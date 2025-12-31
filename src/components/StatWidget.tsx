@@ -52,7 +52,7 @@ export function StatWidget({
                 </motion.p>
               </motion.div>
               {index < stats.length - 1 && (
-                <div className="h-px bg-border my-1" />
+                <div className="h-px bg-primary/30 my-1" />
               )}
             </div>
           ))}
