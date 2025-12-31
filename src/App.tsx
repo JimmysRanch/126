@@ -518,24 +518,13 @@ function App() {
                 <PhotoGalleryCard petName={pet.name} photos={petData[pet.id].groomingPhotos} />
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <MedicalInfoCard
-                  petName={pet.name}
-                  vaccinations={petData[pet.id].vaccinations}
-                  allergies={petData[pet.id].allergies}
-                  medications={petData[pet.id].medications}
-                  notes={petData[pet.id].notes}
-                />
-                
-                <GroomingPreferencesCard
-                  petName={pet.name}
-                  haircut={petData[pet.id].haircut}
-                  shampoo={petData[pet.id].shampoo}
-                  addOns={petData[pet.id].addOns}
-                  specialInstructions={petData[pet.id].specialInstructions}
-                  favoriteGroomer={petData[pet.id].favoriteGroomer}
-                />
-              </div>
+              <MedicalInfoCard
+                petName={pet.name}
+                vaccinations={petData[pet.id].vaccinations}
+                allergies={petData[pet.id].allergies}
+                medications={petData[pet.id].medications}
+                notes={petData[pet.id].notes}
+              />
             </TabsContent>
           ))}
           </Tabs>
