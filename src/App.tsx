@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 function App() {
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1400px] mx-auto space-y-6">
+      <div className="max-w-[1400px] mx-auto space-y-4">
         <header className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             <Button
@@ -46,8 +46,8 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-4">
+          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   LIFETIME SPEND
@@ -69,8 +69,8 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-4">
+          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   NO-SHOWS
@@ -92,8 +92,8 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-4">
+          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   TOTAL APPOINTMENTS
@@ -116,8 +116,8 @@ function App() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 border-border bg-card">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card className="p-4 border-border bg-card">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Last visit</h2>
               <Button
@@ -127,10 +127,10 @@ function App() {
                 REBOOK VISIT
               </Button>
             </div>
-            <p className="text-muted-foreground mt-4">No completed visits yet</p>
+            <p className="text-muted-foreground mt-3">No completed visits yet</p>
           </Card>
 
-          <Card className="p-6 border-border bg-card relative">
+          <Card className="p-4 border-border bg-card relative">
             <div className="absolute top-4 right-4 flex gap-2">
               <Button
                 variant="ghost"
@@ -148,7 +148,7 @@ function App() {
               </Button>
             </div>
 
-            <div className="flex items-start gap-4 mb-6">
+            <div className="flex items-start gap-4 mb-4">
               <Avatar className="h-12 w-12">
                 <AvatarFallback className="bg-primary/20 text-primary">
                   <PawPrint size={24} weight="fill" />
@@ -166,7 +166,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex flex-wrap gap-2 mb-4">
               <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold transition-all duration-200">
                 Rebook appointment
               </Button>
@@ -184,27 +184,27 @@ function App() {
               </Button>
             </div>
 
-            <div className="border border-dashed border-border rounded-lg p-4 mb-4"></div>
+            <div className="border border-dashed border-border rounded-lg p-3 mb-3"></div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="bg-secondary/30 rounded-lg p-4 border border-border">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
                 <p className="text-sm font-medium mb-1">Last appointment</p>
                 <p className="text-muted-foreground">—</p>
               </div>
-              <div className="bg-secondary/30 rounded-lg p-4 border border-border">
+              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
                 <p className="text-sm font-medium mb-1">Next visit</p>
                 <p className="text-muted-foreground font-bold">—</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Auto loads last visit playbook
                 </p>
               </div>
-              <div className="bg-secondary/30 rounded-lg p-4 border border-border">
+              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
                 <p className="text-sm font-medium mb-1">Cadence</p>
                 <p className="text-muted-foreground mt-1">Status: Active</p>
               </div>
             </div>
 
-            <div className="bg-secondary/30 rounded-lg p-4 border border-border">
+            <div className="bg-secondary/30 rounded-lg p-3 border border-border">
               <p className="text-sm font-medium">Favorite notes</p>
             </div>
           </Card>
