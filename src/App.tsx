@@ -48,69 +48,69 @@ function App() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="space-y-4">
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   LIFETIME SPEND
                 </p>
-                <p className="text-2xl font-bold mt-1">$0</p>
+                <p className="text-2xl font-bold">$0</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   AVERAGE TIP
                 </p>
-                <p className="text-2xl font-bold mt-1">$0</p>
+                <p className="text-2xl font-bold">$0</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   AVERAGE $ PER VISIT
                 </p>
-                <p className="text-2xl font-bold mt-1">$0</p>
+                <p className="text-2xl font-bold">$0</p>
               </div>
             </div>
           </Card>
 
           <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="space-y-4">
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   NO-SHOWS
                 </p>
-                <p className="text-2xl font-bold mt-1">0</p>
+                <p className="text-2xl font-bold">0</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   LATE CANCELS
                 </p>
-                <p className="text-2xl font-bold mt-1">0</p>
+                <p className="text-2xl font-bold">0</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   CANCELS
                 </p>
-                <p className="text-2xl font-bold mt-1">0</p>
+                <p className="text-2xl font-bold">0</p>
               </div>
             </div>
           </Card>
 
           <Card className="p-6 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="space-y-4">
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   TOTAL APPOINTMENTS
                 </p>
-                <p className="text-2xl font-bold mt-1">0</p>
+                <p className="text-2xl font-bold">0</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   AVG INTERVAL (DAYS)
                 </p>
-                <p className="text-2xl font-bold mt-1">—</p>
+                <p className="text-2xl font-bold">—</p>
               </div>
-              <div>
+              <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   SINCE LAST VISIT (DAYS)
                 </p>
-                <p className="text-2xl font-bold mt-1">—</p>
+                <p className="text-2xl font-bold">—</p>
               </div>
             </div>
           </Card>
