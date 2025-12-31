@@ -118,14 +118,14 @@ export function AddClient() {
             <CardTitle>Client Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first-name">First Name</Label>
                 <Input
                   id="first-name"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Enter first name"
+                  placeholder="John"
                 />
               </div>
               <div className="space-y-2">
@@ -134,12 +134,9 @@ export function AddClient() {
                   id="last-name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Enter last name"
+                  placeholder="Smith"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -147,7 +144,7 @@ export function AddClient() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email address"
+                  placeholder="test@email.com"
                 />
               </div>
               <div className="space-y-2">
@@ -162,24 +159,23 @@ export function AddClient() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="street-address">Street Address</Label>
-              <Input
-                id="street-address"
-                value={streetAddress}
-                onChange={(e) => setStreetAddress(e.target.value)}
-                placeholder="Enter street address"
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="street-address">Street Address</Label>
+                <Input
+                  id="street-address"
+                  value={streetAddress}
+                  onChange={(e) => setStreetAddress(e.target.value)}
+                  placeholder="123 Main St"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
                 <Input
                   id="city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Enter city"
+                  placeholder="Natalia"
                 />
               </div>
               <div className="space-y-2">
@@ -246,14 +242,14 @@ export function AddClient() {
               )}
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-name-${pet.id}`}>Pet Name</Label>
                   <Input
                     id={`pet-name-${pet.id}`}
                     value={pet.name}
                     onChange={(e) => updatePet(pet.id, 'name', e.target.value)}
-                    placeholder="Enter pet name"
+                    placeholder="Charlie"
                   />
                 </div>
                 <div className="space-y-2">
@@ -265,18 +261,18 @@ export function AddClient() {
                     onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-weight-${pet.id}`}>Weight</Label>
                   <Input
                     id={`pet-weight-${pet.id}`}
                     value={pet.weight}
                     onChange={(e) => updatePet(pet.id, 'weight', e.target.value)}
-                    placeholder="e.g., 25 lbs"
+                    placeholder="55"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-gender-${pet.id}`}>Gender</Label>
                   <Select 
@@ -292,16 +288,13 @@ export function AddClient() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-breed-${pet.id}`}>Breed</Label>
                   <Input
                     id={`pet-breed-${pet.id}`}
                     value={pet.breed}
                     onChange={(e) => updatePet(pet.id, 'breed', e.target.value)}
-                    placeholder="Enter breed"
+                    placeholder="Lab"
                   />
                 </div>
                 <div className="space-y-2">
