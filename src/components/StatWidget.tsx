@@ -27,30 +27,34 @@ export function StatWidget({
       >
         <div className="space-y-1">
           {stats.map((stat, index) => (
-            <motion.div 
-              key={stat.label}
-              className="flex items-center justify-between"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                {stat.label}
-              </p>
-              <motion.p 
-                className="text-2xl font-bold"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ 
-                  duration: 0.5, 
-                  delay: 0.2 + index * 0.1,
-                  type: "spring",
-                  stiffness: 200
-                }}
+            <div key={stat.label}>
+              <motion.div 
+                className="flex items-center justify-between"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                {stat.value}
-              </motion.p>
-            </motion.div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                  {stat.label}
+                </p>
+                <motion.p 
+                  className="text-2xl font-bold"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: 0.2 + index * 0.1,
+                    type: "spring",
+                    stiffness: 200
+                  }}
+                >
+                  {stat.value}
+                </motion.p>
+              </motion.div>
+              {index < stats.length - 1 && (
+                <div className="h-px bg-border my-1" />
+              )}
+            </div>
           ))}
         </div>
       </Card>
