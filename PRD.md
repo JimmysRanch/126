@@ -1,58 +1,97 @@
 # Planning Guide
 
-A client profile page mockup for a pet service business (grooming/vet/boarding) displaying comprehensive client and pet information with financial, appointment, and behavioral metrics.
+A comprehensive pet grooming business management application with client profiles, appointment tracking, financial analytics, and multi-page navigation for complete business operations.
 
 **Experience Qualities**: 
 1. **Professional** - Clean data presentation that inspires confidence in business operations
-2. **Informative** - Dense with relevant metrics without feeling overwhelming
-3. **Actionable** - Quick access to booking and contact features for immediate client management
+2. **Efficient** - Quick navigation between pages with intuitive structure
+3. **Actionable** - Quick access to booking, contact, and client management features for immediate action
 
-**Complexity Level**: Light Application (multiple features with basic state)
-This is a static mockup displaying client information with interactive elements like buttons, but no complex state management or data persistence beyond displaying mock data.
+**Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
+This is a multi-page business management application with navigation between Dashboard, Clients List, individual Client Profiles, and other business management modules (Appointments, Staff, POS, etc.). Features client data management, appointment tracking, financial analytics with interactive widgets, photo galleries, medical records, and payment history.
 
 ## Essential Features
+
+**Top Navigation Bar**
+- Functionality: Global navigation across all major sections of the application
+- Purpose: Provides quick access to Dashboard, Appointments, Messages, Clients, Staff, POS, Inventory, Finances, Reports, and Settings
+- Trigger: Page load
+- Progression: Page loads → Navigation bar displays with active state highlighting → Click tab → Navigate to corresponding page with smooth transition
+- Success criteria: Clear active state indication, smooth page transitions, persistent navigation across all pages
+
+**Dashboard Page**
+- Functionality: Overview of business metrics and quick stats
+- Purpose: Provides at-a-glance view of today's appointments, monthly revenue, active clients, and pets groomed
+- Trigger: App launch or clicking Dashboard tab
+- Progression: Navigate to dashboard → Page loads → Overview cards display with key metrics
+- Success criteria: Clear metric presentation, quick load time, actionable insights
+
+**Clients List Page**
+- Functionality: Searchable list of all clients with their pets and key information
+- Purpose: Browse and search all clients, quick access to individual client profiles
+- Trigger: Click Clients tab in navigation
+- Progression: Navigate to Clients → List displays with search bar → Type in search → Filter results by client name, pet name, or breed → Click client card → Navigate to client profile
+- Success criteria: Fast search, clear client information display, smooth navigation to profiles
 
 **Client Header**
 - Functionality: Displays client name, join date, and primary action buttons
 - Purpose: Provides immediate client identification and quick access to key actions
-- Trigger: Page load
-- Progression: Page loads → Header displays with name, date, action buttons
+- Trigger: Page load on client profile
+- Progression: Page loads → Header displays with name, date, action buttons including Add Appointment, Add Pet, Payment History, Contact, and Edit
 - Success criteria: Clear client identification with accessible CTAs
 
-**Financial & Appointment Metrics Widgets (5 widgets with animated charts)**
-- Functionality: Shows various client metrics with animated data visualizations
-- Purpose: Provides at-a-glance analytics with visual trend data using mini charts
-- Trigger: Page load
-- Progression: Page loads → Widgets animate in with staggered timing → Charts render with smooth animations → Values spring into view
-- Success criteria: Smooth chart animations, clear data visualization, distinct chart types per metric category (area for cumulative, bar for comparisons, line for trends)
+**Financial & Appointment Metrics Widgets (5 widgets with interactive stats)**
+- Functionality: Shows various client metrics in compact, clickable widgets
+- Purpose: Provides at-a-glance analytics about client spending, visit patterns, and reliability
+- Trigger: Page load on client profile
+- Progression: Page loads → Widgets display with values → Click widget → View detailed breakdown or charts
+- Success criteria: Compact display with clear hierarchy, smooth interactions, accurate data visualization
 
-**Last Visit Section**
-- Functionality: Shows information about most recent visit with rebook option
-- Purpose: Quick reference to last interaction
-- Trigger: Page load
-- Progression: Page loads → Displays last visit info or empty state
-- Success criteria: Clear empty state or visit details
-
-**Pet Profile Card**
-- Functionality: Displays pet information with management actions
-- Purpose: Shows pet details, temperament, appointments, and notes
-- Trigger: Page load
-- Progression: Page loads → Card shows pet avatar, name, type, status, and action buttons
-- Success criteria: Comprehensive pet information display with clear CTAs
+**Pet Profile Cards (Multiple pets per client)**
+- Functionality: Displays pet information with flip animation to show grooming preferences
+- Purpose: Shows pet details, temperament, appointments, and grooming preferences
+- Trigger: Page load on client profile
+- Progression: Page loads → Cards display in grid (2-3 per row) → Click card → Card flips to show grooming preferences on back → Edit icon in corner for modifications
+- Success criteria: Equal height cards, smooth flip animation, comprehensive pet information display
 
 **Photo Gallery (Before/After Grooming)**
-- Functionality: Displays before/after photo pairs from grooming sessions with comparison views
+- Functionality: Displays before/after photo pairs from grooming sessions with upload capability
 - Purpose: Visual proof of grooming transformations and portfolio for business
 - Trigger: Page load or photo upload
-- Progression: Page loads → Grid of photo pairs displays → Click photo → Modal opens with split or comparison view → Toggle between comparison modes → Close modal
-- Success criteria: Smooth image loading, intuitive comparison interaction, mobile-responsive grid, clear visual labels for before/after
+- Progression: Page loads → Grid of square photo pairs displays → Click photo → Modal opens with before/after comparison → Upload new photos → Photos save and display in gallery
+- Success criteria: Square image format, smooth image loading, intuitive upload flow, clear visual labels for before/after
+
+**Service History (Per Pet)**
+- Functionality: Shows chronological list of grooming appointments with details
+- Purpose: Track services provided, costs, groomers, and appointment notes
+- Trigger: Select pet tab
+- Progression: Select pet → Service history displays → Click service entry → View full appointment details in expanded view
+- Success criteria: Clear chronological ordering, detailed service breakdown, clickable for full details
+
+**Medical Information Card (Per Pet)**
+- Functionality: Displays vaccinations, allergies, medications, and special notes
+- Purpose: Critical health information for safe grooming practices
+- Trigger: Select pet tab
+- Progression: Select pet → Medical info displays → View vaccination schedules, allergy alerts, and medication information
+- Success criteria: Clear health alerts, up-to-date vaccination tracking, prominent display of critical information
+
+**Payment History Dialog**
+- Functionality: Complete payment history showing all transactions with service breakdowns
+- Purpose: Financial tracking including totals, tips, payment methods, and multi-pet billing
+- Trigger: Click Payment History button
+- Progression: Click button → Dialog opens → Scrollable list of payments displays → View breakdown by pet and service → Close dialog
+- Success criteria: Clear transaction history, accurate totals, clear multi-pet billing breakdown
 
 ## Edge Case Handling
 
-- **No Visit Data**: Display "No completed visits yet" message in last visit section
+- **No Visit Data**: Display "No completed visits yet" message in service history
 - **Zero Values**: Show $0 or 0 for metrics with no data
 - **Long Names**: Truncate or wrap client/pet names appropriately
 - **Missing Pet Info**: Handle optional fields gracefully with dash placeholders
+- **No Search Results**: Display helpful "No clients found" message when search returns empty
+- **Single Pet vs Multiple Pets**: Adapt grid layout for varying number of pets per client
+- **Empty Photo Gallery**: Show upload prompt when no photos exist
+- **Navigation Between Pages**: Maintain smooth transitions and preserve scroll position when appropriate
 
 ## Design Direction
 
@@ -84,47 +123,56 @@ Modern, legible sans-serif that balances technical precision with approachabilit
 
 ## Animations
 
-Animations should be subtle and functional, reinforcing interactions without creating delays—gentle hover states on buttons (scale 1.02 and brightness increase), smooth transitions for state changes (200ms), and micro-interactions on icon buttons. Each stat widget features animated mini-charts (area, bar, or line charts) that smoothly animate on page load with staggered entrance animations for labels and values, creating a sense of data coming to life. Chart animations use spring physics for number values and smooth easing curves (800-1200ms) for chart rendering.
+Animations should be subtle and functional, reinforcing interactions without creating delays—gentle hover states on buttons (scale 1.02 and brightness increase), smooth transitions for state changes (200ms), and micro-interactions on icon buttons. Pet cards feature a 3D flip animation when clicked to reveal grooming preferences on the back. Navigation transitions are smooth with no jarring page reloads. Interactive stat widgets respond to clicks with subtle feedback. Photo gallery modals animate in smoothly.
 
 ## Component Selection
 
 - **Components**: 
-  - Card (shadcn) - For metric widgets and main content sections, with custom dark backgrounds
+  - Card (shadcn) - For metric widgets, client cards, and main content sections
   - Button (shadcn) - Primary (cyan accent), Secondary (navy with border), Ghost (icon buttons)
+  - Input (shadcn) - Search bars with icon
+  - Badge (shadcn) - Pet indicators, service tags, and before/after labels
+  - Tabs (shadcn) - Per-pet information switching
+  - Dialog (shadcn) - Full-screen photo comparison modal and payment history
   - Avatar (shadcn) - For pet profile with icon fallback
   - Separator (shadcn) - Subtle dividers between sections
-  - Dialog (shadcn) - Full-screen photo comparison modal
-  - Badge (shadcn) - Service tags and before/after labels
-  - AreaChart, BarChart, LineChart (recharts) - Animated mini charts for stat visualization
-  - Motion components (framer-motion) - Staggered entrance animations for widgets and values
+  - Navigation - Custom top navigation bar with active state highlighting
+  - Router (react-router-dom) - Page navigation and routing
   
 - **Customizations**: 
-  - Metric cards with glowing border effect on the accent color
-  - Custom grid layout for 3-column widget display
-  - Icon buttons with circular backgrounds in the top-right corners
+  - Metric cards with compact spacing and divider lines
+  - Custom grid layout for 3-column pet card display
+  - Icon buttons with circular backgrounds in top-right corners
+  - Flip animation for pet cards using framer-motion or CSS transforms
+  - Active navigation state with bottom border highlight
   
 - **States**: 
   - Buttons: Default (solid or bordered), Hover (scale + brightness), Active (slight scale down), Disabled (opacity 50%)
-  - Cards: Static with subtle border glow
+  - Cards: Static with hover border color change for client list cards
   - Interactive elements: Smooth 200ms transitions
+  - Navigation: Active state with border-bottom and color change
+  - Pet Cards: Front (default info) and Back (grooming preferences) with flip transition
   
 - **Icon Selection**: 
   - ArrowLeft (back navigation)
   - PencilSimple (edit actions)
-  - DotsThree (menu/options)
-  - PawPrint (pet indicator)
+  - Plus (add actions - new client, new pet, new appointment)
+  - PawPrint (pet indicators throughout app)
+  - MagnifyingGlass (search functionality)
   - Images (photo gallery)
-  - ArrowsLeftRight (before/after comparison)
-  - Plus (add photos)
+  - Clock (appointment times)
   
 - **Spacing**: 
   - Page padding: p-6 (24px)
-  - Card padding: p-6 (24px)
+  - Card padding: p-5 to p-6 (20-24px)
   - Gap between widgets: gap-4 (16px)
-  - Metric internal spacing: gap-2 (8px)
+  - Navigation height: Auto with py-4 padding
+  - List item spacing: gap-3 (12px)
   
 - **Mobile**: 
-  - Stack widgets vertically (grid-cols-1 on mobile, grid-cols-3 on desktop)
-  - Reduce header button sizes and stack if needed
+  - Stack all widgets vertically on mobile
+  - Single column for client list and pet cards on mobile
+  - Navigation collapses or scrolls horizontally on small screens
+  - Reduce header button sizes and wrap if needed
   - Maintain readability with consistent padding
   - Full-width cards with preserved internal spacing
