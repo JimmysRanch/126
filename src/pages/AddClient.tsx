@@ -1,0 +1,361 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Plus, X, PawPrint } from "@phosphor-icons/react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+
+const US_STATES = [
+  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
+  'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 
+  'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 
+  'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 
+  'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 
+  'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 
+  'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 
+  'Wisconsin', 'Wyoming'
+]
+
+const REFERRAL_SOURCES = [
+  'Facebook',
+  'Google',
+  'Nextdoor',
+  'Word-of-mouth',
+  'Other'
+]
+
+interface PetInfo {
+  id: string
+  name: string
+  birthday: string
+  weight: string
+  gender: string
+  breed: string
+  mixedBreed: string
+  notes: string
+}
+
+export function AddClient() {
+  const navigate = useNavigate()
+  
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [streetAddress, setStreetAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('Texas')
+  const [zipCode, setZipCode] = useState('')
+  const [referralSource, setReferralSource] = useState('')
+  
+  const [pets, setPets] = useState<PetInfo[]>([
+    {
+      id: '1',
+      name: '',
+      birthday: '',
+      weight: '',
+      gender: '',
+      breed: '',
+      mixedBreed: '',
+      notes: ''
+    }
+  ])
+
+  const addPet = () => {
+    const newPet: PetInfo = {
+      id: Date.now().toString(),
+      name: '',
+      birthday: '',
+      weight: '',
+      gender: '',
+      breed: '',
+      mixedBreed: '',
+      notes: ''
+    }
+    setPets([...pets, newPet])
+  }
+
+  const removePet = (id: string) => {
+    setPets(pets.filter(pet => pet.id !== id))
+  }
+
+  const updatePet = (id: string, field: keyof PetInfo, value: string) => {
+    setPets(pets.map(pet => 
+      pet.id === id ? { ...pet, [field]: value } : pet
+    ))
+  }
+
+  const handleSave = () => {
+    console.log('Saving client:', {
+      firstName,
+      lastName,
+      email,
+      phone,
+      streetAddress,
+      city,
+      state,
+      zipCode,
+      referralSource,
+      pets
+    })
+    navigate('/clients')
+  }
+
+  const handleCancel = () => {
+    navigate('/clients')
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground p-6">
+      <div className="max-w-[1200px] mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Add New Client</h1>
+
+        <Card className="bg-card border-border mb-6">
+          <CardHeader>
+            <CardTitle>Client Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="first-name">First Name</Label>
+                <Input
+                  id="first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder="Enter first name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input
+                  id="last-name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  placeholder="Enter last name"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(555) 123-4567"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="street-address">Street Address</Label>
+              <Input
+                id="street-address"
+                value={streetAddress}
+                onChange={(e) => setStreetAddress(e.target.value)}
+                placeholder="Enter street address"
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter city"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state">State</Label>
+                <Select value={state} onValueChange={setState}>
+                  <SelectTrigger id="state">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {US_STATES.map((stateName) => (
+                      <SelectItem key={stateName} value={stateName}>
+                        {stateName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="zip-code">ZIP Code</Label>
+                <Input
+                  id="zip-code"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  placeholder="12345"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="referral-source">How did you hear about us?</Label>
+              <Select value={referralSource} onValueChange={setReferralSource}>
+                <SelectTrigger id="referral-source">
+                  <SelectValue placeholder="Select a source" />
+                </SelectTrigger>
+                <SelectContent>
+                  {REFERRAL_SOURCES.map((source) => (
+                    <SelectItem key={source} value={source}>
+                      {source}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {pets.map((pet, index) => (
+          <Card key={pet.id} className="bg-card border-border mb-6">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <PawPrint size={20} weight="fill" className="text-primary" />
+                Pet Information {pets.length > 1 && `#${index + 1}`}
+              </CardTitle>
+              {pets.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => removePet(pet.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <X size={16} className="mr-1" />
+                  Delete Pet
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-name-${pet.id}`}>Pet Name</Label>
+                  <Input
+                    id={`pet-name-${pet.id}`}
+                    value={pet.name}
+                    onChange={(e) => updatePet(pet.id, 'name', e.target.value)}
+                    placeholder="Enter pet name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
+                  <Input
+                    id={`pet-birthday-${pet.id}`}
+                    type="date"
+                    value={pet.birthday}
+                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-weight-${pet.id}`}>Weight</Label>
+                  <Input
+                    id={`pet-weight-${pet.id}`}
+                    value={pet.weight}
+                    onChange={(e) => updatePet(pet.id, 'weight', e.target.value)}
+                    placeholder="e.g., 25 lbs"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-gender-${pet.id}`}>Gender</Label>
+                  <Select 
+                    value={pet.gender} 
+                    onValueChange={(value) => updatePet(pet.id, 'gender', value)}
+                  >
+                    <SelectTrigger id={`pet-gender-${pet.id}`}>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-breed-${pet.id}`}>Breed</Label>
+                  <Input
+                    id={`pet-breed-${pet.id}`}
+                    value={pet.breed}
+                    onChange={(e) => updatePet(pet.id, 'breed', e.target.value)}
+                    placeholder="Enter breed"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed</Label>
+                  <Input
+                    id={`pet-mixed-breed-${pet.id}`}
+                    value={pet.mixedBreed}
+                    onChange={(e) => updatePet(pet.id, 'mixedBreed', e.target.value)}
+                    placeholder="Enter mixed breed (if applicable)"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`pet-notes-${pet.id}`}>Notes</Label>
+                <Textarea
+                  id={`pet-notes-${pet.id}`}
+                  value={pet.notes}
+                  onChange={(e) => updatePet(pet.id, 'notes', e.target.value)}
+                  placeholder="Special instructions, medical information, allergies, and behavior information"
+                  rows={4}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={addPet}
+            className="w-full border-dashed border-2 hover:bg-primary/10 hover:border-primary transition-all duration-200"
+          >
+            <Plus size={18} className="mr-2" />
+            Add Additional Pet
+          </Button>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={handleCancel}
+            className="px-8"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-8"
+          >
+            Save
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -134,7 +134,10 @@ export function ClientsList() {
               className="pl-10"
             />
           </div>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]">
+          <Button 
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
+            onClick={() => navigate('/clients/new')}
+          >
             <Plus size={18} className="mr-2" />
             Add New Client
           </Button>

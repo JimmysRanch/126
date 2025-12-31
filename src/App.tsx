@@ -3,6 +3,7 @@ import { TopNav } from '@/components/TopNav'
 import { Dashboard } from '@/pages/Dashboard'
 import { ClientsList } from '@/pages/ClientsList'
 import { ClientProfile } from '@/pages/ClientProfile'
+import { AddClient } from '@/pages/AddClient'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Route path="/appointments" element={<PlaceholderPage title="Appointments" />} />
           <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
           <Route path="/clients" element={<ClientsList />} />
+          <Route path="/clients/new" element={<AddClient />} />
           <Route path="/clients/:clientId" element={<ClientProfile />} />
           <Route path="/staff" element={<PlaceholderPage title="Staff" />} />
           <Route path="/pos" element={<PlaceholderPage title="POS" />} />
