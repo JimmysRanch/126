@@ -31,7 +31,11 @@ export function MedicalInfoCard({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <FirstAid size={18} className="text-primary" weight="fill" />
-          Medical Info - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
+          Medical Info - 
+          <span className="flex items-center gap-1.5">
+            <PawPrint size={16} weight="fill" className="text-primary" />
+            {petName}
+          </span>
         </h3>
         <Button
           variant="ghost"

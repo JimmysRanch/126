@@ -1,4 +1,4 @@
-import { Receipt, X, Download } from "@phosphor-icons/react"
+import { Receipt, X, Download, PawPrint } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -76,7 +76,10 @@ export function PaymentHistoryDialog({ clientName, payments }: PaymentHistoryDia
                 <div className="space-y-3 mb-3">
                   {payment.pets.map((pet, index) => (
                     <div key={index}>
-                      <p className="text-sm font-semibold mb-1">{pet.name}</p>
+                      <p className="text-sm font-semibold mb-1 flex items-center gap-1.5">
+                        <PawPrint size={14} weight="fill" className="text-primary" />
+                        {pet.name}
+                      </p>
                       <div className="grid grid-cols-2 gap-2">
                         {pet.services.map((service, sIndex) => (
                           <div key={sIndex} className="text-xs text-muted-foreground flex items-center gap-1">

@@ -25,7 +25,11 @@ export function GroomingPreferencesCard({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Scissors size={18} className="text-primary" weight="fill" />
-          Grooming Preferences - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
+          Grooming Preferences - 
+          <span className="flex items-center gap-1.5">
+            <PawPrint size={16} weight="fill" className="text-primary" />
+            {petName}
+          </span>
         </h3>
         <Button
           variant="ghost"

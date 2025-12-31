@@ -24,7 +24,11 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Scissors size={18} className="text-primary" weight="fill" />
-          Service History - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
+          Service History - 
+          <span className="flex items-center gap-1.5">
+            <PawPrint size={16} weight="fill" className="text-primary" />
+            {petName}
+          </span>
         </h3>
       </div>
 
