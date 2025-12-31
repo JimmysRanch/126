@@ -79,21 +79,6 @@ function App() {
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                NO-SHOWS
-              </p>
-              <p className="text-2xl font-bold">0</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                CANCELS
-              </p>
-              <p className="text-2xl font-bold">0</p>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 AVG INTERVAL
               </p>
               <p className="text-2xl font-bold">—</p>
@@ -103,6 +88,21 @@ function App() {
                 SINCE LAST VISIT
               </p>
               <p className="text-2xl font-bold">—</p>
+            </div>
+          </Card>
+
+          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                NO-SHOWS
+              </p>
+              <p className="text-2xl font-bold">0</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                CANCELS
+              </p>
+              <p className="text-2xl font-bold">0</p>
             </div>
           </Card>
 
