@@ -1,4 +1,4 @@
-import { ArrowLeft, PencilSimple } from "@phosphor-icons/react"
+import { ArrowLeft, PencilSimple, Plus } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { StatWidget } from "@/components/StatWidget"
 import { PetCard } from "@/components/PetCard"
@@ -6,10 +6,13 @@ import { ServiceHistoryCard } from "@/components/ServiceHistoryCard"
 import { MedicalInfoCard } from "@/components/MedicalInfoCard"
 import { GroomingPreferencesCard } from "@/components/GroomingPreferencesCard"
 import { PhotoGalleryCard } from "@/components/PhotoGalleryCard"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react"
 
 function App() {
   const pets = [
     {
+      id: "1",
       name: "Trying",
       breed: "Labrador Retriever",
       status: "Active",
@@ -20,93 +23,280 @@ function App() {
       sex: "Male",
       lastAppointment: "Jan 15, 2025",
       nextVisit: "Feb 12, 2025"
-    }
-  ]
-
-  const serviceHistory = [
-    {
-      name: "Full Groom Package",
-      date: "Jan 15, 2025",
-      groomer: "Sarah J.",
-      duration: "2h 30m",
-      cost: "$85",
-      services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
-      notes: "Did great! Very cooperative during nail trim."
-    },
-    {
-      name: "Bath & Brush",
-      date: "Dec 10, 2024",
-      groomer: "Mike T.",
-      duration: "1h 15m",
-      cost: "$45",
-      services: ["Bath", "Brush", "Nail Trim"],
-      notes: "A bit anxious at first but settled down quickly."
-    },
-    {
-      name: "Full Groom Package",
-      date: "Nov 5, 2024",
-      groomer: "Sarah J.",
-      duration: "2h 45m",
-      cost: "$85",
-      services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Teeth Brushing"]
-    }
-  ]
-
-  const vaccinations = [
-    {
-      type: "vaccine",
-      name: "Rabies",
-      date: "Mar 2024",
-      nextDue: "Mar 2027"
-    },
-    {
-      type: "vaccine",
-      name: "DHPP",
-      date: "Mar 2024",
-      nextDue: "Mar 2025"
-    },
-    {
-      type: "vaccine",
-      name: "Bordetella",
-      date: "Sep 2024",
-      nextDue: "Sep 2025"
-    }
-  ]
-
-  const groomingPhotos = [
-    {
-      id: "1",
-      beforeUrl: "https://images.unsplash.com/photo-1558788353-f76d92427f16?w=400&h=400&fit=crop",
-      afterUrl: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop",
-      date: "Jan 15, 2025",
-      service: "Full Groom Package",
-      groomer: "Sarah J."
     },
     {
       id: "2",
-      beforeUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
-      afterUrl: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop",
-      date: "Dec 10, 2024",
-      service: "Bath & Brush",
-      groomer: "Mike T."
+      name: "Luna",
+      breed: "Golden Retriever",
+      status: "Active",
+      temperament: ["Playful", "Gentle", "Water lover"],
+      age: "5 yrs",
+      weight: "58 lbs",
+      color: "Golden",
+      sex: "Female",
+      lastAppointment: "Jan 10, 2025",
+      nextVisit: "Feb 8, 2025"
     },
     {
       id: "3",
-      beforeUrl: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=400&h=400&fit=crop",
-      afterUrl: "https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?w=400&h=400&fit=crop",
-      date: "Nov 5, 2024",
-      service: "Full Groom Package",
-      groomer: "Sarah J."
-    },
-    {
-      id: "4",
-      beforeUrl: "https://images.unsplash.com/photo-1597633425046-08f5110420b5?w=400&h=400&fit=crop",
-      afterUrl: "https://images.unsplash.com/photo-1568572933382-74d440642117?w=400&h=400&fit=crop",
-      date: "Oct 1, 2024",
-      service: "Summer Cut Special",
-      groomer: "Sarah J."
+      name: "Max",
+      breed: "Poodle Mix",
+      status: "Active",
+      temperament: ["Smart", "Anxious", "Food motivated"],
+      age: "2 yrs",
+      weight: "42 lbs",
+      color: "Brown",
+      sex: "Male",
+      lastAppointment: "Jan 18, 2025",
+      nextVisit: "Feb 15, 2025"
     }
   ]
+
+  const [selectedPet, setSelectedPet] = useState(pets[0].id)
+
+  interface MedicalRecord {
+    type: string
+    name: string
+    date: string
+    nextDue?: string
+  }
+
+  const petData: Record<string, {
+    serviceHistory: any[]
+    vaccinations: MedicalRecord[]
+    groomingPhotos: any[]
+    allergies: string[]
+    medications: MedicalRecord[]
+    notes: string
+    haircut: string
+    shampoo: string
+    addOns: string[]
+    specialInstructions: string
+    favoriteGroomer: string
+  }> = {
+    "1": {
+      serviceHistory: [
+        {
+          name: "Full Groom Package",
+          date: "Jan 15, 2025",
+          groomer: "Sarah J.",
+          duration: "2h 30m",
+          cost: "$85",
+          services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
+          notes: "Did great! Very cooperative during nail trim."
+        },
+        {
+          name: "Bath & Brush",
+          date: "Dec 10, 2024",
+          groomer: "Mike T.",
+          duration: "1h 15m",
+          cost: "$45",
+          services: ["Bath", "Brush", "Nail Trim"],
+          notes: "A bit anxious at first but settled down quickly."
+        },
+        {
+          name: "Full Groom Package",
+          date: "Nov 5, 2024",
+          groomer: "Sarah J.",
+          duration: "2h 45m",
+          cost: "$85",
+          services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Teeth Brushing"]
+        }
+      ],
+      vaccinations: [
+        {
+          type: "vaccine",
+          name: "Rabies",
+          date: "Mar 2024",
+          nextDue: "Mar 2027"
+        },
+        {
+          type: "vaccine",
+          name: "DHPP",
+          date: "Mar 2024",
+          nextDue: "Mar 2025"
+        },
+        {
+          type: "vaccine",
+          name: "Bordetella",
+          date: "Sep 2024",
+          nextDue: "Sep 2025"
+        }
+      ],
+      groomingPhotos: [
+        {
+          id: "1",
+          beforeUrl: "https://images.unsplash.com/photo-1558788353-f76d92427f16?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop",
+          date: "Jan 15, 2025",
+          service: "Full Groom Package",
+          groomer: "Sarah J."
+        },
+        {
+          id: "2",
+          beforeUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop",
+          date: "Dec 10, 2024",
+          service: "Bath & Brush",
+          groomer: "Mike T."
+        },
+        {
+          id: "3",
+          beforeUrl: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?w=400&h=400&fit=crop",
+          date: "Nov 5, 2024",
+          service: "Full Groom Package",
+          groomer: "Sarah J."
+        },
+        {
+          id: "4",
+          beforeUrl: "https://images.unsplash.com/photo-1597633425046-08f5110420b5?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1568572933382-74d440642117?w=400&h=400&fit=crop",
+          date: "Oct 1, 2024",
+          service: "Summer Cut Special",
+          groomer: "Sarah J."
+        }
+      ],
+      allergies: ["Chicken", "Corn"],
+      medications: [],
+      notes: "Sensitive skin - use hypoallergenic products only",
+      haircut: "Short summer cut",
+      shampoo: "Hypoallergenic",
+      addOns: ["Teeth brushing", "Paw balm", "De-shedding treatment"],
+      specialInstructions: "Prefers gentle handling around ears. Give treats frequently during grooming.",
+      favoriteGroomer: "Sarah J."
+    },
+    "2": {
+      serviceHistory: [
+        {
+          name: "Luxury Spa Package",
+          date: "Jan 10, 2025",
+          groomer: "Emma R.",
+          duration: "3h 00m",
+          cost: "$120",
+          services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Massage", "Blueberry Facial"],
+          notes: "Absolutely loved the spa treatment. Very relaxed throughout."
+        },
+        {
+          name: "Full Groom Package",
+          date: "Dec 5, 2024",
+          groomer: "Emma R.",
+          duration: "2h 15m",
+          cost: "$85",
+          services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"]
+        }
+      ],
+      vaccinations: [
+        {
+          type: "vaccine",
+          name: "Rabies",
+          date: "Apr 2024",
+          nextDue: "Apr 2027"
+        },
+        {
+          type: "vaccine",
+          name: "DHPP",
+          date: "Apr 2024",
+          nextDue: "Apr 2025"
+        }
+      ],
+      groomingPhotos: [
+        {
+          id: "1",
+          beforeUrl: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=400&fit=crop",
+          date: "Jan 10, 2025",
+          service: "Luxury Spa Package",
+          groomer: "Emma R."
+        },
+        {
+          id: "2",
+          beforeUrl: "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1612536981611-7687656ef8fc?w=400&h=400&fit=crop",
+          date: "Dec 5, 2024",
+          service: "Full Groom Package",
+          groomer: "Emma R."
+        }
+      ],
+      allergies: [],
+      medications: [],
+      notes: "Loves water and bath time. Very cooperative.",
+      haircut: "Teddy bear cut",
+      shampoo: "Oatmeal & Honey",
+      addOns: ["Blueberry facial", "Massage", "Cologne"],
+      specialInstructions: "Loves being pampered. Can add extra spa treatments anytime.",
+      favoriteGroomer: "Emma R."
+    },
+    "3": {
+      serviceHistory: [
+        {
+          name: "Full Groom Package",
+          date: "Jan 18, 2025",
+          groomer: "Mike T.",
+          duration: "2h 00m",
+          cost: "$75",
+          services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
+          notes: "Needed extra patience. Treats helped a lot with anxiety."
+        },
+        {
+          name: "Bath Only",
+          date: "Jan 2, 2025",
+          groomer: "Mike T.",
+          duration: "45m",
+          cost: "$35",
+          services: ["Bath", "Brush"],
+          notes: "Quick bath to help with allergies. Did well."
+        }
+      ],
+      vaccinations: [
+        {
+          type: "vaccine",
+          name: "Rabies",
+          date: "Jan 2024",
+          nextDue: "Jan 2027"
+        },
+        {
+          type: "vaccine",
+          name: "DHPP",
+          date: "Jan 2024",
+          nextDue: "Jan 2025"
+        },
+        {
+          type: "vaccine",
+          name: "Bordetella",
+          date: "Jul 2024",
+          nextDue: "Jul 2025"
+        }
+      ],
+      groomingPhotos: [
+        {
+          id: "1",
+          beforeUrl: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=400&h=400&fit=crop",
+          afterUrl: "https://images.unsplash.com/photo-1624395213043-fa2e123b2656?w=400&h=400&fit=crop",
+          date: "Jan 18, 2025",
+          service: "Full Groom Package",
+          groomer: "Mike T."
+        }
+      ],
+      allergies: ["Grass pollen", "Dust mites"],
+      medications: [
+        {
+          type: "medication",
+          name: "Apoquel 5mg daily",
+          date: "Jan 2024"
+        }
+      ],
+      notes: "Anxious around loud noises. Seasonal allergies require regular baths.",
+      haircut: "Puppy cut (fluffy)",
+      shampoo: "Medicated (prescribed)",
+      addOns: ["Teeth brushing"],
+      specialInstructions: "Needs calm environment. Take breaks if stressed. Use lots of treats and praise.",
+      favoriteGroomer: "Mike T."
+    }
+  }
+
+  const currentPet = pets.find(p => p.id === selectedPet)!
+  const currentData = petData[selectedPet]
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -191,36 +381,62 @@ function App() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {pets.map((pet, index) => (
-            <PetCard key={pet.name} {...pet} index={index} />
+            <PetCard key={pet.id} {...pet} index={index} />
           ))}
+          
+          <div className="flex items-center justify-center border-2 border-dashed border-border rounded-lg bg-card/50 hover:border-primary/50 transition-all duration-200 cursor-pointer group p-6">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-all duration-200">
+                <Plus size={24} className="text-primary" />
+              </div>
+              <p className="text-sm font-semibold text-foreground">Add New Pet</p>
+              <p className="text-xs text-muted-foreground mt-1">Register another pet</p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ServiceHistoryCard petName="Trying" services={serviceHistory} />
-          
-          <PhotoGalleryCard petName="Trying" photos={groomingPhotos} />
-        </div>
+        <Tabs value={selectedPet} onValueChange={setSelectedPet} className="w-full">
+          <div className="flex items-center justify-between mb-3">
+            <TabsList className="bg-secondary/50">
+              {pets.map((pet) => (
+                <TabsTrigger key={pet.id} value={pet.id} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  {pet.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <MedicalInfoCard
-            petName="Trying"
-            vaccinations={vaccinations}
-            allergies={["Chicken", "Corn"]}
-            medications={[]}
-            notes="Sensitive skin - use hypoallergenic products only"
-          />
-          
-          <GroomingPreferencesCard
-            petName="Trying"
-            haircut="Short summer cut"
-            shampoo="Hypoallergenic"
-            addOns={["Teeth brushing", "Paw balm", "De-shedding treatment"]}
-            specialInstructions="Prefers gentle handling around ears. Give treats frequently during grooming."
-            favoriteGroomer="Sarah J."
-          />
-        </div>
+          {pets.map((pet) => (
+            <TabsContent key={pet.id} value={pet.id} className="space-y-4 mt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <ServiceHistoryCard petName={pet.name} services={petData[pet.id].serviceHistory} />
+                
+                <PhotoGalleryCard petName={pet.name} photos={petData[pet.id].groomingPhotos} />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <MedicalInfoCard
+                  petName={pet.name}
+                  vaccinations={petData[pet.id].vaccinations}
+                  allergies={petData[pet.id].allergies}
+                  medications={petData[pet.id].medications}
+                  notes={petData[pet.id].notes}
+                />
+                
+                <GroomingPreferencesCard
+                  petName={pet.name}
+                  haircut={petData[pet.id].haircut}
+                  shampoo={petData[pet.id].shampoo}
+                  addOns={petData[pet.id].addOns}
+                  specialInstructions={petData[pet.id].specialInstructions}
+                  favoriteGroomer={petData[pet.id].favoriteGroomer}
+                />
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
     </div>
   )
