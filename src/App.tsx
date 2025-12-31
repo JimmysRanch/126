@@ -5,6 +5,7 @@ import { PetCard } from "@/components/PetCard"
 import { ServiceHistoryCard } from "@/components/ServiceHistoryCard"
 import { MedicalInfoCard } from "@/components/MedicalInfoCard"
 import { GroomingPreferencesCard } from "@/components/GroomingPreferencesCard"
+import { PhotoGalleryCard } from "@/components/PhotoGalleryCard"
 
 function App() {
   const pets = [
@@ -69,6 +70,41 @@ function App() {
       name: "Bordetella",
       date: "Sep 2024",
       nextDue: "Sep 2025"
+    }
+  ]
+
+  const groomingPhotos = [
+    {
+      id: "1",
+      beforeUrl: "https://images.unsplash.com/photo-1558788353-f76d92427f16?w=400&h=400&fit=crop",
+      afterUrl: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=400&fit=crop",
+      date: "Jan 15, 2025",
+      service: "Full Groom Package",
+      groomer: "Sarah J."
+    },
+    {
+      id: "2",
+      beforeUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop",
+      afterUrl: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400&h=400&fit=crop",
+      date: "Dec 10, 2024",
+      service: "Bath & Brush",
+      groomer: "Mike T."
+    },
+    {
+      id: "3",
+      beforeUrl: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=400&h=400&fit=crop",
+      afterUrl: "https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?w=400&h=400&fit=crop",
+      date: "Nov 5, 2024",
+      service: "Full Groom Package",
+      groomer: "Sarah J."
+    },
+    {
+      id: "4",
+      beforeUrl: "https://images.unsplash.com/photo-1597633425046-08f5110420b5?w=400&h=400&fit=crop",
+      afterUrl: "https://images.unsplash.com/photo-1568572933382-74d440642117?w=400&h=400&fit=crop",
+      date: "Oct 1, 2024",
+      service: "Summer Cut Special",
+      groomer: "Sarah J."
     }
   ]
 
@@ -164,24 +200,26 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <ServiceHistoryCard petName="Trying" services={serviceHistory} />
           
-          <div className="space-y-4">
-            <MedicalInfoCard
-              petName="Trying"
-              vaccinations={vaccinations}
-              allergies={["Chicken", "Corn"]}
-              medications={[]}
-              notes="Sensitive skin - use hypoallergenic products only"
-            />
-            
-            <GroomingPreferencesCard
-              petName="Trying"
-              haircut="Short summer cut"
-              shampoo="Hypoallergenic"
-              addOns={["Teeth brushing", "Paw balm", "De-shedding treatment"]}
-              specialInstructions="Prefers gentle handling around ears. Give treats frequently during grooming."
-              favoriteGroomer="Sarah J."
-            />
-          </div>
+          <PhotoGalleryCard petName="Trying" photos={groomingPhotos} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <MedicalInfoCard
+            petName="Trying"
+            vaccinations={vaccinations}
+            allergies={["Chicken", "Corn"]}
+            medications={[]}
+            notes="Sensitive skin - use hypoallergenic products only"
+          />
+          
+          <GroomingPreferencesCard
+            petName="Trying"
+            haircut="Short summer cut"
+            shampoo="Hypoallergenic"
+            addOns={["Teeth brushing", "Paw balm", "De-shedding treatment"]}
+            specialInstructions="Prefers gentle handling around ears. Give treats frequently during grooming."
+            favoriteGroomer="Sarah J."
+          />
         </div>
       </div>
     </div>

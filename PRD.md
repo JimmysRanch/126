@@ -40,6 +40,13 @@ This is a static mockup displaying client information with interactive elements 
 - Progression: Page loads → Card shows pet avatar, name, type, status, and action buttons
 - Success criteria: Comprehensive pet information display with clear CTAs
 
+**Photo Gallery (Before/After Grooming)**
+- Functionality: Displays before/after photo pairs from grooming sessions with comparison views
+- Purpose: Visual proof of grooming transformations and portfolio for business
+- Trigger: Page load or photo upload
+- Progression: Page loads → Grid of photo pairs displays → Click photo → Modal opens with split or comparison view → Toggle between comparison modes → Close modal
+- Success criteria: Smooth image loading, intuitive comparison interaction, mobile-responsive grid, clear visual labels for before/after
+
 ## Edge Case Handling
 
 - **No Visit Data**: Display "No completed visits yet" message in last visit section
@@ -86,6 +93,8 @@ Animations should be subtle and functional, reinforcing interactions without cre
   - Button (shadcn) - Primary (cyan accent), Secondary (navy with border), Ghost (icon buttons)
   - Avatar (shadcn) - For pet profile with icon fallback
   - Separator (shadcn) - Subtle dividers between sections
+  - Dialog (shadcn) - Full-screen photo comparison modal
+  - Badge (shadcn) - Service tags and before/after labels
   - AreaChart, BarChart, LineChart (recharts) - Animated mini charts for stat visualization
   - Motion components (framer-motion) - Staggered entrance animations for widgets and values
   
@@ -104,6 +113,9 @@ Animations should be subtle and functional, reinforcing interactions without cre
   - PencilSimple (edit actions)
   - DotsThree (menu/options)
   - PawPrint (pet indicator)
+  - Images (photo gallery)
+  - ArrowsLeftRight (before/after comparison)
+  - Plus (add photos)
   
 - **Spacing**: 
   - Page padding: p-6 (24px)
