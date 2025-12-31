@@ -51,7 +51,7 @@ export function PetCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="h-full"
+      className="h-full min-h-[320px]"
       style={{ perspective: "1000px" }}
     >
       <div
@@ -62,12 +62,16 @@ export function PetCard({
         <motion.div
           animate={{ rotateY: isFlipped ? 180 : 0 }}
           transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-          className="w-full h-full"
+          className="w-full h-full relative"
           style={{ transformStyle: "preserve-3d" }}
         >
           <Card 
-            className="absolute inset-0 p-3 border-border bg-card hover:border-primary/50 transition-all duration-200"
-            style={{ backfaceVisibility: "hidden" }}
+            className="p-3 border-border bg-card hover:border-primary/50 transition-all duration-200 h-full"
+            style={{ 
+              backfaceVisibility: "hidden",
+              position: isFlipped ? "absolute" : "relative",
+              opacity: isFlipped ? 0 : 1
+            }}
           >
             <Button
               variant="ghost"
@@ -170,10 +174,15 @@ export function PetCard({
           </Card>
 
           <Card 
-            className="absolute inset-0 p-3 border-border bg-card"
+            className="p-3 border-border bg-card h-full"
             style={{ 
               backfaceVisibility: "hidden",
-              transform: "rotateY(180deg)"
+              transform: "rotateY(180deg)",
+              position: isFlipped ? "relative" : "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              opacity: isFlipped ? 1 : 0
             }}
           >
             <div className="flex items-center justify-between mb-3">
