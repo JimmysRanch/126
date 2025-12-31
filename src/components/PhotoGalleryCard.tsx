@@ -1,10 +1,14 @@
-import { useState } from "react"
-import { Images, Plus, X, ArrowsLeftRight, PawPrint } from "@phosphor-icons/react"
+import { useState, useRef } from "react"
+import { Images, Plus, X, ArrowsLeftRight, PawPrint, Upload, Trash } from "@phosphor-icons/react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { motion, AnimatePresence } from "framer-motion"
+import { toast } from "sonner"
+import { useKV } from "@github/spark/hooks"
 
 interface Photo {
   id: string
@@ -17,12 +21,91 @@ interface Photo {
 
 interface PhotoGalleryCardProps {
   petName: string
+  petId: string
   photos: Photo[]
 }
 
-export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
+export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: PhotoGalleryCardProps) {
+  const [photos, setPhotos] = useKV<Photo[]>(`pet-photos-${petId}`, initialPhotos)
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
   const [showComparison, setShowComparison] = useState(false)
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
+  const [beforePreview, setBeforePreview] = useState<string>("")
+  const [afterPreview, setAfterPreview] = useState<string>("")
+  const [service, setService] = useState("")
+  const [groomer, setGroomer] = useState("")
+  const beforeInputRef = useRef<HTMLInputElement>(null)
+  const afterInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileChange = (file: File | null, type: 'before' | 'after') => {
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const result = reader.result as string
+      if (type === 'before') {
+        setBeforePreview(result)
+      } else {
+        setAfterPreview(result)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleUpload = () => {
+    if (!beforePreview || !afterPreview) {
+      toast.error('Please select both before and after photos')
+      return
+    }
+
+    if (!service.trim()) {
+      toast.error('Please enter a service name')
+      return
+    }
+
+    if (!groomer.trim()) {
+      toast.error('Please enter a groomer name')
+      return
+    }
+
+    const newPhoto: Photo = {
+      id: `photo-${Date.now()}`,
+      beforeUrl: beforePreview,
+      afterUrl: afterPreview,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      service: service.trim(),
+      groomer: groomer.trim()
+    }
+
+    setPhotos((currentPhotos) => [newPhoto, ...(currentPhotos || [])])
+    toast.success('Photos uploaded successfully!')
+    resetUploadForm()
+    setUploadDialogOpen(false)
+  }
+
+  const resetUploadForm = () => {
+    setBeforePreview("")
+    setAfterPreview("")
+    setService("")
+    setGroomer("")
+    if (beforeInputRef.current) beforeInputRef.current.value = ""
+    if (afterInputRef.current) afterInputRef.current.value = ""
+  }
+
+  const handleDeletePhoto = (photoId: string) => {
+    setPhotos((currentPhotos) => (currentPhotos || []).filter(p => p.id !== photoId))
+    if (selectedPhoto?.id === photoId) {
+      setSelectedPhoto(null)
+    }
+    toast.success('Photo deleted')
+  }
+
+  const currentPhotos = photos || []
 
   return (
     <>
@@ -40,19 +123,21 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
             size="sm"
             variant="secondary"
             className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+            onClick={() => setUploadDialogOpen(true)}
           >
             <Plus size={14} className="mr-1" />
             Add Photos
           </Button>
         </div>
 
-        {photos.length === 0 ? (
+        {currentPhotos.length === 0 ? (
           <div className="bg-secondary/30 rounded-md p-8 border border-dashed border-border text-center">
             <Images size={32} className="text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground mb-3">No grooming photos yet</p>
             <Button
               size="sm"
               className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs"
+              onClick={() => setUploadDialogOpen(true)}
             >
               <Plus size={14} className="mr-1" />
               Upload First Photos
@@ -60,19 +145,21 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
           </div>
         ) : (
           <div className="grid grid-cols-4 gap-3">
-            {photos.map((photo, index) => (
+            {currentPhotos.map((photo, index) => (
               <motion.div
                 key={photo.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
                 className="group cursor-pointer"
-                onClick={() => {
-                  setSelectedPhoto(photo)
-                  setShowComparison(true)
-                }}
               >
-                <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2">
+                <div 
+                  className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2"
+                  onClick={() => {
+                    setSelectedPhoto(photo)
+                    setShowComparison(true)
+                  }}
+                >
                   <img
                     src={photo.afterUrl}
                     alt={`${photo.service} - After`}
@@ -87,6 +174,17 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                       <ArrowsLeftRight size={24} className="text-white" weight="bold" />
                     </motion.div>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeletePhoto(photo.id)
+                    }}
+                  >
+                    <Trash size={12} weight="bold" />
+                  </Button>
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-semibold">{photo.service}</p>
@@ -98,6 +196,146 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
           </div>
         )}
       </Card>
+
+      <Dialog open={uploadDialogOpen} onOpenChange={(open) => {
+        setUploadDialogOpen(open)
+        if (!open) resetUploadForm()
+      }}>
+        <DialogContent className="max-w-2xl bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <Upload size={20} className="text-primary" weight="fill" />
+              Upload Before & After Photos
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="before-photo" className="text-sm font-semibold">Before Photo</Label>
+                <div 
+                  className="relative aspect-square rounded-md border-2 border-dashed border-border hover:border-primary/50 transition-all duration-200 overflow-hidden bg-secondary/30 cursor-pointer group"
+                  onClick={() => beforeInputRef.current?.click()}
+                >
+                  {beforePreview ? (
+                    <>
+                      <img src={beforePreview} alt="Before preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setBeforePreview("")
+                            if (beforeInputRef.current) beforeInputRef.current.value = ""
+                          }}
+                        >
+                          <X size={14} className="mr-1" />
+                          Remove
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+                      <Upload size={32} weight="fill" className="mb-2" />
+                      <p className="text-xs font-medium">Click to upload</p>
+                    </div>
+                  )}
+                </div>
+                <Input
+                  ref={beforeInputRef}
+                  id="before-photo"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e.target.files?.[0] || null, 'before')}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="after-photo" className="text-sm font-semibold">After Photo</Label>
+                <div 
+                  className="relative aspect-square rounded-md border-2 border-dashed border-border hover:border-primary/50 transition-all duration-200 overflow-hidden bg-secondary/30 cursor-pointer group"
+                  onClick={() => afterInputRef.current?.click()}
+                >
+                  {afterPreview ? (
+                    <>
+                      <img src={afterPreview} alt="After preview" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setAfterPreview("")
+                            if (afterInputRef.current) afterInputRef.current.value = ""
+                          }}
+                        >
+                          <X size={14} className="mr-1" />
+                          Remove
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+                      <Upload size={32} weight="fill" className="mb-2" />
+                      <p className="text-xs font-medium">Click to upload</p>
+                    </div>
+                  )}
+                </div>
+                <Input
+                  ref={afterInputRef}
+                  id="after-photo"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e.target.files?.[0] || null, 'after')}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="service" className="text-sm font-semibold">Service</Label>
+              <Input
+                id="service"
+                placeholder="e.g., Full Groom Package"
+                value={service}
+                onChange={(e) => setService(e.target.value)}
+                className="bg-secondary/30"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="groomer" className="text-sm font-semibold">Groomer</Label>
+              <Input
+                id="groomer"
+                placeholder="e.g., Sarah J."
+                value={groomer}
+                onChange={(e) => setGroomer(e.target.value)}
+                className="bg-secondary/30"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              onClick={() => setUploadDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={handleUpload}
+            >
+              <Upload size={16} className="mr-2" />
+              Upload Photos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={selectedPhoto !== null} onOpenChange={() => setSelectedPhoto(null)}>
         <DialogContent className="max-w-4xl bg-card border-border p-0 overflow-hidden">
@@ -127,6 +365,15 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                       >
                         <ArrowsLeftRight size={14} className="mr-1" />
                         {showComparison ? "Split View" : "Compare"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleDeletePhoto(selectedPhoto.id)}
+                        className="font-semibold text-xs"
+                      >
+                        <Trash size={14} className="mr-1" />
+                        Delete
                       </Button>
                     </div>
                   </div>

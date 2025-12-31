@@ -515,7 +515,7 @@ function App() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <ServiceHistoryCard petName={pet.name} services={petData[pet.id].serviceHistory} />
                 
-                <PhotoGalleryCard petName={pet.name} photos={petData[pet.id].groomingPhotos} />
+                <PhotoGalleryCard petName={pet.name} petId={pet.id} photos={petData[pet.id].groomingPhotos} />
               </div>
 
               <MedicalInfoCard
