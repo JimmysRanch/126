@@ -55,7 +55,7 @@ function App() {
             </div>
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                TOTAL APPOINTMENTS
+                TOTAL APPTS
               </p>
               <p className="text-2xl font-bold">0</p>
             </div>
@@ -64,13 +64,13 @@ function App() {
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                AVERAGE $ PER VISIT
+                AVG PER VISIT
               </p>
               <p className="text-2xl font-bold">$0</p>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                AVERAGE TIP
+                AVG TIP
               </p>
               <p className="text-2xl font-bold">$0</p>
             </div>
@@ -94,13 +94,13 @@ function App() {
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                AVG INTERVAL (DAYS)
+                AVG INTERVAL
               </p>
               <p className="text-2xl font-bold">—</p>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                SINCE LAST VISIT (DAYS)
+                SINCE LAST VISIT
               </p>
               <p className="text-2xl font-bold">—</p>
             </div>
