@@ -4,6 +4,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { ClientsList } from '@/pages/ClientsList'
 import { ClientProfile } from '@/pages/ClientProfile'
 import { AddClient } from '@/pages/AddClient'
+import { Finances } from '@/pages/Finances'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
           <Route path="/staff" element={<PlaceholderPage title="Staff" />} />
           <Route path="/pos" element={<PlaceholderPage title="POS" />} />
           <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
-          <Route path="/finances" element={<PlaceholderPage title="Finances" />} />
+          <Route path="/finances" element={<Finances />} />
           <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
           <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
         </Routes>
