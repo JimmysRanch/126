@@ -1,10 +1,77 @@
-import { ArrowLeft, PencilSimple, DotsThree, PawPrint } from "@phosphor-icons/react"
+import { ArrowLeft, PencilSimple } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { StatWidget } from "@/components/StatWidget"
+import { PetCard } from "@/components/PetCard"
+import { ServiceHistoryCard } from "@/components/ServiceHistoryCard"
+import { MedicalInfoCard } from "@/components/MedicalInfoCard"
+import { GroomingPreferencesCard } from "@/components/GroomingPreferencesCard"
 
 function App() {
+  const pets = [
+    {
+      name: "Trying",
+      breed: "Labrador Retriever",
+      status: "Active",
+      temperament: ["Friendly", "Energetic", "Loves treats"],
+      age: "3 yrs",
+      weight: "65 lbs",
+      color: "Yellow",
+      sex: "Male",
+      lastAppointment: "Jan 15, 2025",
+      nextVisit: "Feb 12, 2025"
+    }
+  ]
+
+  const serviceHistory = [
+    {
+      name: "Full Groom Package",
+      date: "Jan 15, 2025",
+      groomer: "Sarah J.",
+      duration: "2h 30m",
+      cost: "$85",
+      services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
+      notes: "Did great! Very cooperative during nail trim."
+    },
+    {
+      name: "Bath & Brush",
+      date: "Dec 10, 2024",
+      groomer: "Mike T.",
+      duration: "1h 15m",
+      cost: "$45",
+      services: ["Bath", "Brush", "Nail Trim"],
+      notes: "A bit anxious at first but settled down quickly."
+    },
+    {
+      name: "Full Groom Package",
+      date: "Nov 5, 2024",
+      groomer: "Sarah J.",
+      duration: "2h 45m",
+      cost: "$85",
+      services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Teeth Brushing"]
+    }
+  ]
+
+  const vaccinations = [
+    {
+      type: "vaccine",
+      name: "Rabies",
+      date: "Mar 2024",
+      nextDue: "Mar 2027"
+    },
+    {
+      type: "vaccine",
+      name: "DHPP",
+      date: "Mar 2024",
+      nextDue: "Mar 2025"
+    },
+    {
+      type: "vaccine",
+      name: "Bordetella",
+      date: "Sep 2024",
+      nextDue: "Sep 2025"
+    }
+  ]
+
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-[1400px] mx-auto space-y-4">
@@ -89,97 +156,32 @@ function App() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="p-4 border-border bg-card">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Last visit</h2>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-              >
-                REBOOK VISIT
-              </Button>
-            </div>
-            <p className="text-muted-foreground mt-3">No completed visits yet</p>
-          </Card>
+          {pets.map((pet, index) => (
+            <PetCard key={pet.name} {...pet} index={index} />
+          ))}
+        </div>
 
-          <Card className="p-4 border-border bg-card relative">
-            <div className="absolute top-4 right-4 flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-secondary transition-all duration-200"
-              >
-                <PencilSimple size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-secondary transition-all duration-200"
-              >
-                <DotsThree size={16} />
-              </Button>
-            </div>
-
-            <div className="flex items-start gap-4 mb-4">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-primary/20 text-primary">
-                  <PawPrint size={24} weight="fill" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <PawPrint size={20} weight="fill" className="text-primary" />
-                  Trying
-                </h2>
-                <p className="text-sm text-muted-foreground">Lab • Active</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Temperament:
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/80 font-semibold transition-all duration-200">
-                Rebook appointment
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-              >
-                Add journal entry
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-              >
-                Upload media
-              </Button>
-            </div>
-
-            <div className="border border-dashed border-border rounded-lg p-3 mb-3"></div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
-                <p className="text-sm font-medium mb-1">Last appointment</p>
-                <p className="text-muted-foreground">—</p>
-              </div>
-              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
-                <p className="text-sm font-medium mb-1">Next visit</p>
-                <p className="text-muted-foreground font-bold">—</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Auto loads last visit playbook
-                </p>
-              </div>
-              <div className="bg-secondary/30 rounded-lg p-3 border border-border">
-                <p className="text-sm font-medium mb-1">Cadence</p>
-                <p className="text-muted-foreground mt-1">Status: Active</p>
-              </div>
-            </div>
-
-            <div className="bg-secondary/30 rounded-lg p-3 border border-border">
-              <p className="text-sm font-medium">Favorite notes</p>
-            </div>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <ServiceHistoryCard petName="Trying" services={serviceHistory} />
+          
+          <div className="space-y-4">
+            <MedicalInfoCard
+              petName="Trying"
+              vaccinations={vaccinations}
+              allergies={["Chicken", "Corn"]}
+              medications={[]}
+              notes="Sensitive skin - use hypoallergenic products only"
+            />
+            
+            <GroomingPreferencesCard
+              petName="Trying"
+              haircut="Short summer cut"
+              shampoo="Hypoallergenic"
+              addOns={["Teeth brushing", "Paw balm", "De-shedding treatment"]}
+              specialInstructions="Prefers gentle handling around ears. Give treats frequently during grooming."
+              favoriteGroomer="Sarah J."
+            />
+          </div>
         </div>
       </div>
     </div>
