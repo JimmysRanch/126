@@ -1,10 +1,10 @@
+import { useState } from "react"
 import { Images, Plus, X, ArrowsLeftRight } from "@phosphor-icons/react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { motion, AnimatePresence } from "framer-motion"
-import { useState } from "react"
 
 interface Photo {
   id: string
