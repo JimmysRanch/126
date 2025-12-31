@@ -394,7 +394,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1400px] mx-auto space-y-4">
+      <div className="max-w-[1400px] mx-auto space-y-6">
         <header className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4">
             <Button
@@ -483,7 +483,7 @@ function App() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pet-card-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pet-card-grid mb-8">
           {pets.map((pet, index) => (
             <PetCard 
               key={pet.id} 
@@ -498,7 +498,8 @@ function App() {
           ))}
         </div>
 
-        <Tabs value={selectedPet} onValueChange={setSelectedPet} className="w-full">
+        <div className="pt-4 border-t border-border">
+          <Tabs value={selectedPet} onValueChange={setSelectedPet} className="w-full relative z-0">
           <div className="flex items-center justify-between mb-3">
             <TabsList className="bg-secondary/50">
               {pets.map((pet) => (
@@ -537,7 +538,8 @@ function App() {
               </div>
             </TabsContent>
           ))}
-        </Tabs>
+          </Tabs>
+        </div>
       </div>
     </div>
   )
