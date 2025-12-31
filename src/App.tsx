@@ -46,7 +46,10 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+          <Card 
+            className="p-4 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            onClick={() => console.log('Lifetime Spend clicked')}
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 LIFETIME SPEND
@@ -61,7 +64,10 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+          <Card 
+            className="p-4 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            onClick={() => console.log('Average per visit clicked')}
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 AVG PER VISIT
@@ -76,7 +82,10 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+          <Card 
+            className="p-4 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            onClick={() => console.log('Avg Interval clicked')}
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 AVG INTERVAL
@@ -91,7 +100,10 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+          <Card 
+            className="p-4 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            onClick={() => console.log('No-shows clicked')}
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 NO-SHOWS
@@ -106,7 +118,10 @@ function App() {
             </div>
           </Card>
 
-          <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
+          <Card 
+            className="p-4 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+            onClick={() => console.log('Late arrivals clicked')}
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground uppercase tracking-wider">
                 LATE
