@@ -19,26 +19,12 @@ This is a static mockup displaying client information with interactive elements 
 - Progression: Page loads → Header displays with name, date, action buttons
 - Success criteria: Clear client identification with accessible CTAs
 
-**Financial Metrics Widget (3 metrics)**
-- Functionality: Shows lifetime spend, average tip, and average $ per visit
-- Purpose: Provides financial overview of client value
+**Financial & Appointment Metrics Widgets (5 widgets with animated charts)**
+- Functionality: Shows various client metrics with animated data visualizations
+- Purpose: Provides at-a-glance analytics with visual trend data using mini charts
 - Trigger: Page load
-- Progression: Page loads → Widget displays three financial metrics in card format
-- Success criteria: Clear monetary values with proper formatting
-
-**Appointment Issues Widget (3 metrics)**
-- Functionality: Displays no-shows, late cancels, and cancels counts
-- Purpose: Tracks client reliability and appointment behavior
-- Trigger: Page load
-- Progression: Page loads → Widget shows appointment issue counts
-- Success criteria: Clear numerical display of appointment problems
-
-**Visit Frequency Widget (3 metrics)**
-- Functionality: Shows total appointments, average interval between visits, and days since last visit
-- Purpose: Tracks client engagement and visit patterns
-- Trigger: Page load
-- Progression: Page loads → Widget displays visit frequency data
-- Success criteria: Clear display of visit metrics with appropriate units
+- Progression: Page loads → Widgets animate in with staggered timing → Charts render with smooth animations → Values spring into view
+- Success criteria: Smooth chart animations, clear data visualization, distinct chart types per metric category (area for cumulative, bar for comparisons, line for trends)
 
 **Last Visit Section**
 - Functionality: Shows information about most recent visit with rebook option
@@ -91,7 +77,7 @@ Modern, legible sans-serif that balances technical precision with approachabilit
 
 ## Animations
 
-Animations should be subtle and functional, reinforcing interactions without creating delays—gentle hover states on buttons (scale 1.02 and brightness increase), smooth transitions for state changes (200ms), and micro-interactions on icon buttons.
+Animations should be subtle and functional, reinforcing interactions without creating delays—gentle hover states on buttons (scale 1.02 and brightness increase), smooth transitions for state changes (200ms), and micro-interactions on icon buttons. Each stat widget features animated mini-charts (area, bar, or line charts) that smoothly animate on page load with staggered entrance animations for labels and values, creating a sense of data coming to life. Chart animations use spring physics for number values and smooth easing curves (800-1200ms) for chart rendering.
 
 ## Component Selection
 
@@ -100,6 +86,8 @@ Animations should be subtle and functional, reinforcing interactions without cre
   - Button (shadcn) - Primary (cyan accent), Secondary (navy with border), Ghost (icon buttons)
   - Avatar (shadcn) - For pet profile with icon fallback
   - Separator (shadcn) - Subtle dividers between sections
+  - AreaChart, BarChart, LineChart (recharts) - Animated mini charts for stat visualization
+  - Motion components (framer-motion) - Staggered entrance animations for widgets and values
   
 - **Customizations**: 
   - Metric cards with glowing border effect on the accent color
