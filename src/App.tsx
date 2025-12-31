@@ -47,7 +47,7 @@ function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-3">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   LIFETIME SPEND
@@ -70,7 +70,7 @@ function App() {
           </Card>
 
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-3">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   NO-SHOWS
@@ -93,7 +93,7 @@ function App() {
           </Card>
 
           <Card className="p-4 border-border bg-card hover:border-primary/30 transition-all duration-200">
-            <div className="space-y-3">
+            <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   TOTAL APPOINTMENTS
