@@ -514,7 +514,7 @@ export function ClientProfile() {
 
           {pets.map((pet) => (
             <TabsContent key={pet.id} value={pet.id} className="space-y-4 mt-0">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <ServiceHistoryCard petName={pet.name} services={petData[pet.id].serviceHistory} />
                 
                 <PhotoGalleryCard petName={pet.name} petId={pet.id} photos={petData[pet.id].groomingPhotos} />
