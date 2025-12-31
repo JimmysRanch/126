@@ -59,20 +59,20 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-3">
             {photos.map((photo, index) => (
               <motion.div
                 key={photo.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="relative group cursor-pointer"
+                className="group cursor-pointer"
                 onClick={() => {
                   setSelectedPhoto(photo)
                   setShowComparison(true)
                 }}
               >
-                <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200">
+                <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2">
                   <img
                     src={photo.afterUrl}
                     alt={`${photo.service} - After`}
@@ -87,6 +87,11 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                       <ArrowsLeftRight size={24} className="text-white" weight="bold" />
                     </motion.div>
                   </div>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-xs font-semibold">{photo.service}</p>
+                  <p className="text-[10px] text-muted-foreground">{photo.date}</p>
+                  <p className="text-[10px] text-muted-foreground">{photo.groomer}</p>
                 </div>
               </motion.div>
             ))}
