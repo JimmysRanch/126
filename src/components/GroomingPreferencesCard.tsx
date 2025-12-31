@@ -1,4 +1,4 @@
-import { Scissors, PencilSimple, Star } from "@phosphor-icons/react"
+import { Scissors, PencilSimple, Star, PawPrint } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -25,7 +25,7 @@ export function GroomingPreferencesCard({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Scissors size={18} className="text-primary" weight="fill" />
-          Grooming Preferences - {petName}
+          Grooming Preferences - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
         </h3>
         <Button
           variant="ghost"

@@ -1,4 +1,4 @@
-import { Scissors, Calendar, Clock, User } from "@phosphor-icons/react"
+import { Scissors, Calendar, Clock, User, PawPrint } from "@phosphor-icons/react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
@@ -24,7 +24,7 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Scissors size={18} className="text-primary" weight="fill" />
-          Service History - {petName}
+          Service History - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
         </h3>
       </div>
 

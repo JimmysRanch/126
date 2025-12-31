@@ -1,11 +1,12 @@
-import { PawPrint, PencilSimple, Calendar } from "@phosphor-icons/react"
+import { useState } from "react"
+import { PawPrint, PencilSimple, Calendar, Scissors, Star } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface PetCardProps {
+  id: string
   name: string
   breed: string
   status: string
@@ -17,9 +18,15 @@ interface PetCardProps {
   color?: string
   sex?: string
   index: number
+  haircut?: string
+  shampoo?: string
+  addOns?: string[]
+  specialInstructions?: string
+  favoriteGroomer?: string
 }
 
 export function PetCard({
+  id,
   name,
   breed,
   status,
@@ -30,112 +37,223 @@ export function PetCard({
   weight,
   color,
   sex,
-  index
+  index,
+  haircut,
+  shampoo,
+  addOns = [],
+  specialInstructions,
+  favoriteGroomer
 }: PetCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
+      className="h-full"
+      style={{ perspective: "1000px" }}
     >
-      <Card className="p-3 border-border bg-card hover:border-primary/50 transition-all duration-200 relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 h-6 w-6 hover:bg-secondary transition-all duration-200"
+      <div
+        className="relative w-full h-full cursor-pointer"
+        style={{ transformStyle: "preserve-3d" }}
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        <motion.div
+          animate={{ rotateY: isFlipped ? 180 : 0 }}
+          transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
+          className="w-full h-full"
+          style={{ transformStyle: "preserve-3d" }}
         >
-          <PencilSimple size={14} />
-        </Button>
+          <Card 
+            className="absolute inset-0 p-3 border-border bg-card hover:border-primary/50 transition-all duration-200"
+            style={{ backfaceVisibility: "hidden" }}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 h-6 w-6 hover:bg-secondary transition-all duration-200 z-10"
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+            >
+              <PencilSimple size={14} />
+            </Button>
 
-        <div className="flex items-start gap-3 mb-3">
-          <Avatar className="h-14 w-14">
-            <AvatarFallback className="bg-primary/20 text-primary">
-              <PawPrint size={28} weight="fill" />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <h3 className="text-lg font-bold flex items-center gap-2">
-              <PawPrint size={18} weight="fill" className="text-primary" />
-              {name}
-            </h3>
-            <p className="text-sm text-muted-foreground">{breed} • {status}</p>
-            {temperament.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {temperament.map((trait) => (
-                  <Badge
-                    key={trait}
-                    variant="secondary"
-                    className="text-xs px-2 py-0.5 bg-secondary/50"
-                  >
-                    {trait}
-                  </Badge>
-                ))}
+            <div className="mb-3">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                <PawPrint size={18} weight="fill" className="text-primary" />
+                {name}
+              </h3>
+              <p className="text-sm text-muted-foreground">{breed} • {status}</p>
+              {temperament.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                  {temperament.map((trait) => (
+                    <Badge
+                      key={trait}
+                      variant="secondary"
+                      className="text-xs px-2 py-0.5 bg-secondary/50"
+                    >
+                      {trait}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 mb-3">
+              {age && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Age</p>
+                  <p className="text-sm font-semibold">{age}</p>
+                </div>
+              )}
+              {weight && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</p>
+                  <p className="text-sm font-semibold">{weight}</p>
+                </div>
+              )}
+              {color && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Color</p>
+                  <p className="text-sm font-semibold">{color}</p>
+                </div>
+              )}
+              {sex && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Sex</p>
+                  <p className="text-sm font-semibold">{sex}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
+                  <Calendar size={12} className="text-primary" />
+                  Last appointment
+                </p>
+                <p className="text-sm text-muted-foreground">{lastAppointment || "—"}</p>
               </div>
-            )}
-          </div>
-        </div>
+              <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
+                  <Calendar size={12} className="text-primary" />
+                  Next visit
+                </p>
+                <p className="text-sm font-bold text-foreground">{nextVisit || "—"}</p>
+              </div>
+            </div>
 
-        <div className="grid grid-cols-4 gap-2 mb-3">
-          {age && (
-            <div className="bg-secondary/30 rounded-md p-2 border border-border">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Age</p>
-              <p className="text-sm font-semibold">{age}</p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Add Note
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Upload Photo
+              </Button>
             </div>
-          )}
-          {weight && (
-            <div className="bg-secondary/30 rounded-md p-2 border border-border">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</p>
-              <p className="text-sm font-semibold">{weight}</p>
-            </div>
-          )}
-          {color && (
-            <div className="bg-secondary/30 rounded-md p-2 border border-border">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Color</p>
-              <p className="text-sm font-semibold">{color}</p>
-            </div>
-          )}
-          {sex && (
-            <div className="bg-secondary/30 rounded-md p-2 border border-border">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Sex</p>
-              <p className="text-sm font-semibold">{sex}</p>
-            </div>
-          )}
-        </div>
 
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="bg-secondary/30 rounded-md p-2 border border-border">
-            <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
-              <Calendar size={12} className="text-primary" />
-              Last appointment
-            </p>
-            <p className="text-sm text-muted-foreground">{lastAppointment || "—"}</p>
-          </div>
-          <div className="bg-secondary/30 rounded-md p-2 border border-border">
-            <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
-              <Calendar size={12} className="text-primary" />
-              Next visit
-            </p>
-            <p className="text-sm font-bold text-foreground">{nextVisit || "—"}</p>
-          </div>
-        </div>
+            <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground italic">
+              Click to flip
+            </div>
+          </Card>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant="secondary"
-            className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+          <Card 
+            className="absolute inset-0 p-3 border-border bg-card"
+            style={{ 
+              backfaceVisibility: "hidden",
+              transform: "rotateY(180deg)"
+            }}
           >
-            Add Note
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
-          >
-            Upload Photo
-          </Button>
-        </div>
-      </Card>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                <Scissors size={18} className="text-primary" weight="fill" />
+                Grooming Preferences
+              </h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 hover:bg-secondary transition-all duration-200"
+                onClick={(e) => {
+                  e.stopPropagation()
+                }}
+              >
+                <PencilSimple size={14} />
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                    Preferred Cut
+                  </p>
+                  <p className="text-sm font-semibold">{haircut || "Not specified"}</p>
+                </div>
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                    Shampoo
+                  </p>
+                  <p className="text-sm font-semibold">{shampoo || "Standard"}</p>
+                </div>
+              </div>
+
+              {favoriteGroomer && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center gap-1">
+                    <Star size={12} className="text-primary" weight="fill" />
+                    Favorite Groomer
+                  </p>
+                  <p className="text-sm font-semibold">{favoriteGroomer}</p>
+                </div>
+              )}
+
+              {addOns.length > 0 && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1.5">
+                    Regular Add-ons
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {addOns.map((addOn) => (
+                      <Badge
+                        key={addOn}
+                        variant="secondary"
+                        className="text-xs bg-secondary/70"
+                      >
+                        {addOn}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {specialInstructions && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                    Special Instructions
+                  </p>
+                  <p className="text-xs text-foreground">{specialInstructions}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground italic">
+              Click to flip back
+            </div>
+          </Card>
+        </motion.div>
+      </div>
     </motion.div>
   )
 }

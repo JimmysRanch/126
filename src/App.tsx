@@ -483,9 +483,18 @@ function App() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pet-card-grid">
           {pets.map((pet, index) => (
-            <PetCard key={pet.id} {...pet} index={index} />
+            <PetCard 
+              key={pet.id} 
+              {...pet} 
+              index={index}
+              haircut={petData[pet.id].haircut}
+              shampoo={petData[pet.id].shampoo}
+              addOns={petData[pet.id].addOns}
+              specialInstructions={petData[pet.id].specialInstructions}
+              favoriteGroomer={petData[pet.id].favoriteGroomer}
+            />
           ))}
         </div>
 

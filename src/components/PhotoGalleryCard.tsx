@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Images, Plus, X, ArrowsLeftRight } from "@phosphor-icons/react"
+import { Images, Plus, X, ArrowsLeftRight, PawPrint } from "@phosphor-icons/react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +30,7 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-bold flex items-center gap-2">
             <Images size={18} className="text-primary" weight="fill" />
-            Photo Gallery - {petName}
+            Photo Gallery - <PawPrint size={16} weight="fill" className="text-primary" />{petName}
           </h3>
           <Button
             size="sm"
@@ -69,8 +69,8 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                 }}
               >
                 <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200">
-                  <div className="absolute inset-0 grid grid-cols-2">
-                    <div className="relative overflow-hidden">
+                  <div className="absolute inset-0 grid grid-cols-2 gap-px bg-border">
+                    <div className="relative overflow-hidden bg-background">
                       <img
                         src={photo.beforeUrl}
                         alt="Before"
@@ -80,7 +80,7 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                         <p className="text-[10px] text-white font-semibold uppercase tracking-wide">Before</p>
                       </div>
                     </div>
-                    <div className="relative overflow-hidden">
+                    <div className="relative overflow-hidden bg-background">
                       <img
                         src={photo.afterUrl}
                         alt="After"
