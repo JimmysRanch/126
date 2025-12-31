@@ -5,61 +5,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { StatWidget } from "@/components/StatWidget"
 
 function App() {
-  const lifetimeSpendData = [
-    { value: 120 },
-    { value: 180 },
-    { value: 250 },
-    { value: 320 },
-    { value: 450 },
-    { value: 580 },
-    { value: 720 },
-    { value: 850 },
-  ]
-
-  const avgPerVisitData = [
-    { value: 85 },
-    { value: 92 },
-    { value: 78 },
-    { value: 95 },
-    { value: 88 },
-    { value: 102 },
-    { value: 90 },
-    { value: 98 },
-  ]
-
-  const appointmentIssuesData = [
-    { value: 0 },
-    { value: 1 },
-    { value: 1 },
-    { value: 2 },
-    { value: 2 },
-    { value: 3 },
-    { value: 3 },
-    { value: 4 },
-  ]
-
-  const intervalData = [
-    { value: 30 },
-    { value: 28 },
-    { value: 32 },
-    { value: 29 },
-    { value: 31 },
-    { value: 27 },
-    { value: 30 },
-    { value: 28 },
-  ]
-
-  const lateArrivalsData = [
-    { value: 0 },
-    { value: 0 },
-    { value: 1 },
-    { value: 1 },
-    { value: 1 },
-    { value: 2 },
-    { value: 2 },
-    { value: 2 },
-  ]
-
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-[1400px] mx-auto space-y-4">
@@ -107,8 +52,6 @@ function App() {
               { label: "LIFETIME SPEND", value: "$8,520" },
               { label: "TOTAL APPTS", value: "24" }
             ]}
-            chartData={lifetimeSpendData}
-            chartType="area"
             onClick={() => console.log('Lifetime Spend clicked')}
           />
 
@@ -117,9 +60,6 @@ function App() {
               { label: "AVG PER VISIT", value: "$355" },
               { label: "AVG TIP", value: "$45" }
             ]}
-            chartData={avgPerVisitData}
-            chartType="bar"
-            accentColor="oklch(0.65 0.2 140)"
             onClick={() => console.log('Average per visit clicked')}
           />
 
@@ -128,9 +68,6 @@ function App() {
               { label: "AVG INTERVAL", value: "29" },
               { label: "SINCE LAST VISIT", value: "12" }
             ]}
-            chartData={intervalData}
-            chartType="line"
-            accentColor="oklch(0.7 0.18 280)"
             onClick={() => console.log('Avg Interval clicked')}
           />
 
@@ -139,9 +76,6 @@ function App() {
               { label: "NO-SHOWS", value: "2" },
               { label: "CANCELS", value: "4" }
             ]}
-            chartData={appointmentIssuesData}
-            chartType="bar"
-            accentColor="oklch(0.65 0.22 30)"
             onClick={() => console.log('No-shows clicked')}
           />
 
@@ -150,9 +84,6 @@ function App() {
               { label: "LATE", value: "3" },
               { label: "LATE CANCELS", value: "1" }
             ]}
-            chartData={lateArrivalsData}
-            chartType="area"
-            accentColor="oklch(0.68 0.19 60)"
             onClick={() => console.log('Late arrivals clicked')}
           />
         </div>
