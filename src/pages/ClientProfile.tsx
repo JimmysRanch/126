@@ -1,4 +1,4 @@
-import { ArrowLeft, PencilSimple, Plus } from "@phosphor-icons/react"
+import { ArrowLeft, PencilSimple, Plus, PawPrint } from "@phosphor-icons/react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { StatWidget } from "@/components/StatWidget"
@@ -506,6 +506,7 @@ export function ClientProfile() {
             <TabsList className="bg-secondary/50">
               {pets.map((pet) => (
                 <TabsTrigger key={pet.id} value={pet.id} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <PawPrint size={14} weight="fill" className="mr-1.5" />
                   {pet.name}
                 </TabsTrigger>
               ))}

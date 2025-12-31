@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, X, PawPrint } from "@phosphor-icons/react"
+import { Plus, X, PawPrint, User } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -88,7 +89,99 @@ export function AddClient() {
     ))
   }
 
+  const formatPhoneNumber = (value: string) => {
+    const phoneNumber = value.replace(/\D/g, '')
+    
+    if (phoneNumber.length === 0) {
+      return ''
+    }
+    
+    if (phoneNumber.length <= 3) {
+      return `(${phoneNumber}`
+    }
+    
+    if (phoneNumber.length <= 6) {
+      return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    }
+    
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setPhone(formatted)
+  }
+
+  const validateForm = () => {
+    if (!firstName.trim()) {
+      toast.error('Please enter a first name')
+      return false
+    }
+    if (!lastName.trim()) {
+      toast.error('Please enter a last name')
+      return false
+    }
+    if (!email.trim()) {
+      toast.error('Please enter an email address')
+      return false
+    }
+    if (!phone.trim()) {
+      toast.error('Please enter a phone number')
+      return false
+    }
+    if (!streetAddress.trim()) {
+      toast.error('Please enter a street address')
+      return false
+    }
+    if (!city.trim()) {
+      toast.error('Please enter a city')
+      return false
+    }
+    if (!state.trim()) {
+      toast.error('Please select a state')
+      return false
+    }
+    if (!zipCode.trim()) {
+      toast.error('Please enter a ZIP code')
+      return false
+    }
+    if (!referralSource.trim()) {
+      toast.error('Please select how you heard about us')
+      return false
+    }
+
+    for (let i = 0; i < pets.length; i++) {
+      const pet = pets[i]
+      if (!pet.name.trim()) {
+        toast.error(`Please enter a name for pet ${i + 1}`)
+        return false
+      }
+      if (!pet.birthday.trim()) {
+        toast.error(`Please enter a birthday for ${pet.name || `pet ${i + 1}`}`)
+        return false
+      }
+      if (!pet.weight.trim()) {
+        toast.error(`Please enter a weight for ${pet.name || `pet ${i + 1}`}`)
+        return false
+      }
+      if (!pet.gender.trim()) {
+        toast.error(`Please select a gender for ${pet.name || `pet ${i + 1}`}`)
+        return false
+      }
+      if (!pet.breed.trim()) {
+        toast.error(`Please enter a breed for ${pet.name || `pet ${i + 1}`}`)
+        return false
+      }
+    }
+
+    return true
+  }
+
   const handleSave = () => {
+    if (!validateForm()) {
+      return
+    }
+
     console.log('Saving client:', {
       firstName,
       lastName,
@@ -101,6 +194,8 @@ export function AddClient() {
       referralSource,
       pets
     })
+    
+    toast.success('Client saved successfully!')
     navigate('/clients')
   }
 
@@ -115,12 +210,15 @@ export function AddClient() {
 
         <Card className="bg-card border-border mb-6">
           <CardHeader>
-            <CardTitle>Client Information</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <User size={20} weight="fill" className="text-primary" />
+              Client Information
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first-name">First Name</Label>
+                <Label htmlFor="first-name">First Name *</Label>
                 <Input
                   id="first-name"
                   value={firstName}
@@ -129,7 +227,7 @@ export function AddClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last-name">Last Name</Label>
+                <Label htmlFor="last-name">Last Name *</Label>
                 <Input
                   id="last-name"
                   value={lastName}
@@ -138,7 +236,7 @@ export function AddClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -148,12 +246,12 @@ export function AddClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={handlePhoneChange}
                   placeholder="(555) 123-4567"
                 />
               </div>
@@ -161,7 +259,7 @@ export function AddClient() {
 
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="street-address">Street Address</Label>
+                <Label htmlFor="street-address">Street Address *</Label>
                 <Input
                   id="street-address"
                   value={streetAddress}
@@ -170,7 +268,7 @@ export function AddClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
                   value={city}
@@ -179,7 +277,7 @@ export function AddClient() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">State *</Label>
                 <Select value={state} onValueChange={setState}>
                   <SelectTrigger id="state">
                     <SelectValue />
@@ -194,7 +292,7 @@ export function AddClient() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="zip-code">ZIP Code</Label>
+                <Label htmlFor="zip-code">ZIP Code *</Label>
                 <Input
                   id="zip-code"
                   value={zipCode}
@@ -205,7 +303,7 @@ export function AddClient() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="referral-source">How did you hear about us?</Label>
+              <Label htmlFor="referral-source">How did you hear about us? *</Label>
               <Select value={referralSource} onValueChange={setReferralSource}>
                 <SelectTrigger id="referral-source">
                   <SelectValue placeholder="Select a source" />
@@ -244,7 +342,7 @@ export function AddClient() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-name-${pet.id}`}>Pet Name</Label>
+                  <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
                   <Input
                     id={`pet-name-${pet.id}`}
                     value={pet.name}
@@ -253,16 +351,7 @@ export function AddClient() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
-                  <Input
-                    id={`pet-birthday-${pet.id}`}
-                    type="date"
-                    value={pet.birthday}
-                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-weight-${pet.id}`}>Weight</Label>
+                  <Label htmlFor={`pet-weight-${pet.id}`}>Weight *</Label>
                   <Input
                     id={`pet-weight-${pet.id}`}
                     value={pet.weight}
@@ -270,11 +359,8 @@ export function AddClient() {
                     placeholder="55"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-gender-${pet.id}`}>Gender</Label>
+                  <Label htmlFor={`pet-gender-${pet.id}`}>Gender *</Label>
                   <Select 
                     value={pet.gender} 
                     onValueChange={(value) => updatePet(pet.id, 'gender', value)}
@@ -288,8 +374,11 @@ export function AddClient() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-breed-${pet.id}`}>Breed</Label>
+                  <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
                   <Input
                     id={`pet-breed-${pet.id}`}
                     value={pet.breed}
@@ -304,6 +393,15 @@ export function AddClient() {
                     value={pet.mixedBreed}
                     onChange={(e) => updatePet(pet.id, 'mixedBreed', e.target.value)}
                     placeholder="Enter mixed breed (if applicable)"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday *</Label>
+                  <Input
+                    id={`pet-birthday-${pet.id}`}
+                    type="date"
+                    value={pet.birthday}
+                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
                   />
                 </div>
               </div>
