@@ -174,7 +174,7 @@ function App() {
           name: "Full Groom Package",
           date: "Jan 15, 2025",
           groomer: "Sarah J.",
-          duration: "2h 30m",
+          startTime: "9:00 AM",
           cost: "$85",
           services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
           notes: "Did great! Very cooperative during nail trim."
@@ -183,7 +183,7 @@ function App() {
           name: "Bath & Brush",
           date: "Dec 10, 2024",
           groomer: "Mike T.",
-          duration: "1h 15m",
+          startTime: "2:30 PM",
           cost: "$45",
           services: ["Bath", "Brush", "Nail Trim"],
           notes: "A bit anxious at first but settled down quickly."
@@ -192,7 +192,7 @@ function App() {
           name: "Full Groom Package",
           date: "Nov 5, 2024",
           groomer: "Sarah J.",
-          duration: "2h 45m",
+          startTime: "10:15 AM",
           cost: "$85",
           services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Teeth Brushing"]
         }
@@ -266,7 +266,7 @@ function App() {
           name: "Luxury Spa Package",
           date: "Jan 10, 2025",
           groomer: "Emma R.",
-          duration: "3h 00m",
+          startTime: "11:00 AM",
           cost: "$120",
           services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning", "Massage", "Blueberry Facial"],
           notes: "Absolutely loved the spa treatment. Very relaxed throughout."
@@ -275,7 +275,7 @@ function App() {
           name: "Full Groom Package",
           date: "Dec 5, 2024",
           groomer: "Emma R.",
-          duration: "2h 15m",
+          startTime: "1:00 PM",
           cost: "$85",
           services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"]
         }
@@ -327,7 +327,7 @@ function App() {
           name: "Full Groom Package",
           date: "Jan 18, 2025",
           groomer: "Mike T.",
-          duration: "2h 00m",
+          startTime: "3:45 PM",
           cost: "$75",
           services: ["Bath", "Haircut", "Nail Trim", "Ear Cleaning"],
           notes: "Needed extra patience. Treats helped a lot with anxiety."
@@ -336,7 +336,7 @@ function App() {
           name: "Bath Only",
           date: "Jan 2, 2025",
           groomer: "Mike T.",
-          duration: "45m",
+          startTime: "4:30 PM",
           cost: "$35",
           services: ["Bath", "Brush"],
           notes: "Quick bath to help with allergies. Did well."

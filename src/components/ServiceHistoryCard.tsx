@@ -7,7 +7,8 @@ interface Service {
   name: string
   date: string
   groomer: string
-  duration: string
+  duration?: string
+  startTime?: string
   cost: string
   services: string[]
   notes?: string
@@ -58,7 +59,7 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
                     </p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock size={12} />
-                      {service.duration}
+                      {service.startTime || service.duration}
                     </p>
                   </div>
                 </div>

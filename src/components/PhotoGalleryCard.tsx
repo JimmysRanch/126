@@ -59,7 +59,7 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {photos.map((photo, index) => (
               <motion.div
                 key={photo.id}
@@ -69,33 +69,15 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                 className="relative group cursor-pointer"
                 onClick={() => {
                   setSelectedPhoto(photo)
-                  setShowComparison(false)
+                  setShowComparison(true)
                 }}
               >
                 <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200">
-                  <div className="absolute inset-0 grid grid-cols-2 gap-px bg-border">
-                    <div className="relative overflow-hidden bg-background">
-                      <img
-                        src={photo.beforeUrl}
-                        alt="Before"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
-                        <p className="text-[10px] text-white font-semibold uppercase tracking-wide">Before</p>
-                      </div>
-                    </div>
-                    <div className="relative overflow-hidden bg-background">
-                      <img
-                        src={photo.afterUrl}
-                        alt="After"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1.5">
-                        <p className="text-[10px] text-white font-semibold uppercase tracking-wide">After</p>
-                      </div>
-                    </div>
-                  </div>
-                  
+                  <img
+                    src={photo.afterUrl}
+                    alt={`${photo.service} - After`}
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
                     <motion.div
                       initial={{ scale: 0 }}
@@ -105,11 +87,6 @@ export function PhotoGalleryCard({ petName, photos }: PhotoGalleryCardProps) {
                       <ArrowsLeftRight size={24} className="text-white" weight="bold" />
                     </motion.div>
                   </div>
-                </div>
-                
-                <div className="mt-1">
-                  <p className="text-xs font-semibold">{photo.service}</p>
-                  <p className="text-[10px] text-muted-foreground">{photo.date}</p>
                 </div>
               </motion.div>
             ))}
