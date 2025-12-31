@@ -1,4 +1,4 @@
-import { PawPrint, PencilSimple, DotsThree, Calendar, Syringe, Scissors, Heart } from "@phosphor-icons/react"
+import { PawPrint, PencilSimple, Calendar } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -38,23 +38,14 @@ export function PetCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
-      <Card className="p-3 border-border bg-card hover:border-primary/50 transition-all duration-200">
-        <div className="absolute top-3 right-3 flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 hover:bg-secondary transition-all duration-200"
-          >
-            <PencilSimple size={14} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 hover:bg-secondary transition-all duration-200"
-          >
-            <DotsThree size={14} />
-          </Button>
-        </div>
+      <Card className="p-3 border-border bg-card hover:border-primary/50 transition-all duration-200 relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 h-6 w-6 hover:bg-secondary transition-all duration-200"
+        >
+          <PencilSimple size={14} />
+        </Button>
 
         <div className="flex items-start gap-3 mb-3">
           <Avatar className="h-14 w-14">
@@ -129,12 +120,6 @@ export function PetCard({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
-          >
-            Book Appointment
-          </Button>
           <Button
             size="sm"
             variant="secondary"
