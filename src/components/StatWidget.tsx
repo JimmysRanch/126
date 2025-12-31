@@ -22,10 +22,10 @@ export function StatWidget({
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <Card 
-        className="p-3 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+        className="p-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
         onClick={onClick}
       >
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {stats.map((stat, index) => (
             <div key={stat.label}>
               <motion.div 
@@ -52,7 +52,7 @@ export function StatWidget({
                 </motion.p>
               </motion.div>
               {index < stats.length - 1 && (
-                <div className="h-px bg-primary/30 my-1" />
+                <div className="h-px bg-primary/30 my-0.5" />
               )}
             </div>
           ))}
