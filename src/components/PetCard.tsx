@@ -51,11 +51,29 @@ export function PetCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
-      className="h-full min-h-[320px]"
+      className="h-full min-h-[320px] relative"
       style={{ perspective: "1000px" }}
     >
+      <motion.div
+        className="absolute inset-0 rounded-lg opacity-0 blur-xl pointer-events-none"
+        animate={{
+          opacity: [0.08, 0.12, 0.08],
+          background: [
+            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.25), transparent 60%)",
+            "radial-gradient(circle at 80% 20%, oklch(0.75 0.15 195 / 0.3), transparent 60%)",
+            "radial-gradient(circle at 40% 50%, oklch(0.75 0.15 195 / 0.28), transparent 60%)",
+            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.25), transparent 60%)"
+          ]
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: index * 0.7
+        }}
+      />
       <div
-        className="relative w-full h-full cursor-pointer"
+        className="relative w-full h-full cursor-pointer z-10"
         style={{ transformStyle: "preserve-3d" }}
         onClick={() => setIsFlipped(!isFlipped)}
       >

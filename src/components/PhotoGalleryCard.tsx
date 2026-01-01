@@ -109,93 +109,113 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
 
   return (
     <>
-      <Card className="p-3 border-border bg-card">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-bold flex items-center gap-2">
-            <Images size={18} className="text-primary" weight="fill" />
-            Photo Gallery - 
-            <span className="flex items-center gap-1.5">
-              <PawPrint size={16} weight="fill" className="text-primary" />
-              {petName}
-            </span>
-          </h3>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
-            onClick={() => setUploadDialogOpen(true)}
-          >
-            <Plus size={14} className="mr-1" />
-            Add Photos
-          </Button>
-        </div>
-
-        {currentPhotos.length === 0 ? (
-          <div className="bg-secondary/30 rounded-md p-8 border border-dashed border-border text-center">
-            <Images size={32} className="text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground mb-3">No grooming photos yet</p>
+      <motion.div className="relative">
+        <motion.div
+          className="absolute inset-0 rounded-lg opacity-0 blur-xl pointer-events-none"
+          animate={{
+            opacity: [0.07, 0.11, 0.07],
+            background: [
+              "radial-gradient(circle at 30% 30%, oklch(0.75 0.15 195 / 0.28), transparent 65%)",
+              "radial-gradient(circle at 70% 70%, oklch(0.75 0.15 195 / 0.33), transparent 65%)",
+              "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.3), transparent 65%)",
+              "radial-gradient(circle at 30% 30%, oklch(0.75 0.15 195 / 0.28), transparent 65%)"
+            ]
+          }}
+          transition={{
+            duration: 8.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5
+          }}
+        />
+        <Card className="p-3 border-border bg-card relative z-10">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <Images size={18} className="text-primary" weight="fill" />
+              Photo Gallery - 
+              <span className="flex items-center gap-1.5">
+                <PawPrint size={16} weight="fill" className="text-primary" />
+                {petName}
+              </span>
+            </h3>
             <Button
               size="sm"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs"
+              variant="secondary"
+              className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
               onClick={() => setUploadDialogOpen(true)}
             >
               <Plus size={14} className="mr-1" />
-              Upload First Photos
+              Add Photos
             </Button>
           </div>
-        ) : (
-          <div className="grid grid-cols-4 gap-3">
-            {currentPhotos.map((photo, index) => (
-              <motion.div
-                key={photo.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                className="group cursor-pointer"
+
+          {currentPhotos.length === 0 ? (
+            <div className="bg-secondary/30 rounded-md p-8 border border-dashed border-border text-center">
+              <Images size={32} className="text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground mb-3">No grooming photos yet</p>
+              <Button
+                size="sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs"
+                onClick={() => setUploadDialogOpen(true)}
               >
-                <div 
-                  className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2"
-                  onClick={() => {
-                    setSelectedPhoto(photo)
-                    setShowComparison(true)
-                  }}
+                <Plus size={14} className="mr-1" />
+                Upload First Photos
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-3">
+              {currentPhotos.map((photo, index) => (
+                <motion.div
+                  key={photo.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="group cursor-pointer"
                 >
-                  <img
-                    src={photo.afterUrl}
-                    alt={`${photo.service} - After`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      whileHover={{ scale: 1 }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      <ArrowsLeftRight size={24} className="text-white" weight="bold" />
-                    </motion.div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeletePhoto(photo.id)
+                  <div 
+                    className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2"
+                    onClick={() => {
+                      setSelectedPhoto(photo)
+                      setShowComparison(true)
                     }}
                   >
-                    <Trash size={12} weight="bold" />
-                  </Button>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-semibold">{photo.service}</p>
-                  <p className="text-[10px] text-muted-foreground">{photo.date}</p>
-                  <p className="text-[10px] text-muted-foreground">{photo.groomer}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </Card>
+                    <img
+                      src={photo.afterUrl}
+                      alt={`${photo.service} - After`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        whileHover={{ scale: 1 }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      >
+                        <ArrowsLeftRight size={24} className="text-white" weight="bold" />
+                      </motion.div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeletePhoto(photo.id)
+                      }}
+                    >
+                      <Trash size={12} weight="bold" />
+                    </Button>
+                  </div>
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-semibold">{photo.service}</p>
+                    <p className="text-[10px] text-muted-foreground">{photo.date}</p>
+                    <p className="text-[10px] text-muted-foreground">{photo.groomer}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </motion.div>
 
       <Dialog open={uploadDialogOpen} onOpenChange={(open) => {
         setUploadDialogOpen(open)

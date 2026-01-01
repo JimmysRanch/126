@@ -27,8 +27,27 @@ export function MedicalInfoCard({
   notes
 }: MedicalInfoCardProps) {
   return (
-    <Card className="p-3 border-border bg-card">
-      <div className="flex items-center justify-between mb-3">
+    <motion.div className="relative">
+      <motion.div
+        className="absolute inset-0 rounded-lg opacity-0 blur-xl pointer-events-none"
+        animate={{
+          opacity: [0.05, 0.09, 0.05],
+          background: [
+            "radial-gradient(circle at 60% 40%, oklch(0.75 0.15 195 / 0.26), transparent 65%)",
+            "radial-gradient(circle at 40% 60%, oklch(0.75 0.15 195 / 0.31), transparent 65%)",
+            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.28), transparent 65%)",
+            "radial-gradient(circle at 60% 40%, oklch(0.75 0.15 195 / 0.26), transparent 65%)"
+          ]
+        }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 1
+        }}
+      />
+      <Card className="p-3 border-border bg-card relative z-10">
+        <div className="flex items-center justify-between mb-3">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <FirstAid size={18} className="text-primary" weight="fill" />
           Medical Info - 
@@ -138,5 +157,6 @@ export function MedicalInfoCard({
         )}
       </div>
     </Card>
+    </motion.div>
   )
 }

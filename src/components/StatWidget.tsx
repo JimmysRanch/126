@@ -20,9 +20,27 @@ export function StatWidget({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
+      className="relative"
     >
+      <motion.div
+        className="absolute inset-0 rounded-lg opacity-0 blur-xl"
+        animate={{
+          opacity: [0.1, 0.15, 0.1],
+          background: [
+            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.3), transparent 70%)",
+            "radial-gradient(circle at 30% 70%, oklch(0.75 0.15 195 / 0.4), transparent 70%)",
+            "radial-gradient(circle at 70% 30%, oklch(0.75 0.15 195 / 0.35), transparent 70%)",
+            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.3), transparent 70%)"
+          ]
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
       <Card 
-        className="p-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+        className="p-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98] relative z-10"
         onClick={onClick}
       >
         <div className="space-y-0.5">
@@ -52,7 +70,22 @@ export function StatWidget({
                 </motion.p>
               </motion.div>
               {index < stats.length - 1 && (
-                <div className="h-px bg-primary/30 my-0.5" />
+                <motion.div 
+                  className="h-px my-0.5"
+                  animate={{
+                    background: [
+                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.3), transparent)",
+                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.5), transparent)",
+                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.3), transparent)"
+                    ]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: index * 0.5
+                  }}
+                />
               )}
             </div>
           ))}
