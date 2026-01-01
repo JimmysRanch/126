@@ -23,14 +23,14 @@ export function StatWidget({
       className="relative"
     >
       <motion.div
-        className="absolute inset-0 rounded-lg opacity-0 blur-xl"
+        className="absolute inset-0 rounded-lg blur-lg"
         animate={{
-          opacity: [0.1, 0.15, 0.1],
+          opacity: [0.4, 0.6, 0.4],
           background: [
-            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.3), transparent 70%)",
-            "radial-gradient(circle at 30% 70%, oklch(0.75 0.15 195 / 0.4), transparent 70%)",
-            "radial-gradient(circle at 70% 30%, oklch(0.75 0.15 195 / 0.35), transparent 70%)",
-            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.3), transparent 70%)"
+            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.6), transparent 70%)",
+            "radial-gradient(circle at 30% 70%, oklch(0.75 0.15 195 / 0.8), transparent 70%)",
+            "radial-gradient(circle at 70% 30%, oklch(0.75 0.15 195 / 0.7), transparent 70%)",
+            "radial-gradient(circle at 50% 50%, oklch(0.75 0.15 195 / 0.6), transparent 70%)"
           ]
         }}
         transition={{
@@ -74,9 +74,9 @@ export function StatWidget({
                   className="h-px my-0.5"
                   animate={{
                     background: [
-                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.3), transparent)",
                       "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.5), transparent)",
-                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.3), transparent)"
+                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.9), transparent)",
+                      "linear-gradient(90deg, transparent, oklch(0.75 0.15 195 / 0.5), transparent)"
                     ]
                   }}
                   transition={{

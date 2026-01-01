@@ -55,14 +55,14 @@ export function PetCard({
       style={{ perspective: "1000px" }}
     >
       <motion.div
-        className="absolute inset-0 rounded-lg opacity-0 blur-xl pointer-events-none"
+        className="absolute inset-0 rounded-lg blur-lg pointer-events-none"
         animate={{
-          opacity: [0.08, 0.12, 0.08],
+          opacity: [0.3, 0.5, 0.3],
           background: [
-            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.25), transparent 60%)",
-            "radial-gradient(circle at 80% 20%, oklch(0.75 0.15 195 / 0.3), transparent 60%)",
-            "radial-gradient(circle at 40% 50%, oklch(0.75 0.15 195 / 0.28), transparent 60%)",
-            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.25), transparent 60%)"
+            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.5), transparent 60%)",
+            "radial-gradient(circle at 80% 20%, oklch(0.75 0.15 195 / 0.7), transparent 60%)",
+            "radial-gradient(circle at 40% 50%, oklch(0.75 0.15 195 / 0.6), transparent 60%)",
+            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.5), transparent 60%)"
           ]
         }}
         transition={{
