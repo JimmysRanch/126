@@ -5,6 +5,8 @@ import { ClientsList } from '@/pages/ClientsList'
 import { ClientProfile } from '@/pages/ClientProfile'
 import { AddClient } from '@/pages/AddClient'
 import { Finances } from '@/pages/Finances'
+import { Staff } from '@/pages/Staff'
+import { StaffProfile } from '@/pages/StaffProfile'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 
 function App() {
@@ -19,7 +21,8 @@ function App() {
           <Route path="/clients" element={<ClientsList />} />
           <Route path="/clients/new" element={<AddClient />} />
           <Route path="/clients/:clientId" element={<ClientProfile />} />
-          <Route path="/staff" element={<PlaceholderPage title="Staff" />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/staff/:staffId" element={<StaffProfile />} />
           <Route path="/pos" element={<PlaceholderPage title="POS" />} />
           <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
           <Route path="/finances" element={<Finances />} />
