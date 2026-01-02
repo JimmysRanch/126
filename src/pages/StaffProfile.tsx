@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
+import { StaffScheduleView } from "@/components/StaffScheduleView"
 
 export function StaffProfile() {
   const navigate = useNavigate()
@@ -527,11 +528,7 @@ export function StaffProfile() {
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
-                Schedule management and time-off requests will appear here.
-              </p>
-            </Card>
+            <StaffScheduleView staffId={staffId} />
           </TabsContent>
         </Tabs>
       </div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { StaffScheduleView } from "@/components/StaffScheduleView"
 
 const mockStaff = [
   {
@@ -178,11 +179,7 @@ export function Staff() {
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
-                Staff scheduling calendar will appear here.
-              </p>
-            </Card>
+            <StaffScheduleView />
           </TabsContent>
 
           <TabsContent value="performance" className="mt-0">
