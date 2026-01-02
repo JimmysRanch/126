@@ -7,6 +7,7 @@ import { AddClient } from '@/pages/AddClient'
 import { Finances } from '@/pages/Finances'
 import { Staff } from '@/pages/Staff'
 import { StaffProfile } from '@/pages/StaffProfile'
+import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
           <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
           <Route path="/finances" element={<Finances />} />
           <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
-          <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </Router>

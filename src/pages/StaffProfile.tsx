@@ -12,10 +12,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
+import { useKV } from "@github/spark/hooks"
 
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
+  const [staffPositions] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
 
   const staffData = {
     "1": {
@@ -235,10 +237,11 @@ export function StaffProfile() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Senior Groomer">Senior Groomer</SelectItem>
-                        <SelectItem value="Groomer">Groomer</SelectItem>
-                        <SelectItem value="Spa Specialist">Spa Specialist</SelectItem>
-                        <SelectItem value="Bather">Bather</SelectItem>
+                        {(staffPositions || []).map((position) => (
+                          <SelectItem key={position} value={position}>
+                            {position}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
