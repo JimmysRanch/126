@@ -1,10 +1,15 @@
-import { ArrowLeft, PencilSimple, Plus, Calendar } from "@phosphor-icons/react"
+import { ArrowLeft, PencilSimple, Phone, Envelope } from "@phosphor-icons/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { StatWidget } from "@/components/StatWidget"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 
 export function StaffProfile() {
@@ -127,7 +132,8 @@ export function StaffProfile() {
   }
 
   const staff = staffData[staffId as keyof typeof staffData] || staffData["1"]
-  const [activeTab, setActiveTab] = useState("appointments")
+  const [activeTab, setActiveTab] = useState("overview")
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -160,206 +166,370 @@ export function StaffProfile() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]">
-              <Calendar size={18} className="mr-2" />
-              View Schedule
-            </Button>
-            <Button
-              variant="secondary"
-              className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-            >
-              Contact
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                >
+                  Contact
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border">
+                <DialogHeader>
+                  <DialogTitle>Contact {staff.name}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                    <Phone size={20} className="text-primary" />
+                    <div>
+                      <div className="text-xs text-muted-foreground">Phone</div>
+                      <div className="font-medium">{staff.phone}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                    <Envelope size={20} className="text-primary" />
+                    <div>
+                      <div className="text-xs text-muted-foreground">Email</div>
+                      <div className="font-medium">{staff.email}</div>
+                    </div>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Button
               variant="ghost"
               size="icon"
               className="hover:bg-secondary transition-all duration-200"
+              onClick={() => setIsEditDialogOpen(true)}
             >
               <PencilSimple size={20} />
             </Button>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <StatWidget
-            stats={[
-              { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() },
-              { label: "COMPLETION RATE", value: staff.stats.completionRate }
-            ]}
-            onClick={() => console.log('Total Appointments clicked')}
-          />
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="bg-card border-border max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Staff Member Information</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 pt-4">
+              <Card className="p-6 bg-secondary/20 border-border">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  Basic Information
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input id="firstName" defaultValue={staff.name.split(' ')[0]} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input id="lastName" defaultValue={staff.name.split(' ')[1]} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Position</Label>
+                    <Select defaultValue={staff.role}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Senior Groomer">Senior Groomer</SelectItem>
+                        <SelectItem value="Groomer">Groomer</SelectItem>
+                        <SelectItem value="Spa Specialist">Spa Specialist</SelectItem>
+                        <SelectItem value="Bather">Bather</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select defaultValue={staff.status}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="On Leave">On Leave</SelectItem>
+                        <SelectItem value="Inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" defaultValue={staff.email} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" defaultValue={staff.phone} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="streetAddress">Street Address</Label>
+                    <Input id="streetAddress" placeholder="123 Market Street" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" placeholder="Austin" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Select defaultValue="Texas">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Texas">Texas</SelectItem>
+                        <SelectItem value="California">California</SelectItem>
+                        <SelectItem value="New York">New York</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="zipCode">ZIP Code</Label>
+                    <Input id="zipCode" placeholder="73301" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hiredDate">Hired Date</Label>
+                    <Input id="hiredDate" type="date" />
+                  </div>
+                  <div className="space-y-2 col-span-2">
+                    <Label htmlFor="notes">Notes</Label>
+                    <Textarea 
+                      id="notes" 
+                      placeholder="Add context about certifications, specialties, or scheduling preferences."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              </Card>
 
-          <StatWidget
-            stats={[
-              { label: "REVENUE", value: staff.stats.revenue },
-              { label: "AVG TIP", value: staff.stats.avgTip }
-            ]}
-            onClick={() => console.log('Revenue clicked')}
-          />
+              <Card className="p-6 bg-secondary/20 border-border">
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  Emergency Contact
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyFirstName">First Name</Label>
+                    <Input id="emergencyFirstName" placeholder="Jane" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyLastName">Last Name</Label>
+                    <Input id="emergencyLastName" placeholder="Doe" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyPhone">Phone Number</Label>
+                    <Input id="emergencyPhone" placeholder="(512) 555-0100" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyRelation">Relation</Label>
+                    <Input id="emergencyRelation" placeholder="Spouse, Parent, Sibling, etc." />
+                  </div>
+                </div>
+              </Card>
 
-          <StatWidget
-            stats={[
-              { label: "AVG RATING", value: staff.stats.avgRating.toString() },
-              { label: "HOURLY RATE", value: staff.hourlyRate }
-            ]}
-            onClick={() => console.log('Rating clicked')}
-          />
-
-          <StatWidget
-            stats={[
-              { label: "NO-SHOWS", value: staff.stats.noShows.toString() },
-              { label: "CANCELS", value: staff.stats.cancellations.toString() }
-            ]}
-            onClick={() => console.log('No-shows clicked')}
-          />
-
-          <StatWidget
-            stats={[
-              { label: "LATE", value: staff.stats.lateArrivals.toString() }
-            ]}
-            onClick={() => console.log('Late arrivals clicked')}
-          />
-        </div>
-
-        <Card className="p-5 bg-card border-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Staff Information
-            </h3>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Email</div>
-              <div className="font-medium">{staff.email}</div>
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Phone</div>
-              <div className="font-medium">{staff.phone}</div>
-            </div>
-            <div className="col-span-2">
-              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Specialties</div>
-              <div className="flex items-center gap-2 flex-wrap">
-                {staff.specialties.map((specialty, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {specialty}
-                  </Badge>
-                ))}
+              <div className="flex justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => {
+                    setIsEditDialogOpen(false)
+                  }}
+                >
+                  Save Changes
+                </Button>
               </div>
             </div>
-          </div>
-        </Card>
+          </DialogContent>
+        </Dialog>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-secondary/50">
+          <TabsList className="bg-secondary/50 mb-6">
             <TabsTrigger 
-              value="appointments" 
+              value="overview" 
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              Upcoming Appointments
+              Overview
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              Appointment History
+              History
             </TabsTrigger>
             <TabsTrigger 
-              value="performance" 
+              value="payroll" 
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
-              Performance
+              Payroll
+            </TabsTrigger>
+            <TabsTrigger 
+              value="schedule" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Schedule
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="appointments" className="mt-4">
-            <div className="space-y-3">
-              {staff.upcomingAppointments.length > 0 ? (
-                staff.upcomingAppointments.map((apt) => (
-                  <Card key={apt.id} className="p-4 bg-card border-border">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-semibold">{apt.client}</h4>
-                          <Badge variant="secondary" className="text-xs">
-                            {apt.pet}
-                          </Badge>
-                          <Badge 
-                            variant={apt.status === "Confirmed" ? "default" : "secondary"}
-                            className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
-                          >
-                            {apt.status}
-                          </Badge>
+          <TabsContent value="overview" className="mt-0 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <StatWidget
+                stats={[
+                  { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() },
+                  { label: "COMPLETION RATE", value: staff.stats.completionRate }
+                ]}
+                onClick={() => console.log('Total Appointments clicked')}
+              />
+
+              <StatWidget
+                stats={[
+                  { label: "REVENUE", value: staff.stats.revenue },
+                  { label: "AVG TIP", value: staff.stats.avgTip }
+                ]}
+                onClick={() => console.log('Revenue clicked')}
+              />
+
+              <StatWidget
+                stats={[
+                  { label: "AVG RATING", value: staff.stats.avgRating.toString() },
+                  { label: "HOURLY RATE", value: staff.hourlyRate }
+                ]}
+                onClick={() => console.log('Rating clicked')}
+              />
+
+              <StatWidget
+                stats={[
+                  { label: "NO-SHOWS", value: staff.stats.noShows.toString() },
+                  { label: "CANCELS", value: staff.stats.cancellations.toString() }
+                ]}
+                onClick={() => console.log('No-shows clicked')}
+              />
+
+              <StatWidget
+                stats={[
+                  { label: "LATE", value: staff.stats.lateArrivals.toString() }
+                ]}
+                onClick={() => console.log('Late arrivals clicked')}
+              />
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  Upcoming Appointments
+                </h3>
+                <div className="space-y-3">
+                  {staff.upcomingAppointments.length > 0 ? (
+                    staff.upcomingAppointments.map((apt) => (
+                      <Card key={apt.id} className="p-4 bg-card border-border">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-semibold">{apt.client}</h4>
+                              <Badge variant="secondary" className="text-xs">
+                                {apt.pet}
+                              </Badge>
+                              <Badge 
+                                variant={apt.status === "Confirmed" ? "default" : "secondary"}
+                                className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                              >
+                                {apt.status}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {apt.service}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold">{apt.date}</div>
+                            <div className="text-sm text-muted-foreground">{apt.time} • {apt.duration}</div>
+                          </div>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                          {apt.service}
+                      </Card>
+                    ))
+                  ) : (
+                    <Card className="p-12 bg-card border-border text-center">
+                      <p className="text-muted-foreground">
+                        No upcoming appointments scheduled.
+                      </p>
+                    </Card>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                  Recent Appointments
+                </h3>
+                <div className="space-y-3">
+                  {staff.recentAppointments.length > 0 ? (
+                    staff.recentAppointments.map((apt) => (
+                      <Card key={apt.id} className="p-4 bg-card border-border">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h4 className="font-semibold">{apt.client}</h4>
+                              <Badge variant="secondary" className="text-xs">
+                                {apt.pet}
+                              </Badge>
+                              <div className="text-xs text-primary">
+                                {apt.rating} ⭐
+                              </div>
+                            </div>
+                            <div className="text-sm text-muted-foreground mb-1">
+                              {apt.service}
+                            </div>
+                            {apt.notes && (
+                              <div className="text-xs text-muted-foreground italic">
+                                "{apt.notes}"
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold">{apt.date}</div>
+                            <div className="text-sm text-muted-foreground">{apt.time}</div>
+                            <div className="text-sm font-semibold text-primary mt-1">
+                              {apt.cost} + {apt.tip} tip
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{apt.date}</div>
-                        <div className="text-sm text-muted-foreground">{apt.time} • {apt.duration}</div>
-                      </div>
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <Card className="p-12 bg-card border-border text-center">
-                  <p className="text-muted-foreground">
-                    No upcoming appointments scheduled.
-                  </p>
-                </Card>
-              )}
+                      </Card>
+                    ))
+                  ) : (
+                    <Card className="p-12 bg-card border-border text-center">
+                      <p className="text-muted-foreground">
+                        No appointment history available.
+                      </p>
+                    </Card>
+                  )}
+                </div>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="history" className="mt-4">
-            <div className="space-y-3">
-              {staff.recentAppointments.length > 0 ? (
-                staff.recentAppointments.map((apt) => (
-                  <Card key={apt.id} className="p-4 bg-card border-border">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h4 className="font-semibold">{apt.client}</h4>
-                          <Badge variant="secondary" className="text-xs">
-                            {apt.pet}
-                          </Badge>
-                          <div className="text-xs text-primary">
-                            {apt.rating} ⭐
-                          </div>
-                        </div>
-                        <div className="text-sm text-muted-foreground mb-1">
-                          {apt.service}
-                        </div>
-                        {apt.notes && (
-                          <div className="text-xs text-muted-foreground italic">
-                            "{apt.notes}"
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold">{apt.date}</div>
-                        <div className="text-sm text-muted-foreground">{apt.time}</div>
-                        <div className="text-sm font-semibold text-primary mt-1">
-                          {apt.cost} + {apt.tip} tip
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <Card className="p-12 bg-card border-border text-center">
-                  <p className="text-muted-foreground">
-                    No appointment history available.
-                  </p>
-                </Card>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="performance" className="mt-4">
+          <TabsContent value="history" className="mt-0">
             <Card className="p-12 bg-card border-border text-center">
               <p className="text-muted-foreground">
-                Detailed performance analytics and charts will appear here.
+                Complete activity history showing all actions performed by this staff member will appear here.
+              </p>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="payroll" className="mt-0">
+            <Card className="p-12 bg-card border-border text-center">
+              <p className="text-muted-foreground">
+                Payroll history and metrics will appear here.
+              </p>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schedule" className="mt-0">
+            <Card className="p-12 bg-card border-border text-center">
+              <p className="text-muted-foreground">
+                Schedule management and time-off requests will appear here.
               </p>
             </Card>
           </TabsContent>

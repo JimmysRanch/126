@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MagnifyingGlass, Plus, User } from "@phosphor-icons/react"
+import { Plus } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -77,20 +76,13 @@ const mockStaff = [
 
 export function Staff() {
   const navigate = useNavigate()
-  const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("list")
-
-  const filteredStaff = mockStaff.filter(staff => 
-    staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    staff.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    staff.specialties.some(specialty => specialty.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-[1600px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex flex-col items-center gap-4 mb-6">
             <TabsList className="bg-secondary/50">
               <TabsTrigger 
                 value="list" 
@@ -112,29 +104,17 @@ export function Staff() {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-4">
-              <div className="w-80 relative">
-                <MagnifyingGlass size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search staff..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
-              >
-                <Plus size={18} className="mr-2" />
-                Add New Staff
-              </Button>
-            </div>
+            <Button 
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
+            >
+              <Plus size={18} className="mr-2" />
+              Add New Staff
+            </Button>
           </div>
 
           <TabsContent value="list" className="mt-0">
             <div className="grid grid-cols-1 gap-3">
-              {filteredStaff.map((staff) => (
+              {mockStaff.map((staff) => (
                 <Card
                   key={staff.id}
                   className="p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
@@ -184,13 +164,6 @@ export function Staff() {
 
                       <div className="text-center">
                         <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                          Rating
-                        </div>
-                        <div className="font-semibold text-primary">{staff.rating} ⭐</div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                           Hired
                         </div>
                         <div className="font-semibold">{staff.hireDate}</div>
@@ -201,11 +174,7 @@ export function Staff() {
               ))}
             </div>
 
-            {filteredStaff.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                No staff members found matching "{searchQuery}"
-              </div>
-            )}
+
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
