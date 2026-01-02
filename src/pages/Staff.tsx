@@ -84,33 +84,52 @@ export function Staff() {
       <div className="max-w-[1600px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-6">
-            <TabsList className="bg-secondary/50">
-              <TabsTrigger 
-                value="list" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            <div className="flex-1"></div>
+            
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setActiveTab("list")}
+                variant={activeTab === "list" ? "default" : "secondary"}
+                className={`rounded-full px-6 font-medium transition-all duration-200 ${
+                  activeTab === "list" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
               >
                 Staff List
-              </TabsTrigger>
-              <TabsTrigger 
-                value="schedule" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              </Button>
+              <Button
+                onClick={() => setActiveTab("schedule")}
+                variant={activeTab === "schedule" ? "default" : "secondary"}
+                className={`rounded-full px-6 font-medium transition-all duration-200 ${
+                  activeTab === "schedule" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
               >
                 Schedule
-              </TabsTrigger>
-              <TabsTrigger 
-                value="performance" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              </Button>
+              <Button
+                onClick={() => setActiveTab("performance")}
+                variant={activeTab === "performance" ? "default" : "secondary"}
+                className={`rounded-full px-6 font-medium transition-all duration-200 ${
+                  activeTab === "performance" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
               >
                 Performance
-              </TabsTrigger>
-            </TabsList>
+              </Button>
+            </div>
 
-            <Button 
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
-            >
-              <Plus size={18} className="mr-2" />
-              Add Staff Member
-            </Button>
+            <div className="flex-1 flex justify-end">
+              <Button 
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Plus size={18} className="mr-2" />
+                Add Staff Member
+              </Button>
+            </div>
           </div>
 
           <TabsContent value="list" className="mt-0">
