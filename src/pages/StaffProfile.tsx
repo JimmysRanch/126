@@ -348,32 +348,34 @@ export function StaffProfile() {
         </Dialog>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-secondary/50 mb-6">
-            <TabsTrigger 
-              value="overview" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              History
-            </TabsTrigger>
-            <TabsTrigger 
-              value="payroll" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Payroll
-            </TabsTrigger>
-            <TabsTrigger 
-              value="schedule" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Schedule
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-6">
+            <TabsList className="bg-secondary/50">
+              <TabsTrigger 
+                value="overview" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                History
+              </TabsTrigger>
+              <TabsTrigger 
+                value="payroll" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Payroll
+              </TabsTrigger>
+              <TabsTrigger 
+                value="schedule" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Schedule
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="mt-0 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

@@ -83,7 +83,7 @@ export function Staff() {
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-[1600px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col items-center gap-4 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <TabsList className="bg-secondary/50">
               <TabsTrigger 
                 value="list" 
@@ -109,7 +109,7 @@ export function Staff() {
               className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]"
             >
               <Plus size={18} className="mr-2" />
-              Add New Staff
+              Add Staff Member
             </Button>
           </div>
 
