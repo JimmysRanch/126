@@ -26,7 +26,7 @@ export function RecentActivity() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {Object.entries(groupedActivities).map(([category, activities]) => {
         if (activities.length === 0) return null
         
@@ -52,18 +52,19 @@ export function RecentActivity() {
                     whileHover={{ x: 4 }}
                     className="flex items-start gap-2 p-2 rounded-lg bg-card border border-border cursor-pointer"
                   >
-                    <div className={`mt-0.5 ${iconColor}`}>
-                      <Icon size={16} weight="duotone" />
+                    <div className={`mt-0.5 flex-shrink-0 ${iconColor}`}>
+                      <Icon size={14} weight="duotone" className="sm:hidden" />
+                      <Icon size={16} weight="duotone" className="hidden sm:block" />
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium">{activity.description}</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">
+                      <div className="text-xs font-medium leading-tight">{activity.description}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5 truncate sm:overflow-visible sm:text-clip">
                         {activity.client}
                       </div>
                     </div>
                     
-                    <div className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    <div className="text-[10px] text-muted-foreground whitespace-nowrap flex-shrink-0">
                       {activity.time}
                     </div>
                   </motion.div>

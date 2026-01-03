@@ -35,7 +35,7 @@ export function BookedGauge({ percentage, target, delay = 0 }: BookedGaugeProps)
 
   return (
     <div className="relative flex items-center justify-center">
-      <svg width="180" height="180" className="transform -rotate-90">
+      <svg width="160" height="160" className="transform -rotate-90 sm:w-[180px] sm:h-[180px]" viewBox="0 0 180 180">
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="oklch(0.75 0.15 195)" />
@@ -72,7 +72,7 @@ export function BookedGauge({ percentage, target, delay = 0 }: BookedGaugeProps)
       
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.div
-          className="text-4xl font-bold"
+          className="text-3xl sm:text-4xl font-bold"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.5, delay: delay + 0.3 }}

@@ -49,31 +49,31 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1600px] mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6">
+      <div className="max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
         
-        <header className="flex items-center justify-end gap-2">
-          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+        <header className="flex flex-wrap items-center justify-end gap-2">
+          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
             <div className="text-[10px] text-muted-foreground">Total Clients</div>
-            <div className="text-base font-bold">
+            <div className="text-sm sm:text-base font-bold">
               <AnimatedNumber value={clientMetrics.totalClients} delay={0.1} />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
             <div className="text-[10px] text-muted-foreground">New This Month</div>
-            <div className="text-base font-bold text-green-500">
+            <div className="text-sm sm:text-base font-bold text-green-500">
               +<AnimatedNumber value={clientMetrics.newThisMonth} delay={0.15} />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
             <div className="text-[10px] text-muted-foreground">Repeat Rate</div>
-            <div className="text-base font-bold">
+            <div className="text-sm sm:text-base font-bold">
               <AnimatedNumber value={clientMetrics.repeatVisitRate} delay={0.2} suffix="%" />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
             <div className="text-[10px] text-muted-foreground">Avg Days Between</div>
-            <div className="text-base font-bold">
+            <div className="text-sm sm:text-base font-bold">
               <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
             </div>
           </div>
@@ -81,10 +81,10 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-card rounded-lg px-3 py-1.5 border border-border h-[52px] flex flex-col justify-center"
+            className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border h-[52px] flex flex-col justify-center w-full sm:w-auto"
           >
             <div className="text-[10px] text-muted-foreground mb-1">Booked %</div>
-            <div className="flex items-center gap-3 text-xs">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs justify-between sm:justify-start">
               <div className="flex items-center gap-1">
                 <span className="text-muted-foreground">Today:</span>
                 <span className="font-bold text-primary">
@@ -108,7 +108,7 @@ export function Dashboard() {
         </header>
 
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             
             <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
               <div className="space-y-3">
@@ -184,7 +184,7 @@ export function Dashboard() {
             <KpiCard title="Expected Revenue" delay={0.2} className="xl:col-span-1">
               <div className="space-y-2">
                 <div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-xl sm:text-2xl font-bold">
                     <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">Total Revenue Today</div>
@@ -219,30 +219,33 @@ export function Dashboard() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                   <div className="flex items-center gap-1.5">
-                    <Clock size={16} className="text-yellow-500" weight="duotone" />
+                    <Clock size={14} className="text-yellow-500 sm:hidden" weight="duotone" />
+                    <Clock size={16} className="text-yellow-500 hidden sm:block" weight="duotone" />
                     <span className="text-xs">Late arrivals</span>
                   </div>
-                  <div className="text-lg font-bold">
+                  <div className="text-base sm:text-lg font-bold">
                     <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                   <div className="flex items-center gap-1.5">
-                    <Warning size={16} className="text-orange-500" weight="duotone" />
+                    <Warning size={14} className="text-orange-500 sm:hidden" weight="duotone" />
+                    <Warning size={16} className="text-orange-500 hidden sm:block" weight="duotone" />
                     <span className="text-xs">No-shows</span>
                   </div>
-                  <div className="text-lg font-bold">
+                  <div className="text-base sm:text-lg font-bold">
                     <AnimatedNumber value={issuesData.noShows} delay={0.4} />
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                   <div className="flex items-center gap-1.5">
-                    <XCircle size={16} className="text-red-500" weight="duotone" />
+                    <XCircle size={14} className="text-red-500 sm:hidden" weight="duotone" />
+                    <XCircle size={16} className="text-red-500 hidden sm:block" weight="duotone" />
                     <span className="text-xs">Canceled</span>
                   </div>
-                  <div className="text-lg font-bold">
+                  <div className="text-base sm:text-lg font-bold">
                     <AnimatedNumber value={issuesData.canceled} delay={0.45} />
                   </div>
                 </div>
@@ -257,11 +260,11 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.0 }}
-            className="bg-card rounded-xl p-4 border border-border"
+            className="bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <h2 className="text-base font-semibold mb-0.5">Recent Activity</h2>
+                <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
                 <p className="text-xs text-muted-foreground">Latest Updates</p>
               </div>
               
