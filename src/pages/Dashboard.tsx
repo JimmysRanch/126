@@ -254,15 +254,14 @@ export function Dashboard() {
               <RevenueMiniChart />
             </KpiCard>
 
-            <KpiCard title="Top Services" delay={0.55} className="lg:col-span-2">
               <TopServicesCard />
             </KpiCard>
+          </div>
           </div>
         </section>
 
         <section>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.0 }}
             className="bg-card rounded-xl p-4 border border-border"
