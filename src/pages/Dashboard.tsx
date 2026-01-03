@@ -364,3 +364,20 @@ export function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.0 }}
+            className="bg-card rounded-xl p-6 border border-border"
+          >
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold mb-1">Recent Activity</h2>
+                <p className="text-sm text-muted-foreground">Latest Updates</p>
+              </div>
+              
+              <RecentActivity />
+            </div>
+          </motion.div>
+        </section>
+      </div>
+    </div>
+  )
+}
