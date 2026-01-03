@@ -15,23 +15,21 @@ function App() {
     <Router>
       <div className="min-h-screen bg-background text-foreground">
         <TopNav />
-        <div className="scale-[0.8] origin-top">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/appointments" element={<PlaceholderPage title="Appointments" />} />
-            <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
-            <Route path="/clients" element={<ClientsList />} />
-            <Route path="/clients/new" element={<AddClient />} />
-            <Route path="/clients/:clientId" element={<ClientProfile />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/staff/:staffId" element={<StaffProfile />} />
-            <Route path="/pos" element={<PlaceholderPage title="POS" />} />
-            <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
-            <Route path="/finances" element={<Finances />} />
-            <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
-            <Route path="/settings" element={<Settings />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/appointments" element={<PlaceholderPage title="Appointments" />} />
+          <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
+          <Route path="/clients" element={<ClientsList />} />
+          <Route path="/clients/new" element={<AddClient />} />
+          <Route path="/clients/:clientId" element={<ClientProfile />} />
+          <Route path="/staff" element={<Staff />} />
+          <Route path="/staff/:staffId" element={<StaffProfile />} />
+          <Route path="/pos" element={<PlaceholderPage title="POS" />} />
+          <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
+          <Route path="/finances" element={<Finances />} />
+          <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
       </div>
     </Router>
   )
