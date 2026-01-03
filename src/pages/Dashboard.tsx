@@ -145,7 +145,7 @@ export function Dashboard() {
               </div>
             </KpiCard>
 
-            <KpiCard title="Booked" delay={0.1} className="xl:col-span-1 flex items-center justify-center">
+            <KpiCard title="Booked" delay={0.1} className="xl:col-span-1">
               <BookedGauge 
                 percentage={capacityData.bookedPercentage} 
                 target={capacityData.target}
