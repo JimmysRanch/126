@@ -50,7 +50,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1600px] mx-auto space-y-8 scale-[0.8] origin-top">
+      <div className="max-w-[1600px] mx-auto space-y-8">
         
         <header className="flex items-center justify-end gap-3">
           <div className="bg-card rounded-lg px-4 py-2 border border-border">
