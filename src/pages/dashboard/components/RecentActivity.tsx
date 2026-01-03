@@ -26,19 +26,19 @@ export function RecentActivity() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {Object.entries(groupedActivities).map(([category, activities]) => {
         if (activities.length === 0) return null
         
         const categoryTitle = category === 'today' ? 'Today' : category === 'yesterday' ? 'Yesterday' : 'This Week'
         
         return (
-          <div key={category} className="space-y-3">
-            <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          <div key={category} className="space-y-2">
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {categoryTitle}
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {activities.map((activity, index) => {
                 const Icon = iconMap[activity.type as keyof typeof iconMap]
                 const iconColor = colorMap[activity.type as keyof typeof colorMap]
@@ -50,20 +50,20 @@ export function RecentActivity() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ x: 4 }}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-card border border-border cursor-pointer"
+                    className="flex items-start gap-2 p-2 rounded-lg bg-card border border-border cursor-pointer"
                   >
                     <div className={`mt-0.5 ${iconColor}`}>
-                      <Icon size={20} weight="duotone" />
+                      <Icon size={16} weight="duotone" />
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium">{activity.description}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
+                      <div className="text-xs font-medium">{activity.description}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">
                         {activity.client}
                       </div>
                     </div>
                     
-                    <div className="text-xs text-muted-foreground whitespace-nowrap">
+                    <div className="text-[10px] text-muted-foreground whitespace-nowrap">
                       {activity.time}
                     </div>
                   </motion.div>

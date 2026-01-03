@@ -14,8 +14,8 @@ export function GroomerUtilization() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {groomerWeekData.map((groomer, index) => (
           <motion.div
             key={groomer.id}
@@ -23,38 +23,38 @@ export function GroomerUtilization() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
             onClick={handleCardClick}
-            className="bg-secondary/50 rounded-lg p-4 border border-border cursor-pointer hover:bg-secondary/70 hover:shadow-lg transition-all duration-200"
+            className="bg-secondary/50 rounded-lg p-3 border border-border cursor-pointer hover:bg-secondary/70 hover:shadow-lg transition-all duration-200"
           >
-            <div className="font-semibold text-sm mb-2">{groomer.name}</div>
-            <div className="flex items-baseline gap-3 mb-1">
-              <div className="text-2xl font-bold text-primary">{groomer.weekUtilization}%</div>
-              <div className="text-sm text-muted-foreground">{groomer.weekAppointments} appts</div>
+            <div className="font-semibold text-xs mb-1.5">{groomer.name}</div>
+            <div className="flex items-baseline gap-2 mb-1">
+              <div className="text-xl font-bold text-primary">{groomer.weekUtilization}%</div>
+              <div className="text-xs text-muted-foreground">{groomer.weekAppointments} appts</div>
             </div>
-            <div className="text-xs text-muted-foreground">This Week</div>
+            <div className="text-[10px] text-muted-foreground">This Week</div>
           </motion.div>
         ))}
       </div>
 
-      <div className="space-y-4">
-        <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+      <div className="space-y-3">
+        <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Weekly Schedule
         </div>
         
         {groomerWeekData.map((groomer, groomerIndex) => (
-          <div key={groomer.id} className="space-y-2">
-            <div className="text-sm font-medium">{groomer.name}</div>
+          <div key={groomer.id} className="space-y-1.5">
+            <div className="text-xs font-medium">{groomer.name}</div>
             
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               {daysOfWeek.map((day, dayIndex) => {
                 const daySchedule = groomer.weekSchedule[dayIndex]
                 
                 return (
-                  <div key={day} className="flex items-center gap-3">
-                    <div className="w-10 text-xs text-muted-foreground font-medium">{day}</div>
+                  <div key={day} className="flex items-center gap-2">
+                    <div className="w-8 text-[10px] text-muted-foreground font-medium">{day}</div>
                     
-                    <div className="flex-1 relative h-7 bg-secondary/30 rounded-lg">
-                      <div className="absolute inset-0 flex items-center px-2 pointer-events-none">
-                        <div className="flex w-full justify-between text-[9px] text-muted-foreground/40">
+                    <div className="flex-1 relative h-6 bg-secondary/30 rounded-lg">
+                      <div className="absolute inset-0 flex items-center px-1.5 pointer-events-none">
+                        <div className="flex w-full justify-between text-[8px] text-muted-foreground/40">
                           <span>8a</span>
                           <span>12p</span>
                           <span>6p</span>
@@ -87,7 +87,7 @@ export function GroomerUtilization() {
                       })}
                     </div>
                     
-                    <div className="w-12 text-xs text-muted-foreground text-right">
+                    <div className="w-10 text-[10px] text-muted-foreground text-right">
                       {daySchedule.utilization}%
                     </div>
                   </div>

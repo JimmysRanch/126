@@ -50,75 +50,75 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1600px] mx-auto space-y-8">
+      <div className="max-w-[1600px] mx-auto space-y-6">
         
-        <header className="flex items-center justify-end gap-3">
-          <div className="bg-card rounded-lg px-4 py-2 border border-border">
-            <div className="text-xs text-muted-foreground">Total Clients</div>
-            <div className="text-xl font-bold">
+        <header className="flex items-center justify-end gap-2">
+          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+            <div className="text-[10px] text-muted-foreground">Total Clients</div>
+            <div className="text-base font-bold">
               <AnimatedNumber value={clientMetrics.totalClients} delay={0.1} />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-4 py-2 border border-border">
-            <div className="text-xs text-muted-foreground">New This Month</div>
-            <div className="text-xl font-bold text-green-500">
+          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+            <div className="text-[10px] text-muted-foreground">New This Month</div>
+            <div className="text-base font-bold text-green-500">
               +<AnimatedNumber value={clientMetrics.newThisMonth} delay={0.15} />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-4 py-2 border border-border">
-            <div className="text-xs text-muted-foreground">Repeat Rate</div>
-            <div className="text-xl font-bold">
+          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+            <div className="text-[10px] text-muted-foreground">Repeat Rate</div>
+            <div className="text-base font-bold">
               <AnimatedNumber value={clientMetrics.repeatVisitRate} delay={0.2} suffix="%" />
             </div>
           </div>
-          <div className="bg-card rounded-lg px-4 py-2 border border-border">
-            <div className="text-xs text-muted-foreground">Avg Days Between</div>
-            <div className="text-xl font-bold">
+          <div className="bg-card rounded-lg px-3 py-1.5 border border-border">
+            <div className="text-[10px] text-muted-foreground">Avg Days Between</div>
+            <div className="text-base font-bold">
               <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
             </div>
           </div>
         </header>
 
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             
             <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                     <span className="text-muted-foreground">Scheduled</span>
                   </div>
                   <div className="font-semibold text-right">
                     <AnimatedNumber value={appointmentData.today.scheduled} delay={0.1} />
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <CheckCircle size={12} className="text-green-500" weight="fill" />
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle size={10} className="text-green-500" weight="fill" />
                     <span className="text-muted-foreground">Completed</span>
                   </div>
                   <div className="font-semibold text-right">
                     <AnimatedNumber value={appointmentData.today.completed} delay={0.15} />
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <XCircle size={12} className="text-red-500" weight="fill" />
+                  <div className="flex items-center gap-1.5">
+                    <XCircle size={10} className="text-red-500" weight="fill" />
                     <span className="text-muted-foreground">Canceled</span>
                   </div>
                   <div className="font-semibold text-right">
                     <AnimatedNumber value={appointmentData.today.canceled} delay={0.2} />
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Warning size={12} className="text-orange-500" weight="fill" />
+                  <div className="flex items-center gap-1.5">
+                    <Warning size={10} className="text-orange-500" weight="fill" />
                     <span className="text-muted-foreground">No-Shows</span>
                   </div>
                   <div className="font-semibold text-right">
                     <AnimatedNumber value={appointmentData.today.noShows} delay={0.25} />
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Clock size={12} className="text-yellow-500" weight="fill" />
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={10} className="text-yellow-500" weight="fill" />
                     <span className="text-muted-foreground">Late</span>
                   </div>
                   <div className="font-semibold text-right">
@@ -126,14 +126,14 @@ export function Dashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[10px] text-muted-foreground">
                     <span>Day Progress</span>
                     <span>
                       <AnimatedNumber value={progress.completed} delay={0.35} /> / <AnimatedNumber value={progress.total} delay={0.35} />
                     </span>
                   </div>
-                  <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-primary rounded-full"
                       initial={{ width: 0 }}
@@ -154,30 +154,30 @@ export function Dashboard() {
             </KpiCard>
 
             <KpiCard title="Expected Revenue" delay={0.2} className="xl:col-span-1">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div>
-                  <div className="text-3xl font-bold">
+                  <div className="text-2xl font-bold">
                     <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">Total Revenue Today</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">Total Revenue Today</div>
                 </div>
                 
-                <div className="pt-3 border-t border-border space-y-2">
-                  <div className="flex justify-between text-sm">
+                <div className="pt-2 border-t border-border space-y-1.5">
+                  <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Profit After Commissions</span>
                     <span className="font-semibold text-green-500">
                       <AnimatedNumber value={revenueData.today.profit} delay={0.35} prefix="$" />
                     </span>
                   </div>
                   
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-[10px]">
                     <span className="text-muted-foreground">Tips (excluded)</span>
                     <span className="font-medium">
                       <AnimatedNumber value={revenueData.today.tips} delay={0.4} prefix="$" />
                     </span>
                   </div>
                   
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-[10px]">
                     <span className="text-muted-foreground">Commission estimate</span>
                     <span className="font-medium">
                       <AnimatedNumber value={revenueData.today.commission} delay={0.45} prefix="$" />
@@ -188,33 +188,33 @@ export function Dashboard() {
             </KpiCard>
 
             <KpiCard title="Issues" delay={0.3} className="xl:col-span-1">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Clock size={20} className="text-yellow-500" weight="duotone" />
-                    <span className="text-sm">Late arrivals</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={16} className="text-yellow-500" weight="duotone" />
+                    <span className="text-xs">Late arrivals</span>
                   </div>
-                  <div className="text-xl font-bold">
+                  <div className="text-lg font-bold">
                     <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Warning size={20} className="text-orange-500" weight="duotone" />
-                    <span className="text-sm">No-shows</span>
+                <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+                  <div className="flex items-center gap-1.5">
+                    <Warning size={16} className="text-orange-500" weight="duotone" />
+                    <span className="text-xs">No-shows</span>
                   </div>
-                  <div className="text-xl font-bold">
+                  <div className="text-lg font-bold">
                     <AnimatedNumber value={issuesData.noShows} delay={0.4} />
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <XCircle size={20} className="text-red-500" weight="duotone" />
-                    <span className="text-sm">Canceled</span>
+                <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+                  <div className="flex items-center gap-1.5">
+                    <XCircle size={16} className="text-red-500" weight="duotone" />
+                    <span className="text-xs">Canceled</span>
                   </div>
-                  <div className="text-xl font-bold">
+                  <div className="text-lg font-bold">
                     <AnimatedNumber value={issuesData.canceled} delay={0.45} />
                   </div>
                 </div>
@@ -223,16 +223,16 @@ export function Dashboard() {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <section className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="xl:col-span-2 bg-card rounded-xl p-6 border border-border"
+            className="xl:col-span-2 bg-card rounded-xl p-4 border border-border"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">Booking Overview</h2>
+                <h2 className="text-base font-semibold mb-1">Booking Overview</h2>
               </div>
               
               <div className="flex items-center justify-center gap-6 text-sm">
@@ -264,30 +264,30 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="bg-card rounded-xl p-6 border border-border"
+            className="bg-card rounded-xl p-4 border border-border"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">Monthly Booking Rate</h2>
-                <p className="text-sm text-muted-foreground">Prev: {bookingRateData[bookingRateData.length - 1].previousYearPercentage}%</p>
+                <h2 className="text-base font-semibold mb-0.5">Monthly Booking Rate</h2>
+                <p className="text-xs text-muted-foreground">Prev: {bookingRateData[bookingRateData.length - 1].previousYearPercentage}%</p>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {bookingRateData.map((month, index) => {
                   return (
-                    <div key={month.period} className="space-y-1">
-                      <div className="flex justify-between text-xs">
+                    <div key={month.period} className="space-y-0.5">
+                      <div className="flex justify-between text-[10px]">
                         <span className="text-muted-foreground">{month.period}</span>
                         <span className="font-semibold">{month.percentage}%</span>
                       </div>
-                      <div className="h-6 bg-secondary/30 rounded overflow-hidden relative">
+                      <div className="h-5 bg-secondary/30 rounded overflow-hidden relative">
                         <motion.div
                           className="h-full bg-primary flex items-center justify-end pr-1.5"
                           initial={{ width: 0 }}
                           animate={{ width: `${month.percentage}%` }}
                           transition={{ duration: 0.6, delay: 0.7 + index * 0.04, ease: 'easeOut' }}
                         >
-                          <span className="text-[9px] font-bold text-primary-foreground">
+                          <span className="text-[8px] font-bold text-primary-foreground">
                             {month.percentage}%
                           </span>
                         </motion.div>
@@ -305,12 +305,12 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="bg-card rounded-xl p-6 border border-border"
+            className="bg-card rounded-xl p-4 border border-border"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">Revenue Snapshot</h2>
-                <p className="text-sm text-muted-foreground">This Week</p>
+                <h2 className="text-base font-semibold mb-0.5">Revenue Snapshot</h2>
+                <p className="text-xs text-muted-foreground">This Week</p>
               </div>
               
               <RevenueMiniChart />
@@ -323,12 +323,12 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.9 }}
-            className="bg-card rounded-xl p-6 border border-border"
+            className="bg-card rounded-xl p-4 border border-border"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">Groomer Utilization</h2>
-                <p className="text-sm text-muted-foreground">This Week</p>
+                <h2 className="text-base font-semibold mb-0.5">Groomer Utilization</h2>
+                <p className="text-xs text-muted-foreground">This Week</p>
               </div>
               
               <GroomerUtilization />
@@ -341,12 +341,12 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.0 }}
-            className="bg-card rounded-xl p-6 border border-border"
+            className="bg-card rounded-xl p-4 border border-border"
           >
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
-                <h2 className="text-lg font-semibold mb-1">Recent Activity</h2>
-                <p className="text-sm text-muted-foreground">Latest Updates</p>
+                <h2 className="text-base font-semibold mb-0.5">Recent Activity</h2>
+                <p className="text-xs text-muted-foreground">Latest Updates</p>
               </div>
               
               <RecentActivity />
