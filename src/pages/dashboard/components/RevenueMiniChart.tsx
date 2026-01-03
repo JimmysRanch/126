@@ -27,7 +27,10 @@ export function RevenueMiniChart() {
           return (
             <div key={day.day} className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground font-medium">{day.day}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground font-medium w-8">{day.day}</span>
+                  <span className="text-muted-foreground/60 text-[10px]">{day.date}</span>
+                </div>
                 <span className="font-semibold">${day.amount.toLocaleString()}</span>
               </div>
               <div className="h-6 bg-secondary/30 rounded overflow-hidden relative">

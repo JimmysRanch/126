@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { KpiCard } from './dashboard/components/KpiCard'
 import { BookedGauge } from './dashboard/components/BookedGauge'
-import { BookingHeatmap14 } from './dashboard/components/BookingHeatmap14'
 import { RevenueMiniChart } from './dashboard/components/RevenueMiniChart'
 import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
@@ -53,34 +52,29 @@ export function Dashboard() {
     <div className="min-h-screen bg-background text-foreground p-6">
       <div className="max-w-[1600px] mx-auto space-y-8">
         
-        <header className="flex items-center justify-between">
-          <h1 className="text-[32px] font-bold tracking-tight leading-none">
-            Dashboard
-          </h1>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-card rounded-lg px-4 py-2 border border-border">
-              <div className="text-xs text-muted-foreground">Total Clients</div>
-              <div className="text-xl font-bold">
-                <AnimatedNumber value={clientMetrics.totalClients} delay={0.1} />
-              </div>
+        <header className="flex items-center justify-end gap-3">
+          <div className="bg-card rounded-lg px-4 py-2 border border-border">
+            <div className="text-xs text-muted-foreground">Total Clients</div>
+            <div className="text-xl font-bold">
+              <AnimatedNumber value={clientMetrics.totalClients} delay={0.1} />
             </div>
-            <div className="bg-card rounded-lg px-4 py-2 border border-border">
-              <div className="text-xs text-muted-foreground">New This Month</div>
-              <div className="text-xl font-bold text-green-500">
-                +<AnimatedNumber value={clientMetrics.newThisMonth} delay={0.15} />
-              </div>
+          </div>
+          <div className="bg-card rounded-lg px-4 py-2 border border-border">
+            <div className="text-xs text-muted-foreground">New This Month</div>
+            <div className="text-xl font-bold text-green-500">
+              +<AnimatedNumber value={clientMetrics.newThisMonth} delay={0.15} />
             </div>
-            <div className="bg-card rounded-lg px-4 py-2 border border-border">
-              <div className="text-xs text-muted-foreground">Repeat Rate</div>
-              <div className="text-xl font-bold">
-                <AnimatedNumber value={clientMetrics.repeatVisitRate} delay={0.2} suffix="%" />
-              </div>
+          </div>
+          <div className="bg-card rounded-lg px-4 py-2 border border-border">
+            <div className="text-xs text-muted-foreground">Repeat Rate</div>
+            <div className="text-xl font-bold">
+              <AnimatedNumber value={clientMetrics.repeatVisitRate} delay={0.2} suffix="%" />
             </div>
-            <div className="bg-card rounded-lg px-4 py-2 border border-border">
-              <div className="text-xs text-muted-foreground">Avg Days Between</div>
-              <div className="text-xl font-bold">
-                <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
-              </div>
+          </div>
+          <div className="bg-card rounded-lg px-4 py-2 border border-border">
+            <div className="text-xs text-muted-foreground">Avg Days Between</div>
+            <div className="text-xl font-bold">
+              <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
             </div>
           </div>
         </header>
@@ -239,12 +233,9 @@ export function Dashboard() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-semibold mb-1">Booking Overview</h2>
-                <p className="text-sm text-muted-foreground">Next 14 Days</p>
               </div>
               
-              <BookingHeatmap14 />
-              
-              <div className="flex items-center justify-center gap-6 pt-4 border-t border-border text-sm">
+              <div className="flex items-center justify-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Today:</span>
                   <span className="font-bold text-primary">
@@ -278,7 +269,7 @@ export function Dashboard() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-semibold mb-1">Monthly Booking Rate</h2>
-                <p className="text-sm text-muted-foreground">Last 12 Months</p>
+                <p className="text-sm text-muted-foreground">Prev: {bookingRateData[bookingRateData.length - 1].previousYearPercentage}%</p>
               </div>
               
               <div className="space-y-2">
@@ -287,26 +278,11 @@ export function Dashboard() {
                     <div key={month.period} className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">{month.period}</span>
-                        <div className="flex gap-3 items-center">
-                          <span className="text-[10px] text-muted-foreground/60">
-                            Prev: {month.previousYearPercentage}%
-                          </span>
-                          <span className="font-semibold">{month.percentage}%</span>
-                        </div>
+                        <span className="font-semibold">{month.percentage}%</span>
                       </div>
-                      <div className="h-6 bg-secondary/30 rounded overflow-hidden relative flex">
+                      <div className="h-6 bg-secondary/30 rounded overflow-hidden relative">
                         <motion.div
-                          className="h-full bg-muted/60 rounded-l flex items-center justify-end pr-1.5"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${month.previousYearPercentage}%` }}
-                          transition={{ duration: 0.6, delay: 0.7 + index * 0.04, ease: 'easeOut' }}
-                        >
-                          <span className="text-[9px] font-bold text-muted-foreground">
-                            {month.previousYearPercentage}%
-                          </span>
-                        </motion.div>
-                        <motion.div
-                          className="h-full bg-primary flex items-center justify-end pr-1.5 -ml-px"
+                          className="h-full bg-primary flex items-center justify-end pr-1.5"
                           initial={{ width: 0 }}
                           animate={{ width: `${month.percentage}%` }}
                           transition={{ duration: 0.6, delay: 0.7 + index * 0.04, ease: 'easeOut' }}

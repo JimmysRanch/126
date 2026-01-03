@@ -1,11 +1,17 @@
 import { motion } from 'framer-motion'
 import { groomerWeekData } from '../data/dashboardMockData'
+import { useNavigate } from 'react-router-dom'
 
 export function GroomerUtilization() {
+  const navigate = useNavigate()
   const workdayStart = 8
   const workdayEnd = 18
   const workdayHours = workdayEnd - workdayStart
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+  const handleCardClick = () => {
+    navigate('/staff')
+  }
 
   return (
     <div className="space-y-6">
@@ -16,7 +22,8 @@ export function GroomerUtilization() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="bg-secondary/50 rounded-lg p-4 border border-border"
+            onClick={handleCardClick}
+            className="bg-secondary/50 rounded-lg p-4 border border-border cursor-pointer hover:bg-secondary/70 hover:shadow-lg transition-all duration-200"
           >
             <div className="font-semibold text-sm mb-2">{groomer.name}</div>
             <div className="flex items-baseline gap-3 mb-1">
