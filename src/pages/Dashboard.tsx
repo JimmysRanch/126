@@ -255,42 +255,6 @@ export function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="bg-card rounded-xl p-4 border border-border"
-          >
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-base font-semibold mb-0.5">Monthly Booking Rate</h2>
-                <p className="text-xs text-muted-foreground">Prev: {bookingRateData[bookingRateData.length - 1].previousYearPercentage}%</p>
-              </div>
-              
-              <div className="space-y-1.5">
-                {bookingRateData.map((month, index) => {
-                  return (
-                    <div key={month.period} className="space-y-0.5">
-                      <div className="flex justify-between text-[10px]">
-                        <span className="text-muted-foreground">{month.period}</span>
-                        <span className="font-semibold">{month.percentage}%</span>
-                      </div>
-                      <div className="h-5 bg-secondary/30 rounded overflow-hidden relative">
-                        <motion.div
-                          className="h-full bg-primary flex items-center justify-end pr-1.5"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${month.percentage}%` }}
-                          transition={{ duration: 0.6, delay: 0.7 + index * 0.04, ease: 'easeOut' }}
-                        >
-                          <span className="text-[8px] font-bold text-primary-foreground">
-                            {month.percentage}%
-                          </span>
-                        </motion.div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </motion.div>
-        </section>
 
         <section>
           <motion.div
