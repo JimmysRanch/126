@@ -254,9 +254,7 @@ export function Dashboard() {
               <RevenueMiniChart />
             </KpiCard>
 
-              <TopServicesCard />
-            </KpiCard>
-          </div>
+            <TopServicesCard />
           </div>
         </section>
 
