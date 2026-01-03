@@ -255,6 +255,11 @@ export function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+            className="bg-card rounded-xl p-4 border border-border"
+          >
+            <div className="space-y-4">
+              <div>
                 <h2 className="text-base font-semibold mb-0.5">Revenue Snapshot</h2>
                 <p className="text-xs text-muted-foreground">This Week</p>
               </div>
