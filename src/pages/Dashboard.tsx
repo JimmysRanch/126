@@ -381,3 +381,20 @@ export function Dashboard() {
     </div>
   )
 }
+            transition={{ duration: 0.5, delay: 1.0 }}
+            className="bg-card rounded-xl p-6 border border-border"
+          >
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold mb-1">Recent Activity</h2>
+                <p className="text-sm text-muted-foreground">Latest Updates</p>
+              </div>
+              
+              <RecentActivity />
+            </div>
+          </motion.div>
+        </section>
+      </div>
+    </div>
+  )
+}
