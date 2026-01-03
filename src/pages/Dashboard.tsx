@@ -223,32 +223,34 @@ export function Dashboard() {
                     <Clock size={16} className="text-yellow-500 hidden sm:block" weight="duotone" />
                     <span className="text-xs">Late arrivals</span>
                   </div>
+                  <div className="text-base sm:text-lg font-bold">
                     <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
-                    <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
+                  </div>
                 </div>
                 
                 <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                   <div className="flex items-center gap-1.5">
                     <Warning size={14} className="text-orange-500 sm:hidden" weight="duotone" />
+                    <Warning size={16} className="text-orange-500 hidden sm:block" weight="duotone" />
                     <span className="text-xs">No-shows</span>
                   </div>
-                    <span className="text-xs">No-shows</span>
-                  </div>
-                  </div>
+                  <div className="text-base sm:text-lg font-bold">
                     <AnimatedNumber value={issuesData.noShows} delay={0.4} />
                   </div>
+                </div>
+                
                 <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                   <div className="flex items-center gap-1.5">
                     <XCircle size={14} className="text-red-500 sm:hidden" weight="duotone" />
                     <XCircle size={16} className="text-red-500 hidden sm:block" weight="duotone" />
-                    <XCircle size={14} className="text-red-500 sm:hidden" weight="duotone" />
-                    <XCircle size={16} className="text-red-500 hidden sm:block" weight="duotone" />
-                  <div className="text-base sm:text-lg font-bold">
+                    <span className="text-xs">Canceled</span>
                   </div>
                   <div className="text-base sm:text-lg font-bold">
+                    <AnimatedNumber value={issuesData.canceled} delay={0.45} />
+                  </div>
                 </div>
               </div>
-                </div>
+            </KpiCard>
 
           </div>
         </section>
@@ -260,14 +262,11 @@ export function Dashboard() {
             transition={{ duration: 0.5, delay: 1.0 }}
             className="bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            className="bg-card rounded-xl p-3 sm:p-4 border border-border"
-              <div>
-            <div className="space-y-3 sm:space-y-4">h2>
-              <div>
-                <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
-                <p className="text-xs text-muted-foreground">Latest Updates</p>
-              <RecentActivity />
-              
+            <div>
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
+              <p className="text-xs text-muted-foreground">Latest Updates</p>
+            </div>
+            <RecentActivity />
           </motion.div>
         </section>
       </div>
