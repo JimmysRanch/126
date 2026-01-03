@@ -249,10 +249,6 @@ export function Dashboard() {
               </div>
             </KpiCard>
 
-            <TopBreedsCard />
-          </div>
-        </section>
-
         <section>
           <motion.div
             animate={{ opacity: 1, y: 0 }}
