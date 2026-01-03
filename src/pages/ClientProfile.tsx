@@ -9,9 +9,11 @@ import { PhotoGalleryCard } from "@/components/PhotoGalleryCard"
 import { PaymentHistoryDialog } from "@/components/PaymentHistoryDialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function ClientProfile() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const pets = [
     {
@@ -394,67 +396,90 @@ export function ClientProfile() {
   const currentData = petData[selectedPet]
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1400px] mx-auto space-y-6">
-        <header className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
+    <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
+        <header className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+          <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto">
             <Button
               variant="ghost"
               size="icon"
-              className="mt-1 hover:bg-secondary transition-all duration-200"
+              className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
               onClick={() => navigate('/clients')}
             >
               <ArrowLeft size={24} />
             </Button>
-            <div>
-              <h1 className="text-[32px] font-bold tracking-tight leading-none">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight leading-none">
                 George moodys
               </h1>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+              <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-1">
                 CLIENT SINCE DEC 5, 2025
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]">
-              Add Appointment
-            </Button>
-            <Button
-              variant="secondary"
-              className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-            >
-              <Plus size={18} className="mr-2" />
-              Add Pet
-            </Button>
-            <PaymentHistoryDialog clientName="George moodys" payments={paymentHistory} />
-            <Button
-              variant="secondary"
-              className="font-semibold transition-all duration-200 hover:scale-[1.02]"
-            >
-              Contact
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-secondary transition-all duration-200"
-            >
-              <PencilSimple size={20} />
-            </Button>
-          </div>
+          
+          {isMobile ? (
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 text-sm">
+                Add Appt
+              </Button>
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 text-sm"
+              >
+                <Plus size={16} className="mr-1" />
+                Add Pet
+              </Button>
+              <PaymentHistoryDialog clientName="George moodys" payments={paymentHistory} />
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 text-sm"
+              >
+                Contact
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]">
+                Add Appointment
+              </Button>
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+              >
+                <Plus size={18} className="mr-2" />
+                Add Pet
+              </Button>
+              <PaymentHistoryDialog clientName="George moodys" payments={paymentHistory} />
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+              >
+                Contact
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-secondary transition-all duration-200"
+              >
+                <PencilSimple size={20} />
+              </Button>
+            </div>
+          )}
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
           <StatWidget
             stats={[
-              { label: "LIFETIME SPEND", value: "$8,520" },
-              { label: "TOTAL APPTS", value: "24" }
+              { label: "LIFETIME", value: "$8,520" },
+              { label: "APPTS", value: "24" }
             ]}
             onClick={() => console.log('Lifetime Spend clicked')}
           />
 
           <StatWidget
             stats={[
-              { label: "AVG PER VISIT", value: "$355" },
+              { label: "AVG VISIT", value: "$355" },
               { label: "AVG TIP", value: "$45" }
             ]}
             onClick={() => console.log('Average per visit clicked')}
@@ -462,8 +487,8 @@ export function ClientProfile() {
 
           <StatWidget
             stats={[
-              { label: "AVG INTERVAL", value: "29" },
-              { label: "SINCE LAST VISIT", value: "12" }
+              { label: "INTERVAL", value: "29" },
+              { label: "LAST VISIT", value: "12" }
             ]}
             onClick={() => console.log('Avg Interval clicked')}
           />
@@ -485,7 +510,7 @@ export function ClientProfile() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pet-card-grid mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 pet-card-grid mb-6 sm:mb-8">
           {pets.map((pet, index) => (
             <PetCard 
               key={pet.id} 
@@ -500,13 +525,17 @@ export function ClientProfile() {
           ))}
         </div>
 
-        <div className="pt-4 border-t border-border">
+        <div className="pt-3 sm:pt-4 border-t border-border">
           <Tabs value={selectedPet} onValueChange={setSelectedPet} className="w-full relative z-0">
           <div className="flex items-center justify-between mb-3">
-            <TabsList className="bg-secondary/50">
+            <TabsList className="bg-secondary/50 w-full sm:w-auto overflow-x-auto">
               {pets.map((pet) => (
-                <TabsTrigger key={pet.id} value={pet.id} className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <PawPrint size={14} weight="fill" className="mr-1.5" />
+                <TabsTrigger 
+                  key={pet.id} 
+                  value={pet.id} 
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm"
+                >
+                  <PawPrint size={14} weight="fill" className="mr-1 sm:mr-1.5" />
                   {pet.name}
                 </TabsTrigger>
               ))}
@@ -514,8 +543,8 @@ export function ClientProfile() {
           </div>
 
           {pets.map((pet) => (
-            <TabsContent key={pet.id} value={pet.id} className="space-y-4 mt-0">
-              <div className="grid grid-cols-2 gap-4">
+            <TabsContent key={pet.id} value={pet.id} className="space-y-3 sm:space-y-4 mt-0">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 <ServiceHistoryCard petName={pet.name} services={petData[pet.id].serviceHistory} />
                 
                 <PhotoGalleryCard petName={pet.name} petId={pet.id} photos={petData[pet.id].groomingPhotos} />

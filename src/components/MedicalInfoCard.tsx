@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface MedicalRecord {
   type: string
@@ -26,6 +27,8 @@ export function MedicalInfoCard({
   medications,
   notes
 }: MedicalInfoCardProps) {
+  const isMobile = useIsMobile()
+  
   return (
     <motion.div className="relative">
       <motion.div
@@ -48,21 +51,23 @@ export function MedicalInfoCard({
       />
       <Card className="p-3 border-border bg-card relative z-10">
         <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-bold flex items-center gap-2">
-          <FirstAid size={18} className="text-primary" weight="fill" />
-          Medical Info - 
-          <span className="flex items-center gap-1.5">
-            <PawPrint size={16} weight="fill" className="text-primary" />
-            {petName}
+        <h3 className={`${isMobile ? "text-base" : "text-lg"} font-bold flex items-center gap-1.5 sm:gap-2 min-w-0`}>
+          <FirstAid size={isMobile ? 16 : 18} className="text-primary shrink-0" weight="fill" />
+          <span className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+            <span className={isMobile ? "hidden" : "inline"}>Medical Info - </span>
+            <PawPrint size={isMobile ? 14 : 16} weight="fill" className="text-primary shrink-0" />
+            <span className="truncate">{petName}</span>
           </span>
         </h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 hover:bg-secondary transition-all duration-200"
-        >
-          <PencilSimple size={14} />
-        </Button>
+        {!isMobile && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 hover:bg-secondary transition-all duration-200 shrink-0"
+          >
+            <PencilSimple size={14} />
+          </Button>
+        )}
       </div>
 
       <div className="space-y-3">
@@ -83,17 +88,17 @@ export function MedicalInfoCard({
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   className="bg-secondary/30 rounded-md p-2 border border-border"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium">{vax.name}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{vax.name}</p>
                       <p className="text-xs text-muted-foreground">Last: {vax.date}</p>
                     </div>
                     {vax.nextDue && (
                       <Badge
                         variant="secondary"
-                        className="text-xs bg-primary/20 text-primary"
+                        className="text-xs bg-primary/20 text-primary shrink-0"
                       >
-                        Due: {vax.nextDue}
+                        {isMobile ? vax.nextDue : `Due: ${vax.nextDue}`}
                       </Badge>
                     )}
                   </div>
@@ -106,7 +111,7 @@ export function MedicalInfoCard({
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5 flex items-center gap-1">
             <Warning size={12} className="text-destructive" />
-            Allergies & Sensitivities
+            Allergies
           </p>
           {allergies.length === 0 ? (
             <p className="text-sm text-muted-foreground">None recorded</p>

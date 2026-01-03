@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { motion } from "framer-motion"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface Service {
   name: string
@@ -23,6 +24,7 @@ interface ServiceHistoryCardProps {
 
 export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProps) {
   const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const isMobile = useIsMobile()
 
   return (
     <>
@@ -46,12 +48,12 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
         />
         <Card className="p-3 border-border bg-card relative z-10">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold flex items-center gap-2">
-              <Scissors size={18} className="text-primary" weight="fill" />
-              Service History - 
-              <span className="flex items-center gap-1.5">
-                <PawPrint size={16} weight="fill" className="text-primary" />
-                {petName}
+            <h3 className={`${isMobile ? "text-base" : "text-lg"} font-bold flex items-center gap-1.5 sm:gap-2`}>
+              <Scissors size={isMobile ? 16 : 18} className="text-primary shrink-0" weight="fill" />
+              <span className="flex items-center gap-1 sm:gap-1.5">
+                <span className={isMobile ? "hidden" : "inline"}>Service History - </span>
+                <PawPrint size={isMobile ? 14 : 16} weight="fill" className="text-primary shrink-0" />
+                <span className="truncate">{petName}</span>
               </span>
             </h3>
           </div>
@@ -70,28 +72,30 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
                   className="bg-secondary/30 rounded-md p-2.5 border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer hover:bg-secondary/50"
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm">{service.name}</p>
-                      <div className="flex items-center gap-3 mt-1">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{service.name}</p>
+                      <div className={`flex ${isMobile ? "flex-col gap-0.5" : "items-center gap-3"} mt-1`}>
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Calendar size={12} />
+                          <Calendar size={12} className="shrink-0" />
                           {service.date}
                         </p>
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <User size={12} />
+                          <User size={12} className="shrink-0" />
                           {service.groomer}
                         </p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock size={12} />
-                          {service.startTime || service.duration}
-                        </p>
+                        {!isMobile && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock size={12} />
+                            {service.startTime || service.duration}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <p className="font-bold text-primary">{service.cost}</p>
+                    <p className="font-bold text-primary shrink-0">{service.cost}</p>
                   </div>
 
                   <div className="flex flex-wrap gap-1 mb-1">
-                    {service.services.map((svc) => (
+                    {service.services.slice(0, isMobile ? 3 : undefined).map((svc) => (
                       <Badge
                         key={svc}
                         variant="secondary"
@@ -100,10 +104,18 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
                         {svc}
                       </Badge>
                     ))}
+                    {isMobile && service.services.length > 3 && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 bg-secondary/70"
+                      >
+                        +{service.services.length - 3}
+                      </Badge>
+                    )}
                   </div>
 
-                  {service.notes && (
-                    <p className="text-xs text-muted-foreground italic mt-1.5 border-t border-border/50 pt-1.5">
+                  {service.notes && !isMobile && (
+                    <p className="text-xs text-muted-foreground italic mt-1.5 border-t border-border/50 pt-1.5 line-clamp-2">
                       {service.notes}
                     </p>
                   )}
@@ -119,40 +131,40 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
           {selectedService && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                <DialogTitle className={`${isMobile ? "text-lg" : "text-xl"} font-bold flex items-center gap-2`}>
                   <Scissors size={20} className="text-primary" weight="fill" />
                   Appointment Details
                 </DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold mb-2">{selectedService.name}</h3>
+                    <h3 className={`${isMobile ? "text-xl" : "text-2xl"} font-bold mb-2`}>{selectedService.name}</h3>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar size={16} className="text-primary" />
+                        <Calendar size={16} className="text-primary shrink-0" />
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Date</p>
                           <p className="font-semibold">{selectedService.date}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Clock size={16} className="text-primary" />
+                        <Clock size={16} className="text-primary shrink-0" />
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Start Time</p>
                           <p className="font-semibold">{selectedService.startTime || selectedService.duration}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <User size={16} className="text-primary" />
+                        <User size={16} className="text-primary shrink-0" />
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Groomer</p>
                           <p className="font-semibold">{selectedService.groomer}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <PawPrint size={16} className="text-primary" weight="fill" />
+                        <PawPrint size={16} className="text-primary shrink-0" weight="fill" />
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wide">Pet</p>
                           <p className="font-semibold">{petName}</p>
@@ -160,9 +172,9 @@ export function ServiceHistoryCard({ petName, services }: ServiceHistoryCardProp
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className={`text-${isMobile ? "left" : "right"} w-full sm:w-auto`}>
                     <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Total Cost</p>
-                    <p className="text-3xl font-bold text-primary">{selectedService.cost}</p>
+                    <p className={`${isMobile ? "text-2xl" : "text-3xl"} font-bold text-primary`}>{selectedService.cost}</p>
                   </div>
                 </div>
 

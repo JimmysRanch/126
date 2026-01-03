@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { useKV } from "@github/spark/hooks"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface Photo {
   id: string
@@ -36,6 +37,7 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
   const [groomer, setGroomer] = useState("")
   const beforeInputRef = useRef<HTMLInputElement>(null)
   const afterInputRef = useRef<HTMLInputElement>(null)
+  const isMobile = useIsMobile()
 
   const handleFileChange = (file: File | null, type: 'before' | 'after') => {
     if (!file) return
@@ -223,14 +225,14 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
       }}>
         <DialogContent className="max-w-2xl bg-card border-border">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+            <DialogTitle className={`${isMobile ? "text-base" : "text-lg"} font-bold flex items-center gap-2`}>
               <Upload size={20} className="text-primary" weight="fill" />
               Upload Before & After Photos
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="before-photo" className="text-sm font-semibold">Before Photo</Label>
                 <div 
@@ -258,7 +260,7 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                     </>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                      <Upload size={32} weight="fill" className="mb-2" />
+                      <Upload size={isMobile ? 24 : 32} weight="fill" className="mb-2" />
                       <p className="text-xs font-medium">Click to upload</p>
                     </div>
                   )}
@@ -300,7 +302,7 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                     </>
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                      <Upload size={32} weight="fill" className="mb-2" />
+                      <Upload size={isMobile ? 24 : 32} weight="fill" className="mb-2" />
                       <p className="text-xs font-medium">Click to upload</p>
                     </div>
                   )}
@@ -339,15 +341,16 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="secondary"
               onClick={() => setUploadDialogOpen(false)}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
               onClick={handleUpload}
             >
               <Upload size={16} className="mr-2" />
@@ -368,29 +371,29 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <DialogHeader className="p-4 border-b border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <DialogTitle className="text-lg font-bold">{selectedPhoto.service}</DialogTitle>
-                      <p className="text-sm text-muted-foreground mt-0.5">
+                <DialogHeader className="p-3 sm:p-4 border-b border-border">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <DialogTitle className={`${isMobile ? "text-base" : "text-lg"} font-bold truncate`}>{selectedPhoto.service}</DialogTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                         {selectedPhoto.date} • {selectedPhoto.groomer}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <Button
                         size="sm"
                         variant={showComparison ? "default" : "secondary"}
                         onClick={() => setShowComparison(!showComparison)}
-                        className="font-semibold text-xs"
+                        className="font-semibold text-xs flex-1 sm:flex-none"
                       >
                         <ArrowsLeftRight size={14} className="mr-1" />
-                        {showComparison ? "Split View" : "Compare"}
+                        {showComparison ? "Split" : "Compare"}
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={() => handleDeletePhoto(selectedPhoto.id)}
-                        className="font-semibold text-xs"
+                        className="font-semibold text-xs flex-1 sm:flex-none"
                       >
                         <Trash size={14} className="mr-1" />
                         Delete
@@ -399,7 +402,7 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                   </div>
                 </DialogHeader>
 
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                   {showComparison ? (
                     <div className="relative aspect-video rounded-md overflow-hidden bg-secondary/30">
                       <div className="grid grid-cols-2 h-full">
@@ -409,8 +412,8 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                             alt="Before"
                             className="w-full h-full object-cover"
                           />
-                          <div className="absolute top-3 left-3">
-                            <Badge className="bg-black/70 text-white border-white/20">Before</Badge>
+                          <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                            <Badge className="bg-black/70 text-white border-white/20 text-xs">Before</Badge>
                           </div>
                         </div>
                         <div className="relative">
@@ -419,25 +422,25 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                             alt="After"
                             className="w-full h-full object-cover"
                           />
-                          <div className="absolute top-3 right-3">
-                            <Badge className="bg-primary text-primary-foreground">After</Badge>
+                          <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+                            <Badge className="bg-primary text-primary-foreground text-xs">After</Badge>
                           </div>
                         </div>
                       </div>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border-2 border-primary rounded-full p-2 shadow-lg">
-                        <ArrowsLeftRight size={20} className="text-primary" weight="bold" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border-2 border-primary rounded-full p-1.5 sm:p-2 shadow-lg">
+                        <ArrowsLeftRight size={isMobile ? 16 : 20} className="text-primary" weight="bold" />
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <div className="relative aspect-video rounded-md overflow-hidden bg-secondary/30">
                         <img
                           src={selectedPhoto.beforeUrl}
                           alt="Before"
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-black/70 text-white border-white/20">Before</Badge>
+                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                          <Badge className="bg-black/70 text-white border-white/20 text-xs">Before</Badge>
                         </div>
                       </div>
                       <div className="relative aspect-video rounded-md overflow-hidden bg-secondary/30">
@@ -446,8 +449,8 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                           alt="After"
                           className="w-full h-full object-cover"
                         />
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-primary text-primary-foreground">After</Badge>
+                        <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+                          <Badge className="bg-primary text-primary-foreground text-xs">After</Badge>
                         </div>
                       </div>
                     </div>
