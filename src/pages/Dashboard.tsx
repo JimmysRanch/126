@@ -2,7 +2,6 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { KpiCard } from './dashboard/components/KpiCard'
 import { BookedGauge } from './dashboard/components/BookedGauge'
-import { RevenueMiniChart } from './dashboard/components/RevenueMiniChart'
 import { TopBreedsCard } from './dashboard/components/TopBreedsCard'
 import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
@@ -248,10 +247,6 @@ export function Dashboard() {
                   </div>
                 </div>
               </div>
-            </KpiCard>
-
-            <KpiCard title="Revenue Snapshot" delay={0.5} className="md:col-span-2 lg:col-span-2">
-              <RevenueMiniChart />
             </KpiCard>
 
             <TopBreedsCard />
