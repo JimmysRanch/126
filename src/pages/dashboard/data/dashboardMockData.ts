@@ -464,3 +464,26 @@ export const topServicesData = [
     revenue: 960,
   },
 ]
+
+export const topBreedsData = [
+  {
+    name: 'Golden Retriever',
+    count: 28,
+    avgVisitValue: 85,
+  },
+  {
+    name: 'Labrador',
+    count: 24,
+    avgVisitValue: 75,
+  },
+  {
+    name: 'Poodle',
+    count: 22,
+    avgVisitValue: 95,
+  },
+  {
+    name: 'German Shepherd',
+    count: 18,
+    avgVisitValue: 80,
+  },
+]
