@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { KpiCard } from './dashboard/components/KpiCard'
 import { BookedGauge } from './dashboard/components/BookedGauge'
 import { RevenueMiniChart } from './dashboard/components/RevenueMiniChart'
+import { TopServicesCard } from './dashboard/components/TopServicesCard'
 import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { 
@@ -251,6 +252,10 @@ export function Dashboard() {
 
             <KpiCard title="Revenue Snapshot" delay={0.5} className="lg:col-span-2">
               <RevenueMiniChart />
+            </KpiCard>
+
+            <KpiCard title="Top Services" delay={0.55} className="lg:col-span-2">
+              <TopServicesCard />
             </KpiCard>
           </div>
         </section>

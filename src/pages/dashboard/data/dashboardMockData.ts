@@ -437,3 +437,30 @@ export const bookingSummary = {
   week: 78,
   month: 73,
 }
+
+export const topServicesData = [
+  {
+    name: 'Full Groom',
+    icon: 'scissors',
+    count: 24,
+    revenue: 2880,
+  },
+  {
+    name: 'Bath & Brush',
+    icon: 'sparkle',
+    count: 18,
+    revenue: 1440,
+  },
+  {
+    name: 'Nail Trim',
+    icon: 'eyedropper',
+    count: 32,
+    revenue: 640,
+  },
+  {
+    name: 'Deluxe Spa',
+    icon: 'sparkle',
+    count: 8,
+    revenue: 960,
+  },
+]
