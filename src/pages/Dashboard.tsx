@@ -81,9 +81,9 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-card rounded-lg px-3 py-1.5 border border-border"
+            className="bg-card rounded-lg px-3 py-1.5 border border-border h-[52px] flex flex-col justify-center"
           >
-            <div className="text-[10px] text-muted-foreground mb-1">Booking Overview</div>
+            <div className="text-[10px] text-muted-foreground mb-1">Booked %</div>
             <div className="flex items-center gap-3 text-xs">
               <div className="flex items-center gap-1">
                 <span className="text-muted-foreground">Today:</span>
