@@ -248,11 +248,7 @@ export function Dashboard() {
                 </div>
               </div>
             </KpiCard>
-          </div>
-        </section>
 
-        <section>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
             <KpiCard title="Revenue Snapshot" delay={0.5} className="lg:col-span-2">
               <RevenueMiniChart />
             </KpiCard>
