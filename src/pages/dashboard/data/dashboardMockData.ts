@@ -61,14 +61,18 @@ export const bookingHeatmapData = Array.from({ length: 14 }, (_, i) => {
 })
 
 export const bookingRateData = [
-  { period: 'Week 1', percentage: 72 },
-  { period: 'Week 2', percentage: 85 },
-  { period: 'Week 3', percentage: 78 },
-  { period: 'Week 4', percentage: 91 },
-  { period: 'Week 5', percentage: 68 },
-  { period: 'Week 6', percentage: 82 },
-  { period: 'Week 7', percentage: 88 },
-  { period: 'Week 8', percentage: 76 },
+  { period: 'Jan', percentage: 72, previousYearPercentage: 68 },
+  { period: 'Feb', percentage: 85, previousYearPercentage: 78 },
+  { period: 'Mar', percentage: 78, previousYearPercentage: 82 },
+  { period: 'Apr', percentage: 91, previousYearPercentage: 85 },
+  { period: 'May', percentage: 68, previousYearPercentage: 72 },
+  { period: 'Jun', percentage: 82, previousYearPercentage: 79 },
+  { period: 'Jul', percentage: 88, previousYearPercentage: 83 },
+  { period: 'Aug', percentage: 76, previousYearPercentage: 74 },
+  { period: 'Sep', percentage: 84, previousYearPercentage: 80 },
+  { period: 'Oct', percentage: 79, previousYearPercentage: 76 },
+  { period: 'Nov', percentage: 92, previousYearPercentage: 88 },
+  { period: 'Dec', percentage: 87, previousYearPercentage: 85 },
 ]
 
 export const groomerData = [
@@ -115,6 +119,242 @@ export const groomerData = [
       { start: 15, duration: 1, client: 'Tucker (Spaniel)' },
       { start: 16.5, duration: 1.5, client: 'Bailey (Retriever)' },
     ],
+  },
+]
+
+export const groomerWeekData = [
+  {
+    id: 1,
+    name: 'Sarah Johnson',
+    weekUtilization: 87,
+    weekAppointments: 42,
+    weekSchedule: [
+      { 
+        day: 'Monday',
+        utilization: 95,
+        appointments: [
+          { start: 8, duration: 1.5 },
+          { start: 9.5, duration: 1 },
+          { start: 11, duration: 2 },
+          { start: 13, duration: 1 },
+          { start: 14.5, duration: 1.5 },
+          { start: 16, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Tuesday',
+        utilization: 90,
+        appointments: [
+          { start: 8, duration: 1 },
+          { start: 9.5, duration: 1.5 },
+          { start: 11.5, duration: 1.5 },
+          { start: 13.5, duration: 1 },
+          { start: 15, duration: 2 },
+        ]
+      },
+      { 
+        day: 'Wednesday',
+        utilization: 85,
+        appointments: [
+          { start: 8.5, duration: 1.5 },
+          { start: 10.5, duration: 1 },
+          { start: 12, duration: 1.5 },
+          { start: 14, duration: 1.5 },
+          { start: 16, duration: 1 },
+        ]
+      },
+      { 
+        day: 'Thursday',
+        utilization: 88,
+        appointments: [
+          { start: 8, duration: 1 },
+          { start: 9.5, duration: 2 },
+          { start: 12, duration: 1 },
+          { start: 13.5, duration: 1.5 },
+          { start: 15.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Friday',
+        utilization: 92,
+        appointments: [
+          { start: 8, duration: 1.5 },
+          { start: 10, duration: 1 },
+          { start: 11.5, duration: 1.5 },
+          { start: 13.5, duration: 1 },
+          { start: 15, duration: 2 },
+        ]
+      },
+      { 
+        day: 'Saturday',
+        utilization: 80,
+        appointments: [
+          { start: 9, duration: 1.5 },
+          { start: 11, duration: 1 },
+          { start: 13, duration: 1.5 },
+          { start: 15, duration: 1 },
+        ]
+      },
+      { 
+        day: 'Sunday',
+        utilization: 0,
+        appointments: []
+      },
+    ]
+  },
+  {
+    id: 2,
+    name: 'Mike Chen',
+    weekUtilization: 72,
+    weekAppointments: 35,
+    weekSchedule: [
+      { 
+        day: 'Monday',
+        utilization: 78,
+        appointments: [
+          { start: 8.5, duration: 1 },
+          { start: 10, duration: 1.5 },
+          { start: 12, duration: 1 },
+          { start: 14, duration: 2 },
+          { start: 16, duration: 1 },
+        ]
+      },
+      { 
+        day: 'Tuesday',
+        utilization: 75,
+        appointments: [
+          { start: 8, duration: 1.5 },
+          { start: 10, duration: 1 },
+          { start: 12, duration: 1.5 },
+          { start: 14, duration: 1 },
+          { start: 15.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Wednesday',
+        utilization: 70,
+        appointments: [
+          { start: 9, duration: 1 },
+          { start: 10.5, duration: 1.5 },
+          { start: 13, duration: 1 },
+          { start: 15, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Thursday',
+        utilization: 68,
+        appointments: [
+          { start: 8.5, duration: 1.5 },
+          { start: 10.5, duration: 1 },
+          { start: 12.5, duration: 1.5 },
+          { start: 15, duration: 1 },
+        ]
+      },
+      { 
+        day: 'Friday',
+        utilization: 80,
+        appointments: [
+          { start: 8, duration: 1 },
+          { start: 9.5, duration: 1.5 },
+          { start: 11.5, duration: 1 },
+          { start: 13, duration: 1.5 },
+          { start: 15, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Saturday',
+        utilization: 65,
+        appointments: [
+          { start: 9, duration: 1.5 },
+          { start: 11, duration: 1 },
+          { start: 13.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Sunday',
+        utilization: 0,
+        appointments: []
+      },
+    ]
+  },
+  {
+    id: 3,
+    name: 'Emily Rodriguez',
+    weekUtilization: 81,
+    weekAppointments: 38,
+    weekSchedule: [
+      { 
+        day: 'Monday',
+        utilization: 88,
+        appointments: [
+          { start: 8, duration: 1 },
+          { start: 9.5, duration: 1.5 },
+          { start: 11.5, duration: 1 },
+          { start: 13, duration: 1.5 },
+          { start: 15, duration: 1 },
+          { start: 16.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Tuesday',
+        utilization: 82,
+        appointments: [
+          { start: 8.5, duration: 1.5 },
+          { start: 10.5, duration: 1 },
+          { start: 12, duration: 1.5 },
+          { start: 14, duration: 1 },
+          { start: 15.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Wednesday',
+        utilization: 78,
+        appointments: [
+          { start: 8, duration: 1.5 },
+          { start: 10, duration: 1 },
+          { start: 11.5, duration: 1.5 },
+          { start: 13.5, duration: 1 },
+          { start: 15, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Thursday',
+        utilization: 85,
+        appointments: [
+          { start: 8.5, duration: 1 },
+          { start: 10, duration: 1.5 },
+          { start: 12, duration: 1 },
+          { start: 13.5, duration: 1.5 },
+          { start: 15.5, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Friday',
+        utilization: 90,
+        appointments: [
+          { start: 8, duration: 1.5 },
+          { start: 9.5, duration: 1 },
+          { start: 11, duration: 1.5 },
+          { start: 13, duration: 1 },
+          { start: 14.5, duration: 2 },
+        ]
+      },
+      { 
+        day: 'Saturday',
+        utilization: 75,
+        appointments: [
+          { start: 9, duration: 1 },
+          { start: 10.5, duration: 1.5 },
+          { start: 13, duration: 1 },
+          { start: 15, duration: 1.5 },
+        ]
+      },
+      { 
+        day: 'Sunday',
+        utilization: 0,
+        appointments: []
+      },
+    ]
   },
 ]
 
