@@ -181,10 +181,6 @@ export function Dashboard() {
               />
             </KpiCard>
 
-            <KpiCard title="Revenue Snapshot" delay={0.35} className="md:col-span-2 xl:col-span-2 row-span-1">
-              <RevenueMiniChart />
-            </KpiCard>
-
             <KpiCard title="Expected Revenue" delay={0.2} className="xl:col-span-1">
               <div className="space-y-2">
                 <div>
@@ -251,6 +247,14 @@ export function Dashboard() {
                   </div>
                 </div>
               </div>
+            </KpiCard>
+          </div>
+        </section>
+
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <KpiCard title="Revenue Snapshot" delay={0.5} className="md:col-span-2">
+              <RevenueMiniChart />
             </KpiCard>
           </div>
         </section>

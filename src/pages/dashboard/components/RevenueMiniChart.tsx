@@ -8,7 +8,7 @@ export function RevenueMiniChart() {
   const isPositive = thisWeek.percentChange >= 0
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex items-start justify-between">
         <div>
           <div className="text-2xl font-bold">${(thisWeek.total / 1000).toFixed(1)}k</div>
@@ -20,28 +20,23 @@ export function RevenueMiniChart() {
         </div>
       </div>
       
-      <div className="space-y-2">
+      <div className="grid grid-cols-7 gap-1.5">
         {thisWeek.daily.map((day, index) => {
-          const widthPercent = (day.amount / maxAmount) * 100
+          const heightPercent = (day.amount / maxAmount) * 100
           
           return (
-            <div key={day.day} className="space-y-0.5">
-              <div className="flex justify-between text-[10px]">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground font-medium w-7">{day.day}</span>
-                  <span className="text-muted-foreground/60 text-[9px]">{day.date}</span>
-                </div>
-                <span className="font-semibold">${day.amount.toLocaleString()}</span>
-              </div>
-              <div className="h-5 bg-secondary/30 rounded overflow-hidden relative">
+            <div key={day.day} className="flex flex-col items-center gap-1">
+              <div className="text-[10px] text-muted-foreground font-medium">{day.day}</div>
+              <div className="text-[9px] text-muted-foreground/60">{day.date}</div>
+              <div className="w-full h-16 bg-secondary/30 rounded overflow-hidden relative flex flex-col justify-end">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-primary to-primary/80 rounded flex items-center justify-end pr-1.5"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${widthPercent}%` }}
+                  className="w-full bg-gradient-to-t from-primary to-primary/80 rounded flex items-end justify-center pb-0.5"
+                  initial={{ height: 0 }}
+                  animate={{ height: `${heightPercent}%` }}
                   transition={{ duration: 0.6, delay: index * 0.05, ease: 'easeOut' }}
                 >
                   <span className="text-[8px] font-bold text-primary-foreground">
-                    ${day.amount}
+                    ${(day.amount / 1000).toFixed(1)}k
                   </span>
                 </motion.div>
               </div>
@@ -50,7 +45,7 @@ export function RevenueMiniChart() {
         })}
       </div>
       
-      <div className="text-[10px] text-muted-foreground pt-1.5 border-t border-border">
+      <div className="text-[10px] text-muted-foreground text-center">
         vs Last Week
       </div>
     </div>
