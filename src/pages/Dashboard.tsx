@@ -256,7 +256,6 @@ export function Dashboard() {
 
             <TopServicesCard />
           </div>
-        </section>
 
         <section>
           <motion.div
