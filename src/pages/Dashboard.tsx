@@ -181,6 +181,10 @@ export function Dashboard() {
               />
             </KpiCard>
 
+            <KpiCard title="Revenue Snapshot" delay={0.35} className="md:col-span-2 xl:col-span-2 row-span-1">
+              <RevenueMiniChart />
+            </KpiCard>
+
             <KpiCard title="Expected Revenue" delay={0.2} className="xl:col-span-1">
               <div className="space-y-2">
                 <div>
@@ -249,24 +253,6 @@ export function Dashboard() {
               </div>
             </KpiCard>
           </div>
-        </section>
-
-        <section>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="bg-card rounded-xl p-4 border border-border"
-          >
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-base font-semibold mb-0.5">Revenue Snapshot</h2>
-                <p className="text-xs text-muted-foreground">This Week</p>
-              </div>
-              
-              <RevenueMiniChart />
-            </div>
-          </motion.div>
         </section>
 
         <section>
