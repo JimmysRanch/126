@@ -77,6 +77,34 @@ export function Dashboard() {
               <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
             </div>
           </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-card rounded-lg px-3 py-1.5 border border-border"
+          >
+            <div className="text-[10px] text-muted-foreground mb-1">Booking Overview</div>
+            <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground">Today:</span>
+                <span className="font-bold text-primary">
+                  <AnimatedNumber value={bookingSummary.today} delay={0.7} suffix="%" />
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground">Week:</span>
+                <span className="font-bold text-primary">
+                  <AnimatedNumber value={bookingSummary.week} delay={0.75} suffix="%" />
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground">Month:</span>
+                <span className="font-bold text-primary">
+                  <AnimatedNumber value={bookingSummary.month} delay={0.8} suffix="%" />
+                </span>
+              </div>
+            </div>
+          </motion.div>
         </header>
 
         <section>
@@ -223,43 +251,7 @@ export function Dashboard() {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="xl:col-span-2 bg-card rounded-xl p-4 border border-border"
-          >
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-base font-semibold mb-1">Booking Overview</h2>
-              </div>
-              
-              <div className="flex items-center justify-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Today:</span>
-                  <span className="font-bold text-primary">
-                    <AnimatedNumber value={bookingSummary.today} delay={0.7} suffix="%" />
-                  </span>
-                </div>
-                <div className="w-px h-4 bg-border" />
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Week:</span>
-                  <span className="font-bold text-primary">
-                    <AnimatedNumber value={bookingSummary.week} delay={0.75} suffix="%" />
-                  </span>
-                </div>
-                <div className="w-px h-4 bg-border" />
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Month:</span>
-                  <span className="font-bold text-primary">
-                    <AnimatedNumber value={bookingSummary.month} delay={0.8} suffix="%" />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
+        <section>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
