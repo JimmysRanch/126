@@ -506,39 +506,56 @@ export function Settings() {
                       (addOns || []).map((addOn) => (
                         <div
                           key={addOn.id}
-                          className="flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
+                          className="p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
                         >
-                          <div className="flex-1">
-                            <span className="font-medium">{addOn.name}</span>
-                            {addOn.hasSizePricing && addOn.pricing ? (
-                              <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
-                                <span>Small: ${addOn.pricing.small}</span>
-                                <span>Medium: ${addOn.pricing.medium}</span>
-                                <span>Large: ${addOn.pricing.large}</span>
-                                <span>Giant: ${addOn.pricing.giant}</span>
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-base">{addOn.name}</h3>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-foreground hover:bg-primary/10"
+                                onClick={() => openAddOnDialog(addOn)}
+                              >
+                                <PencilSimple size={18} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => handleDeleteAddOn(addOn.id)}
+                              >
+                                <Trash size={18} />
+                              </Button>
+                            </div>
+                          </div>
+                          {addOn.hasSizePricing && addOn.pricing ? (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                              <div className="bg-background/50 p-3 rounded-md">
+                                <div className="text-xs text-muted-foreground mb-1">Small (1-25 lbs)</div>
+                                <div className="text-lg font-semibold">${addOn.pricing.small}</div>
                               </div>
-                            ) : (
-                              <span className="ml-3 text-primary font-semibold">${addOn.price}</span>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-foreground hover:bg-primary/10"
-                              onClick={() => openAddOnDialog(addOn)}
-                            >
-                              <PencilSimple size={18} />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => handleDeleteAddOn(addOn.id)}
-                            >
-                              <Trash size={18} />
-                            </Button>
-                          </div>
+                              <div className="bg-background/50 p-3 rounded-md">
+                                <div className="text-xs text-muted-foreground mb-1">Medium (26-50 lbs)</div>
+                                <div className="text-lg font-semibold">${addOn.pricing.medium}</div>
+                              </div>
+                              <div className="bg-background/50 p-3 rounded-md">
+                                <div className="text-xs text-muted-foreground mb-1">Large (51-80 lbs)</div>
+                                <div className="text-lg font-semibold">${addOn.pricing.large}</div>
+                              </div>
+                              <div className="bg-background/50 p-3 rounded-md">
+                                <div className="text-xs text-muted-foreground mb-1">Giant (81+ lbs)</div>
+                                <div className="text-lg font-semibold">${addOn.pricing.giant}</div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-background/50 p-3 rounded-md inline-block">
+                              <div className="text-xs text-muted-foreground mb-1">Price</div>
+                              <div className="text-lg font-semibold">${addOn.price}</div>
+                            </div>
+                          )}
                         </div>
                       ))
                     )}
