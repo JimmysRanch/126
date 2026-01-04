@@ -66,6 +66,8 @@ export function Settings() {
   const [activeTab, setActiveTab] = useState("staff")
   const [staffPositions, setStaffPositions] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
+  const [editingPosition, setEditingPosition] = useState<string | null>(null)
+  const [editPositionValue, setEditPositionValue] = useState("")
   
   const [mainServices, setMainServices] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
   const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
@@ -113,6 +115,37 @@ export function Settings() {
   const handleDeletePosition = (position: string) => {
     setStaffPositions((current) => (current || []).filter(p => p !== position))
     toast.success("Position removed successfully")
+  }
+
+  const handleEditPosition = (position: string) => {
+    setEditingPosition(position)
+    setEditPositionValue(position)
+  }
+
+  const handleSaveEditPosition = () => {
+    if (!editPositionValue.trim()) {
+      toast.error("Position name cannot be empty")
+      return
+    }
+
+    if (editingPosition && editPositionValue.trim() !== editingPosition) {
+      if ((staffPositions || []).includes(editPositionValue.trim())) {
+        toast.error("This position already exists")
+        return
+      }
+    }
+
+    setStaffPositions((current) => 
+      (current || []).map(p => p === editingPosition ? editPositionValue.trim() : p)
+    )
+    setEditingPosition(null)
+    setEditPositionValue("")
+    toast.success("Position updated successfully")
+  }
+
+  const handleCancelEditPosition = () => {
+    setEditingPosition(null)
+    setEditPositionValue("")
   }
   
   const openMainServiceDialog = (service?: MainService) => {
@@ -373,15 +406,61 @@ export function Settings() {
                           key={position}
                           className="flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
                         >
-                          <span className="font-medium">{position}</span>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                            onClick={() => handleDeletePosition(position)}
-                          >
-                            <Trash size={18} />
-                          </Button>
+                          {editingPosition === position ? (
+                            <>
+                              <Input
+                                value={editPositionValue}
+                                onChange={(e) => setEditPositionValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveEditPosition()
+                                  } else if (e.key === 'Escape') {
+                                    handleCancelEditPosition()
+                                  }
+                                }}
+                                className="flex-1 mr-3"
+                                autoFocus
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleCancelEditPosition}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="bg-primary text-primary-foreground"
+                                  onClick={handleSaveEditPosition}
+                                >
+                                  Save
+                                </Button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-medium">{position}</span>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-foreground hover:bg-primary/10"
+                                  onClick={() => handleEditPosition(position)}
+                                >
+                                  <PencilSimple size={18} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleDeletePosition(position)}
+                                >
+                                  <Trash size={18} />
+                                </Button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       ))
                     )}
