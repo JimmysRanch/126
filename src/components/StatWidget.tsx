@@ -40,23 +40,23 @@ export function StatWidget({
         }}
       />
       <Card 
-        className="p-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98] relative z-10"
+        className="p-2 sm:p-3 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer active:scale-[0.98] relative z-10"
         onClick={onClick}
       >
         <div className="space-y-0.5">
           {stats.map((stat, index) => (
             <div key={stat.label}>
               <motion.div 
-                className="flex items-center justify-between"
+                className="flex items-center justify-between gap-1"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider leading-tight">
                   {stat.label}
                 </p>
                 <motion.p 
-                  className="text-2xl font-bold"
+                  className="text-lg sm:text-2xl font-bold"
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ 

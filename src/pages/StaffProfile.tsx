@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { useKV } from "@github/spark/hooks"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function StaffProfile() {
   const navigate = useNavigate()
@@ -137,26 +138,27 @@ export function StaffProfile() {
   const staff = staffData[staffId as keyof typeof staffData] || staffData["1"]
   const [activeTab, setActiveTab] = useState("overview")
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
-      <div className="max-w-[1400px] mx-auto space-y-6">
-        <header className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-4">
+    <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
+        <header className="flex flex-col sm:flex-row items-stretch sm:items-start justify-between gap-3 sm:gap-4">
+          <div className="flex items-start gap-3 sm:gap-4">
             <Button
               variant="ghost"
               size="icon"
-              className="mt-1 hover:bg-secondary transition-all duration-200"
+              className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
               onClick={() => navigate('/staff')}
             >
-              <ArrowLeft size={24} />
+              <ArrowLeft size={isMobile ? 20 : 24} />
             </Button>
-            <div>
-              <h1 className="text-[32px] font-bold tracking-tight leading-none">
+            <div className="flex-1 min-w-0">
+              <h1 className={`${isMobile ? 'text-xl' : 'text-[32px]'} font-bold tracking-tight leading-none`}>
                 {staff.name}
               </h1>
-              <div className="flex items-center gap-3 mt-1">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+              <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
+                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
                   {staff.role} • SINCE {staff.hireDate.toUpperCase()}
                 </p>
                 <Badge 
@@ -168,12 +170,12 @@ export function StaffProfile() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="secondary"
-                  className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                  className={`font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'flex-1' : ''}`}
                 >
                   Contact
                 </Button>
@@ -203,10 +205,10 @@ export function StaffProfile() {
             <Button
               variant="ghost"
               size="icon"
-              className="hover:bg-secondary transition-all duration-200"
+              className="hover:bg-secondary transition-all duration-200 shrink-0"
               onClick={() => setIsEditDialogOpen(true)}
             >
-              <PencilSimple size={20} />
+              <PencilSimple size={isMobile ? 18 : 20} />
             </Button>
           </div>
         </header>
@@ -351,37 +353,37 @@ export function StaffProfile() {
         </Dialog>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-center mb-6">
-            <TabsList className="bg-secondary/50">
+          <div className="flex justify-center mb-4 sm:mb-6">
+            <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-2 w-full gap-1' : ''}`}>
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="history" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 History
               </TabsTrigger>
               <TabsTrigger 
                 value="payroll" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Payroll
               </TabsTrigger>
               <TabsTrigger 
                 value="schedule" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Schedule
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="overview" className="mt-0 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <TabsContent value="overview" className="mt-0 space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4">
               <StatWidget
                 stats={[
                   { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() },
@@ -422,43 +424,71 @@ export function StaffProfile() {
               />
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">
                   Upcoming Appointments
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {staff.upcomingAppointments.length > 0 ? (
                     staff.upcomingAppointments.map((apt) => (
-                      <Card key={apt.id} className="p-4 bg-card border-border">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h4 className="font-semibold">{apt.client}</h4>
-                              <Badge variant="secondary" className="text-xs">
-                                {apt.pet}
-                              </Badge>
-                              <Badge 
-                                variant={apt.status === "Confirmed" ? "default" : "secondary"}
-                                className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
-                              >
-                                {apt.status}
-                              </Badge>
+                      <Card key={apt.id} className="p-3 sm:p-4 bg-card border-border">
+                        {isMobile ? (
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-sm mb-1.5">{apt.client}</h4>
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {apt.pet}
+                                  </Badge>
+                                  <Badge 
+                                    variant={apt.status === "Confirmed" ? "default" : "secondary"}
+                                    className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                                  >
+                                    {apt.status}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <div className="text-right shrink-0">
+                                <div className="font-semibold text-sm">{apt.date}</div>
+                                <div className="text-xs text-muted-foreground">{apt.time}</div>
+                              </div>
                             </div>
-                            <div className="text-sm text-muted-foreground">
-                              {apt.service}
+                            <div className="text-xs text-muted-foreground">
+                              {apt.service} • {apt.duration}
                             </div>
                           </div>
-                          <div className="text-right">
-                            <div className="font-semibold">{apt.date}</div>
-                            <div className="text-sm text-muted-foreground">{apt.time} • {apt.duration}</div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className="font-semibold">{apt.client}</h4>
+                                <Badge variant="secondary" className="text-xs">
+                                  {apt.pet}
+                                </Badge>
+                                <Badge 
+                                  variant={apt.status === "Confirmed" ? "default" : "secondary"}
+                                  className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                                >
+                                  {apt.status}
+                                </Badge>
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {apt.service}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">{apt.date}</div>
+                              <div className="text-sm text-muted-foreground">{apt.time} • {apt.duration}</div>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </Card>
                     ))
                   ) : (
-                    <Card className="p-12 bg-card border-border text-center">
-                      <p className="text-muted-foreground">
+                    <Card className="p-8 sm:p-12 bg-card border-border text-center">
+                      <p className="text-sm sm:text-base text-muted-foreground">
                         No upcoming appointments scheduled.
                       </p>
                     </Card>
@@ -467,46 +497,81 @@ export function StaffProfile() {
               </div>
 
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                <h3 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 sm:mb-4">
                   Recent Appointments
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {staff.recentAppointments.length > 0 ? (
                     staff.recentAppointments.map((apt) => (
-                      <Card key={apt.id} className="p-4 bg-card border-border">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h4 className="font-semibold">{apt.client}</h4>
-                              <Badge variant="secondary" className="text-xs">
-                                {apt.pet}
-                              </Badge>
-                              <div className="text-xs text-primary">
-                                {apt.rating} ⭐
+                      <Card key={apt.id} className="p-3 sm:p-4 bg-card border-border">
+                        {isMobile ? (
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1.5">
+                                  <h4 className="font-semibold text-sm">{apt.client}</h4>
+                                  <div className="text-xs text-primary">
+                                    {apt.rating} ⭐
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {apt.pet}
+                                  </Badge>
+                                </div>
+                                <div className="text-xs text-muted-foreground mb-1">
+                                  {apt.service}
+                                </div>
+                                {apt.notes && (
+                                  <div className="text-xs text-muted-foreground italic">
+                                    "{apt.notes}"
+                                  </div>
+                                )}
+                              </div>
+                              <div className="text-right shrink-0">
+                                <div className="font-semibold text-sm">{apt.date}</div>
+                                <div className="text-xs text-muted-foreground">{apt.time}</div>
+                                <div className="text-xs font-semibold text-primary mt-1">
+                                  {apt.cost} + {apt.tip}
+                                </div>
                               </div>
                             </div>
-                            <div className="text-sm text-muted-foreground mb-1">
-                              {apt.service}
-                            </div>
-                            {apt.notes && (
-                              <div className="text-xs text-muted-foreground italic">
-                                "{apt.notes}"
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className="font-semibold">{apt.client}</h4>
+                                <Badge variant="secondary" className="text-xs">
+                                  {apt.pet}
+                                </Badge>
+                                <div className="text-xs text-primary">
+                                  {apt.rating} ⭐
+                                </div>
                               </div>
-                            )}
-                          </div>
-                          <div className="text-right">
-                            <div className="font-semibold">{apt.date}</div>
-                            <div className="text-sm text-muted-foreground">{apt.time}</div>
-                            <div className="text-sm font-semibold text-primary mt-1">
-                              {apt.cost} + {apt.tip} tip
+                              <div className="text-sm text-muted-foreground mb-1">
+                                {apt.service}
+                              </div>
+                              {apt.notes && (
+                                <div className="text-xs text-muted-foreground italic">
+                                  "{apt.notes}"
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">{apt.date}</div>
+                              <div className="text-sm text-muted-foreground">{apt.time}</div>
+                              <div className="text-sm font-semibold text-primary mt-1">
+                                {apt.cost} + {apt.tip} tip
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )}
                       </Card>
                     ))
                   ) : (
-                    <Card className="p-12 bg-card border-border text-center">
-                      <p className="text-muted-foreground">
+                    <Card className="p-8 sm:p-12 bg-card border-border text-center">
+                      <p className="text-sm sm:text-base text-muted-foreground">
                         No appointment history available.
                       </p>
                     </Card>
@@ -517,16 +582,16 @@ export function StaffProfile() {
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
+            <Card className="p-8 sm:p-12 bg-card border-border text-center">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Complete activity history showing all actions performed by this staff member will appear here.
               </p>
             </Card>
           </TabsContent>
 
           <TabsContent value="payroll" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
+            <Card className="p-8 sm:p-12 bg-card border-border text-center">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Payroll history and metrics will appear here.
               </p>
             </Card>
