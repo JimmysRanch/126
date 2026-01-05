@@ -255,7 +255,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Revenue</p>
                 <p className="text-xl md:text-2xl font-bold mt-2">$2,194.89</p>
@@ -322,7 +322,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Run</p>
                 <p className="text-base md:text-lg font-bold mt-2">Not Scheduled</p>
@@ -396,7 +396,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Collected</p>
                 <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
