@@ -515,3 +515,23 @@ export const expensesData = [
     color: 'oklch(0.65 0.22 25)',
   },
 ]
+
+export const dogsGroomedData = {
+  day: 12,
+  week: 68,
+  month: 285,
+  lifetime: 3842,
+}
+
+export const bookedPercentageData = {
+  day: 82,
+  week: 78,
+  month: 73,
+}
+
+export const clientsData = {
+  total: 156,
+  newThisMonth: 12,
+  repeatRate: 78,
+  avgDaysBetween: 28,
+}

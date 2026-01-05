@@ -8,6 +8,9 @@ import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
 import { GroomerAvgCard } from './dashboard/components/GroomerAvgCard'
 import { ExpensesCard } from './dashboard/components/ExpensesCard'
+import { DogsGroomedCard } from './dashboard/components/DogsGroomedCard'
+import { BookedPercentageCard } from './dashboard/components/BookedPercentageCard'
+import { ClientsCard } from './dashboard/components/ClientsCard'
 import { 
   appointmentData, 
   capacityData, 
@@ -15,7 +18,10 @@ import {
   issuesData,
   bookingRateData,
   clientMetrics,
-  bookingSummary
+  bookingSummary,
+  dogsGroomedData,
+  bookedPercentageData,
+  clientsData
 } from './dashboard/data/dashboardMockData'
 import { calculateAppointmentProgress, formatCurrency } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
@@ -252,6 +258,45 @@ export function Dashboard() {
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
             </div>
             <ExpensesCard />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.0 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Dogs Groomed</h2>
+              <p className="text-xs text-muted-foreground">Completed Appointments</p>
+            </div>
+            <DogsGroomedCard data={dogsGroomedData} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Booked %</h2>
+              <p className="text-xs text-muted-foreground">Store Capacity</p>
+            </div>
+            <BookedPercentageCard data={bookedPercentageData} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Clients</h2>
+              <p className="text-xs text-muted-foreground">Client Metrics</p>
+            </div>
+            <ClientsCard data={clientsData} />
           </motion.div>
         </div>
 
