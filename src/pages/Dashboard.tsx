@@ -52,8 +52,8 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto">
-      <div className="max-w-[1600px] mx-auto space-y-3">
+    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-120px)] overflow-hidden">
+      <div className="max-w-[1600px] mx-auto h-full grid grid-rows-3 gap-3">
         
         <div className="min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
@@ -244,9 +244,7 @@ export function Dashboard() {
             </div>
             <GroomerAvgCard />
           </motion.div>
-        </div>
 
-        <div className="min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
