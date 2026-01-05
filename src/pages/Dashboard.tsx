@@ -208,12 +208,14 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.0 }}
-            className="lg:col-span-2 bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="lg:col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden"
           >
-            <div className="mb-3">
+            <div className="p-3 sm:p-4 pb-2 flex-shrink-0">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
             </div>
-            <RecentActivity />
+            <div className="overflow-y-auto px-3 sm:px-4 pb-3 sm:pb-4 scrollbar-thin flex-1">
+              <RecentActivity />
+            </div>
           </motion.div>
 
           <motion.div
