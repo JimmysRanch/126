@@ -42,7 +42,7 @@ export function Finances() {
           </ScrollArea>
 
           <TabsContent value="dashboard" className="space-y-4 md:space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-2 md:p-2.5 border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ export function Finances() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <Card className="p-4 md:p-6 border-border">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -184,7 +184,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Expenses</p>
                 <p className="text-xl md:text-2xl font-bold mt-2">$400.00</p>
@@ -255,7 +255,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Revenue</p>
                 <p className="text-xl md:text-2xl font-bold mt-2">$2,194.89</p>
@@ -322,7 +322,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Run</p>
                 <p className="text-base md:text-lg font-bold mt-2">Not Scheduled</p>
@@ -396,7 +396,7 @@ export function Finances() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Collected</p>
                 <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
