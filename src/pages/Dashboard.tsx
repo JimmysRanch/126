@@ -200,8 +200,18 @@ export function Dashboard() {
         </div>
 
         <div className="min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="lg:col-span-4">
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
+              <p className="text-xs text-muted-foreground">Category Breakdown</p>
+            </div>
+            <ExpensesCard />
+          </motion.div>
         </div>
 
         <div className="min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-3">
@@ -243,19 +253,6 @@ export function Dashboard() {
               <p className="text-xs text-muted-foreground">Daily Metrics</p>
             </div>
             <GroomerAvgCard />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.3 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
-          >
-            <div className="mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
-              <p className="text-xs text-muted-foreground">Category Breakdown</p>
-            </div>
-            <ExpensesCard />
           </motion.div>
         </div>
 
