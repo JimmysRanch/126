@@ -6,6 +6,7 @@ import { TopBreedsCard } from './dashboard/components/TopBreedsCard'
 import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
+import { GroomerAvgCard } from './dashboard/components/GroomerAvgCard'
 import { 
   appointmentData, 
   capacityData, 
@@ -274,13 +275,26 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.1 }}
-            className="lg:col-span-2 bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomers Workload</h2>
               <p className="text-xs text-muted-foreground">Today's Schedule</p>
             </div>
             <GroomersWorkloadCard />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.2 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomer Avg</h2>
+              <p className="text-xs text-muted-foreground">Daily Metrics</p>
+            </div>
+            <GroomerAvgCard />
           </motion.div>
         </section>
       </div>
