@@ -487,3 +487,31 @@ export const topBreedsData = [
     avgVisitValue: 80,
   },
 ]
+
+export const expensesData = [
+  {
+    category: 'Payroll',
+    amount: 4200,
+    color: 'oklch(0.75 0.15 195)',
+  },
+  {
+    category: 'Supplies',
+    amount: 1850,
+    color: 'oklch(0.75 0.20 285)',
+  },
+  {
+    category: 'Rent',
+    amount: 2500,
+    color: 'oklch(0.70 0.18 340)',
+  },
+  {
+    category: 'Utilities',
+    amount: 650,
+    color: 'oklch(0.80 0.15 85)',
+  },
+  {
+    category: 'Marketing',
+    amount: 800,
+    color: 'oklch(0.65 0.22 25)',
+  },
+]

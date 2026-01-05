@@ -7,6 +7,7 @@ import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
 import { GroomerAvgCard } from './dashboard/components/GroomerAvgCard'
+import { ExpensesCard } from './dashboard/components/ExpensesCard'
 import { 
   appointmentData, 
   capacityData, 
@@ -51,8 +52,8 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-120px)] overflow-hidden">
-      <div className="max-w-[1600px] mx-auto h-full grid grid-rows-3 gap-3">
+    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto">
+      <div className="max-w-[1600px] mx-auto space-y-3">
         
         <div className="min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
@@ -242,6 +243,21 @@ export function Dashboard() {
               <p className="text-xs text-muted-foreground">Daily Metrics</p>
             </div>
             <GroomerAvgCard />
+          </motion.div>
+        </div>
+
+        <div className="min-h-0 grid grid-cols-1 lg:grid-cols-4 gap-3">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.3 }}
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
+              <p className="text-xs text-muted-foreground">Category Breakdown</p>
+            </div>
+            <ExpensesCard />
           </motion.div>
         </div>
 
