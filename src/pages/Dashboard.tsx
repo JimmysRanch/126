@@ -250,7 +250,6 @@ export function Dashboard() {
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
-              <p className="text-xs text-muted-foreground">Category Breakdown</p>
             </div>
             <ExpensesCard />
           </motion.div>
