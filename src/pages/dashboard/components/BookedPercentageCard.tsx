@@ -35,15 +35,15 @@ interface BookedPercentageCardProps {
 
 export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
   return (
-    <div className="space-y-3">
-      <div className="space-y-2">
+    <div className="space-y-2 sm:space-y-3">
+      <div className="space-y-1.5 sm:space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Day</span>
-          <span className="text-lg font-bold">
+          <span className="text-[10px] sm:text-xs text-muted-foreground">Day</span>
+          <span className="text-base sm:text-lg font-bold">
             <AnimatedNumber value={data.day} delay={0.1} />
           </span>
         </div>
-        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+        <div className="h-1.5 sm:h-2 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-primary rounded-full"
             initial={{ width: 0 }}
@@ -53,14 +53,14 @@ export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Week</span>
-          <span className="text-lg font-bold">
+          <span className="text-[10px] sm:text-xs text-muted-foreground">Week</span>
+          <span className="text-base sm:text-lg font-bold">
             <AnimatedNumber value={data.week} delay={0.2} />
           </span>
         </div>
-        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+        <div className="h-1.5 sm:h-2 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-primary rounded-full"
             initial={{ width: 0 }}
@@ -70,14 +70,14 @@ export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Month</span>
-          <span className="text-lg font-bold">
+          <span className="text-[10px] sm:text-xs text-muted-foreground">Month</span>
+          <span className="text-base sm:text-lg font-bold">
             <AnimatedNumber value={data.month} delay={0.3} />
           </span>
         </div>
-        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+        <div className="h-1.5 sm:h-2 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-primary rounded-full"
             initial={{ width: 0 }}

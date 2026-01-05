@@ -51,28 +51,28 @@ export function ExpensesCard() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="flex items-center justify-between text-xs py-0.5"
+              className="flex items-center justify-between text-xs py-0.5 gap-2"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
                 <div 
                   className="w-2 h-2 rounded-full flex-shrink-0" 
                   style={{ backgroundColor: expense.color }}
                 />
-                <span className="text-muted-foreground truncate">{expense.category}</span>
+                <span className="text-muted-foreground truncate text-[11px] sm:text-xs">{expense.category}</span>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="font-semibold">${Math.round(animatedValues[index]).toLocaleString()}</span>
-                <span className="text-muted-foreground text-xs w-10 text-right">{percentage}%</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                <span className="font-semibold text-[11px] sm:text-xs">${Math.round(animatedValues[index]).toLocaleString()}</span>
+                <span className="text-muted-foreground text-[10px] sm:text-xs w-8 sm:w-10 text-right">{percentage}%</span>
               </div>
             </motion.div>
           )
         })}
       </div>
       
-      <div className="pt-1.5 border-t border-border flex-shrink-0">
+      <div className="pt-1.5 border-t border-border flex-shrink-0 mt-1">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Total Expenses</span>
-          <span className="text-base font-bold">
+          <span className="text-[11px] sm:text-xs text-muted-foreground">Total Expenses</span>
+          <span className="text-sm sm:text-base font-bold">
             ${Math.round(animatedValues.reduce((sum, val) => sum + val, 0)).toLocaleString()}
           </span>
         </div>

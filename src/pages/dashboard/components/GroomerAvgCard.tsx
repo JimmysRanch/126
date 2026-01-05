@@ -20,20 +20,20 @@ function GroomerAvgItem({ groomer, delay, dogsPerDay, revenuePerDay }: GroomerAv
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
-      className="flex items-center gap-2"
+      className="flex items-center gap-1.5 sm:gap-2"
     >
       <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${getBarColor(groomer.id)}`} />
-      <div className="flex-shrink-0 min-w-0">
-        <div className="text-[11px] font-semibold whitespace-nowrap">{groomer.name}</div>
+      <div className="flex-shrink-0 min-w-0 flex-1">
+        <div className="text-[10px] sm:text-[11px] font-semibold truncate">{groomer.name}</div>
       </div>
-      <div className="flex items-center gap-2 text-[11px] ml-auto flex-shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] flex-shrink-0">
         <div className="text-right">
           <div className="font-bold">{dogsPerDay}</div>
-          <div className="text-[9px] text-muted-foreground">dogs/day</div>
+          <div className="text-[8px] sm:text-[9px] text-muted-foreground">dogs/day</div>
         </div>
         <div className="text-right">
           <div className="font-bold text-primary">${revenuePerDay}</div>
-          <div className="text-[9px] text-muted-foreground">revenue/day</div>
+          <div className="text-[8px] sm:text-[9px] text-muted-foreground">revenue/day</div>
         </div>
       </div>
     </motion.div>

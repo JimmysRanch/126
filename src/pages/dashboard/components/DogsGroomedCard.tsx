@@ -37,31 +37,31 @@ interface DogsGroomedCardProps {
 export function DogsGroomedCard({ data }: DogsGroomedCardProps) {
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <div className="space-y-0.5">
-          <div className="text-xs text-muted-foreground">Day</div>
-          <div className="text-xl font-bold">
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Day</div>
+          <div className="text-lg sm:text-xl font-bold">
             <AnimatedNumber value={data.day} delay={0.1} />
           </div>
         </div>
         
         <div className="space-y-0.5">
-          <div className="text-xs text-muted-foreground">Week</div>
-          <div className="text-xl font-bold">
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Week</div>
+          <div className="text-lg sm:text-xl font-bold">
             <AnimatedNumber value={data.week} delay={0.15} />
           </div>
         </div>
         
         <div className="space-y-0.5">
-          <div className="text-xs text-muted-foreground">Month</div>
-          <div className="text-xl font-bold">
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Month</div>
+          <div className="text-lg sm:text-xl font-bold">
             <AnimatedNumber value={data.month} delay={0.2} />
           </div>
         </div>
         
         <div className="space-y-0.5">
-          <div className="text-xs text-muted-foreground">Lifetime</div>
-          <div className="text-xl font-bold text-primary">
+          <div className="text-[10px] sm:text-xs text-muted-foreground">Lifetime</div>
+          <div className="text-lg sm:text-xl font-bold text-primary">
             <AnimatedNumber value={data.lifetime} delay={0.25} />
           </div>
         </div>

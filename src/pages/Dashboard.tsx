@@ -58,10 +58,10 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 h-[calc(100vh-120px)] overflow-hidden">
-      <div className="max-w-[1600px] mx-auto h-full flex flex-col gap-3">
+    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 lg:h-[calc(100vh-120px)] lg:overflow-hidden">
+      <div className="max-w-[1600px] mx-auto lg:h-full flex flex-col gap-3">
         
-        <div className="min-h-0 flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
@@ -205,12 +205,12 @@ export function Dashboard() {
           </KpiCard>
         </div>
 
-        <div className="min-h-0 flex-1 grid grid-cols-1 lg:grid-cols-4 gap-3">
+        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 lg:grid-cols-4 gap-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="lg:col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden"
+            className="lg:col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden min-h-[300px] lg:min-h-0"
           >
             <div className="p-3 sm:p-4 pb-2 flex-shrink-0">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
@@ -224,11 +224,11 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden h-full"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden lg:h-full"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomers Workload</h2>
-              <p className="text-xs text-muted-foreground">Today's Schedule</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Today's Schedule</p>
             </div>
             <GroomersWorkloadCard />
           </motion.div>
@@ -237,26 +237,26 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden h-full"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden lg:h-full"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomer Avg</h2>
-              <p className="text-xs text-muted-foreground">Daily Metrics</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Daily Metrics</p>
             </div>
             <GroomerAvgCard />
           </motion.div>
         </div>
 
-        <div className="min-h-0 flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pb-4 lg:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.9 }}
             className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
-              <p className="text-xs text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
             <ExpensesCard />
           </motion.div>
@@ -267,9 +267,9 @@ export function Dashboard() {
             transition={{ duration: 0.5, delay: 1.0 }}
             className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Completed Appointments</h2>
-              <p className="text-xs text-muted-foreground">Appointment History</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Appointment History</p>
             </div>
             <DogsGroomedCard data={dogsGroomedData} />
           </motion.div>
@@ -280,9 +280,9 @@ export function Dashboard() {
             transition={{ duration: 0.5, delay: 1.1 }}
             className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Booked %</h2>
-              <p className="text-xs text-muted-foreground">Store Capacity</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Store Capacity</p>
             </div>
             <BookedPercentageCard data={bookedPercentageData} />
           </motion.div>
@@ -293,9 +293,9 @@ export function Dashboard() {
             transition={{ duration: 0.5, delay: 1.2 }}
             className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            <div className="mb-3">
+            <div className="mb-2 sm:mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Clients</h2>
-              <p className="text-xs text-muted-foreground">Client Metrics</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">Client Metrics</p>
             </div>
             <ClientsCard data={clientsData} />
           </motion.div>
