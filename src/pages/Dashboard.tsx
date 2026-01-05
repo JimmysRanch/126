@@ -53,62 +53,6 @@ export function Dashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6">
       <div className="max-w-[1600px] mx-auto space-y-3">
-        
-        <header className="flex flex-wrap items-center justify-end gap-2">
-          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
-            <div className="text-[10px] text-muted-foreground">Total Clients</div>
-            <div className="text-sm sm:text-base font-bold">
-              <AnimatedNumber value={clientMetrics.totalClients} delay={0.1} />
-            </div>
-          </div>
-          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
-            <div className="text-[10px] text-muted-foreground">New This Month</div>
-            <div className="text-sm sm:text-base font-bold text-green-500">
-              +<AnimatedNumber value={clientMetrics.newThisMonth} delay={0.15} />
-            </div>
-          </div>
-          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
-            <div className="text-[10px] text-muted-foreground">Repeat Rate</div>
-            <div className="text-sm sm:text-base font-bold">
-              <AnimatedNumber value={clientMetrics.repeatVisitRate} delay={0.2} suffix="%" />
-            </div>
-          </div>
-          <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
-            <div className="text-[10px] text-muted-foreground">Avg Days Between</div>
-            <div className="text-sm sm:text-base font-bold">
-              <AnimatedNumber value={clientMetrics.avgDaysBetweenVisits} delay={0.25} />
-            </div>
-          </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border h-[52px] flex flex-col justify-center w-full sm:w-auto"
-          >
-            <div className="text-[10px] text-muted-foreground mb-1">Booked %</div>
-            <div className="flex items-center gap-2 sm:gap-3 text-xs justify-between sm:justify-start">
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground">Today:</span>
-                <span className="font-bold text-primary">
-                  <AnimatedNumber value={bookingSummary.today} delay={0.7} suffix="%" />
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground">Week:</span>
-                <span className="font-bold text-primary">
-                  <AnimatedNumber value={bookingSummary.week} delay={0.75} suffix="%" />
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-muted-foreground">Month:</span>
-                <span className="font-bold text-primary">
-                  <AnimatedNumber value={bookingSummary.month} delay={0.8} suffix="%" />
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </header>
-
         <section>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             
