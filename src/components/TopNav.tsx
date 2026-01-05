@@ -32,7 +32,7 @@ export function TopNav() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
         
         <div className="md:hidden flex items-center justify-between h-14">
-          <div className="text-lg font-bold text-primary">PawHub</div>
+          <div className="text-lg font-bold text-primary">Scruffy Butts</div>
           
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
