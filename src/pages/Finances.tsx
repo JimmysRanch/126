@@ -172,18 +172,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="expenses" className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold">Expenses</h2>
-                <p className="text-xs md:text-sm text-muted-foreground">Track and manage business expenses</p>
-              </div>
-              <Button className="gap-2 w-full md:w-auto">
-                <Circle size={18} />
-                Add Expense
-              </Button>
-            </div>
-
+          <TabsContent value="expenses" className="space-y-3">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Expenses</p>
@@ -204,8 +193,12 @@ export function Finances() {
             </div>
 
             <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border">
+              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Recent Expenses</h3>
+                <Button className="gap-2">
+                  <Circle size={18} />
+                  Add Expense
+                </Button>
               </div>
               <div className="divide-y divide-border">
                 {[
@@ -243,18 +236,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="payments" className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold">Payments</h2>
-                <p className="text-xs md:text-sm text-muted-foreground">View all client payments and payouts</p>
-              </div>
-              <Button className="gap-2 w-full md:w-auto">
-                <CreditCard size={18} />
-                Record Payment
-              </Button>
-            </div>
-
+          <TabsContent value="payments" className="space-y-3">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Revenue</p>
@@ -275,8 +257,12 @@ export function Finances() {
             </div>
 
             <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border">
+              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Recent Payments</h3>
+                <Button className="gap-2">
+                  <CreditCard size={18} />
+                  Record Payment
+                </Button>
               </div>
               <div className="divide-y divide-border">
                 {[
@@ -310,18 +296,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="payroll" className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold">Payroll</h2>
-                <p className="text-xs md:text-sm text-muted-foreground">Manage employee compensation</p>
-              </div>
-              <Button className="gap-2 w-full md:w-auto">
-                <Users size={18} />
-                Run Payroll
-              </Button>
-            </div>
-
+          <TabsContent value="payroll" className="space-y-3">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Run</p>
@@ -342,8 +317,12 @@ export function Finances() {
             </div>
 
             <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border">
+              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Staff Members</h3>
+                <Button className="gap-2">
+                  <Users size={18} />
+                  Run Payroll
+                </Button>
               </div>
               <div className="divide-y divide-border">
                 {[
@@ -384,18 +363,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="taxes" className="space-y-4 md:space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold">Taxes</h2>
-                <p className="text-xs md:text-sm text-muted-foreground">Sales tax collection and reporting</p>
-              </div>
-              <Button className="gap-2 w-full md:w-auto">
-                <Receipt size={18} />
-                File Taxes
-              </Button>
-            </div>
-
+          <TabsContent value="taxes" className="space-y-3">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               <Card className="p-3 md:p-4 border-border">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Collected</p>
@@ -416,8 +384,12 @@ export function Finances() {
             </div>
 
             <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border">
+              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Tax Periods</h3>
+                <Button className="gap-2">
+                  <Receipt size={18} />
+                  File Taxes
+                </Button>
               </div>
               <div className="divide-y divide-border">
                 {[
