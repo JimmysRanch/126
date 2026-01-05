@@ -39,8 +39,8 @@ export function ExpensesCard() {
   let cumulativePercentage = 0
 
   return (
-    <div className="space-y-3">
-      <div className="relative w-full aspect-square max-w-[120px] mx-auto">
+    <div className="space-y-2 h-full flex flex-col">
+      <div className="relative w-full aspect-square max-w-[80px] mx-auto flex-shrink-0">
         <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
           {expensesData.map((expense, index) => {
             const percentage = (animatedValues[index] / total) * 100
@@ -71,14 +71,14 @@ export function ExpensesCard() {
         </svg>
         
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-lg font-bold">
+          <div className="text-sm font-bold">
             ${Math.round(animatedValues.reduce((sum, val) => sum + val, 0)).toLocaleString()}
           </div>
-          <div className="text-[10px] text-muted-foreground">Total</div>
+          <div className="text-[9px] text-muted-foreground">Total</div>
         </div>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1 overflow-y-auto flex-1 scrollbar-thin pr-1">
         {expensesData.map((expense, index) => {
           const percentage = total > 0 ? ((animatedValues[index] / total) * 100).toFixed(1) : 0
           
@@ -88,18 +88,18 @@ export function ExpensesCard() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="flex items-center justify-between text-xs"
+              className="flex items-center justify-between text-[10px]"
             >
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 <div 
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+                  className="w-2 h-2 rounded-full flex-shrink-0" 
                   style={{ backgroundColor: expense.color }}
                 />
-                <span className="text-muted-foreground">{expense.category}</span>
+                <span className="text-muted-foreground truncate">{expense.category}</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className="font-semibold">${Math.round(animatedValues[index]).toLocaleString()}</span>
-                <span className="text-muted-foreground text-[10px] w-10 text-right">{percentage}%</span>
+                <span className="text-muted-foreground text-[9px] w-8 text-right">{percentage}%</span>
               </div>
             </motion.div>
           )
