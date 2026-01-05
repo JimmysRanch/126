@@ -1,0 +1,436 @@
+import { useState } from 'react'
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { useKV } from "@github/spark/hooks"
+import { toast } from "sonner"
+import { Appointment, Transaction, TransactionItem, InventoryItem } from "@/lib/types"
+import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar } from "@phosphor-icons/react"
+import { useIsMobile } from "@/hooks/use-mobile"
+
+export function POS() {
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [inventory] = useKV<InventoryItem[]>("inventory", [])
+  const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
+  
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
+  const [cartItems, setCartItems] = useState<TransactionItem[]>([])
+  const [discount, setDiscount] = useState(0)
+  const [additionalFees, setAdditionalFees] = useState(0)
+  const [paymentMethod, setPaymentMethod] = useState("cash")
+  const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false)
+  const isMobile = useIsMobile()
+
+  const todayAppointments = (appointments || []).filter(apt => {
+    const today = new Date().toISOString().split('T')[0]
+    return apt.date === today && apt.status === 'completed'
+  })
+
+  const retailProducts = (inventory || []).filter(item => item.category === 'retail')
+
+  const handleSelectAppointment = (appointment: Appointment) => {
+    setSelectedAppointment(appointment)
+    const appointmentItems: TransactionItem[] = appointment.services.map(service => ({
+      id: service.serviceId,
+      name: service.serviceName,
+      type: 'service',
+      quantity: 1,
+      price: service.price,
+      total: service.price
+    }))
+    setCartItems(appointmentItems)
+  }
+
+  const handleAddProduct = (product: InventoryItem) => {
+    const existingItem = cartItems.find(item => item.id === product.id && item.type === 'product')
+    
+    if (existingItem) {
+      setCartItems(cartItems.map(item =>
+        item.id === product.id && item.type === 'product'
+          ? { ...item, quantity: item.quantity + 1, total: (item.quantity + 1) * item.price }
+          : item
+      ))
+    } else {
+      setCartItems([...cartItems, {
+        id: product.id,
+        name: product.name,
+        type: 'product',
+        quantity: 1,
+        price: product.price,
+        total: product.price
+      }])
+    }
+    toast.success(`Added ${product.name} to cart`)
+  }
+
+  const handleUpdateQuantity = (itemId: string, itemType: 'service' | 'product', delta: number) => {
+    setCartItems(cartItems.map(item => {
+      if (item.id === itemId && item.type === itemType) {
+        const newQuantity = Math.max(1, item.quantity + delta)
+        return { ...item, quantity: newQuantity, total: newQuantity * item.price }
+      }
+      return item
+    }))
+  }
+
+  const handleRemoveItem = (itemId: string, itemType: 'service' | 'product') => {
+    setCartItems(cartItems.filter(item => !(item.id === itemId && item.type === itemType)))
+  }
+
+  const calculateSubtotal = () => {
+    return cartItems.reduce((sum, item) => sum + item.total, 0)
+  }
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal()
+    return subtotal - discount + additionalFees
+  }
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      toast.error("Cart is empty")
+      return
+    }
+
+    const newTransaction: Transaction = {
+      id: Date.now().toString(),
+      appointmentId: selectedAppointment?.id,
+      date: new Date().toISOString(),
+      clientId: selectedAppointment?.clientId || "",
+      clientName: selectedAppointment?.clientName || "Walk-in",
+      items: cartItems,
+      subtotal: calculateSubtotal(),
+      discount,
+      additionalFees,
+      total: calculateTotal(),
+      paymentMethod,
+      status: 'completed',
+      type: selectedAppointment ? 'appointment' : 'retail'
+    }
+
+    setTransactions((current) => [...(current || []), newTransaction])
+    
+    cartItems.filter(item => item.type === 'product').forEach(item => {
+      const product = (inventory || []).find(p => p.id === item.id)
+      if (product) {
+        // Update inventory
+      }
+    })
+
+    toast.success("Transaction completed!")
+    setCheckoutDialogOpen(false)
+    resetCart()
+  }
+
+  const resetCart = () => {
+    setSelectedAppointment(null)
+    setCartItems([])
+    setDiscount(0)
+    setAdditionalFees(0)
+    setPaymentMethod("cash")
+  }
+
+  const filteredProducts = retailProducts.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  return (
+    <div className="min-h-screen bg-background p-3 sm:p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Point of Sale</h1>
+        <p className="text-sm text-muted-foreground mt-1">Process transactions and sell products</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 space-y-4">
+          <Card className="p-4">
+            <h2 className="text-lg font-semibold mb-3">Today's Completed Appointments</h2>
+            <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
+              {todayAppointments.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">No completed appointments today</p>
+              ) : (
+                todayAppointments.map(apt => (
+                  <button
+                    key={apt.id}
+                    onClick={() => handleSelectAppointment(apt)}
+                    className={`w-full text-left p-3 border rounded-lg transition-colors ${
+                      selectedAppointment?.id === apt.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">{apt.petName} - {apt.clientName}</div>
+                        <div className="text-sm text-muted-foreground">{apt.startTime}</div>
+                      </div>
+                      <div className="text-lg font-bold text-primary">${apt.totalPrice.toFixed(2)}</div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold">Retail Products</h2>
+              <div className="relative w-64">
+                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto scrollbar-thin">
+              {filteredProducts.length === 0 ? (
+                <div className="col-span-full text-center text-muted-foreground py-8">
+                  <ShoppingCart size={48} className="mx-auto mb-3 opacity-50" />
+                  <p>No products found</p>
+                </div>
+              ) : (
+                filteredProducts.map(product => (
+                  <button
+                    key={product.id}
+                    onClick={() => handleAddProduct(product)}
+                    className="p-3 border border-border rounded-lg hover:border-primary transition-colors text-left"
+                    disabled={product.quantity === 0}
+                  >
+                    <div className="font-medium truncate">{product.name}</div>
+                    <div className="text-sm text-muted-foreground mt-1">Stock: {product.quantity}</div>
+                    <div className="text-lg font-bold text-primary mt-2">${product.price.toFixed(2)}</div>
+                  </button>
+                ))
+              )}
+            </div>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-1">
+          <Card className="p-4 sticky top-4">
+            <div className="flex items-center gap-2 mb-4">
+              <ShoppingCart size={20} className="text-primary" />
+              <h2 className="text-lg font-semibold">Cart</h2>
+              {cartItems.length > 0 && (
+                <Badge variant="secondary">{cartItems.length}</Badge>
+              )}
+            </div>
+
+            <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto scrollbar-thin">
+              {cartItems.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8 text-sm">Cart is empty</p>
+              ) : (
+                cartItems.map((item, idx) => (
+                  <div key={`${item.id}-${item.type}-${idx}`} className="p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate">{item.name}</div>
+                        <Badge variant="secondary" className="text-xs mt-1">{item.type}</Badge>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveItem(item.id, item.type)}
+                        className="text-destructive hover:opacity-80"
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleUpdateQuantity(item.id, item.type, -1)}
+                          className="w-6 h-6 rounded border border-border hover:border-primary flex items-center justify-center"
+                          disabled={item.quantity === 1}
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="w-8 text-center font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => handleUpdateQuantity(item.id, item.type, 1)}
+                          className="w-6 h-6 rounded border border-border hover:border-primary flex items-center justify-center"
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
+                      <div className="font-semibold">${item.total.toFixed(2)}</div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <Label htmlFor="discount">Discount ($)</Label>
+                <Input
+                  id="discount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={discount}
+                  onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fees">Additional Fees ($)</Label>
+                <Input
+                  id="fees"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={additionalFees}
+                  onChange={(e) => setAdditionalFees(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="payment">Payment Method</Label>
+                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                  <SelectTrigger id="payment">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="credit">Credit Card</SelectItem>
+                    <SelectItem value="debit">Debit Card</SelectItem>
+                    <SelectItem value="check">Check</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Discount</span>
+                  <span className="font-medium text-green-500">-${discount.toFixed(2)}</span>
+                </div>
+              )}
+              {additionalFees > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Additional Fees</span>
+                  <span className="font-medium">+${additionalFees.toFixed(2)}</span>
+                </div>
+              )}
+              <Separator />
+              <div className="flex items-center justify-between text-lg">
+                <span className="font-bold">Total</span>
+                <span className="font-bold text-primary text-2xl">${calculateTotal().toFixed(2)}</span>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => setCheckoutDialogOpen(true)}
+              disabled={cartItems.length === 0}
+              className="w-full mt-4"
+              size="lg"
+            >
+              <Receipt className="mr-2" />
+              Checkout
+            </Button>
+
+            {cartItems.length > 0 && (
+              <Button
+                onClick={resetCart}
+                variant="outline"
+                className="w-full mt-2"
+              >
+                Clear Cart
+              </Button>
+            )}
+          </Card>
+        </div>
+      </div>
+
+      <Dialog open={checkoutDialogOpen} onOpenChange={setCheckoutDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Receipt size={24} className="text-primary" />
+              Confirm Transaction
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {selectedAppointment && (
+              <div className="p-3 bg-muted/50 rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">Client</div>
+                <div className="font-medium">{selectedAppointment.clientName}</div>
+                <div className="text-sm">{selectedAppointment.petName}</div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              {cartItems.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between text-sm">
+                  <span>{item.name} x{item.quantity}</span>
+                  <span className="font-medium">${item.total.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+
+            <Separator />
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span>Subtotal</span>
+                <span>${calculateSubtotal().toFixed(2)}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex items-center justify-between text-green-500">
+                  <span>Discount</span>
+                  <span>-${discount.toFixed(2)}</span>
+                </div>
+              )}
+              {additionalFees > 0 && (
+                <div className="flex items-center justify-between">
+                  <span>Additional Fees</span>
+                  <span>+${additionalFees.toFixed(2)}</span>
+                </div>
+              )}
+              <Separator />
+              <div className="flex items-center justify-between text-lg font-bold">
+                <span>Total</span>
+                <span className="text-primary">${calculateTotal().toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>Payment Method</span>
+                <span className="capitalize">{paymentMethod}</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCheckoutDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCheckout}>
+              <CurrencyDollar className="mr-2" />
+              Complete Transaction
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

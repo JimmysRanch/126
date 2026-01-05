@@ -9,6 +9,9 @@ import { Staff } from '@/pages/Staff'
 import { StaffProfile } from '@/pages/StaffProfile'
 import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
+import { Appointments } from '@/pages/Appointments'
+import { POS } from '@/pages/POS'
+import { Inventory } from '@/pages/Inventory'
 
 function App() {
   return (
@@ -17,15 +20,15 @@ function App() {
         <TopNav />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/appointments" element={<PlaceholderPage title="Appointments" />} />
+          <Route path="/appointments" element={<Appointments />} />
           <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
           <Route path="/clients" element={<ClientsList />} />
           <Route path="/clients/new" element={<AddClient />} />
           <Route path="/clients/:clientId" element={<ClientProfile />} />
           <Route path="/staff" element={<Staff />} />
           <Route path="/staff/:staffId" element={<StaffProfile />} />
-          <Route path="/pos" element={<PlaceholderPage title="POS" />} />
-          <Route path="/inventory" element={<PlaceholderPage title="Inventory" />} />
+          <Route path="/pos" element={<POS />} />
+          <Route path="/inventory" element={<Inventory />} />
           <Route path="/finances" element={<Finances />} />
           <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
           <Route path="/settings" element={<Settings />} />
