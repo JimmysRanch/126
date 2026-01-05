@@ -14,12 +14,6 @@ export function Finances() {
   return (
     <div className="min-h-screen bg-background text-foreground p-3 md:p-6">
       <div className="max-w-[1600px] mx-auto">
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <h1 className="text-2xl md:text-[32px] font-bold tracking-tight leading-none">
-            Finances
-          </h1>
-        </div>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
           <ScrollArea className="w-full">
             <TabsList className="bg-card border border-border h-10 md:h-12 w-full inline-flex">
@@ -27,19 +21,19 @@ export function Finances() {
                 <SquaresFour size={isMobile ? 16 : 18} />
                 {!isMobile && 'Dashboard'}
               </TabsTrigger>
-              <TabsTrigger value="expenses" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-card data-[state=active]:text-foreground">
+              <TabsTrigger value="expenses" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Circle size={isMobile ? 16 : 18} />
                 {!isMobile && 'Expenses'}
               </TabsTrigger>
-              <TabsTrigger value="payments" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-card data-[state=active]:text-foreground">
+              <TabsTrigger value="payments" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <CreditCard size={isMobile ? 16 : 18} />
                 {!isMobile && 'Payments'}
               </TabsTrigger>
-              <TabsTrigger value="payroll" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-card data-[state=active]:text-foreground">
+              <TabsTrigger value="payroll" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Users size={isMobile ? 16 : 18} />
                 {!isMobile && 'Payroll'}
               </TabsTrigger>
-              <TabsTrigger value="taxes" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-card data-[state=active]:text-foreground">
+              <TabsTrigger value="taxes" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Receipt size={isMobile ? 16 : 18} />
                 {!isMobile && 'Taxes'}
               </TabsTrigger>
@@ -49,65 +43,44 @@ export function Finances() {
 
           <TabsContent value="dashboard" className="space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <Card className="p-3 md:p-4 border-border">
-                <div className="space-y-0.5">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                    BILLS
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">0 OVERDUE</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">BILLS</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$0</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 shrink-0">REVIEW</Button>
                 </div>
-                <div className="mt-1.5 md:mt-2">
-                  <p className="text-xl md:text-2xl font-bold">$0</p>
-                </div>
-                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
-                  REVIEW BILLS
-                </Button>
               </Card>
 
-              <Card className="p-3 md:p-4 border-border">
-                <div className="space-y-0.5">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                    PAYMENTS
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">NEXT PAYOUT</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PAYMENTS</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,195</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 shrink-0">LEDGER</Button>
                 </div>
-                <div className="mt-1.5 md:mt-2">
-                  <p className="text-xl md:text-2xl font-bold">$2,195</p>
-                </div>
-                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
-                  VIEW LEDGER
-                </Button>
               </Card>
 
-              <Card className="p-3 md:p-4 border-border">
-                <div className="space-y-0.5">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                    SALES TAX
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">DECEMBER 2025 COLLECTED</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">SALES TAX</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$0</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 shrink-0">TAXES</Button>
                 </div>
-                <div className="mt-1.5 md:mt-2">
-                  <p className="text-xl md:text-2xl font-bold">$0</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Due January 20, 2026</p>
-                </div>
-                <Button variant="outline" size="sm" className="mt-1.5 text-xs h-7 w-full md:w-auto">
-                  OPEN TAXES
-                </Button>
               </Card>
 
-              <Card className="p-3 md:p-4 border-border">
-                <div className="space-y-0.5">
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-                    PAYROLL
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">NEXT RUN</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PAYROLL</p>
+                    <p className="text-sm md:text-base font-bold mt-0.5">Not scheduled</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 shrink-0">OPEN</Button>
                 </div>
-                <div className="mt-1.5 md:mt-2">
-                  <p className="text-lg md:text-xl font-bold">Not scheduled</p>
-                </div>
-                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
-                  OPEN PAYROLL
-                </Button>
               </Card>
             </div>
 
