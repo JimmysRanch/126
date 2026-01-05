@@ -52,7 +52,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6">
-      <div className="max-w-[1600px] mx-auto space-y-4 sm:space-y-6">
+      <div className="max-w-[1600px] mx-auto space-y-3">
         
         <header className="flex flex-wrap items-center justify-end gap-2">
           <div className="bg-card rounded-lg px-2 sm:px-3 py-1.5 border border-border">
