@@ -3,15 +3,16 @@ import { useEffect, useState } from 'react'
 import { expensesData } from '../data/dashboardMockData'
 
 export function ExpensesCard() {
-  const [animatedValues, setAnimatedValues] = useState(expensesData.map(() => 0))
+  const sortedExpenses = [...expensesData].sort((a, b) => b.amount - a.amount)
+  const [animatedValues, setAnimatedValues] = useState(sortedExpenses.map(() => 0))
   
-  const total = expensesData.reduce((sum, expense) => sum + expense.amount, 0)
+  const total = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0)
   
   useEffect(() => {
-    const timers = expensesData.map((_, index) => 
+    const timers = sortedExpenses.map((_, index) => 
       setTimeout(() => {
         let current = 0
-        const target = expensesData[index].amount
+        const target = sortedExpenses[index].amount
         const increment = target / 60
         const interval = setInterval(() => {
           current += increment
@@ -41,7 +42,7 @@ export function ExpensesCard() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="space-y-0.5 overflow-y-auto flex-1 scrollbar-thin pr-1 min-h-0">
-        {expensesData.map((expense, index) => {
+        {sortedExpenses.map((expense, index) => {
           const percentage = total > 0 ? ((animatedValues[index] / total) * 100).toFixed(1) : 0
           
           return (
