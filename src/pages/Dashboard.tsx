@@ -267,8 +267,8 @@ export function Dashboard() {
             className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
             <div className="mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Dogs Groomed</h2>
-              <p className="text-xs text-muted-foreground">Completed Appointments</p>
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Completed Appointments</h2>
+              <p className="text-xs text-muted-foreground">Appointment History</p>
             </div>
             <DogsGroomedCard data={dogsGroomedData} />
           </motion.div>

@@ -59,7 +59,7 @@ export function ClientsCard({ data }: ClientsCardProps) {
         </div>
         
         <div className="space-y-0.5">
-          <div className="text-xs text-muted-foreground">Avg Days Between</div>
+          <div className="text-xs text-muted-foreground">Avg Rebooking</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.avgDaysBetween} delay={0.25} />
           </div>
