@@ -40,7 +40,7 @@ export function ExpensesCard() {
 
   return (
     <div className="space-y-3">
-      <div className="relative w-full aspect-square max-w-[200px] mx-auto">
+      <div className="relative w-full aspect-square max-w-[120px] mx-auto">
         <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
           {expensesData.map((expense, index) => {
             const percentage = (animatedValues[index] / total) * 100
