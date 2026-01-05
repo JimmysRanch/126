@@ -30,14 +30,8 @@ export function RecentActivity() {
       {Object.entries(groupedActivities).map(([category, activities]) => {
         if (activities.length === 0) return null
         
-        const categoryTitle = category === 'today' ? 'Today' : category === 'yesterday' ? 'Yesterday' : 'This Week'
-        
         return (
           <div key={category} className="space-y-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {categoryTitle}
-            </div>
-            
             <div className="space-y-1.5">
               {activities.map((activity, index) => {
                 const Icon = iconMap[activity.type as keyof typeof iconMap]

@@ -212,7 +212,6 @@ export function Dashboard() {
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
-              <p className="text-xs text-muted-foreground">Latest Updates</p>
             </div>
             <RecentActivity />
           </motion.div>
