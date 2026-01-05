@@ -10,11 +10,10 @@ function GroomerWorkloadItem({ groomer, delay }: GroomerWorkloadItemProps) {
   const totalMinutesInDay = 480
   const bookedMinutes = Math.round((groomer.bookedPercentage / 100) * totalMinutesInDay)
 
-  const getBarColor = (percentage: number) => {
-    if (percentage >= 90) return 'from-pink-500 to-purple-500'
-    if (percentage >= 75) return 'from-green-500 to-teal-500'
-    if (percentage >= 60) return 'from-yellow-500 to-orange-500'
-    return 'from-blue-500 to-cyan-500'
+  const getBarColor = (groomerId: number) => {
+    if (groomerId === 1) return 'from-pink-500 to-purple-500'
+    if (groomerId === 2) return 'from-blue-500 to-cyan-500'
+    return 'from-green-500 to-teal-500'
   }
 
   return (
@@ -40,7 +39,7 @@ function GroomerWorkloadItem({ groomer, delay }: GroomerWorkloadItemProps) {
 
       <div className="relative h-2 bg-secondary rounded-full overflow-hidden">
         <motion.div
-          className={`h-full bg-gradient-to-r ${getBarColor(groomer.bookedPercentage)} rounded-full`}
+          className={`h-full bg-gradient-to-r ${getBarColor(groomer.id)} rounded-full`}
           initial={{ width: 0 }}
           animate={{ width: `${groomer.bookedPercentage}%` }}
           transition={{ duration: 1, delay: delay + 0.2, ease: 'easeOut' }}
