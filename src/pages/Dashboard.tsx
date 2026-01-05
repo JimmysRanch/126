@@ -246,7 +246,7 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.9 }}
-            className="bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden"
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
