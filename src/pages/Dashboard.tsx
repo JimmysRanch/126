@@ -241,12 +241,12 @@ export function Dashboard() {
           </motion.div>
         </div>
 
-        <div className="min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="min-h-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.9 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
