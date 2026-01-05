@@ -173,22 +173,22 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-3">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Expenses</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$400.00</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD EXPENSES</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">YTD Expenses</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$400.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD EXPENSES</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Pending</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Avg Monthly</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$400.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG MONTHLY</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
               </Card>
             </div>
 
@@ -237,22 +237,22 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-3">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Revenue</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$2,194.89</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD REVENUE</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$2,194.89</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">YTD Revenue</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$2,194.89</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD REVENUE</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$2,194.89</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Payout</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$2,195.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NEXT PAYOUT</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$2,195.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Avg Transaction</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$68.59</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG TRANSACTION</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$68.59</p>
               </Card>
             </div>
 
@@ -297,22 +297,22 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="payroll" className="space-y-3">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Run</p>
-                <p className="text-base md:text-lg font-bold mt-2">Not Scheduled</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NEXT RUN</p>
+                <p className="text-sm md:text-base font-bold mt-0.5">Not Scheduled</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Payroll</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD PAYROLL</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">YTD Payroll</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD PAYROLL</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Active Staff</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">3</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">ACTIVE STAFF</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">3</p>
               </Card>
             </div>
 
@@ -364,22 +364,22 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="taxes" className="space-y-3">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">MTD Collected</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD COLLECTED</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">YTD Collected</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD COLLECTED</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Next Due Date</p>
-                <p className="text-base md:text-lg font-bold mt-2">Jan 20, 2026</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NEXT DUE DATE</p>
+                <p className="text-sm md:text-base font-bold mt-0.5">Jan 20, 2026</p>
               </Card>
-              <Card className="p-3 md:p-4 border-border">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Amount Due</p>
-                <p className="text-xl md:text-2xl font-bold mt-2">$0.00</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AMOUNT DUE</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
               </Card>
             </div>
 
