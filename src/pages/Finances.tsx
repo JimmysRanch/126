@@ -41,7 +41,7 @@ export function Finances() {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
 
-          <TabsContent value="dashboard" className="space-y-4 md:space-y-6">
+          <TabsContent value="dashboard" className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-2 md:p-2.5 border-border">
                 <div className="flex items-center justify-between">
