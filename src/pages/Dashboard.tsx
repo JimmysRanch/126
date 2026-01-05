@@ -224,7 +224,7 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden h-full"
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomers Workload</h2>
@@ -237,7 +237,7 @@ export function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden h-full"
           >
             <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomer Avg</h2>
