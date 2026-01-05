@@ -5,6 +5,7 @@ import { BookedGauge } from './dashboard/components/BookedGauge'
 import { TopBreedsCard } from './dashboard/components/TopBreedsCard'
 import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
+import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
 import { 
   appointmentData, 
   capacityData, 
@@ -255,18 +256,31 @@ export function Dashboard() {
           </div>
         </section>
 
-        <section>
+        <section className="grid grid-cols-1 lg:grid-cols-4 gap-3 sm:gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 1.0 }}
-            className="bg-card rounded-xl p-3 sm:p-4 border border-border"
+            className="lg:col-span-2 bg-card rounded-xl p-3 sm:p-4 border border-border"
           >
-            <div>
+            <div className="mb-3">
               <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
               <p className="text-xs text-muted-foreground">Latest Updates</p>
             </div>
             <RecentActivity />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+            className="lg:col-span-2 bg-card rounded-xl p-3 sm:p-4 border border-border"
+          >
+            <div className="mb-3">
+              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomers Workload</h2>
+              <p className="text-xs text-muted-foreground">Today's Schedule</p>
+            </div>
+            <GroomersWorkloadCard />
           </motion.div>
         </section>
       </div>
