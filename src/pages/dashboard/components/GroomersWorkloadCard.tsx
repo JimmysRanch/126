@@ -51,7 +51,7 @@ function GroomerWorkloadItem({ groomer, delay }: GroomerWorkloadItemProps) {
 
 export function GroomersWorkloadCard() {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-[210px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
       {groomerData.map((groomer, index) => (
         <GroomerWorkloadItem
           key={groomer.id}
