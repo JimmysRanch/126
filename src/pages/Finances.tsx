@@ -49,63 +49,63 @@ export function Finances() {
 
           <TabsContent value="dashboard" className="space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              <Card className="p-4 md:p-6 border-border">
-                <div className="space-y-1">
+              <Card className="p-3 md:p-4 border-border">
+                <div className="space-y-0.5">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     BILLS
                   </p>
                   <p className="text-[10px] text-muted-foreground">0 OVERDUE</p>
                 </div>
-                <div className="mt-2 md:mt-3">
-                  <p className="text-2xl md:text-3xl font-bold">$0</p>
+                <div className="mt-1.5 md:mt-2">
+                  <p className="text-xl md:text-2xl font-bold">$0</p>
                 </div>
-                <Button variant="outline" size="sm" className="mt-3 md:mt-4 text-xs h-8 w-full md:w-auto">
+                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
                   REVIEW BILLS
                 </Button>
               </Card>
 
-              <Card className="p-4 md:p-6 border-border">
-                <div className="space-y-1">
+              <Card className="p-3 md:p-4 border-border">
+                <div className="space-y-0.5">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     PAYMENTS
                   </p>
                   <p className="text-[10px] text-muted-foreground">NEXT PAYOUT</p>
                 </div>
-                <div className="mt-2 md:mt-3">
-                  <p className="text-2xl md:text-3xl font-bold">$2,195</p>
+                <div className="mt-1.5 md:mt-2">
+                  <p className="text-xl md:text-2xl font-bold">$2,195</p>
                 </div>
-                <Button variant="outline" size="sm" className="mt-3 md:mt-4 text-xs h-8 w-full md:w-auto">
+                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
                   VIEW LEDGER
                 </Button>
               </Card>
 
-              <Card className="p-4 md:p-6 border-border">
-                <div className="space-y-1">
+              <Card className="p-3 md:p-4 border-border">
+                <div className="space-y-0.5">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     SALES TAX
                   </p>
                   <p className="text-[10px] text-muted-foreground">DECEMBER 2025 COLLECTED</p>
                 </div>
-                <div className="mt-2 md:mt-3">
-                  <p className="text-2xl md:text-3xl font-bold">$0</p>
-                  <p className="text-xs text-muted-foreground mt-1">Due January 20, 2026</p>
+                <div className="mt-1.5 md:mt-2">
+                  <p className="text-xl md:text-2xl font-bold">$0</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Due January 20, 2026</p>
                 </div>
-                <Button variant="outline" size="sm" className="mt-2 text-xs h-8 w-full md:w-auto">
+                <Button variant="outline" size="sm" className="mt-1.5 text-xs h-7 w-full md:w-auto">
                   OPEN TAXES
                 </Button>
               </Card>
 
-              <Card className="p-4 md:p-6 border-border">
-                <div className="space-y-1">
+              <Card className="p-3 md:p-4 border-border">
+                <div className="space-y-0.5">
                   <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
                     PAYROLL
                   </p>
                   <p className="text-[10px] text-muted-foreground">NEXT RUN</p>
                 </div>
-                <div className="mt-2 md:mt-3">
-                  <p className="text-xl md:text-2xl font-bold">Not scheduled</p>
+                <div className="mt-1.5 md:mt-2">
+                  <p className="text-lg md:text-xl font-bold">Not scheduled</p>
                 </div>
-                <Button variant="outline" size="sm" className="mt-3 md:mt-4 text-xs h-8 w-full md:w-auto">
+                <Button variant="outline" size="sm" className="mt-2 md:mt-2.5 text-xs h-7 w-full md:w-auto">
                   OPEN PAYROLL
                 </Button>
               </Card>
