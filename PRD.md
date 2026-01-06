@@ -113,14 +113,6 @@ This is a comprehensive multi-page business management application with navigati
 - **Single Pet vs Multiple Pets**: Adapt grid layout for varying number of pets per client
 - **Empty Photo Gallery**: Show upload prompt when no photos exist
 - **Navigation Between Pages**: Maintain smooth transitions and preserve scroll position when appropriate
-- **No Appointments**: Display empty state with helpful message in all appointment views
-- **Auto-Groomer Assignment**: Evenly distribute appointments across groomers when auto-assign is selected
-- **Weight Category Pricing**: Automatically calculate service prices based on pet weight (small/medium/large/giant)
-- **Empty Cart**: Disable checkout button and show empty state in POS
-- **Low Stock Items**: Highlight items at or below reorder level with warnings
-- **Out of Stock**: Disable product selection in POS when quantity is 0
-- **Missing Required Fields**: Show validation errors for incomplete forms
-- **Duplicate SKUs**: Prevent adding items with duplicate SKU codes in inventory
 
 ## Design Direction
 
@@ -157,19 +149,14 @@ Animations should be subtle and functional, reinforcing interactions without cre
 ## Component Selection
 
 - **Components**: 
-  - Card (shadcn) - For metric widgets, client cards, appointment cards, inventory tables, and main content sections
+  - Card (shadcn) - For metric widgets, client cards, and main content sections
   - Button (shadcn) - Primary (cyan accent), Secondary (navy with border), Ghost (icon buttons)
-  - Input (shadcn) - Search bars with icon, quantity inputs, price inputs
-  - Badge (shadcn) - Pet indicators, service tags, status badges, before/after labels, stock levels
-  - Tabs (shadcn) - Per-pet information switching, appointment views (calendar/list/groomer), inventory categories
-  - Dialog (shadcn) - Full-screen photo comparison modal, payment history, appointment details, create appointment, checkout confirmation, add/edit inventory
+  - Input (shadcn) - Search bars with icon
+  - Badge (shadcn) - Pet indicators, service tags, and before/after labels
+  - Tabs (shadcn) - Per-pet information switching
+  - Dialog (shadcn) - Full-screen photo comparison modal and payment history
   - Avatar (shadcn) - For pet profile with icon fallback
   - Separator (shadcn) - Subtle dividers between sections
-  - Select (shadcn) - Client/pet selection, groomer assignment, time slots, payment methods, categories
-  - Checkbox (shadcn) - Add-on service selection
-  - Textarea (shadcn) - Appointment notes, product descriptions
-  - Calendar integration - Week view with time slots for appointment scheduling
-  - Table - Inventory listing with inline quantity adjustments
   - Navigation - Custom top navigation bar with active state highlighting
   - Router (react-router-dom) - Page navigation and routing
   
@@ -179,11 +166,6 @@ Animations should be subtle and functional, reinforcing interactions without cre
   - Icon buttons with circular backgrounds in top-right corners
   - Flip animation for pet cards using framer-motion or CSS transforms
   - Active navigation state with bottom border highlight
-  - Real-time price calculator display in appointment creation
-  - Receipt-style summary panel with live updates
-  - Calendar grid with time slots and drag-drop support
-  - Low-stock warning badges and alerts
-  - Quick quantity adjustment buttons (+/-) for inventory and cart
   
 - **States**: 
   - Buttons: Default (solid or bordered), Hover (scale + brightness), Active (slight scale down), Disabled (opacity 50%)
@@ -191,42 +173,27 @@ Animations should be subtle and functional, reinforcing interactions without cre
   - Interactive elements: Smooth 200ms transitions
   - Navigation: Active state with border-bottom and color change
   - Pet Cards: Front (default info) and Back (grooming preferences) with flip transition
-  - Appointments: Scheduled (blue), Checked-in (yellow), In-Progress (purple), Completed (green), Cancelled (red)
-  - Inventory: Normal stock, Low stock (warning), Out of stock (disabled)
-  - Cart Items: Add animation, remove animation, quantity transitions
   
 - **Icon Selection**: 
   - ArrowLeft (back navigation)
   - PencilSimple (edit actions)
-  - Plus/Minus (add actions, quantity adjustments)
+  - Plus (add actions - new client, new pet, new appointment)
   - PawPrint (pet indicators throughout app)
   - MagnifyingGlass (search functionality)
-  - Calendar (appointment scheduling)
+  - Images (photo gallery)
   - Clock (appointment times)
-  - User (groomer selection, client info)
-  - ShoppingCart (POS cart)
-  - Receipt (checkout, transactions)
-  - CurrencyDollar (pricing, payments)
-  - Package (inventory items)
-  - Warning (low stock alerts)
-  - Trash (delete actions)
-  - CaretLeft/CaretRight (navigation arrows)
   
 - **Spacing**: 
-  - Page padding: p-3 sm:p-6 (12px mobile, 24px desktop)
-  - Card padding: p-4 to p-5 (16-20px)
-  - Gap between widgets: gap-3 sm:gap-4 (12-16px)
+  - Page padding: p-6 (24px)
+  - Card padding: p-5 to p-6 (20-24px)
+  - Gap between widgets: gap-4 (16px)
   - Navigation height: Auto with py-4 padding
-  - List item spacing: gap-2 to gap-3 (8-12px)
-  - Modal/Dialog padding: p-6 (24px)
+  - List item spacing: gap-3 (12px)
   
 - **Mobile**: 
   - Stack all widgets vertically on mobile
   - Single column for client list and pet cards on mobile
-  - Navigation tabs scroll horizontally on small screens
+  - Navigation collapses or scrolls horizontally on small screens
   - Reduce header button sizes and wrap if needed
   - Maintain readability with consistent padding
   - Full-width cards with preserved internal spacing
-  - Collapsible appointment calendar to list view on mobile
-  - Touch-friendly buttons and controls (min 44px touch targets)
-  - Simplified POS layout with cart as bottom sheet or separate view
