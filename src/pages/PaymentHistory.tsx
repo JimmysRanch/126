@@ -120,80 +120,80 @@ export function PaymentHistory() {
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
       <div className="max-w-[1200px] mx-auto">
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <Button
             variant="ghost"
             size="icon"
             className="hover:bg-secondary transition-all duration-200"
             onClick={() => navigate(`/clients/${clientId}`)}
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-              <Receipt size={28} className="text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <Receipt size={22} className="text-primary" />
               Payment History
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">George moodys</p>
+            <p className="text-xs text-muted-foreground">George moodys</p>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {paymentHistory.map((payment) => (
-            <Card key={payment.id} className="p-4 sm:p-6 bg-card border-border">
-              <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-3">
+            <Card key={payment.id} className="p-3 sm:p-4 bg-card border-border">
+              <div className="flex flex-col sm:flex-row items-start justify-between mb-3 gap-2">
                 <div>
-                  <p className="text-lg font-semibold">{payment.date}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
+                  <p className="text-sm font-semibold">{payment.date}</p>
+                  <div className="flex items-center gap-2 mt-1">
                     <Badge 
                       variant={payment.status === "Paid" ? "default" : "secondary"}
-                      className={payment.status === "Paid" ? "bg-primary/20 text-primary" : ""}
+                      className={payment.status === "Paid" ? "bg-primary/20 text-primary text-xs" : "text-xs"}
                     >
                       {payment.status}
                     </Badge>
-                    <span className="text-sm text-muted-foreground">{payment.method}</span>
+                    <span className="text-xs text-muted-foreground">{payment.method}</span>
                   </div>
                 </div>
-                <Button variant="secondary" size="sm" className="font-semibold">
-                  <Download size={16} className="mr-2" />
-                  Download Receipt
+                <Button variant="secondary" size="sm" className="font-semibold text-xs h-8">
+                  <Download size={14} className="mr-1.5" />
+                  Download
                 </Button>
               </div>
 
-              <div className="space-y-4 mb-4">
+              <div className="space-y-2 mb-3">
                 {payment.pets.map((pet, index) => (
                   <div key={index}>
-                    <p className="text-base font-bold mb-2 flex items-center gap-2">
-                      <PawPrint size={16} weight="fill" className="text-primary" />
+                    <p className="text-sm font-bold mb-1.5 flex items-center gap-1.5">
+                      <PawPrint size={14} weight="fill" className="text-primary" />
                       {pet.name}
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 mb-1.5">
                       {pet.services.map((service, sIndex) => (
-                        <div key={sIndex} className="text-sm text-muted-foreground flex items-center gap-2 bg-secondary/30 rounded-md px-3 py-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        <div key={sIndex} className="text-xs text-muted-foreground flex items-center gap-1.5 bg-secondary/30 rounded px-2 py-1">
+                          <span className="w-1 h-1 rounded-full bg-primary"></span>
                           {service}
                         </div>
                       ))}
                     </div>
-                    <p className="text-base font-semibold text-right">{pet.cost}</p>
-                    {index < payment.pets.length - 1 && <Separator className="mt-4" />}
+                    <p className="text-sm font-semibold text-right">{pet.cost}</p>
+                    {index < payment.pets.length - 1 && <Separator className="mt-2" />}
                   </div>
                 ))}
               </div>
 
-              <Separator className="mb-4" />
+              <Separator className="mb-2" />
 
-              <div className="space-y-2">
-                <div className="flex justify-between text-base">
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-semibold">{payment.paid}</span>
                 </div>
-                <div className="flex justify-between text-base">
+                <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Tip</span>
                   <span className="font-semibold">{payment.tip}</span>
                 </div>
-                <Separator className="my-3" />
-                <div className="flex justify-between text-xl font-bold">
+                <Separator className="my-2" />
+                <div className="flex justify-between text-base font-bold">
                   <span>Total</span>
                   <span className="text-primary">{payment.total}</span>
                 </div>
