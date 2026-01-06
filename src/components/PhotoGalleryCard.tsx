@@ -165,7 +165,7 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {currentPhotos.map((photo, index) => (
                 <motion.div
                   key={photo.id}
@@ -175,39 +175,54 @@ export function PhotoGalleryCard({ petName, petId, photos: initialPhotos }: Phot
                   className="group cursor-pointer"
                 >
                   <div 
-                    className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200 mb-2"
+                    className="space-y-2"
                     onClick={() => {
                       setSelectedPhoto(photo)
                       setShowComparison(true)
                     }}
                   >
-                    <img
-                      src={photo.afterUrl}
-                      alt={`${photo.service} - After`}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        whileHover={{ scale: 1 }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200">
+                      <img
+                        src={photo.beforeUrl}
+                        alt={`${photo.service} - Before`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 left-2">
+                        <Badge className="bg-black/70 text-white border-white/20 text-xs">Before</Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeletePhoto(photo.id)
+                        }}
                       >
-                        <ArrowsLeftRight size={24} className="text-white" weight="bold" />
-                      </motion.div>
+                        <Trash size={12} weight="bold" />
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-6 w-6 p-0"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeletePhoto(photo.id)
-                      }}
-                    >
-                      <Trash size={12} weight="bold" />
-                    </Button>
+                    <div className="relative aspect-square rounded-md overflow-hidden border border-border bg-secondary/30 hover:border-primary/50 transition-all duration-200">
+                      <img
+                        src={photo.afterUrl}
+                        alt={`${photo.service} - After`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute top-2 left-2">
+                        <Badge className="bg-primary text-primary-foreground text-xs">After</Badge>
+                      </div>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          whileHover={{ scale: 1 }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        >
+                          <ArrowsLeftRight size={24} className="text-white" weight="bold" />
+                        </motion.div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 mt-2">
                     <p className="text-xs font-semibold">{photo.service}</p>
                     <p className="text-[10px] text-muted-foreground">{photo.date}</p>
                     <p className="text-[10px] text-muted-foreground">{photo.groomer}</p>

@@ -1,18 +1,18 @@
 import { ArrowLeft, PencilSimple, Plus, PawPrint } from "@phosphor-icons/react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { StatWidget } from "@/components/StatWidget"
 import { PetCard } from "@/components/PetCard"
 import { ServiceHistoryCard } from "@/components/ServiceHistoryCard"
 import { MedicalInfoCard } from "@/components/MedicalInfoCard"
 import { PhotoGalleryCard } from "@/components/PhotoGalleryCard"
-import { PaymentHistoryDialog } from "@/components/PaymentHistoryDialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function ClientProfile() {
   const navigate = useNavigate()
+  const { clientId } = useParams()
   const isMobile = useIsMobile()
 
   const pets = [
@@ -58,99 +58,6 @@ export function ClientProfile() {
   ]
 
   const [selectedPet, setSelectedPet] = useState(pets[0].id)
-
-  const paymentHistory = [
-    {
-      id: "1",
-      date: "Jan 15, 2025",
-      total: "$175.00",
-      paid: "$130.00",
-      tip: "$45.00",
-      method: "Credit Card",
-      status: "Paid",
-      pets: [
-        {
-          name: "Trying",
-          services: ["Full Groom Package", "Bath", "Haircut", "Nail Trim"],
-          cost: "$85.00"
-        },
-        {
-          name: "Max",
-          services: ["Bath Only", "Brush"],
-          cost: "$45.00"
-        }
-      ]
-    },
-    {
-      id: "2",
-      date: "Jan 10, 2025",
-      total: "$165.00",
-      paid: "$120.00",
-      tip: "$45.00",
-      method: "Credit Card",
-      status: "Paid",
-      pets: [
-        {
-          name: "Luna",
-          services: ["Luxury Spa Package", "Massage", "Blueberry Facial"],
-          cost: "$120.00"
-        }
-      ]
-    },
-    {
-      id: "3",
-      date: "Dec 10, 2024",
-      total: "$95.00",
-      paid: "$50.00",
-      tip: "$45.00",
-      method: "Cash",
-      status: "Paid",
-      pets: [
-        {
-          name: "Trying",
-          services: ["Bath & Brush", "Nail Trim"],
-          cost: "$50.00"
-        }
-      ]
-    },
-    {
-      id: "4",
-      date: "Dec 5, 2024",
-      total: "$125.00",
-      paid: "$85.00",
-      tip: "$40.00",
-      method: "Credit Card",
-      status: "Paid",
-      pets: [
-        {
-          name: "Luna",
-          services: ["Full Groom Package", "Ear Cleaning"],
-          cost: "$85.00"
-        }
-      ]
-    },
-    {
-      id: "5",
-      date: "Nov 5, 2024",
-      total: "$180.00",
-      paid: "$130.00",
-      tip: "$50.00",
-      method: "Credit Card",
-      status: "Paid",
-      pets: [
-        {
-          name: "Trying",
-          services: ["Full Groom Package", "Teeth Brushing"],
-          cost: "$85.00"
-        },
-        {
-          name: "Max",
-          services: ["Bath & Brush", "Nail Trim"],
-          cost: "$45.00"
-        }
-      ]
-    }
-  ]
 
   interface MedicalRecord {
     type: string
@@ -426,14 +333,22 @@ export function ClientProfile() {
               <Button
                 variant="secondary"
                 className="font-semibold transition-all duration-200 text-sm"
+                onClick={() => navigate(`/clients/${clientId}/add-pet`)}
               >
                 <Plus size={16} className="mr-1" />
                 Add Pet
               </Button>
-              <PaymentHistoryDialog clientName="George moodys" payments={paymentHistory} />
               <Button
                 variant="secondary"
                 className="font-semibold transition-all duration-200 text-sm"
+                onClick={() => navigate(`/clients/${clientId}/payment-history`)}
+              >
+                Payment History
+              </Button>
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 text-sm"
+                onClick={() => navigate(`/clients/${clientId}/contact`)}
               >
                 Contact
               </Button>
@@ -446,14 +361,22 @@ export function ClientProfile() {
               <Button
                 variant="secondary"
                 className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => navigate(`/clients/${clientId}/add-pet`)}
               >
                 <Plus size={18} className="mr-2" />
                 Add Pet
               </Button>
-              <PaymentHistoryDialog clientName="George moodys" payments={paymentHistory} />
               <Button
                 variant="secondary"
                 className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => navigate(`/clients/${clientId}/payment-history`)}
+              >
+                Payment History
+              </Button>
+              <Button
+                variant="secondary"
+                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                onClick={() => navigate(`/clients/${clientId}/contact`)}
               >
                 Contact
               </Button>
@@ -461,6 +384,7 @@ export function ClientProfile() {
                 variant="ghost"
                 size="icon"
                 className="hover:bg-secondary transition-all duration-200"
+                onClick={() => navigate(`/clients/${clientId}/edit`)}
               >
                 <PencilSimple size={20} />
               </Button>

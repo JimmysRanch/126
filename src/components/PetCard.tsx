@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion, AnimatePresence } from "framer-motion"
+import { EditPetDialog } from "@/components/EditPetDialog"
 
 interface PetCardProps {
   id: string
@@ -91,16 +92,25 @@ export function PetCard({
               opacity: isFlipped ? 0 : 1
             }}
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 h-6 w-6 hover:bg-secondary transition-all duration-200 z-10"
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
+            <div 
+              className="absolute top-2 right-2 z-10"
+              onClick={(e) => e.stopPropagation()}
             >
-              <PencilSimple size={14} />
-            </Button>
+              <EditPetDialog
+                petId={id}
+                petName={name}
+                breed={breed}
+                age={age || ''}
+                weight={weight || ''}
+                color={color || ''}
+                sex={sex || ''}
+                haircut={haircut}
+                shampoo={shampoo}
+                favoriteGroomer={favoriteGroomer}
+                specialInstructions={specialInstructions}
+                temperament={temperament}
+              />
+            </div>
 
             <div className="mb-3">
               <h3 className="text-lg font-bold flex items-center gap-2">
@@ -208,16 +218,22 @@ export function PetCard({
                 <Scissors size={18} className="text-primary" weight="fill" />
                 Grooming Preferences
               </h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 hover:bg-secondary transition-all duration-200"
-                onClick={(e) => {
-                  e.stopPropagation()
-                }}
-              >
-                <PencilSimple size={14} />
-              </Button>
+              <div onClick={(e) => e.stopPropagation()}>
+                <EditPetDialog
+                  petId={id}
+                  petName={name}
+                  breed={breed}
+                  age={age || ''}
+                  weight={weight || ''}
+                  color={color || ''}
+                  sex={sex || ''}
+                  haircut={haircut}
+                  shampoo={shampoo}
+                  favoriteGroomer={favoriteGroomer}
+                  specialInstructions={specialInstructions}
+                  temperament={temperament}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
