@@ -15,6 +15,7 @@ import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { Appointments } from '@/pages/Appointments'
 import { NewAppointment } from '@/pages/NewAppointment'
+import { EditAppointment } from '@/pages/EditAppointment'
 import { POS } from '@/pages/POS'
 import { Inventory } from '@/pages/Inventory'
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/appointments/new" element={<NewAppointment />} />
+          <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
           <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
           <Route path="/clients" element={<ClientsList />} />
           <Route path="/clients/new" element={<AddClient />} />

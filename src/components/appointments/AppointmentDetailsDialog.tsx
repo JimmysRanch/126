@@ -6,7 +6,8 @@ import { Appointment } from "@/lib/types"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import { PawPrint, User, Clock, CurrencyDollar } from "@phosphor-icons/react"
+import { PawPrint, User, Clock, CurrencyDollar, PencilSimple } from "@phosphor-icons/react"
+import { useNavigate } from "react-router-dom"
 
 interface AppointmentDetailsDialogProps {
   appointment: Appointment
@@ -16,6 +17,7 @@ interface AppointmentDetailsDialogProps {
 
 export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: AppointmentDetailsDialogProps) {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
+  const navigate = useNavigate()
 
   const handleStatusChange = (newStatus: Appointment['status']) => {
     setAppointments((current) => 
@@ -131,6 +133,17 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
           <Separator />
 
           <div className="flex gap-2 flex-wrap">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                onOpenChange(false)
+                navigate(`/appointments/${appointment.id}/edit`)
+              }}
+              className="flex-1"
+            >
+              <PencilSimple className="mr-2" />
+              Edit
+            </Button>
             {appointment.status === 'scheduled' && (
               <Button onClick={() => handleStatusChange('checked-in')} className="flex-1">
                 Check In
