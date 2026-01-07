@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import { BreedCombobox } from "@/components/BreedCombobox"
+import { DOG_BREEDS } from "@/lib/breeds"
 
 export function AddPet() {
   const navigate = useNavigate()
@@ -26,6 +28,7 @@ export function AddPet() {
   const [specialInstructions, setSpecialInstructions] = useState('')
   const [notes, setNotes] = useState('')
   const [temperament, setTemperament] = useState('')
+  const [breedError, setBreedError] = useState(false)
 
   const validateForm = () => {
     if (!name.trim()) {
@@ -44,8 +47,9 @@ export function AddPet() {
       toast.error('Please select a gender')
       return false
     }
-    if (!breed.trim()) {
-      toast.error('Please enter a breed')
+    if (!breed.trim() || !DOG_BREEDS.includes(breed as any)) {
+      setBreedError(true)
+      toast.error('Please select a breed from the list')
       return false
     }
     return true
@@ -149,12 +153,24 @@ export function AddPet() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="breed">Breed *</Label>
-                <Input
+                <BreedCombobox
                   id="breed"
                   value={breed}
-                  onChange={(e) => setBreed(e.target.value)}
-                  placeholder="Labrador Retriever"
+                  onChange={(value) => {
+                    setBreed(value)
+                    setBreedError(false)
+                  }}
+                  onBlur={() => {
+                    if (!DOG_BREEDS.includes(breed as any)) {
+                      setBreedError(true)
+                    }
+                  }}
+                  error={breedError}
                 />
+                <p className="text-xs text-muted-foreground">Select a breed from the list</p>
+                {breedError && (
+                  <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="mixed-breed">Mixed Breed (if applicable)</Label>

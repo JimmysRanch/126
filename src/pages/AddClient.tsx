@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import { BreedCombobox } from "@/components/BreedCombobox"
+import { DOG_BREEDS } from "@/lib/breeds"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -37,6 +39,7 @@ interface PetInfo {
   breed: string
   mixedBreed: string
   notes: string
+  breedError?: boolean
 }
 
 export function AddClient() {
@@ -61,7 +64,8 @@ export function AddClient() {
       gender: '',
       breed: '',
       mixedBreed: '',
-      notes: ''
+      notes: '',
+      breedError: false
     }
   ])
 
@@ -74,7 +78,8 @@ export function AddClient() {
       gender: '',
       breed: '',
       mixedBreed: '',
-      notes: ''
+      notes: '',
+      breedError: false
     }
     setPets([...pets, newPet])
   }
@@ -168,8 +173,9 @@ export function AddClient() {
         toast.error(`Please select a gender for ${pet.name || `pet ${i + 1}`}`)
         return false
       }
-      if (!pet.breed.trim()) {
-        toast.error(`Please enter a breed for ${pet.name || `pet ${i + 1}`}`)
+      if (!pet.breed.trim() || !DOG_BREEDS.includes(pet.breed as any)) {
+        setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
+        toast.error(`Please select a breed from the list for ${pet.name || `pet ${i + 1}`}`)
         return false
       }
     }
@@ -379,12 +385,24 @@ export function AddClient() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
-                  <Input
+                  <BreedCombobox
                     id={`pet-breed-${pet.id}`}
                     value={pet.breed}
-                    onChange={(e) => updatePet(pet.id, 'breed', e.target.value)}
-                    placeholder="Lab"
+                    onChange={(value) => {
+                      updatePet(pet.id, 'breed', value)
+                      setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: false } : p))
+                    }}
+                    onBlur={() => {
+                      if (!DOG_BREEDS.includes(pet.breed as any)) {
+                        setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
+                      }
+                    }}
+                    error={pet.breedError}
                   />
+                  <p className="text-xs text-muted-foreground">Select a breed from the list</p>
+                  {pet.breedError && (
+                    <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed</Label>
