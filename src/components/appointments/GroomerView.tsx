@@ -2,17 +2,21 @@ import { useState } from 'react'
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Staff } from "@/lib/types"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
-import { format, addDays, subDays } from "date-fns"
+import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+
+type ViewMode = 'day' | 'week' | 'month'
 
 export function GroomerView() {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [viewMode, setViewMode] = useState<ViewMode>('day')
 
   const groomers = Array.from(
     new Set((appointments || []).map(apt => apt.groomerId))
@@ -24,15 +28,68 @@ export function GroomerView() {
     }
   })
 
+  const getDateRange = () => {
+    switch (viewMode) {
+      case 'week':
+        return {
+          start: startOfWeek(currentDate, { weekStartsOn: 0 }),
+          end: endOfWeek(currentDate, { weekStartsOn: 0 })
+        }
+      case 'month':
+        return {
+          start: startOfMonth(currentDate),
+          end: endOfMonth(currentDate)
+        }
+      default:
+        return {
+          start: currentDate,
+          end: currentDate
+        }
+    }
+  }
+
   const getGroomerAppointments = (groomerId: string) => {
-    const dateStr = currentDate.toISOString().split('T')[0]
+    const { start, end } = getDateRange()
     return (appointments || [])
-      .filter(apt => apt.groomerId === groomerId && apt.status !== 'cancelled' && apt.date === dateStr)
+      .filter(apt => {
+        if (apt.groomerId !== groomerId || apt.status === 'cancelled') return false
+        const aptDate = new Date(apt.date)
+        if (viewMode === 'day') {
+          const dateStr = currentDate.toISOString().split('T')[0]
+          return apt.date === dateStr
+        }
+        return isWithinInterval(aptDate, { start, end })
+      })
       .sort((a, b) => {
         const dateA = new Date(`${a.date} ${a.startTime}`)
         const dateB = new Date(`${b.date} ${b.startTime}`)
         return dateA.getTime() - dateB.getTime()
       })
+  }
+
+  const navigateDate = (direction: 'prev' | 'next') => {
+    switch (viewMode) {
+      case 'week':
+        setCurrentDate(direction === 'prev' ? subWeeks(currentDate, 1) : addWeeks(currentDate, 1))
+        break
+      case 'month':
+        setCurrentDate(direction === 'prev' ? subMonths(currentDate, 1) : addMonths(currentDate, 1))
+        break
+      default:
+        setCurrentDate(direction === 'prev' ? subDays(currentDate, 1) : addDays(currentDate, 1))
+    }
+  }
+
+  const getHeaderText = () => {
+    const { start, end } = getDateRange()
+    switch (viewMode) {
+      case 'week':
+        return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+      case 'month':
+        return format(currentDate, 'MMMM yyyy')
+      default:
+        return format(currentDate, 'MMMM d, yyyy')
+    }
   }
 
   const getStatusColor = (status: string) => {
@@ -48,25 +105,34 @@ export function GroomerView() {
   return (
     <div className="space-y-4">
       <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">{format(currentDate, 'MMMM d, yyyy')}</h2>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setCurrentDate(subDays(currentDate, 1))}>
-              <CaretLeft />
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
-              Today
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => setCurrentDate(addDays(currentDate, 1))}>
-              <CaretRight />
-            </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
+          <div className="flex items-center gap-3">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+              <TabsList>
+                <TabsTrigger value="day">Day</TabsTrigger>
+                <TabsTrigger value="week">Week</TabsTrigger>
+                <TabsTrigger value="month">Month</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
+                <CaretLeft />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                Today
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
+                <CaretRight />
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {groomers.map(groomer => {
-          const dayApts = getGroomerAppointments(groomer.id)
+          const groomerApts = getGroomerAppointments(groomer.id)
         
           return (
             <Card key={groomer.id} className="p-4">
@@ -77,19 +143,19 @@ export function GroomerView() {
               <div>
                 <h3 className="font-semibold">{groomer.name}</h3>
                 <p className="text-xs text-muted-foreground">
-                  {dayApts.length} appointment{dayApts.length !== 1 ? 's' : ''}
+                  {groomerApts.length} appointment{groomerApts.length !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>
 
             <div className="space-y-2 max-h-[400px] overflow-y-auto scrollbar-thin">
-              {dayApts.length === 0 ? (
+              {groomerApts.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <PawPrint size={32} className="mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No appointments for this day</p>
+                  <p className="text-sm">No appointments for this {viewMode}</p>
                 </div>
               ) : (
-                dayApts.map(apt => (
+                groomerApts.map(apt => (
                   <button
                     key={apt.id}
                     onClick={() => {
