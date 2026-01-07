@@ -14,6 +14,7 @@ import { StaffProfile } from '@/pages/StaffProfile'
 import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { Appointments } from '@/pages/Appointments'
+import { NewAppointment } from '@/pages/NewAppointment'
 import { POS } from '@/pages/POS'
 import { Inventory } from '@/pages/Inventory'
 
@@ -25,6 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/appointments/new" element={<NewAppointment />} />
           <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
           <Route path="/clients" element={<ClientsList />} />
           <Route path="/clients/new" element={<AddClient />} />

@@ -92,6 +92,7 @@ export function ListView() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
+                      <PawPrint size={16} />
                       <h3 className="font-semibold">{apt.petName}</h3>
                       <Badge variant="secondary" className={getStatusColor(apt.status)}>
                         {apt.status}

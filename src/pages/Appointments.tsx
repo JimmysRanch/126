@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -6,12 +7,11 @@ import { Plus } from "@phosphor-icons/react"
 import { CalendarView } from "@/components/appointments/CalendarView"
 import { ListView } from "@/components/appointments/ListView"
 import { GroomerView } from "@/components/appointments/GroomerView"
-import { CreateAppointmentDialog } from "@/components/appointments/CreateAppointmentDialog"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function Appointments() {
   const [activeView, setActiveView] = useState("calendar")
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const navigate = useNavigate()
   const isMobile = useIsMobile()
 
   return (
@@ -21,7 +21,7 @@ export function Appointments() {
           <h1 className="text-2xl sm:text-3xl font-bold">Appointments</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage your grooming schedule</p>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)} className="w-full sm:w-auto">
+        <Button onClick={() => navigate('/appointments/new')} className="w-full sm:w-auto">
           <Plus className="mr-2" />
           New Appointment
         </Button>
@@ -31,7 +31,7 @@ export function Appointments() {
         <TabsList className={`grid w-full ${isMobile ? 'grid-cols-3' : 'w-auto'}`}>
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="list">List</TabsTrigger>
-          <TabsTrigger value="groomer">By Groomer</TabsTrigger>
+          <TabsTrigger value="groomer">Groomers</TabsTrigger>
         </TabsList>
 
         <TabsContent value="calendar" className="mt-6">
@@ -46,11 +46,6 @@ export function Appointments() {
           <GroomerView />
         </TabsContent>
       </Tabs>
-
-      <CreateAppointmentDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-      />
     </div>
   )
 }

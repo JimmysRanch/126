@@ -50,7 +50,10 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-2xl font-bold">{appointment.petName}</h3>
+              <h3 className="text-2xl font-bold flex items-center gap-2">
+                <PawPrint size={24} />
+                {appointment.petName}
+              </h3>
               <p className="text-muted-foreground">{appointment.clientName}</p>
             </div>
             <Badge className={getStatusColor(appointment.status)}>
