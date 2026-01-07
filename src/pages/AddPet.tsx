@@ -29,6 +29,7 @@ export function AddPet() {
   const [notes, setNotes] = useState('')
   const [temperament, setTemperament] = useState('')
   const [breedError, setBreedError] = useState(false)
+  const [mixedBreedError, setMixedBreedError] = useState(false)
 
   const validateForm = () => {
     if (!name.trim()) {
@@ -174,12 +175,24 @@ export function AddPet() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="mixed-breed">Mixed Breed (if applicable)</Label>
-                <Input
+                <BreedCombobox
                   id="mixed-breed"
                   value={mixedBreed}
-                  onChange={(e) => setMixedBreed(e.target.value)}
-                  placeholder="Poodle"
+                  onChange={(value) => {
+                    setMixedBreed(value)
+                    setMixedBreedError(false)
+                  }}
+                  onBlur={() => {
+                    if (mixedBreed && !DOG_BREEDS.includes(mixedBreed as any)) {
+                      setMixedBreedError(true)
+                    }
+                  }}
+                  error={mixedBreedError}
                 />
+                <p className="text-xs text-muted-foreground">Select a second breed if mixed</p>
+                {mixedBreedError && (
+                  <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="color">Color</Label>

@@ -40,6 +40,7 @@ interface PetInfo {
   mixedBreed: string
   notes: string
   breedError?: boolean
+  mixedBreedError?: boolean
 }
 
 export function AddClient() {
@@ -65,7 +66,8 @@ export function AddClient() {
       breed: '',
       mixedBreed: '',
       notes: '',
-      breedError: false
+      breedError: false,
+      mixedBreedError: false
     }
   ])
 
@@ -79,7 +81,8 @@ export function AddClient() {
       breed: '',
       mixedBreed: '',
       notes: '',
-      breedError: false
+      breedError: false,
+      mixedBreedError: false
     }
     setPets([...pets, newPet])
   }
@@ -405,13 +408,25 @@ export function AddClient() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed</Label>
-                  <Input
+                  <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed (if applicable)</Label>
+                  <BreedCombobox
                     id={`pet-mixed-breed-${pet.id}`}
                     value={pet.mixedBreed}
-                    onChange={(e) => updatePet(pet.id, 'mixedBreed', e.target.value)}
-                    placeholder="Enter mixed breed (if applicable)"
+                    onChange={(value) => {
+                      updatePet(pet.id, 'mixedBreed', value)
+                      setPets(pets.map(p => p.id === pet.id ? { ...p, mixedBreedError: false } : p))
+                    }}
+                    onBlur={() => {
+                      if (pet.mixedBreed && !DOG_BREEDS.includes(pet.mixedBreed as any)) {
+                        setPets(pets.map(p => p.id === pet.id ? { ...p, mixedBreedError: true } : p))
+                      }
+                    }}
+                    error={pet.mixedBreedError}
                   />
+                  <p className="text-xs text-muted-foreground">Select a second breed if mixed</p>
+                  {pet.mixedBreedError && (
+                    <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday *</Label>
