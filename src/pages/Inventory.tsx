@@ -90,7 +90,7 @@ const DEFAULT_INVENTORY: InventoryItem[] = [
 ]
 
 export function Inventory() {
-  const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", DEFAULT_INVENTORY)
+  const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
