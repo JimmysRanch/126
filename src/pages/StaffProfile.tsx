@@ -175,7 +175,7 @@ export function StaffProfile() {
               <DialogTrigger asChild>
                 <Button
                   variant="secondary"
-                  className={`font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'flex-1' : ''}`}
+                  className={`font-semibold transition-colors duration-200 ${isMobile ? 'flex-1' : ''}`}
                 >
                   Contact
                 </Button>
@@ -205,7 +205,7 @@ export function StaffProfile() {
             <Button
               variant="ghost"
               size="icon"
-              className="hover:bg-secondary transition-all duration-200 shrink-0"
+              className="hover:bg-secondary transition-colors duration-200 shrink-0"
               onClick={() => setIsEditDialogOpen(true)}
             >
               <PencilSimple size={isMobile ? 18 : 20} />

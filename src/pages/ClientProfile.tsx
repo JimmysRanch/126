@@ -327,12 +327,12 @@ export function ClientProfile() {
           
           {isMobile ? (
             <div className="grid grid-cols-2 gap-2 w-full">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 text-sm">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200 text-sm">
                 Add Appt
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 text-sm"
+                className="font-semibold transition-colors duration-200 text-sm"
                 onClick={() => navigate(`/clients/${clientId}/add-pet`)}
               >
                 <Plus size={16} className="mr-1" />
@@ -340,14 +340,14 @@ export function ClientProfile() {
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 text-sm"
+                className="font-semibold transition-colors duration-200 text-sm"
                 onClick={() => navigate(`/clients/${clientId}/payment-history`)}
               >
                 Payment History
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 text-sm"
+                className="font-semibold transition-colors duration-200 text-sm"
                 onClick={() => navigate(`/clients/${clientId}/contact`)}
               >
                 Contact
@@ -355,12 +355,12 @@ export function ClientProfile() {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02]">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200">
                 Add Appointment
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                className="font-semibold transition-colors duration-200"
                 onClick={() => navigate(`/clients/${clientId}/add-pet`)}
               >
                 <Plus size={18} className="mr-2" />
@@ -368,14 +368,14 @@ export function ClientProfile() {
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                className="font-semibold transition-colors duration-200"
                 onClick={() => navigate(`/clients/${clientId}/payment-history`)}
               >
                 Payment History
               </Button>
               <Button
                 variant="secondary"
-                className="font-semibold transition-all duration-200 hover:scale-[1.02]"
+                className="font-semibold transition-colors duration-200"
                 onClick={() => navigate(`/clients/${clientId}/contact`)}
               >
                 Contact
@@ -383,7 +383,7 @@ export function ClientProfile() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-secondary transition-all duration-200"
+                className="hover:bg-secondary transition-colors duration-200"
                 onClick={() => navigate(`/clients/${clientId}/edit`)}
               >
                 <PencilSimple size={20} />

@@ -3,7 +3,6 @@ import { PawPrint, PencilSimple, Calendar, Scissors, Star } from "@phosphor-icon
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { motion, AnimatePresence } from "framer-motion"
 import { EditPetDialog } from "@/components/EditPetDialog"
 
 interface PetCardProps {
@@ -48,41 +47,21 @@ export function PetCard({
   const [isFlipped, setIsFlipped] = useState(false)
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
+    <div
       className="h-full min-h-[320px] relative"
       style={{ perspective: "1000px" }}
     >
-      <motion.div
-        className="absolute inset-0 rounded-lg blur-lg pointer-events-none"
-        animate={{
-          opacity: [0.3, 0.5, 0.3],
-          background: [
-            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.5), transparent 60%)",
-            "radial-gradient(circle at 80% 20%, oklch(0.75 0.15 195 / 0.7), transparent 60%)",
-            "radial-gradient(circle at 40% 50%, oklch(0.75 0.15 195 / 0.6), transparent 60%)",
-            "radial-gradient(circle at 20% 80%, oklch(0.75 0.15 195 / 0.5), transparent 60%)"
-          ]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: index * 0.7
-        }}
-      />
       <div
         className="relative w-full h-full cursor-pointer z-10"
         style={{ transformStyle: "preserve-3d" }}
         onClick={() => setIsFlipped(!isFlipped)}
       >
-        <motion.div
-          animate={{ rotateY: isFlipped ? 180 : 0 }}
-          transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-          className="w-full h-full relative"
-          style={{ transformStyle: "preserve-3d" }}
+        <div
+          className="w-full h-full relative transition-transform duration-600"
+          style={{ 
+            transformStyle: "preserve-3d",
+            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+          }}
         >
           <Card 
             className="p-3 border-border bg-card hover:border-primary/50 transition-all duration-200 h-full"
@@ -181,7 +160,7 @@ export function PetCard({
               <Button
                 size="sm"
                 variant="secondary"
-                className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+                className="font-semibold text-xs transition-colors duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
                 Add Note
@@ -189,7 +168,7 @@ export function PetCard({
               <Button
                 size="sm"
                 variant="secondary"
-                className="font-semibold text-xs transition-all duration-200 hover:scale-[1.02]"
+                className="font-semibold text-xs transition-colors duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
                 Upload Photo
@@ -295,8 +274,8 @@ export function PetCard({
               Click to flip back
             </div>
           </Card>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

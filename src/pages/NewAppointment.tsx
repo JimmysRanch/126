@@ -198,8 +198,8 @@ export function NewAppointment() {
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      <div className="mb-6">
-        <Button variant="ghost" onClick={() => navigate('/appointments')} className="mb-4">
+      <div className="mb-4">
+        <Button variant="ghost" onClick={() => navigate('/appointments')} className="mb-2">
           <ArrowLeft className="mr-2" />
           Back to Appointments
         </Button>
@@ -209,18 +209,18 @@ export function NewAppointment() {
         </h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Client & Pet Information</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="client">Client *</Label>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 space-y-3">
+          <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Client & Pet Information</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="client" className="text-sm">Client *</Label>
                 <Select value={selectedClient} onValueChange={(value) => {
                   setSelectedClient(value)
                   setSelectedPet("")
                 }}>
-                  <SelectTrigger id="client">
+                  <SelectTrigger id="client" className="h-9">
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent>
@@ -233,10 +233,10 @@ export function NewAppointment() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="pet">Pet *</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="pet" className="text-sm">Pet *</Label>
                 <Select value={selectedPet} onValueChange={setSelectedPet} disabled={!selectedClient}>
-                  <SelectTrigger id="pet">
+                  <SelectTrigger id="pet" className="h-9">
                     <SelectValue placeholder="Select pet" />
                   </SelectTrigger>
                   <SelectContent>
@@ -254,22 +254,22 @@ export function NewAppointment() {
             </div>
 
             {pet && (
-              <Card className="p-3 bg-muted/50 mt-4">
+              <Card className="p-2 bg-muted/50 mt-3">
                 <div className="flex items-center gap-2 text-sm">
-                  <PawPrint size={16} />
+                  <PawPrint size={14} />
                   <span className="font-medium">{pet.name}</span>
                   <span className="text-muted-foreground">•</span>
-                  <span>{pet.breed}</span>
+                  <span className="text-xs">{pet.breed}</span>
                   <span className="text-muted-foreground">•</span>
-                  <Badge variant="secondary">{pet.weight} lbs ({weightCategory})</Badge>
+                  <Badge variant="secondary" className="text-xs">{pet.weight} lbs ({weightCategory})</Badge>
                 </div>
               </Card>
             )}
           </Card>
 
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Main Service *</h2>
-            <div className="space-y-2">
+          <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Main Service *</h2>
+            <div className="space-y-1.5">
               {(mainServices || []).map(service => {
                 const price = weightCategory ? getPriceForWeight(service.pricing, weightCategory) : 0
                 return (
@@ -277,19 +277,19 @@ export function NewAppointment() {
                     key={service.id}
                     disabled={!pet}
                     onClick={() => setSelectedMainService(service.id)}
-                    className={`w-full text-left p-4 border rounded-lg transition-all ${
+                    className={`w-full text-left p-2.5 border rounded-lg transition-all ${
                       selectedMainService === service.id
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50'
                     } ${!pet ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <div className="font-semibold">{service.name}</div>
-                        <div className="text-sm text-muted-foreground mt-1">{service.description}</div>
+                        <div className="font-semibold text-sm">{service.name}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5">{service.description}</div>
                       </div>
                       {pet && (
-                        <div className="text-lg font-bold text-primary">${price}</div>
+                        <div className="text-base font-bold text-primary">${price}</div>
                       )}
                     </div>
                   </button>
@@ -298,9 +298,9 @@ export function NewAppointment() {
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Add-Ons (Optional)</h2>
-            <div className="space-y-2">
+          <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Add-Ons (Optional)</h2>
+            <div className="space-y-1.5">
               {(addOns || []).map(addon => {
                 const isSelected = selectedAddOns.includes(addon.id)
                 const price = addon.hasSizePricing && addon.pricing && weightCategory
@@ -318,19 +318,19 @@ export function NewAppointment() {
                         setSelectedAddOns([...selectedAddOns, addon.id])
                       }
                     }}
-                    className={`w-full text-left p-3 border rounded-lg transition-all ${
+                    className={`w-full text-left p-2 border rounded-lg transition-all ${
                       isSelected
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50'
                     } ${!pet ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Checkbox checked={isSelected} disabled={!pet} />
-                        <span className="font-medium">{addon.name}</span>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={isSelected} disabled={!pet} className="h-4 w-4" />
+                        <span className="font-medium text-sm">{addon.name}</span>
                       </div>
                       {pet && (
-                        <div className="font-semibold text-primary">${price}</div>
+                        <div className="font-semibold text-sm text-primary">${price}</div>
                       )}
                     </div>
                   </button>
@@ -339,24 +339,25 @@ export function NewAppointment() {
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Schedule & Details</h2>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="space-y-2">
-                <Label htmlFor="date">Date *</Label>
+          <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Schedule & Details</h2>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="date" className="text-sm">Date *</Label>
                 <Input
                   id="date"
                   type="date"
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
+                  className="h-9"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="time">Time *</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="time" className="text-sm">Time *</Label>
                 <Select value={appointmentTime} onValueChange={setAppointmentTime}>
-                  <SelectTrigger id="time">
+                  <SelectTrigger id="time" className="h-9">
                     <SelectValue placeholder="Select time" />
                   </SelectTrigger>
                   <SelectContent>
@@ -370,10 +371,10 @@ export function NewAppointment() {
               </div>
             </div>
 
-            <div className="space-y-2 mb-4">
-              <Label htmlFor="groomer">Groomer</Label>
+            <div className="space-y-1.5 mb-3">
+              <Label htmlFor="groomer" className="text-sm">Groomer</Label>
               <Select value={selectedGroomer} onValueChange={setSelectedGroomer}>
-                <SelectTrigger id="groomer">
+                <SelectTrigger id="groomer" className="h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -390,32 +391,33 @@ export function NewAppointment() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="notes" className="text-sm">Notes (Optional)</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any special instructions or notes..."
-                rows={3}
+                rows={2}
+                className="text-sm"
               />
             </div>
           </Card>
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="p-6 sticky top-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Receipt size={20} className="text-primary" />
-              <h3 className="font-semibold">Summary</h3>
+          <Card className="p-4 sticky top-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Receipt size={18} className="text-primary" />
+              <h3 className="font-semibold text-base">Summary</h3>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {pet && (
-                <div className="pb-3 border-b border-border">
-                  <div className="text-sm text-muted-foreground mb-1">Pet</div>
-                  <div className="font-medium flex items-center gap-1">
-                    <PawPrint size={14} />
+                <div className="pb-2 border-b border-border">
+                  <div className="text-xs text-muted-foreground mb-1">Pet</div>
+                  <div className="font-medium text-sm flex items-center gap-1">
+                    <PawPrint size={12} />
                     {pet.name}
                   </div>
                   <div className="text-xs text-muted-foreground">{pet.weight} lbs ({weightCategory})</div>
@@ -423,13 +425,13 @@ export function NewAppointment() {
               )}
 
               {selectedMainService && weightCategory && (
-                <div className="pb-3 border-b border-border">
-                  <div className="text-sm text-muted-foreground mb-2">Main Service</div>
+                <div className="pb-2 border-b border-border">
+                  <div className="text-xs text-muted-foreground mb-1.5">Main Service</div>
                   {(() => {
                     const service = (mainServices || []).find(s => s.id === selectedMainService)
                     const price = service ? getPriceForWeight(service.pricing, weightCategory) : 0
                     return (
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between text-sm">
                         <span className="font-medium">{service?.name}</span>
                         <span className="font-semibold">${price.toFixed(2)}</span>
                       </div>
@@ -439,16 +441,16 @@ export function NewAppointment() {
               )}
 
               {selectedAddOns.length > 0 && weightCategory && (
-                <div className="pb-3 border-b border-border">
-                  <div className="text-sm text-muted-foreground mb-2">Add-Ons</div>
-                  <div className="space-y-2">
+                <div className="pb-2 border-b border-border">
+                  <div className="text-xs text-muted-foreground mb-1.5">Add-Ons</div>
+                  <div className="space-y-1">
                     {selectedAddOns.map(addonId => {
                       const addon = (addOns || []).find(a => a.id === addonId)
                       const price = addon?.hasSizePricing && addon.pricing
                         ? getPriceForWeight(addon.pricing, weightCategory)
                         : (addon?.price || 0)
                       return (
-                        <div key={addonId} className="flex items-center justify-between text-sm">
+                        <div key={addonId} className="flex items-center justify-between text-xs">
                           <span>{addon?.name}</span>
                           <span className="font-semibold">${price.toFixed(2)}</span>
                         </div>
@@ -458,25 +460,25 @@ export function NewAppointment() {
                 </div>
               )}
 
-              <div className="pt-2">
-                <div className="flex items-center justify-between text-lg">
-                  <span className="font-bold">Total</span>
-                  <span className="font-bold text-primary text-2xl">${total.toFixed(2)}</span>
+              <div className="pt-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-base">Total</span>
+                  <span className="font-bold text-primary text-xl">${total.toFixed(2)}</span>
                 </div>
               </div>
 
               {appointmentDate && appointmentTime && (
-                <div className="pt-3 border-t border-border text-sm">
-                  <div className="text-muted-foreground mb-1">Scheduled For</div>
-                  <div className="font-medium">{appointmentDate}</div>
-                  <div className="font-medium">{appointmentTime}</div>
+                <div className="pt-2 border-t border-border">
+                  <div className="text-xs text-muted-foreground mb-1">Scheduled For</div>
+                  <div className="font-medium text-sm">{appointmentDate}</div>
+                  <div className="font-medium text-sm">{appointmentTime}</div>
                 </div>
               )}
 
               {selectedGroomer !== "auto" && (
-                <div className="pt-3 border-t border-border text-sm">
-                  <div className="text-muted-foreground mb-1">Groomer</div>
-                  <div className="font-medium">
+                <div className="pt-2 border-t border-border">
+                  <div className="text-xs text-muted-foreground mb-1">Groomer</div>
+                  <div className="font-medium text-sm">
                     {mockGroomers.find(g => g.id === selectedGroomer)?.name}
                   </div>
                   <Badge variant="secondary" className="text-xs mt-1">Client Requested</Badge>
@@ -486,7 +488,7 @@ export function NewAppointment() {
 
             <Button 
               onClick={handleSubmit} 
-              className="w-full mt-6"
+              className="w-full mt-4 h-9"
               disabled={!selectedClient || !selectedPet || !selectedMainService || !appointmentDate || !appointmentTime}
             >
               Create Appointment

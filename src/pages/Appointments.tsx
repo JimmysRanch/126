@@ -8,7 +8,7 @@ import { GroomerView } from "@/components/appointments/GroomerView"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function Appointments() {
-  const [activeView, setActiveView] = useState("calendar")
+  const [activeView, setActiveView] = useState("groomer")
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
@@ -23,15 +23,15 @@ export function Appointments() {
           
           <div className={`flex ${isMobile ? 'flex-row' : 'items-center'} gap-2 sm:gap-3 ${isMobile ? 'order-3' : ''}`}>
             <Button
-              onClick={() => setActiveView("calendar")}
-              variant={activeView === "calendar" ? "default" : "secondary"}
+              onClick={() => setActiveView("groomer")}
+              variant={activeView === "groomer" ? "default" : "secondary"}
               className={`rounded-full ${isMobile ? 'flex-1' : 'px-6'} font-medium transition-all duration-200 ${
-                activeView === "calendar" 
+                activeView === "groomer" 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                   : "bg-secondary/50 hover:bg-secondary"
               }`}
             >
-              Calendar
+              Groomers
             </Button>
             <Button
               onClick={() => setActiveView("list")}
@@ -45,15 +45,15 @@ export function Appointments() {
               List
             </Button>
             <Button
-              onClick={() => setActiveView("groomer")}
-              variant={activeView === "groomer" ? "default" : "secondary"}
+              onClick={() => setActiveView("calendar")}
+              variant={activeView === "calendar" ? "default" : "secondary"}
               className={`rounded-full ${isMobile ? 'flex-1' : 'px-6'} font-medium transition-all duration-200 ${
-                activeView === "groomer" 
+                activeView === "calendar" 
                   ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                   : "bg-secondary/50 hover:bg-secondary"
               }`}
             >
-              Groomers
+              Calendar
             </Button>
           </div>
 
