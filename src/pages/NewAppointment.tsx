@@ -10,10 +10,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
-import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X } from "@phosphor-icons/react"
+import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X, Check, CaretUpDown } from "@phosphor-icons/react"
 
 interface Client {
   id: string
@@ -39,7 +41,7 @@ export function NewAppointment() {
   const [addOns] = useKV<AddOn[]>("service-addons", [])
 
   const [selectedClient, setSelectedClient] = useState("")
-  const [selectedPet, setSelectedPet] = useState("")
+  const [selectedPets, setSelectedPets] = useState<string[]>([])
   const [selectedMainService, setSelectedMainService] = useState("")
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
   const [selectedGroomer, setSelectedGroomer] = useState("auto")
@@ -55,6 +57,9 @@ export function NewAppointment() {
   const [photoWant, setPhotoWant] = useState<File | null>(null)
   const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
   const [styleConfirmed, setStyleConfirmed] = useState(false)
+  
+  const [openClientCombobox, setOpenClientCombobox] = useState(false)
+  const [clientSearch, setClientSearch] = useState("")
 
   const mockClients: Client[] = [
     {
@@ -89,37 +94,49 @@ export function NewAppointment() {
   ]
 
   const client = mockClients.find(c => c.id === selectedClient)
-  const pet = client?.pets.find(p => p.id === selectedPet)
-  const weightCategory = pet ? getWeightCategory(pet.weight) : null
+  const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
+  
+  const togglePet = (petId: string) => {
+    if (selectedPets.includes(petId)) {
+      setSelectedPets(selectedPets.filter(id => id !== petId))
+    } else {
+      setSelectedPets([...selectedPets, petId])
+    }
+  }
 
   const calculateTotal = () => {
     let total = 0
 
-    if (selectedMainService && weightCategory) {
-      const mainService = (mainServices || []).find(s => s.id === selectedMainService)
-      if (mainService) {
-        total += getPriceForWeight(mainService.pricing, weightCategory)
-      }
-    }
-
-    selectedAddOns.forEach(addonId => {
-      const addon = (addOns || []).find(a => a.id === addonId)
-      if (addon) {
-        if (addon.hasSizePricing && addon.pricing && weightCategory) {
-          total += getPriceForWeight(addon.pricing, weightCategory)
-        } else if (addon.price) {
-          total += addon.price
+    selectedPetsData.forEach(pet => {
+      const weightCategory = getWeightCategory(pet.weight)
+      
+      if (selectedMainService) {
+        const mainService = (mainServices || []).find(s => s.id === selectedMainService)
+        if (mainService) {
+          total += getPriceForWeight(mainService.pricing, weightCategory)
         }
       }
+
+      selectedAddOns.forEach(addonId => {
+        const addon = (addOns || []).find(a => a.id === addonId)
+        if (addon) {
+          if (addon.hasSizePricing && addon.pricing) {
+            total += getPriceForWeight(addon.pricing, weightCategory)
+          } else if (addon.price) {
+            total += addon.price
+          }
+        }
+      })
     })
 
     return total
   }
 
-  const getServicesList = (): AppointmentService[] => {
+  const getServicesList = (pet: { weight: number }): AppointmentService[] => {
     const services: AppointmentService[] = []
+    const weightCategory = getWeightCategory(pet.weight)
 
-    if (selectedMainService && weightCategory) {
+    if (selectedMainService) {
       const mainService = (mainServices || []).find(s => s.id === selectedMainService)
       if (mainService) {
         services.push({
@@ -134,7 +151,7 @@ export function NewAppointment() {
     selectedAddOns.forEach(addonId => {
       const addon = (addOns || []).find(a => a.id === addonId)
       if (addon) {
-        const price = addon.hasSizePricing && addon.pricing && weightCategory
+        const price = addon.hasSizePricing && addon.pricing
           ? getPriceForWeight(addon.pricing, weightCategory)
           : (addon.price || 0)
         
@@ -161,7 +178,7 @@ export function NewAppointment() {
   }
 
   const handleSubmit = () => {
-    if (!selectedClient || !selectedPet || !selectedMainService || !appointmentDate || !appointmentTime) {
+    if (!selectedClient || selectedPets.length === 0 || !selectedMainService || !appointmentDate || !appointmentTime) {
       toast.error("Please fill in all required fields")
       return
     }
@@ -186,30 +203,53 @@ export function NewAppointment() {
       photoDontWant: photoDontWant?.name || null
     }
 
-    const newAppointment: Appointment = {
-      id: Date.now().toString(),
-      clientId: selectedClient,
-      clientName: client?.name || "",
-      petId: selectedPet,
-      petName: pet?.name || "",
-      petWeight: pet?.weight || 0,
-      petWeightCategory: weightCategory || 'medium',
-      groomerId: groomer.id,
-      groomerName: groomer.name,
-      groomerRequested: selectedGroomer !== "auto",
-      date: appointmentDate,
-      startTime: appointmentTime,
-      endTime: "",
-      services: getServicesList(),
-      totalPrice: calculateTotal(),
-      status: 'scheduled',
-      notes,
-      groomingPreferences,
-      createdAt: new Date().toISOString()
-    }
+    const newAppointments: Appointment[] = selectedPetsData.map(pet => {
+      const weightCategory = getWeightCategory(pet.weight)
+      
+      return {
+        id: Date.now().toString() + "-" + pet.id,
+        clientId: selectedClient,
+        clientName: client?.name || "",
+        petId: pet.id,
+        petName: pet.name,
+        petWeight: pet.weight,
+        petWeightCategory: weightCategory,
+        groomerId: groomer.id,
+        groomerName: groomer.name,
+        groomerRequested: selectedGroomer !== "auto",
+        date: appointmentDate,
+        startTime: appointmentTime,
+        endTime: "",
+        services: getServicesList(pet),
+        totalPrice: (() => {
+          let total = 0
+          if (selectedMainService) {
+            const mainService = (mainServices || []).find(s => s.id === selectedMainService)
+            if (mainService) {
+              total += getPriceForWeight(mainService.pricing, weightCategory)
+            }
+          }
+          selectedAddOns.forEach(addonId => {
+            const addon = (addOns || []).find(a => a.id === addonId)
+            if (addon) {
+              if (addon.hasSizePricing && addon.pricing) {
+                total += getPriceForWeight(addon.pricing, weightCategory)
+              } else if (addon.price) {
+                total += addon.price
+              }
+            }
+          })
+          return total
+        })(),
+        status: 'scheduled',
+        notes,
+        groomingPreferences,
+        createdAt: new Date().toISOString()
+      }
+    })
 
-    setAppointments((current) => [...(current || []), newAppointment])
-    toast.success("Appointment created successfully!")
+    setAppointments((current) => [...(current || []), ...newAppointments])
+    toast.success(`${newAppointments.length} appointment${newAppointments.length > 1 ? 's' : ''} created successfully!`)
     navigate('/appointments')
   }
 
@@ -263,93 +303,118 @@ export function NewAppointment() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-3">
           <Card className="p-4">
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="client" className="text-sm">Client *</Label>
-                <Select value={selectedClient} onValueChange={(value) => {
-                  setSelectedClient(value)
-                  setSelectedPet("")
-                }}>
-                  <SelectTrigger id="client" className="h-9">
-                    <SelectValue placeholder="Select client" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockClients.map(client => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={openClientCombobox} onOpenChange={setOpenClientCombobox}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openClientCombobox}
+                      className="w-full justify-between h-9 font-normal"
+                    >
+                      {selectedClient
+                        ? mockClients.find(c => c.id === selectedClient)?.name
+                        : "Search or select client..."}
+                      <CaretUpDown className="ml-2 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search clients..." />
+                      <CommandList>
+                        <CommandEmpty>No client found.</CommandEmpty>
+                        <CommandGroup>
+                          {mockClients.map((client) => (
+                            <CommandItem
+                              key={client.id}
+                              value={client.name}
+                              onSelect={() => {
+                                setSelectedClient(client.id)
+                                setSelectedPets([])
+                                setOpenClientCombobox(false)
+                              }}
+                            >
+                              <Check
+                                className={selectedClient === client.id ? "opacity-100" : "opacity-0"}
+                              />
+                              {client.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="pet" className="text-sm">Pet *</Label>
-                <Select value={selectedPet} onValueChange={setSelectedPet} disabled={!selectedClient}>
-                  <SelectTrigger id="pet" className="h-9">
-                    <SelectValue placeholder="Select pet" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {client?.pets.map(pet => (
-                      <SelectItem key={pet.id} value={pet.id}>
-                        <span className="flex items-center gap-1">
-                          <PawPrint size={14} />
-                          {pet.name} ({pet.weight} lbs)
-                        </span>
-                      </SelectItem>
+              {client && client.pets.length > 0 && (
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Select Pet(s) *</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {client.pets.map(pet => (
+                      <button
+                        key={pet.id}
+                        onClick={() => togglePet(pet.id)}
+                        className={`px-3 py-2 rounded-full border-2 transition-all flex items-center gap-2 ${
+                          selectedPets.includes(pet.id)
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border hover:border-primary'
+                        }`}
+                      >
+                        <PawPrint size={16} />
+                        <span className="font-medium text-sm">{pet.name}</span>
+                        <span className="text-xs opacity-75">({pet.weight} lbs)</span>
+                      </button>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button
               variant="outline"
               size="sm"
               onClick={() => navigate('/clients/new')}
-              className="w-full"
+              className="w-full mt-3"
             >
               <Plus className="mr-2" size={16} />
               Create New Client
             </Button>
-
-            {pet && (
-              <Card className="p-2 bg-muted/50 mt-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <PawPrint size={14} />
-                  <span className="font-medium">{pet.name}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-xs">{pet.breed}</span>
-                  <span className="text-muted-foreground">•</span>
-                  <Badge variant="secondary" className="text-xs">{pet.weight} lbs ({weightCategory})</Badge>
-                </div>
-              </Card>
-            )}
           </Card>
 
           <Card className="p-4">
             <h2 className="text-base font-semibold mb-3">Main Service *</h2>
             <div className="space-y-1.5">
               {(mainServices || []).map(service => {
-                const price = weightCategory ? getPriceForWeight(service.pricing, weightCategory) : 0
+                const displayPrice = selectedPetsData.length > 0 
+                  ? selectedPetsData.reduce((sum, pet) => {
+                      const weightCategory = getWeightCategory(pet.weight)
+                      return sum + getPriceForWeight(service.pricing, weightCategory)
+                    }, 0)
+                  : 0
                 return (
                   <button
                     key={service.id}
-                    disabled={!pet}
+                    disabled={selectedPets.length === 0}
                     onClick={() => setSelectedMainService(service.id)}
                     className={`w-full text-left p-2.5 border rounded-lg transition-all ${
                       selectedMainService === service.id
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50'
-                    } ${!pet ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    } ${selectedPets.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <div className="font-semibold text-sm">{service.name}</div>
                         <div className="text-xs text-muted-foreground mt-0.5">{service.description}</div>
                       </div>
-                      {pet && (
-                        <div className="text-base font-bold text-primary">${price}</div>
+                      {selectedPets.length > 0 && (
+                        <div className="text-base font-bold text-primary">
+                          ${displayPrice.toFixed(2)}
+                          {selectedPets.length > 1 && <span className="text-xs ml-1">({selectedPets.length} pets)</span>}
+                        </div>
                       )}
                     </div>
                   </button>
@@ -363,14 +428,20 @@ export function NewAppointment() {
             <div className="space-y-1.5">
               {(addOns || []).map(addon => {
                 const isSelected = selectedAddOns.includes(addon.id)
-                const price = addon.hasSizePricing && addon.pricing && weightCategory
-                  ? getPriceForWeight(addon.pricing, weightCategory)
-                  : (addon.price || 0)
+                const displayPrice = selectedPetsData.length > 0 
+                  ? selectedPetsData.reduce((sum, pet) => {
+                      const weightCategory = getWeightCategory(pet.weight)
+                      const price = addon.hasSizePricing && addon.pricing
+                        ? getPriceForWeight(addon.pricing, weightCategory)
+                        : (addon.price || 0)
+                      return sum + price
+                    }, 0)
+                  : 0
 
                 return (
                   <button
                     key={addon.id}
-                    disabled={!pet}
+                    disabled={selectedPets.length === 0}
                     onClick={() => {
                       if (isSelected) {
                         setSelectedAddOns(selectedAddOns.filter(id => id !== addon.id))
@@ -382,15 +453,18 @@ export function NewAppointment() {
                       isSelected
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/50'
-                    } ${!pet ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    } ${selectedPets.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <Checkbox checked={isSelected} disabled={!pet} className="h-4 w-4" />
+                        <Checkbox checked={isSelected} disabled={selectedPets.length === 0} className="h-4 w-4" />
                         <span className="font-medium text-sm">{addon.name}</span>
                       </div>
-                      {pet && (
-                        <div className="font-semibold text-sm text-primary">${price}</div>
+                      {selectedPets.length > 0 && (
+                        <div className="font-semibold text-sm text-primary">
+                          ${displayPrice.toFixed(2)}
+                          {selectedPets.length > 1 && <span className="text-xs ml-1">({selectedPets.length} pets)</span>}
+                        </div>
                       )}
                     </div>
                   </button>
@@ -636,46 +710,57 @@ export function NewAppointment() {
             </div>
 
             <div className="space-y-2">
-              {pet && (
+              {selectedPetsData.length > 0 && (
                 <div className="pb-2 border-b border-border">
-                  <div className="text-xs text-muted-foreground mb-1">Pet</div>
-                  <div className="font-medium text-sm flex items-center gap-1">
-                    <PawPrint size={12} />
-                    {pet.name}
+                  <div className="text-xs text-muted-foreground mb-1">Pet{selectedPetsData.length > 1 ? 's' : ''}</div>
+                  <div className="space-y-1">
+                    {selectedPetsData.map(pet => (
+                      <div key={pet.id} className="font-medium text-sm flex items-center gap-1">
+                        <PawPrint size={12} />
+                        {pet.name}
+                        <span className="text-xs text-muted-foreground ml-1">({pet.weight} lbs)</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="text-xs text-muted-foreground">{pet.weight} lbs ({weightCategory})</div>
                 </div>
               )}
 
-              {selectedMainService && weightCategory && (
+              {selectedMainService && selectedPetsData.length > 0 && (
                 <div className="pb-2 border-b border-border">
                   <div className="text-xs text-muted-foreground mb-1.5">Main Service</div>
                   {(() => {
                     const service = (mainServices || []).find(s => s.id === selectedMainService)
-                    const price = service ? getPriceForWeight(service.pricing, weightCategory) : 0
+                    const totalPrice = selectedPetsData.reduce((sum, pet) => {
+                      const weightCategory = getWeightCategory(pet.weight)
+                      return sum + (service ? getPriceForWeight(service.pricing, weightCategory) : 0)
+                    }, 0)
                     return (
                       <div className="flex items-center justify-between text-sm">
                         <span className="font-medium">{service?.name}</span>
-                        <span className="font-semibold">${price.toFixed(2)}</span>
+                        <span className="font-semibold">${totalPrice.toFixed(2)}</span>
                       </div>
                     )
                   })()}
                 </div>
               )}
 
-              {selectedAddOns.length > 0 && weightCategory && (
+              {selectedAddOns.length > 0 && selectedPetsData.length > 0 && (
                 <div className="pb-2 border-b border-border">
                   <div className="text-xs text-muted-foreground mb-1.5">Add-Ons</div>
                   <div className="space-y-1">
                     {selectedAddOns.map(addonId => {
                       const addon = (addOns || []).find(a => a.id === addonId)
-                      const price = addon?.hasSizePricing && addon.pricing
-                        ? getPriceForWeight(addon.pricing, weightCategory)
-                        : (addon?.price || 0)
+                      const totalPrice = selectedPetsData.reduce((sum, pet) => {
+                        const weightCategory = getWeightCategory(pet.weight)
+                        const price = addon?.hasSizePricing && addon.pricing
+                          ? getPriceForWeight(addon.pricing, weightCategory)
+                          : (addon?.price || 0)
+                        return sum + price
+                      }, 0)
                       return (
                         <div key={addonId} className="flex items-center justify-between text-xs">
                           <span>{addon?.name}</span>
-                          <span className="font-semibold">${price.toFixed(2)}</span>
+                          <span className="font-semibold">${totalPrice.toFixed(2)}</span>
                         </div>
                       )
                     })}
@@ -688,6 +773,9 @@ export function NewAppointment() {
                   <span className="font-bold text-base">Total</span>
                   <span className="font-bold text-primary text-xl">${total.toFixed(2)}</span>
                 </div>
+                {selectedPets.length > 1 && (
+                  <div className="text-xs text-muted-foreground mt-1">For {selectedPets.length} pets</div>
+                )}
               </div>
 
               {appointmentDate && appointmentTime && (
@@ -712,9 +800,9 @@ export function NewAppointment() {
             <Button 
               onClick={handleSubmit} 
               className="w-full mt-4 h-9"
-              disabled={!selectedClient || !selectedPet || !selectedMainService || !appointmentDate || !appointmentTime || !styleConfirmed}
+              disabled={!selectedClient || selectedPets.length === 0 || !selectedMainService || !appointmentDate || !appointmentTime || !styleConfirmed}
             >
-              Create Appointment
+              Create Appointment{selectedPets.length > 1 ? 's' : ''}
             </Button>
           </Card>
         </div>
