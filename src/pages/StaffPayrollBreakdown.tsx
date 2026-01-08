@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Download, Receipt, Tag, WarningCircle, PawPrint, CreditCard, Money } from "@phosphor-icons/react"
+import { ArrowLeft, Download, Receipt, Tag, WarningCircle, PawPrint, CreditCard, Money, Info } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface AppointmentDetail {
   id: string
@@ -483,8 +484,29 @@ export function StaffPayrollBreakdown() {
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                         Tip Amount
                       </div>
-                      <div className="text-sm font-semibold">
-                        ${apt.tipAmount.toFixed(2)}
+                      <div className="flex items-center gap-1.5">
+                        <div className="text-sm font-semibold">
+                          ${apt.tipAmount.toFixed(2)}
+                        </div>
+                        {apt.tipPaymentMethod === "Cash" && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                                  <Info size={14} weight="fill" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-[250px]">
+                                <p className="text-xs">This cash tip was paid directly to the groomer at time of service and is not included in payroll.</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                        {apt.tipPaymentMethod === "Cash" && (
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            Cash
+                          </Badge>
+                        )}
                       </div>
                     </div>
 
@@ -494,36 +516,6 @@ export function StaffPayrollBreakdown() {
                       </div>
                       <div className="text-sm font-semibold">
                         {apt.paymentMethod}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
-                    <div className="flex items-start gap-2">
-                      {apt.tipPaymentMethod === "Cash" ? (
-                        <Money size={18} className="text-primary mt-0.5 shrink-0" weight="fill" />
-                      ) : (
-                        <CreditCard size={18} className="text-primary mt-0.5 shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="font-semibold text-sm">Tip: ${apt.tipAmount.toFixed(2)}</span>
-                          <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
-                            {apt.tipPaymentMethod}
-                          </Badge>
-                          <Badge 
-                            variant="outline" 
-                            className={apt.tipPaidInPayroll ? "bg-primary/20 border-primary text-xs" : "text-xs"}
-                          >
-                            {apt.tipPaidInPayroll ? "Paid in payroll" : "Paid to groomer (cash)"}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {apt.tipPaidInPayroll 
-                            ? `This ${apt.tipPaymentMethod.toLowerCase()} tip is included in the staff earnings above and will be paid in this payroll cycle.`
-                            : `This ${apt.tipPaymentMethod.toLowerCase()} tip was paid directly to the groomer at time of service and is not included in payroll.`
-                          }
-                        </p>
                       </div>
                     </div>
                   </div>
