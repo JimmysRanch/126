@@ -521,31 +521,28 @@ export function StaffPayrollBreakdown() {
                   </div>
 
                   {apt.discountApplied && (
-                    <div className="border-t border-border pt-3">
-                      <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
-                        <div className="flex items-start gap-2 mb-2">
-                          <Tag size={18} className="text-primary mt-0.5 shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1 flex-wrap">
-                              <span className="font-semibold text-sm">Discount Applied</span>
-                              <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
-                                -${apt.discountAmount.toFixed(2)}
-                              </Badge>
-                            </div>
-                            <div className="text-xs sm:text-sm font-medium text-primary mb-1">
-                              {apt.discountReason}
-                            </div>
+                    <div className="mt-3 border-t border-border pt-3">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className="font-semibold text-sm">Discount Applied</span>
+                            <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
+                              -${apt.discountAmount.toFixed(2)}
+                            </Badge>
+                          </div>
+                          <div className="text-xs sm:text-sm font-medium text-primary mb-1">
+                            {apt.discountReason}
                           </div>
                         </div>
-                        {apt.discountNotes && (
-                          <div className="flex items-start gap-2 ml-6">
-                            <WarningCircle size={16} className="text-muted-foreground mt-0.5 shrink-0" />
-                            <p className="text-xs sm:text-sm text-muted-foreground italic">
-                              {apt.discountNotes}
-                            </p>
-                          </div>
-                        )}
                       </div>
+                      {apt.discountNotes && (
+                        <div className="flex items-start gap-2 ml-6 mt-2">
+                          <WarningCircle size={16} className="text-muted-foreground mt-0.5 shrink-0" />
+                          <p className="text-xs sm:text-sm text-muted-foreground italic">
+                            {apt.discountNotes}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
