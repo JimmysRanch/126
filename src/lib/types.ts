@@ -62,6 +62,14 @@ export interface Appointment {
   totalPrice: number
   status: 'scheduled' | 'checked-in' | 'in-progress' | 'completed' | 'cancelled'
   notes?: string
+  groomingPreferences?: {
+    overallLength?: string
+    faceStyle?: string
+    handlingNotes?: string[]
+    sensitiveAreas?: string[]
+    photoWant?: string | null
+    photoDontWant?: string | null
+  }
   createdAt: string
 }
 

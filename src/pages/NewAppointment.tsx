@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
-import { PawPrint, Receipt, ArrowLeft } from "@phosphor-icons/react"
+import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X } from "@phosphor-icons/react"
 
 interface Client {
   id: string
@@ -46,6 +47,14 @@ export function NewAppointment() {
   const [appointmentDate, setAppointmentDate] = useState("")
   const [appointmentTime, setAppointmentTime] = useState("")
   const [notes, setNotes] = useState("")
+
+  const [overallLength, setOverallLength] = useState("")
+  const [faceStyle, setFaceStyle] = useState("")
+  const [handlingNotes, setHandlingNotes] = useState<string[]>([])
+  const [sensitiveAreas, setSensitiveAreas] = useState<string[]>([])
+  const [photoWant, setPhotoWant] = useState<File | null>(null)
+  const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
+  const [styleConfirmed, setStyleConfirmed] = useState(false)
 
   const mockClients: Client[] = [
     {
@@ -157,10 +166,24 @@ export function NewAppointment() {
       return
     }
 
+    if (!styleConfirmed) {
+      toast.error("Please confirm the style summary")
+      return
+    }
+
     const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
       return
+    }
+
+    const groomingPreferences = {
+      overallLength,
+      faceStyle,
+      handlingNotes,
+      sensitiveAreas,
+      photoWant: photoWant?.name || null,
+      photoDontWant: photoDontWant?.name || null
     }
 
     const newAppointment: Appointment = {
@@ -181,6 +204,7 @@ export function NewAppointment() {
       totalPrice: calculateTotal(),
       status: 'scheduled',
       notes,
+      groomingPreferences,
       createdAt: new Date().toISOString()
     }
 
@@ -190,6 +214,34 @@ export function NewAppointment() {
   }
 
   const total = calculateTotal()
+
+  const getStyleSummary = () => {
+    const parts: string[] = []
+    if (overallLength && overallLength !== "Groomer decides") {
+      parts.push(overallLength.toLowerCase() + " body")
+    }
+    if (faceStyle && faceStyle !== "Groomer decides") {
+      parts.push(faceStyle.toLowerCase() + " face")
+    }
+    if (parts.length === 0) return "Groomer will decide on style"
+    return parts.join(", ").charAt(0).toUpperCase() + parts.join(", ").slice(1) + "."
+  }
+
+  const toggleHandlingNote = (note: string) => {
+    if (handlingNotes.includes(note)) {
+      setHandlingNotes(handlingNotes.filter(n => n !== note))
+    } else {
+      setHandlingNotes([...handlingNotes, note])
+    }
+  }
+
+  const toggleSensitiveArea = (area: string) => {
+    if (sensitiveAreas.includes(area)) {
+      setSensitiveAreas(sensitiveAreas.filter(a => a !== area))
+    } else {
+      setSensitiveAreas([...sensitiveAreas, area])
+    }
+  }
 
   const timeSlots = Array.from({ length: 10 }, (_, i) => {
     const hour = i + 8
@@ -203,8 +255,7 @@ export function NewAppointment() {
           <ArrowLeft className="mr-2" />
           Back to Appointments
         </Button>
-        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-          <PawPrint size={32} className="text-primary" />
+        <h1 className="text-2xl sm:text-3xl font-bold">
           Create New Appointment
         </h1>
       </div>
@@ -212,8 +263,7 @@ export function NewAppointment() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-3">
           <Card className="p-4">
-            <h2 className="text-base font-semibold mb-3">Client & Pet Information</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               <div className="space-y-1.5">
                 <Label htmlFor="client" className="text-sm">Client *</Label>
                 <Select value={selectedClient} onValueChange={(value) => {
@@ -252,6 +302,16 @@ export function NewAppointment() {
                 </Select>
               </div>
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/clients/new')}
+              className="w-full"
+            >
+              <Plus className="mr-2" size={16} />
+              Create New Client
+            </Button>
 
             {pet && (
               <Card className="p-2 bg-muted/50 mt-3">
@@ -336,6 +396,169 @@ export function NewAppointment() {
                   </button>
                 )
               })}
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Grooming Preferences</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+                <RadioGroup value={overallLength} onValueChange={setOverallLength}>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["Short & neat", "Medium & neat", "Long & fluffy", "Groomer decides"].map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <RadioGroupItem value={option} id={`length-${option}`} />
+                        <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Face style</Label>
+                <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["Round / teddy", "Short & neat", "Beard / mustache", "Breed standard", "Groomer decides"].map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <RadioGroupItem value={option} id={`face-${option}`} />
+                        <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Handling notes</Label>
+                <div className="space-y-2">
+                  {["First groom", "Nervous / anxious", "History of biting or snapping"].map((note) => (
+                    <div key={note} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`handling-${note}`}
+                        checked={handlingNotes.includes(note)}
+                        onCheckedChange={() => toggleHandlingNote(note)}
+                      />
+                      <Label htmlFor={`handling-${note}`} className="text-sm font-normal cursor-pointer">
+                        {note}
+                      </Label>
+                    </div>
+                  ))}
+                  <div className="mt-2">
+                    <Label className="text-xs text-muted-foreground mb-1 block">Sensitive areas</Label>
+                    <div className="flex gap-2 flex-wrap">
+                      {["Feet", "Face", "Nails"].map((area) => (
+                        <div key={area} className="flex items-center space-x-1.5">
+                          <Checkbox
+                            id={`sensitive-${area}`}
+                            checked={sensitiveAreas.includes(area)}
+                            onCheckedChange={() => toggleSensitiveArea(area)}
+                          />
+                          <Label htmlFor={`sensitive-${area}`} className="text-xs font-normal cursor-pointer">
+                            {area}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Reference photos (Optional)</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1.5 block">What I want</Label>
+                    {photoWant ? (
+                      <div className="relative border border-border rounded-lg p-2 bg-muted/50">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs truncate flex-1">{photoWant.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPhotoWant(null)}
+                            className="h-6 w-6 p-0 ml-2"
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                        <Upload size={20} className="text-muted-foreground mb-1" />
+                        <span className="text-xs text-muted-foreground">Upload photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && setPhotoWant(e.target.files[0])}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground mb-1.5 block">What I don't want</Label>
+                    {photoDontWant ? (
+                      <div className="relative border border-border rounded-lg p-2 bg-muted/50">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs truncate flex-1">{photoDontWant.name}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPhotoDontWant(null)}
+                            className="h-6 w-6 p-0 ml-2"
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                        <Upload size={20} className="text-muted-foreground mb-1" />
+                        <span className="text-xs text-muted-foreground">Upload photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => e.target.files?.[0] && setPhotoDontWant(e.target.files[0])}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Confirmation</Label>
+                <Card className="p-3 bg-muted/30 mb-3">
+                  <p className="text-xs text-muted-foreground mb-1">Style summary:</p>
+                  <p className="text-sm font-medium">{getStyleSummary()}</p>
+                </Card>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="style-confirmation"
+                    checked={styleConfirmed}
+                    onCheckedChange={(checked) => setStyleConfirmed(checked as boolean)}
+                  />
+                  <Label htmlFor="style-confirmation" className="text-sm font-normal cursor-pointer">
+                    This matches what I want
+                  </Label>
+                </div>
+              </div>
             </div>
           </Card>
 
@@ -489,7 +712,7 @@ export function NewAppointment() {
             <Button 
               onClick={handleSubmit} 
               className="w-full mt-4 h-9"
-              disabled={!selectedClient || !selectedPet || !selectedMainService || !appointmentDate || !appointmentTime}
+              disabled={!selectedClient || !selectedPet || !selectedMainService || !appointmentDate || !appointmentTime || !styleConfirmed}
             >
               Create Appointment
             </Button>
