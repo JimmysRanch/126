@@ -1,0 +1,385 @@
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react"
+import { Download, CalendarBlank, Clock, Check, X } from "@phosphor-icons/react"
+import { useNavigate } from "react-router-dom"
+import { useIsMobile } from "@/hooks/use-mobile"
+
+interface PayrollData {
+  staffId: string
+  staffName: string
+  role: string
+  payPeriod: string
+  regularHours: number
+  overtimeHours: number
+  hourlyRate: number
+  grossPay: number
+  deductions: number
+  netPay: number
+  status: "Pending" | "Approved" | "Paid"
+  appointmentsCompleted: number
+  tips: number
+}
+
+const mockPayrollData: PayrollData[] = [
+  {
+    staffId: "1",
+    staffName: "Sarah Johnson",
+    role: "Senior Groomer",
+    payPeriod: "Jan 16 - Jan 31, 2025",
+    regularHours: 80,
+    overtimeHours: 4,
+    hourlyRate: 35,
+    grossPay: 3010,
+    deductions: 603,
+    netPay: 2407,
+    status: "Pending",
+    appointmentsCompleted: 42,
+    tips: 1180
+  },
+  {
+    staffId: "2",
+    staffName: "Mike Torres",
+    role: "Groomer",
+    payPeriod: "Jan 16 - Jan 31, 2025",
+    regularHours: 80,
+    overtimeHours: 2,
+    hourlyRate: 28,
+    grossPay: 2324,
+    deductions: 465,
+    netPay: 1859,
+    status: "Approved",
+    appointmentsCompleted: 38,
+    tips: 836
+  },
+  {
+    staffId: "3",
+    staffName: "Emma Roberts",
+    role: "Spa Specialist",
+    payPeriod: "Jan 16 - Jan 31, 2025",
+    regularHours: 80,
+    overtimeHours: 0,
+    hourlyRate: 32,
+    grossPay: 2560,
+    deductions: 512,
+    netPay: 2048,
+    status: "Approved",
+    appointmentsCompleted: 35,
+    tips: 1050
+  },
+  {
+    staffId: "4",
+    staffName: "Carlos Martinez",
+    role: "Bather",
+    payPeriod: "Jan 16 - Jan 31, 2025",
+    regularHours: 80,
+    overtimeHours: 6,
+    hourlyRate: 22,
+    grossPay: 1958,
+    deductions: 392,
+    netPay: 1566,
+    status: "Paid",
+    appointmentsCompleted: 52,
+    tips: 520
+  },
+  {
+    staffId: "5",
+    staffName: "Lisa Chen",
+    role: "Groomer",
+    payPeriod: "Jan 16 - Jan 31, 2025",
+    regularHours: 0,
+    overtimeHours: 0,
+    hourlyRate: 30,
+    grossPay: 0,
+    deductions: 0,
+    netPay: 0,
+    status: "Pending",
+    appointmentsCompleted: 0,
+    tips: 0
+  }
+]
+
+export function PayrollOverview() {
+  const [activeView, setActiveView] = useState("current")
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
+
+  const currentPeriodTotal = mockPayrollData.reduce((acc, curr) => acc + curr.netPay, 0)
+  const currentPeriodGross = mockPayrollData.reduce((acc, curr) => acc + curr.grossPay, 0)
+  const currentPeriodDeductions = mockPayrollData.reduce((acc, curr) => acc + curr.deductions, 0)
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Paid":
+        return "bg-primary text-primary-foreground"
+      case "Approved":
+        return "bg-accent/20 text-accent border-accent"
+      case "Pending":
+        return "bg-secondary text-secondary-foreground"
+      default:
+        return ""
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Paid":
+        return <Check size={14} weight="bold" />
+      case "Approved":
+        return <Check size={14} />
+      case "Pending":
+        return <Clock size={14} />
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2 sm:gap-4 flex-1`}>
+          <Card className="p-3 sm:p-4 bg-card border-border">
+            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+              Current Period
+            </div>
+            <div className="text-lg sm:text-2xl font-bold">
+              Jan 16 - 31
+            </div>
+          </Card>
+          <Card className="p-3 sm:p-4 bg-card border-border">
+            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+              Gross Pay
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-primary">
+              ${currentPeriodGross.toLocaleString()}
+            </div>
+          </Card>
+          <Card className="p-3 sm:p-4 bg-card border-border">
+            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+              Deductions
+            </div>
+            <div className="text-lg sm:text-2xl font-bold">
+              ${currentPeriodDeductions.toLocaleString()}
+            </div>
+          </Card>
+          <Card className="p-3 sm:p-4 bg-card border-border">
+            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+              Net Pay
+            </div>
+            <div className="text-lg sm:text-2xl font-bold text-primary">
+              ${currentPeriodTotal.toLocaleString()}
+            </div>
+          </Card>
+        </div>
+        <Button 
+          className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'w-full' : ''}`}
+        >
+          <Download size={18} className="mr-2" />
+          Export Report
+        </Button>
+      </div>
+
+      <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
+        <div className="flex justify-center mb-4">
+          <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-3 w-full' : ''}`}>
+            <TabsTrigger 
+              value="current" 
+              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+            >
+              Current Period
+            </TabsTrigger>
+            <TabsTrigger 
+              value="history" 
+              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+            >
+              History
+            </TabsTrigger>
+            <TabsTrigger 
+              value="settings" 
+              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+            >
+              Settings
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="current" className="mt-0 space-y-3">
+          {mockPayrollData.map((payroll) => (
+            <Card
+              key={payroll.staffId}
+              className="p-3 sm:p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
+              onClick={() => navigate(`/staff/${payroll.staffId}`)}
+            >
+              {isMobile ? (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold mb-1.5">{payroll.staffName}</h3>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="secondary" className="text-xs">
+                          {payroll.role}
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className={`${getStatusColor(payroll.status)} text-xs`}
+                        >
+                          <span className="mr-1">{getStatusIcon(payroll.status)}</span>
+                          {payroll.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-lg font-bold text-primary">${payroll.netPay.toLocaleString()}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Net Pay</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
+                    <div className="bg-secondary/30 rounded-md p-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                        Hours
+                      </div>
+                      <div className="text-sm font-semibold">
+                        {payroll.regularHours}h
+                        {payroll.overtimeHours > 0 && (
+                          <span className="text-primary ml-1">+{payroll.overtimeHours} OT</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-secondary/30 rounded-md p-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                        Gross Pay
+                      </div>
+                      <div className="text-sm font-semibold">${payroll.grossPay.toLocaleString()}</div>
+                    </div>
+                    <div className="bg-secondary/30 rounded-md p-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                        Appointments
+                      </div>
+                      <div className="text-sm font-semibold">{payroll.appointmentsCompleted}</div>
+                    </div>
+                    <div className="bg-secondary/30 rounded-md p-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                        Tips
+                      </div>
+                      <div className="text-sm font-semibold text-primary">${payroll.tips.toLocaleString()}</div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-6">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-4 mb-2">
+                      <h3 className="text-lg font-semibold">{payroll.staffName}</h3>
+                      <Badge variant="secondary" className="text-xs">
+                        {payroll.role}
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className={`${getStatusColor(payroll.status)}`}
+                      >
+                        <span className="mr-1.5">{getStatusIcon(payroll.status)}</span>
+                        {payroll.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <CalendarBlank size={16} />
+                        <span>{payroll.payPeriod}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock size={16} />
+                        <span>
+                          {payroll.regularHours}h regular
+                          {payroll.overtimeHours > 0 && (
+                            <span className="text-primary ml-1">+ {payroll.overtimeHours}h OT</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-8 text-sm">
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                        Appointments
+                      </div>
+                      <div className="font-semibold">{payroll.appointmentsCompleted}</div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                        Tips
+                      </div>
+                      <div className="font-semibold text-primary">${payroll.tips.toLocaleString()}</div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                        Gross Pay
+                      </div>
+                      <div className="font-semibold">${payroll.grossPay.toLocaleString()}</div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                        Deductions
+                      </div>
+                      <div className="font-semibold">${payroll.deductions.toLocaleString()}</div>
+                    </div>
+
+                    <div className="text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                        Net Pay
+                      </div>
+                      <div className="text-xl font-bold text-primary">${payroll.netPay.toLocaleString()}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-0">
+          <Card className="p-8 sm:p-12 bg-card border-border text-center">
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Historical payroll records will appear here.
+            </p>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="settings" className="mt-0">
+          <Card className="p-6 bg-card border-border">
+            <h3 className="text-lg font-semibold mb-4">Payroll Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                <div>
+                  <div className="font-semibold mb-1">Pay Period</div>
+                  <div className="text-sm text-muted-foreground">Bi-weekly (every 2 weeks)</div>
+                </div>
+                <Button variant="outline" size="sm">Change</Button>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                <div>
+                  <div className="font-semibold mb-1">Overtime Multiplier</div>
+                  <div className="text-sm text-muted-foreground">1.5x after 40 hours</div>
+                </div>
+                <Button variant="outline" size="sm">Change</Button>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
+                <div>
+                  <div className="font-semibold mb-1">Tax Withholding</div>
+                  <div className="text-sm text-muted-foreground">20% standard deduction</div>
+                </div>
+                <Button variant="outline" size="sm">Change</Button>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}

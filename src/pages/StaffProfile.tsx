@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
+import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
 import { useKV } from "@github/spark/hooks"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -362,12 +363,6 @@ export function StaffProfile() {
                 Overview
               </TabsTrigger>
               <TabsTrigger 
-                value="history" 
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                History
-              </TabsTrigger>
-              <TabsTrigger 
                 value="payroll" 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
@@ -378,6 +373,12 @@ export function StaffProfile() {
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Schedule
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history" 
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+              >
+                History
               </TabsTrigger>
             </TabsList>
           </div>
@@ -590,11 +591,11 @@ export function StaffProfile() {
           </TabsContent>
 
           <TabsContent value="payroll" className="mt-0">
-            <Card className="p-8 sm:p-12 bg-card border-border text-center">
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Payroll history and metrics will appear here.
-              </p>
-            </Card>
+            <StaffPayrollDetail 
+              staffId={staffId}
+              staffName={staff.name}
+              hourlyRate={parseFloat(staff.hourlyRate.replace('$', '').replace('/hr', ''))}
+            />
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
