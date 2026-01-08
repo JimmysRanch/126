@@ -210,7 +210,7 @@ export function PayrollOverview() {
             <Card
               key={payroll.staffId}
               className="p-3 sm:p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
-              onClick={() => navigate(`/staff/${payroll.staffId}`)}
+              onClick={() => navigate(`/staff/${payroll.staffId}/payroll-breakdown`)}
             >
               {isMobile ? (
                 <div className="space-y-3">

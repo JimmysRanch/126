@@ -136,14 +136,17 @@ export function Staff() {
               </Button>
             </div>
 
-            <div className={`${isMobile ? 'w-full order-1' : 'flex-1 flex justify-end'}`}>
-              <Button 
-                className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'w-full' : ''}`}
-              >
-                <Plus size={18} className="mr-2" />
-                {isMobile ? "Add Staff" : "Add Staff Member"}
-              </Button>
-            </div>
+            {activeTab === "list" && (
+              <div className={`${isMobile ? 'w-full order-1' : 'flex-1 flex justify-end'}`}>
+                <Button 
+                  className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'w-full' : ''}`}
+                >
+                  <Plus size={18} className="mr-2" />
+                  {isMobile ? "Add Staff" : "Add Staff Member"}
+                </Button>
+              </div>
+            )}
+            {activeTab !== "list" && !isMobile && <div className="flex-1"></div>}
           </div>
 
           <TabsContent value="list" className="mt-0">
