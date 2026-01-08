@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus, Envelope, Phone, Star } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -79,8 +79,16 @@ const mockStaff = [
 
 export function Staff() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
+
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab && ['list', 'schedule', 'payroll', 'performance'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [searchParams])
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">

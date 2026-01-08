@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Download, Receipt, Tag, WarningCircle } from "@phosphor-icons/react"
+import { ArrowLeft, Download, Receipt, Tag, WarningCircle, PawPrint, CreditCard, Money } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,6 +23,8 @@ interface AppointmentDetail {
   discountNotes: string
   finalPrice: number
   tipAmount: number
+  tipPaymentMethod: "Cash" | "Card"
+  tipPaidInPayroll: boolean
   paymentMethod: string
   staffEarnings: number
   commissionRate: number
@@ -47,6 +49,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Promotional offer for new customers during January. Applied automatically at booking.",
       finalPrice: 85,
       tipAmount: 45,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Credit Card",
       staffEarnings: 42.50,
       commissionRate: 50,
@@ -68,6 +72,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "",
       finalPrice: 55,
       tipAmount: 20,
+      tipPaymentMethod: "Cash",
+      tipPaidInPayroll: false,
       paymentMethod: "Cash",
       staffEarnings: 27.50,
       commissionRate: 50,
@@ -89,6 +95,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Customer reached 10 visits milestone. 20% discount applied as per loyalty rewards program.",
       finalPrice: 60,
       tipAmount: 25,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Credit Card",
       staffEarnings: 30.00,
       commissionRate: 50,
@@ -110,6 +118,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Customer experienced scheduling conflict last visit. Manager approved 30% discount as goodwill gesture. Ref: Case #SR-2025-012",
       finalPrice: 80,
       tipAmount: 35,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Debit Card",
       staffEarnings: 40.00,
       commissionRate: 50,
@@ -131,6 +141,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "",
       finalPrice: 45,
       tipAmount: 15,
+      tipPaymentMethod: "Cash",
+      tipPaidInPayroll: false,
       paymentMethod: "Credit Card",
       staffEarnings: 22.50,
       commissionRate: 50,
@@ -152,6 +164,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Customer also booked bath service for next week. Applied 15% discount for bundled services.",
       finalPrice: 25,
       tipAmount: 10,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Cash",
       staffEarnings: 12.50,
       commissionRate: 50,
@@ -173,6 +187,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "",
       finalPrice: 50,
       tipAmount: 18,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Credit Card",
       staffEarnings: 25.00,
       commissionRate: 50,
@@ -194,6 +210,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Customer referred by existing client Jennifer Park. Both customers received $20 credit. Referral ID: REF-2025-045",
       finalPrice: 100,
       tipAmount: 40,
+      tipPaymentMethod: "Cash",
+      tipPaidInPayroll: false,
       paymentMethod: "Credit Card",
       staffEarnings: 50.00,
       commissionRate: 50,
@@ -215,6 +233,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "",
       finalPrice: 85,
       tipAmount: 30,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Debit Card",
       staffEarnings: 42.50,
       commissionRate: 50,
@@ -236,6 +256,8 @@ const mockAppointments: Record<string, AppointmentDetail[]> = {
       discountNotes: "Zeus is 12 years old. Applied 20% senior pet discount (ages 10+) as per pricing policy.",
       finalPrice: 72,
       tipAmount: 28,
+      tipPaymentMethod: "Card",
+      tipPaidInPayroll: true,
       paymentMethod: "Credit Card",
       staffEarnings: 36.00,
       commissionRate: 50,
@@ -270,6 +292,8 @@ export function StaffPayrollBreakdown() {
 
   const totalEarnings = appointments.reduce((sum, apt) => sum + apt.staffEarnings, 0)
   const totalTips = appointments.reduce((sum, apt) => sum + apt.tipAmount, 0)
+  const totalTipsInPayroll = appointments.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? apt.tipAmount : 0), 0)
+  const totalTipsCash = appointments.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? 0 : apt.tipAmount), 0)
   const totalRevenue = appointments.reduce((sum, apt) => sum + apt.finalPrice, 0)
   const totalDiscounts = appointments.reduce((sum, apt) => sum + apt.discountAmount, 0)
   const appointmentsWithDiscount = appointments.filter(apt => apt.discountApplied).length
@@ -283,7 +307,7 @@ export function StaffPayrollBreakdown() {
               variant="ghost"
               size="icon"
               className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
-              onClick={() => navigate('/staff')}
+              onClick={() => navigate('/staff?tab=payroll')}
             >
               <ArrowLeft size={isMobile ? 20 : 24} />
             </Button>
@@ -368,7 +392,7 @@ export function StaffPayrollBreakdown() {
               ${totalRevenue.toFixed(2)}
             </div>
             <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-              Before discounts
+              From services
             </div>
           </Card>
 
@@ -404,7 +428,8 @@ export function StaffPayrollBreakdown() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <h3 className="font-semibold text-sm sm:text-base">{apt.clientName}</h3>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs flex items-center gap-1">
+                          <PawPrint size={12} weight="fill" className="text-primary" />
                           {apt.petName} - {apt.petBreed}
                         </Badge>
                         <Badge variant="secondary" className="text-xs">
@@ -427,10 +452,10 @@ export function StaffPayrollBreakdown() {
                         Staff Earnings
                       </div>
                       <div className="text-xl sm:text-2xl font-bold text-primary">
-                        ${apt.staffEarnings.toFixed(2)}
+                        ${(apt.staffEarnings + (apt.tipPaidInPayroll ? apt.tipAmount : 0)).toFixed(2)}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {apt.commissionRate}% commission
+                        {apt.commissionRate}% commission + tips
                       </div>
                     </div>
                   </div>
@@ -473,6 +498,36 @@ export function StaffPayrollBreakdown() {
                     </div>
                   </div>
 
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      {apt.tipPaymentMethod === "Cash" ? (
+                        <Money size={18} className="text-primary mt-0.5 shrink-0" weight="fill" />
+                      ) : (
+                        <CreditCard size={18} className="text-primary mt-0.5 shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-semibold text-sm">Tip: ${apt.tipAmount.toFixed(2)}</span>
+                          <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
+                            {apt.tipPaymentMethod}
+                          </Badge>
+                          <Badge 
+                            variant="outline" 
+                            className={apt.tipPaidInPayroll ? "bg-primary/20 border-primary text-xs" : "text-xs"}
+                          >
+                            {apt.tipPaidInPayroll ? "Paid in payroll" : "Paid to groomer (cash)"}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {apt.tipPaidInPayroll 
+                            ? `This ${apt.tipPaymentMethod.toLowerCase()} tip is included in the staff earnings above and will be paid in this payroll cycle.`
+                            : `This ${apt.tipPaymentMethod.toLowerCase()} tip was paid directly to the groomer at time of service and is not included in payroll.`
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {apt.discountApplied && (
                     <div className="border-t border-border pt-3">
                       <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
@@ -511,13 +566,16 @@ export function StaffPayrollBreakdown() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div>
               <div className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">
-                Total Take Home (Commission + Tips)
+                Total Payroll Amount (Commission + Tips in Payroll)
               </div>
               <div className="text-2xl sm:text-4xl font-bold text-primary">
-                ${(totalEarnings + totalTips).toFixed(2)}
+                ${(totalEarnings + totalTipsInPayroll).toFixed(2)}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                ${totalTipsCash.toFixed(2)} in cash tips already paid to groomer
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
                   Commission
@@ -528,10 +586,18 @@ export function StaffPayrollBreakdown() {
               </div>
               <div>
                 <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Tips
+                  Tips (Payroll)
+                </div>
+                <div className="text-lg sm:text-xl font-bold text-primary">
+                  ${totalTipsInPayroll.toFixed(2)}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                  Tips (Cash Paid)
                 </div>
                 <div className="text-lg sm:text-xl font-bold">
-                  ${totalTips.toFixed(2)}
+                  ${totalTipsCash.toFixed(2)}
                 </div>
               </div>
             </div>
