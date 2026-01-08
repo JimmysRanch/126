@@ -455,7 +455,7 @@ export function StaffPayrollBreakdown() {
                         ${(apt.staffEarnings + (apt.tipPaidInPayroll ? apt.tipAmount : 0)).toFixed(2)}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {apt.commissionRate}% commission + tips
+                        {apt.commissionRate}% commission{apt.tipPaidInPayroll ? ' + tips' : ''}
                       </div>
                     </div>
                   </div>
