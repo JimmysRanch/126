@@ -489,23 +489,23 @@ export function StaffPayrollBreakdown() {
                           ${apt.tipAmount.toFixed(2)}
                         </div>
                         {apt.tipPaymentMethod === "Cash" && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                                  <Info size={14} weight="fill" />
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-[250px]">
-                                <p className="text-xs">This cash tip was paid directly to the groomer at time of service and is not included in payroll.</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
-                        {apt.tipPaymentMethod === "Cash" && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            Cash
-                          </Badge>
+                          <>
+                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                              Cash
+                            </Badge>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                                    <Info size={14} weight="fill" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-[250px]">
+                                  <p className="text-xs">This cash tip was paid directly to the groomer at time of service and is not included in payroll.</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </>
                         )}
                       </div>
                     </div>
