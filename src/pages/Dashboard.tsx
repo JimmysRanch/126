@@ -55,8 +55,8 @@ export function Dashboard() {
     <div className="h-[calc(100vh-57px)] md:h-[calc(100vh-57px)] overflow-hidden bg-background text-foreground p-3">
       <div className="h-full grid grid-rows-3 gap-3">
         
-        <div className="grid grid-cols-4 gap-3 min-h-0">
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Appointments Today</h2>
             <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
@@ -118,7 +118,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Booked</h2>
             <div className="flex-1 min-h-0 flex items-center justify-center">
               <BookedGauge 
@@ -129,7 +129,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Expected Revenue</h2>
             <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div>
@@ -164,7 +164,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Issues</h2>
             <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
               <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
@@ -200,8 +200,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 min-h-0">
-          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
+        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
+          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden h-full">
             <div className="p-3 pb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
@@ -210,7 +210,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomers Workload</h2>
               <p className="text-[10px] text-muted-foreground">Today's Schedule</p>
@@ -220,7 +220,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomer Avg</h2>
               <p className="text-[10px] text-muted-foreground">Daily Metrics</p>
@@ -231,8 +231,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 min-h-0">
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Expenses</h2>
               <p className="text-[10px] text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
@@ -242,7 +242,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Completed Appointments</h2>
               <p className="text-[10px] text-muted-foreground">Appointment History</p>
@@ -252,7 +252,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Booked %</h2>
               <p className="text-[10px] text-muted-foreground">Store Capacity</p>
@@ -262,7 +262,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
             <div className="mb-2 flex-shrink-0">
               <h2 className="text-sm font-semibold">Clients</h2>
               <p className="text-[10px] text-muted-foreground">Client Metrics</p>
