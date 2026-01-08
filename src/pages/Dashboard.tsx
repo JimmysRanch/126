@@ -1,9 +1,6 @@
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { KpiCard } from './dashboard/components/KpiCard'
 import { BookedGauge } from './dashboard/components/BookedGauge'
-import { TopBreedsCard } from './dashboard/components/TopBreedsCard'
-import { GroomerUtilization } from './dashboard/components/GroomerUtilization'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
 import { GroomerAvgCard } from './dashboard/components/GroomerAvgCard'
@@ -16,14 +13,11 @@ import {
   capacityData, 
   revenueData, 
   issuesData,
-  bookingRateData,
-  clientMetrics,
-  bookingSummary,
   dogsGroomedData,
   bookedPercentageData,
   clientsData
 } from './dashboard/data/dashboardMockData'
-import { calculateAppointmentProgress, formatCurrency } from './dashboard/utils/dashboardCalculations'
+import { calculateAppointmentProgress } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
 
 function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value: number; delay?: number; prefix?: string; suffix?: string }) {
@@ -58,55 +52,56 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 lg:h-[calc(100vh-120px)] lg:overflow-hidden">
-      <div className="max-w-[1600px] mx-auto lg:h-full flex flex-col gap-3">
+    <div className="h-[calc(100vh-57px)] md:h-[calc(100vh-57px)] overflow-hidden bg-background text-foreground p-3">
+      <div className="h-full grid grid-rows-3 gap-3">
         
-        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <KpiCard title="Appointments Today" delay={0} className="xl:col-span-1">
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  <span className="text-muted-foreground">Scheduled</span>
+        <div className="grid grid-cols-4 gap-3 min-h-0">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Appointments Today</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between">
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                  <span className="text-muted-foreground truncate">Scheduled</span>
                 </div>
                 <div className="font-semibold text-right">
                   <AnimatedNumber value={appointmentData.today.scheduled} delay={0.1} />
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle size={10} className="text-green-500" weight="fill" />
-                  <span className="text-muted-foreground">Completed</span>
+                <div className="flex items-center gap-1">
+                  <CheckCircle size={10} className="text-green-500 flex-shrink-0" weight="fill" />
+                  <span className="text-muted-foreground truncate">Completed</span>
                 </div>
                 <div className="font-semibold text-right">
                   <AnimatedNumber value={appointmentData.today.completed} delay={0.15} />
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                  <XCircle size={10} className="text-red-500" weight="fill" />
-                  <span className="text-muted-foreground">Canceled</span>
+                <div className="flex items-center gap-1">
+                  <XCircle size={10} className="text-red-500 flex-shrink-0" weight="fill" />
+                  <span className="text-muted-foreground truncate">Canceled</span>
                 </div>
                 <div className="font-semibold text-right">
                   <AnimatedNumber value={appointmentData.today.canceled} delay={0.2} />
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                  <Warning size={10} className="text-orange-500" weight="fill" />
-                  <span className="text-muted-foreground">No-Shows</span>
+                <div className="flex items-center gap-1">
+                  <Warning size={10} className="text-orange-500 flex-shrink-0" weight="fill" />
+                  <span className="text-muted-foreground truncate">No-Shows</span>
                 </div>
                 <div className="font-semibold text-right">
                   <AnimatedNumber value={appointmentData.today.noShows} delay={0.25} />
                 </div>
                 
-                <div className="flex items-center gap-1.5">
-                  <Clock size={10} className="text-yellow-500" weight="fill" />
-                  <span className="text-muted-foreground">Late</span>
+                <div className="flex items-center gap-1">
+                  <Clock size={10} className="text-yellow-500 flex-shrink-0" weight="fill" />
+                  <span className="text-muted-foreground truncate">Late</span>
                 </div>
                 <div className="font-semibold text-right">
                   <AnimatedNumber value={appointmentData.today.late} delay={0.3} />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1 mt-2">
                 <div className="flex justify-between text-[10px] text-muted-foreground">
                   <span>Day Progress</span>
                   <span>
@@ -114,35 +109,37 @@ export function Dashboard() {
                   </span>
                 </div>
                 <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-primary rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress.percentageComplete}%` }}
-                    transition={{ duration: 1, delay: 0.4, ease: 'easeOut' }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${progress.percentageComplete}%` }}
                   />
                 </div>
               </div>
             </div>
-          </KpiCard>
+          </div>
 
-          <KpiCard title="Booked" delay={0.1} className="xl:col-span-1">
-            <BookedGauge 
-              percentage={capacityData.bookedPercentage} 
-              target={capacityData.target}
-              delay={0.2}
-            />
-          </KpiCard>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Booked</h2>
+            <div className="flex-1 min-h-0 flex items-center justify-center">
+              <BookedGauge 
+                percentage={capacityData.bookedPercentage} 
+                target={capacityData.target}
+                delay={0.2}
+              />
+            </div>
+          </div>
 
-          <KpiCard title="Expected Revenue" delay={0.2} className="xl:col-span-1">
-            <div className="space-y-2">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Expected Revenue</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div>
-                <div className="text-xl sm:text-2xl font-bold">
+                <div className="text-2xl font-bold">
                   <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
                 </div>
                 <div className="text-[10px] text-muted-foreground mt-0.5">Total Revenue Today</div>
               </div>
               
-              <div className="pt-2 border-t border-border space-y-1.5">
+              <div className="pt-2 border-t border-border space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Profit After Commissions</span>
                   <span className="font-semibold text-green-500">
@@ -165,140 +162,115 @@ export function Dashboard() {
                 </div>
               </div>
             </div>
-          </KpiCard>
+          </div>
 
-          <KpiCard title="Issues" delay={0.3} className="xl:col-span-1">
-            <div className="space-y-2">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Issues</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
               <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                 <div className="flex items-center gap-1.5">
-                  <Clock size={14} className="text-yellow-500 sm:hidden" weight="duotone" />
-                  <Clock size={16} className="text-yellow-500 hidden sm:block" weight="duotone" />
-                  <span className="text-xs">Late arrivals</span>
+                  <Clock size={14} className="text-yellow-500 flex-shrink-0" weight="duotone" />
+                  <span className="text-xs truncate">Late arrivals</span>
                 </div>
-                <div className="text-base sm:text-lg font-bold">
+                <div className="text-lg font-bold">
                   <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
                 </div>
               </div>
               
               <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                 <div className="flex items-center gap-1.5">
-                  <Warning size={14} className="text-orange-500 sm:hidden" weight="duotone" />
-                  <Warning size={16} className="text-orange-500 hidden sm:block" weight="duotone" />
-                  <span className="text-xs">No-shows</span>
+                  <Warning size={14} className="text-orange-500 flex-shrink-0" weight="duotone" />
+                  <span className="text-xs truncate">No-shows</span>
                 </div>
-                <div className="text-base sm:text-lg font-bold">
+                <div className="text-lg font-bold">
                   <AnimatedNumber value={issuesData.noShows} delay={0.4} />
                 </div>
               </div>
               
               <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
                 <div className="flex items-center gap-1.5">
-                  <XCircle size={14} className="text-red-500 sm:hidden" weight="duotone" />
-                  <XCircle size={16} className="text-red-500 hidden sm:block" weight="duotone" />
-                  <span className="text-xs">Canceled</span>
+                  <XCircle size={14} className="text-red-500 flex-shrink-0" weight="duotone" />
+                  <span className="text-xs truncate">Canceled</span>
                 </div>
-                <div className="text-base sm:text-lg font-bold">
+                <div className="text-lg font-bold">
                   <AnimatedNumber value={issuesData.canceled} delay={0.45} />
                 </div>
               </div>
             </div>
-          </KpiCard>
+          </div>
         </div>
 
-        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 lg:grid-cols-4 gap-3">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="lg:col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden min-h-[300px] lg:min-h-0"
-          >
-            <div className="p-3 sm:p-4 pb-2 flex-shrink-0">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Recent Activity</h2>
+        <div className="grid grid-cols-4 gap-3 min-h-0">
+          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
+            <div className="p-3 pb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
-            <div className="overflow-y-auto px-3 sm:px-4 pb-3 sm:pb-4 scrollbar-thin flex-1">
+            <div className="overflow-y-auto px-3 pb-3 scrollbar-thin flex-1 min-h-0">
               <RecentActivity />
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden lg:h-full"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomers Workload</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Today's Schedule</p>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Groomers Workload</h2>
+              <p className="text-[10px] text-muted-foreground">Today's Schedule</p>
             </div>
-            <GroomersWorkloadCard />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <GroomersWorkloadCard />
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden lg:h-full"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Groomer Avg</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Daily Metrics</p>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Groomer Avg</h2>
+              <p className="text-[10px] text-muted-foreground">Daily Metrics</p>
             </div>
-            <GroomerAvgCard />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <GroomerAvgCard />
+            </div>
+          </div>
         </div>
 
-        <div className="lg:min-h-0 lg:flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pb-4 lg:pb-0">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.9 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border overflow-hidden"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Expenses</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+        <div className="grid grid-cols-4 gap-3 min-h-0">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Expenses</h2>
+              <p className="text-[10px] text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
-            <ExpensesCard />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <ExpensesCard />
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.0 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Completed Appointments</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Appointment History</p>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Completed Appointments</h2>
+              <p className="text-[10px] text-muted-foreground">Appointment History</p>
             </div>
-            <DogsGroomedCard data={dogsGroomedData} />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <DogsGroomedCard data={dogsGroomedData} />
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.1 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Booked %</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Store Capacity</p>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Booked %</h2>
+              <p className="text-[10px] text-muted-foreground">Store Capacity</p>
             </div>
-            <BookedPercentageCard data={bookedPercentageData} />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <BookedPercentageCard data={bookedPercentageData} />
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 1.2 }}
-            className="lg:col-span-1 bg-card rounded-xl p-3 sm:p-4 border border-border"
-          >
-            <div className="mb-2 sm:mb-3">
-              <h2 className="text-sm sm:text-base font-semibold mb-0.5">Clients</h2>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">Client Metrics</p>
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
+            <div className="mb-2 flex-shrink-0">
+              <h2 className="text-sm font-semibold">Clients</h2>
+              <p className="text-[10px] text-muted-foreground">Client Metrics</p>
             </div>
-            <ClientsCard data={clientsData} />
-          </motion.div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <ClientsCard data={clientsData} />
+            </div>
+          </div>
         </div>
 
       </div>

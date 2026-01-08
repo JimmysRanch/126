@@ -48,8 +48,8 @@ export function GroomerAvgCard() {
   }))
 
   return (
-    <div className="space-y-3">
-      {groomerStats.map((groomer, index) => (
+    <div className="space-y-2 h-full flex flex-col justify-center">
+      {groomerStats.slice(0, 3).map((groomer, index) => (
         <GroomerAvgItem
           key={groomer.id}
           groomer={groomer}

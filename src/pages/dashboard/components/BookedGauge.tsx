@@ -34,8 +34,8 @@ export function BookedGauge({ percentage, target, delay = 0 }: BookedGaugeProps)
   const gradientId = `gauge-gradient-${Math.random().toString(36).substr(2, 9)}`
 
   return (
-    <div className="relative flex items-center justify-center">
-      <svg width="160" height="160" className="transform -rotate-90 sm:w-[180px] sm:h-[180px]" viewBox="0 0 180 180">
+    <div className="relative flex items-center justify-center w-full h-full max-h-full">
+      <svg className="transform -rotate-90 w-full h-full max-w-[140px] max-h-[140px]" viewBox="0 0 180 180">
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="oklch(0.75 0.15 195)" />
@@ -55,7 +55,7 @@ export function BookedGauge({ percentage, target, delay = 0 }: BookedGaugeProps)
           fill="none"
         />
         
-        <motion.circle
+        <circle
           cx="90"
           cy="90"
           r="70"
@@ -64,23 +64,17 @@ export function BookedGauge({ percentage, target, delay = 0 }: BookedGaugeProps)
           fill="none"
           strokeLinecap="round"
           strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, delay, ease: 'easeOut' }}
+          strokeDashoffset={offset}
+          style={{ transition: 'stroke-dashoffset 1.5s ease-out' }}
         />
       </svg>
       
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <motion.div
-          className="text-3xl sm:text-4xl font-bold"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5, delay: delay + 0.3 }}
-        >
+        <div className="text-2xl font-bold">
           {displayPercentage}%
-        </motion.div>
-        <div className="text-xs text-muted-foreground mt-0.5">Today</div>
-        <div className="text-[10px] text-muted-foreground mt-0.5">Target {target}%</div>
+        </div>
+        <div className="text-[10px] text-muted-foreground mt-0.5">Today</div>
+        <div className="text-[9px] text-muted-foreground">Target {target}%</div>
       </div>
     </div>
   )
