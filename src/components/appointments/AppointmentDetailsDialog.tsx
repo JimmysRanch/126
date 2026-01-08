@@ -71,7 +71,7 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
               <div className="flex items-center gap-2">
                 <Clock size={16} />
                 <span className="font-medium">
-                  {format(new Date(appointment.date), 'MMM d, yyyy')} at {appointment.startTime}
+                  {format(new Date(appointment.date + 'T00:00:00'), 'MMM d, yyyy')} at {appointment.startTime}
                 </span>
               </div>
             </div>

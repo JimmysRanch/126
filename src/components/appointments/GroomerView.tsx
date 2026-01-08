@@ -53,7 +53,7 @@ export function GroomerView() {
     return (appointments || [])
       .filter(apt => {
         if (apt.groomerId !== groomerId || apt.status === 'cancelled') return false
-        const aptDate = new Date(apt.date)
+        const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
           const dateStr = currentDate.toISOString().split('T')[0]
           return apt.date === dateStr
@@ -61,8 +61,8 @@ export function GroomerView() {
         return isWithinInterval(aptDate, { start, end })
       })
       .sort((a, b) => {
-        const dateA = new Date(`${a.date} ${a.startTime}`)
-        const dateB = new Date(`${b.date} ${b.startTime}`)
+        const dateA = new Date(`${a.date}T${a.startTime}`)
+        const dateB = new Date(`${b.date}T${b.startTime}`)
         return dateA.getTime() - dateB.getTime()
       })
   }
@@ -177,7 +177,7 @@ export function GroomerView() {
                       </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {format(new Date(apt.date), 'MMM d')} • {apt.startTime}
+                      {format(new Date(apt.date + 'T00:00:00'), 'MMM d')} • {apt.startTime}
                     </div>
                     <div className="text-sm font-semibold text-primary mt-1">
                       ${apt.totalPrice.toFixed(2)}

@@ -28,7 +28,7 @@ export function CalendarView() {
 
   const getAppointmentsForSlot = (day: Date, timeSlot: string) => {
     return (appointments || []).filter(apt => {
-      const aptDate = new Date(apt.date)
+      const aptDate = new Date(apt.date + 'T00:00:00')
       return isSameDay(aptDate, day) && apt.startTime === timeSlot
     })
   }

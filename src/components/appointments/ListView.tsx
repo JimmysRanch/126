@@ -109,7 +109,7 @@ export function ListView() {
                         <span>{apt.clientName}</span>
                       </div>
                       <div>Groomer: {apt.groomerName}</div>
-                      <div>{format(new Date(apt.date), 'MMM d, yyyy')} at {apt.startTime}</div>
+                      <div>{format(new Date(apt.date + 'T00:00:00'), 'MMM d, yyyy')} at {apt.startTime}</div>
                     </div>
                   </div>
                   <div className="text-right">
