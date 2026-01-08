@@ -496,7 +496,10 @@ export function StaffPayrollBreakdown() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <button className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                                  <button 
+                                    type="button"
+                                    className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                                  >
                                     <Info size={14} weight="fill" />
                                   </button>
                                 </TooltipTrigger>
