@@ -36,29 +36,29 @@ interface ClientsCardProps {
 export function ClientsCard({ data }: ClientsCardProps) {
   return (
     <div className="h-full flex items-center">
-      <div className="grid grid-cols-2 gap-2 w-full">
-        <div className="space-y-0.5">
+      <div className="grid grid-cols-2 gap-1.5 w-full">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Total Clients</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.total} delay={0.1} />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">New This Month</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.newThisMonth} delay={0.15} />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Repeat Rate</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.repeatRate} delay={0.2} suffix="%" />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Avg Rebooking</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.avgDaysBetween} delay={0.25} />

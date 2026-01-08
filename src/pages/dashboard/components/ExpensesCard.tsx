@@ -41,7 +41,7 @@ export function ExpensesCard() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="space-y-0.5 overflow-y-auto flex-1 scrollbar-thin pr-1 min-h-0">
+      <div className="space-y-0 overflow-y-auto flex-1 scrollbar-thin pr-1 min-h-0">
         {sortedExpenses.map((expense, index) => {
           const percentage = total > 0 ? ((animatedValues[index] / total) * 100).toFixed(1) : 0
           
@@ -55,24 +55,24 @@ export function ExpensesCard() {
             >
               <div className="flex items-center gap-1.5 min-w-0 flex-1">
                 <div 
-                  className="w-2 h-2 rounded-full flex-shrink-0" 
+                  className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
                   style={{ backgroundColor: expense.color }}
                 />
-                <span className="text-muted-foreground truncate text-[11px] sm:text-xs">{expense.category}</span>
+                <span className="text-muted-foreground truncate text-[11px]">{expense.category}</span>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                <span className="font-semibold text-[11px] sm:text-xs">${Math.round(animatedValues[index]).toLocaleString()}</span>
-                <span className="text-muted-foreground text-[10px] sm:text-xs w-8 sm:w-10 text-right">{percentage}%</span>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <span className="font-semibold text-[11px]">${Math.round(animatedValues[index]).toLocaleString()}</span>
+                <span className="text-muted-foreground text-[10px] w-8 text-right">{percentage}%</span>
               </div>
             </motion.div>
           )
         })}
       </div>
       
-      <div className="pt-1.5 border-t border-border flex-shrink-0 mt-1">
+      <div className="pt-1 border-t border-border flex-shrink-0 mt-1">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] sm:text-xs text-muted-foreground">Total Expenses</span>
-          <span className="text-sm sm:text-base font-bold">
+          <span className="text-[11px] text-muted-foreground">Total Expenses</span>
+          <span className="text-sm font-bold">
             ${Math.round(animatedValues.reduce((sum, val) => sum + val, 0)).toLocaleString()}
           </span>
         </div>

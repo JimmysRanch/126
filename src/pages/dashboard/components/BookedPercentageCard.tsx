@@ -36,8 +36,8 @@ interface BookedPercentageCardProps {
 export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
   return (
     <div className="h-full flex items-center">
-      <div className="space-y-2 w-full">
-        <div className="space-y-1">
+      <div className="space-y-1.5 w-full">
+        <div className="space-y-0.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Day</span>
             <span className="text-base font-bold">
@@ -52,7 +52,7 @@ export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Week</span>
             <span className="text-base font-bold">
@@ -67,7 +67,7 @@ export function BookedPercentageCard({ data }: BookedPercentageCardProps) {
           </div>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Month</span>
             <span className="text-base font-bold">

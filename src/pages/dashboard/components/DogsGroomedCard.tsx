@@ -37,29 +37,29 @@ interface DogsGroomedCardProps {
 export function DogsGroomedCard({ data }: DogsGroomedCardProps) {
   return (
     <div className="h-full flex items-center">
-      <div className="grid grid-cols-2 gap-2 w-full">
-        <div className="space-y-0.5">
+      <div className="grid grid-cols-2 gap-1.5 w-full">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Day</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.day} delay={0.1} />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Week</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.week} delay={0.15} />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Month</div>
           <div className="text-xl font-bold">
             <AnimatedNumber value={data.month} delay={0.2} />
           </div>
         </div>
         
-        <div className="space-y-0.5">
+        <div className="space-y-0">
           <div className="text-[10px] text-muted-foreground">Lifetime</div>
           <div className="text-xl font-bold text-primary">
             <AnimatedNumber value={data.lifetime} delay={0.25} />

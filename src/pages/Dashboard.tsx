@@ -57,9 +57,9 @@ export function Dashboard() {
         
         <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Appointments Today</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between">
-              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+            <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Appointments Today</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden">
+              <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-xs flex-shrink-0">
                 <div className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
                   <span className="text-muted-foreground truncate">Scheduled</span>
@@ -101,7 +101,7 @@ export function Dashboard() {
                 </div>
               </div>
 
-              <div className="space-y-1 mt-2">
+              <div className="space-y-0.5 mt-1.5 flex-shrink-0">
                 <div className="flex justify-between text-[10px] text-muted-foreground">
                   <span>Day Progress</span>
                   <span>
@@ -130,16 +130,16 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Expected Revenue</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between">
-              <div>
+            <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Expected Revenue</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden">
+              <div className="flex-shrink-0">
                 <div className="text-2xl font-bold">
                   <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
                 </div>
                 <div className="text-[10px] text-muted-foreground mt-0.5">Total Revenue Today</div>
               </div>
               
-              <div className="pt-2 border-t border-border space-y-1">
+              <div className="pt-1.5 border-t border-border space-y-0.5 flex-shrink-0">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Profit After Commissions</span>
                   <span className="font-semibold text-green-500">
@@ -165,9 +165,9 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Issues</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
-              <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+            <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Issues</h2>
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1 overflow-hidden">
+              <div className="flex items-center justify-between p-1.5 bg-destructive/10 rounded-lg flex-shrink-0">
                 <div className="flex items-center gap-1.5">
                   <Clock size={14} className="text-yellow-500 flex-shrink-0" weight="duotone" />
                   <span className="text-xs truncate">Late arrivals</span>
@@ -177,7 +177,7 @@ export function Dashboard() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+              <div className="flex items-center justify-between p-1.5 bg-destructive/10 rounded-lg flex-shrink-0">
                 <div className="flex items-center gap-1.5">
                   <Warning size={14} className="text-orange-500 flex-shrink-0" weight="duotone" />
                   <span className="text-xs truncate">No-shows</span>
@@ -187,7 +187,7 @@ export function Dashboard() {
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-2 bg-destructive/10 rounded-lg">
+              <div className="flex items-center justify-between p-1.5 bg-destructive/10 rounded-lg flex-shrink-0">
                 <div className="flex items-center gap-1.5">
                   <XCircle size={14} className="text-red-500 flex-shrink-0" weight="duotone" />
                   <span className="text-xs truncate">Canceled</span>
@@ -202,7 +202,7 @@ export function Dashboard() {
 
         <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
           <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden h-full">
-            <div className="p-3 pb-2 flex-shrink-0">
+            <div className="p-3 pb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
             <div className="overflow-y-auto px-3 pb-3 scrollbar-thin flex-1 min-h-0">
@@ -211,7 +211,7 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomers Workload</h2>
               <p className="text-[10px] text-muted-foreground">Today's Schedule</p>
             </div>
@@ -221,7 +221,7 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomer Avg</h2>
               <p className="text-[10px] text-muted-foreground">Daily Metrics</p>
             </div>
@@ -233,7 +233,7 @@ export function Dashboard() {
 
         <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Expenses</h2>
               <p className="text-[10px] text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
@@ -243,7 +243,7 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Completed Appointments</h2>
               <p className="text-[10px] text-muted-foreground">Appointment History</p>
             </div>
@@ -253,7 +253,7 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Booked %</h2>
               <p className="text-[10px] text-muted-foreground">Store Capacity</p>
             </div>
@@ -263,7 +263,7 @@ export function Dashboard() {
           </div>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
-            <div className="mb-2 flex-shrink-0">
+            <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Clients</h2>
               <p className="text-[10px] text-muted-foreground">Client Metrics</p>
             </div>
