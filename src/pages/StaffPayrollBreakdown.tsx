@@ -348,65 +348,65 @@ export function StaffPayrollBreakdown() {
           </div>
         </div>
 
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-5'} gap-2 sm:gap-4`}>
-          <Card className="p-3 sm:p-5 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1 sm:mb-2">
-              Total Appointments
-            </div>
-            <div className="text-xl sm:text-3xl font-bold text-primary">
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-5'} gap-3`}>
+          <Card className="p-2 md:p-2.5 bg-card border-border">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+              APPOINTMENTS
+            </p>
+            <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">
               {appointments.length}
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               All completed
-            </div>
+            </p>
           </Card>
 
-          <Card className="p-3 sm:p-5 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1 sm:mb-2">
-              Commission Earned
-            </div>
-            <div className="text-xl sm:text-3xl font-bold text-primary">
+          <Card className="p-2 md:p-2.5 bg-card border-border">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+              COMMISSION
+            </p>
+            <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">
               ${totalEarnings.toFixed(2)}
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               From services
-            </div>
+            </p>
           </Card>
 
-          <Card className="p-3 sm:p-5 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1 sm:mb-2">
-              Tips Received
-            </div>
-            <div className="text-xl sm:text-3xl font-bold">
+          <Card className="p-2 md:p-2.5 bg-card border-border">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+              TIPS RECEIVED
+            </p>
+            <p className="text-lg md:text-xl font-bold mt-0.5">
               ${totalTips.toFixed(2)}
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               ${(totalTips / appointments.length).toFixed(2)} avg
-            </div>
+            </p>
           </Card>
 
-          <Card className="p-3 sm:p-5 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1 sm:mb-2">
-              Total Revenue
-            </div>
-            <div className="text-xl sm:text-3xl font-bold">
+          <Card className="p-2 md:p-2.5 bg-card border-border">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+              TOTAL REVENUE
+            </p>
+            <p className="text-lg md:text-xl font-bold mt-0.5">
               ${totalRevenue.toFixed(2)}
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               From services
-            </div>
+            </p>
           </Card>
 
-          <Card className={`p-3 sm:p-5 bg-card border-border ${isMobile ? 'col-span-2' : ''}`}>
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1 sm:mb-2">
-              Discounts Applied
-            </div>
-            <div className="text-xl sm:text-3xl font-bold">
+          <Card className={`p-2 md:p-2.5 bg-card border-border ${isMobile ? 'col-span-2' : ''}`}>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+              DISCOUNTS
+            </p>
+            <p className="text-lg md:text-xl font-bold mt-0.5">
               ${totalDiscounts.toFixed(2)}
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
               {appointmentsWithDiscount} appointments
-            </div>
+            </p>
           </Card>
         </div>
 
