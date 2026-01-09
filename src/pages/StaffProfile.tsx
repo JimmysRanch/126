@@ -1,4 +1,4 @@
-import { ArrowLeft, PencilSimple, Phone, Envelope } from "@phosphor-icons/react"
+import { ArrowLeft, PencilSimple, Phone, Envelope, PawPrint } from "@phosphor-icons/react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { StatWidget } from "@/components/StatWidget"
@@ -440,7 +440,8 @@ export function StaffProfile() {
                               <div className="flex-1 min-w-0">
                                 <h4 className="font-semibold text-sm mb-1.5">{apt.client}</h4>
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <Badge variant="secondary" className="text-xs">
+                                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                    <PawPrint size={12} weight="fill" />
                                     {apt.pet}
                                   </Badge>
                                   <Badge 
@@ -516,7 +517,8 @@ export function StaffProfile() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
-                                  <Badge variant="secondary" className="text-xs">
+                                  <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                    <PawPrint size={12} weight="fill" />
                                     {apt.pet}
                                   </Badge>
                                 </div>
@@ -543,7 +545,8 @@ export function StaffProfile() {
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 <h4 className="font-semibold">{apt.client}</h4>
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                  <PawPrint size={12} weight="fill" />
                                   {apt.pet}
                                 </Badge>
                                 <div className="text-xs text-primary">

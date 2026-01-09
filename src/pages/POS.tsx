@@ -17,15 +17,25 @@ export function POS() {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [inventory] = useKV<InventoryItem[]>("inventory", [])
   const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
+  const [paymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", [
+    { id: "cash", name: "Cash", enabled: true },
+    { id: "credit", name: "Credit Card", enabled: true },
+    { id: "debit", name: "Debit Card", enabled: true },
+    { id: "check", name: "Check", enabled: true }
+  ])
   
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [cartItems, setCartItems] = useState<TransactionItem[]>([])
   const [discount, setDiscount] = useState(0)
+  const [discountDescription, setDiscountDescription] = useState("")
   const [additionalFees, setAdditionalFees] = useState(0)
-  const [paymentMethod, setPaymentMethod] = useState("cash")
+  const [additionalFeesDescription, setAdditionalFeesDescription] = useState("")
+  const [paymentMethod, setPaymentMethod] = useState("")
   const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false)
   const isMobile = useIsMobile()
+  
+  const enabledPaymentMethods = (paymentMethods || []).filter(pm => pm.enabled)
 
   const todayAppointments = (appointments || []).filter(apt => {
     const today = new Date().toISOString().split('T')[0]
@@ -97,6 +107,11 @@ export function POS() {
       toast.error("Cart is empty")
       return
     }
+    
+    if (!paymentMethod) {
+      toast.error("Please select a payment method")
+      return
+    }
 
     const newTransaction: Transaction = {
       id: Date.now().toString(),
@@ -107,7 +122,9 @@ export function POS() {
       items: cartItems,
       subtotal: calculateSubtotal(),
       discount,
+      discountDescription,
       additionalFees,
+      additionalFeesDescription,
       total: calculateTotal(),
       paymentMethod,
       status: 'completed',
@@ -132,8 +149,10 @@ export function POS() {
     setSelectedAppointment(null)
     setCartItems([])
     setDiscount(0)
+    setDiscountDescription("")
     setAdditionalFees(0)
-    setPaymentMethod("cash")
+    setAdditionalFeesDescription("")
+    setPaymentMethod("")
   }
 
   const filteredProducts = retailProducts.filter(product =>
@@ -283,6 +302,18 @@ export function POS() {
                   placeholder="0.00"
                 />
               </div>
+              
+              {discount > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="discount-desc">Discount Description</Label>
+                  <Input
+                    id="discount-desc"
+                    value={discountDescription}
+                    onChange={(e) => setDiscountDescription(e.target.value)}
+                    placeholder="e.g., Senior discount, Loyalty reward"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="fees">Additional Fees ($)</Label>
@@ -296,18 +327,31 @@ export function POS() {
                   placeholder="0.00"
                 />
               </div>
+              
+              {additionalFees > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="fees-desc">Fee Description</Label>
+                  <Input
+                    id="fees-desc"
+                    value={additionalFeesDescription}
+                    onChange={(e) => setAdditionalFeesDescription(e.target.value)}
+                    placeholder="e.g., Rush service, Special handling"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="payment">Payment Method</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                   <SelectTrigger id="payment">
-                    <SelectValue />
+                    <SelectValue placeholder="Select payment method" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="credit">Credit Card</SelectItem>
-                    <SelectItem value="debit">Debit Card</SelectItem>
-                    <SelectItem value="check">Check</SelectItem>
+                    {enabledPaymentMethods.map((method) => (
+                      <SelectItem key={method.id} value={method.id}>
+                        {method.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -322,13 +366,17 @@ export function POS() {
               </div>
               {discount > 0 && (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Discount</span>
+                  <span className="text-muted-foreground">
+                    Discount {discountDescription && `(${discountDescription})`}
+                  </span>
                   <span className="font-medium text-green-500">-${discount.toFixed(2)}</span>
                 </div>
               )}
               {additionalFees > 0 && (
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Additional Fees</span>
+                  <span className="text-muted-foreground">
+                    Additional Fees {additionalFeesDescription && `(${additionalFeesDescription})`}
+                  </span>
                   <span className="font-medium">+${additionalFees.toFixed(2)}</span>
                 </div>
               )}
@@ -398,13 +446,17 @@ export function POS() {
               </div>
               {discount > 0 && (
                 <div className="flex items-center justify-between text-green-500">
-                  <span>Discount</span>
+                  <span>
+                    Discount {discountDescription && `(${discountDescription})`}
+                  </span>
                   <span>-${discount.toFixed(2)}</span>
                 </div>
               )}
               {additionalFees > 0 && (
                 <div className="flex items-center justify-between">
-                  <span>Additional Fees</span>
+                  <span>
+                    Additional Fees {additionalFeesDescription && `(${additionalFeesDescription})`}
+                  </span>
                   <span>+${additionalFees.toFixed(2)}</span>
                 </div>
               )}
@@ -415,7 +467,9 @@ export function POS() {
               </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>Payment Method</span>
-                <span className="capitalize">{paymentMethod}</span>
+                <span className="capitalize">
+                  {enabledPaymentMethods.find(pm => pm.id === paymentMethod)?.name || paymentMethod}
+                </span>
               </div>
             </div>
           </div>

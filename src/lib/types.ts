@@ -105,7 +105,9 @@ export interface Transaction {
   items: TransactionItem[]
   subtotal: number
   discount: number
+  discountDescription?: string
   additionalFees: number
+  additionalFeesDescription?: string
   total: number
   paymentMethod: string
   status: 'pending' | 'completed' | 'refunded'

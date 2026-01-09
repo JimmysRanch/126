@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Trash, PencilSimple } from "@phosphor-icons/react"
+import { Plus, Trash, PencilSimple, CaretUp, CaretDown } from "@phosphor-icons/react"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -62,6 +62,13 @@ const DEFAULT_ADDONS: AddOn[] = [
   { id: "deshedding", name: "Deshedding", pricing: { small: 20, medium: 25, large: 30, giant: 40 }, hasSizePricing: true }
 ]
 
+const DEFAULT_PAYMENT_METHODS = [
+  { id: "cash", name: "Cash", enabled: true },
+  { id: "credit", name: "Credit Card", enabled: true },
+  { id: "debit", name: "Debit Card", enabled: true },
+  { id: "check", name: "Check", enabled: true }
+]
+
 export function Settings() {
   const [activeTab, setActiveTab] = useState("staff")
   const [staffPositions, setStaffPositions] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
@@ -71,6 +78,11 @@ export function Settings() {
   
   const [mainServices, setMainServices] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
   const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
+  
+  const [paymentMethods, setPaymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", DEFAULT_PAYMENT_METHODS)
+  const [newPaymentMethod, setNewPaymentMethod] = useState("")
+  const [editingPaymentMethod, setEditingPaymentMethod] = useState<{ id: string; name: string } | null>(null)
+  const [editPaymentMethodValue, setEditPaymentMethodValue] = useState("")
   
   const [mainServiceDialogOpen, setMainServiceDialogOpen] = useState(false)
   const [addOnDialogOpen, setAddOnDialogOpen] = useState(false)
@@ -319,6 +331,83 @@ export function Settings() {
     setAddOns((current) => (current || []).filter(a => a.id !== id))
     toast.success("Add-on deleted successfully")
   }
+  
+  const handleAddPaymentMethod = () => {
+    if (!newPaymentMethod.trim()) {
+      toast.error("Payment method name cannot be empty")
+      return
+    }
+
+    if ((paymentMethods || []).some(pm => pm.name.toLowerCase() === newPaymentMethod.trim().toLowerCase())) {
+      toast.error("This payment method already exists")
+      return
+    }
+
+    setPaymentMethods((current) => [
+      ...(current || []), 
+      { id: `pm-${Date.now()}`, name: newPaymentMethod.trim(), enabled: true }
+    ])
+    setNewPaymentMethod("")
+    toast.success("Payment method added successfully")
+  }
+
+  const handleDeletePaymentMethod = (id: string) => {
+    setPaymentMethods((current) => (current || []).filter(pm => pm.id !== id))
+    toast.success("Payment method removed successfully")
+  }
+
+  const handleTogglePaymentMethod = (id: string) => {
+    setPaymentMethods((current) =>
+      (current || []).map(pm => pm.id === id ? { ...pm, enabled: !pm.enabled } : pm)
+    )
+  }
+
+  const handleEditPaymentMethod = (method: { id: string; name: string }) => {
+    setEditingPaymentMethod(method)
+    setEditPaymentMethodValue(method.name)
+  }
+
+  const handleSaveEditPaymentMethod = () => {
+    if (!editPaymentMethodValue.trim()) {
+      toast.error("Payment method name cannot be empty")
+      return
+    }
+
+    if (editingPaymentMethod && editPaymentMethodValue.trim() !== editingPaymentMethod.name) {
+      if ((paymentMethods || []).some(pm => pm.name.toLowerCase() === editPaymentMethodValue.trim().toLowerCase())) {
+        toast.error("This payment method already exists")
+        return
+      }
+    }
+
+    setPaymentMethods((current) =>
+      (current || []).map(pm => pm.id === editingPaymentMethod?.id ? { ...pm, name: editPaymentMethodValue.trim() } : pm)
+    )
+    setEditingPaymentMethod(null)
+    setEditPaymentMethodValue("")
+    toast.success("Payment method updated successfully")
+  }
+
+  const handleCancelEditPaymentMethod = () => {
+    setEditingPaymentMethod(null)
+    setEditPaymentMethodValue("")
+  }
+  
+  const handleMovePaymentMethod = (id: string, direction: 'up' | 'down') => {
+    setPaymentMethods((current) => {
+      const methods = [...(current || [])]
+      const index = methods.findIndex(pm => pm.id === id)
+      if (index === -1) return methods
+      
+      const newIndex = direction === 'up' ? index - 1 : index + 1
+      if (newIndex < 0 || newIndex >= methods.length) return methods
+      
+      const temp = methods[index]
+      methods[index] = methods[newIndex]
+      methods[newIndex] = temp
+      return methods
+    })
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -357,6 +446,12 @@ export function Settings() {
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               Notifications
+            </TabsTrigger>
+            <TabsTrigger 
+              value="pos" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              POS
             </TabsTrigger>
           </TabsList>
 
@@ -671,6 +766,149 @@ export function Settings() {
               <p className="text-muted-foreground">
                 Notification settings will appear here.
               </p>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="pos" className="mt-0">
+            <Card className="p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Payment Methods</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Configure available payment methods for POS transactions. You can add, remove, enable/disable, and reorder payment methods.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <Label htmlFor="new-payment-method" className="sr-only">New Payment Method</Label>
+                      <Input
+                        id="new-payment-method"
+                        placeholder="Enter new payment method (e.g., Venmo, PayPal)"
+                        value={newPaymentMethod}
+                        onChange={(e) => setNewPaymentMethod(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddPaymentMethod()
+                          }
+                        }}
+                      />
+                    </div>
+                    <Button
+                      onClick={handleAddPaymentMethod}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                    >
+                      <Plus size={18} className="mr-2" />
+                      Add Method
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(paymentMethods || []).length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        No payment methods configured. Add your first payment method above.
+                      </div>
+                    ) : (
+                      (paymentMethods || []).map((method, index) => (
+                        <div
+                          key={method.id}
+                          className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                            method.enabled 
+                              ? 'bg-secondary/20 border-border hover:border-primary/50' 
+                              : 'bg-muted/30 border-border/50 opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="flex flex-col">
+                              <button
+                                onClick={() => handleMovePaymentMethod(method.id, 'up')}
+                                disabled={index === 0}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
+                              >
+                                <CaretUp size={18} weight="bold" />
+                              </button>
+                              <button
+                                onClick={() => handleMovePaymentMethod(method.id, 'down')}
+                                disabled={index === (paymentMethods || []).length - 1}
+                                className="text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
+                              >
+                                <CaretDown size={18} weight="bold" />
+                              </button>
+                            </div>
+                            
+                            {editingPaymentMethod?.id === method.id ? (
+                              <Input
+                                value={editPaymentMethodValue}
+                                onChange={(e) => setEditPaymentMethodValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveEditPaymentMethod()
+                                  } else if (e.key === 'Escape') {
+                                    handleCancelEditPaymentMethod()
+                                  }
+                                }}
+                                className="flex-1 mr-3"
+                                autoFocus
+                              />
+                            ) : (
+                              <span className="font-medium">{method.name}</span>
+                            )}
+                          </div>
+                          
+                          <div className="flex gap-2 items-center">
+                            {editingPaymentMethod?.id === method.id ? (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleCancelEditPaymentMethod}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="bg-primary text-primary-foreground"
+                                  onClick={handleSaveEditPaymentMethod}
+                                >
+                                  Save
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleTogglePaymentMethod(method.id)}
+                                  className={method.enabled ? '' : 'border-muted-foreground'}
+                                >
+                                  {method.enabled ? 'Enabled' : 'Disabled'}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-foreground hover:bg-primary/10"
+                                  onClick={() => handleEditPaymentMethod(method)}
+                                >
+                                  <PencilSimple size={18} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleDeletePaymentMethod(method.id)}
+                                >
+                                  <Trash size={18} />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
             </Card>
           </TabsContent>
         </Tabs>
