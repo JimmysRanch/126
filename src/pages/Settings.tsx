@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -9,6 +9,7 @@ import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ServicePricing {
   small: number
@@ -69,6 +70,30 @@ const DEFAULT_PAYMENT_METHODS = [
   { id: "check", name: "Check", enabled: true }
 ]
 
+const TIMEZONES = [
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Phoenix", label: "Arizona Time (MT - No DST)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "America/Anchorage", label: "Alaska Time (AKT)" },
+  { value: "Pacific/Honolulu", label: "Hawaii Time (HT)" },
+  { value: "America/Puerto_Rico", label: "Atlantic Time (AST)" }
+]
+
+interface BusinessInfo {
+  companyName: string
+  businessPhone: string
+  businessEmail: string
+  address: string
+  city: string
+  state: string
+  zipCode: string
+  timezone: string
+  taxId: string
+  website: string
+}
+
 export function Settings() {
   const [activeTab, setActiveTab] = useState("staff")
   const [staffPositions, setStaffPositions] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
@@ -107,6 +132,38 @@ export function Settings() {
     largePrice: "",
     giantPrice: ""
   })
+  
+  const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", {
+    companyName: "",
+    businessPhone: "",
+    businessEmail: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    timezone: "America/New_York",
+    taxId: "",
+    website: ""
+  })
+  
+  const [businessFormData, setBusinessFormData] = useState<BusinessInfo>({
+    companyName: "",
+    businessPhone: "",
+    businessEmail: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    timezone: "America/New_York",
+    taxId: "",
+    website: ""
+  })
+  
+  useEffect(() => {
+    if (businessInfo) {
+      setBusinessFormData(businessInfo)
+    }
+  }, [businessInfo])
 
   const handleAddPosition = () => {
     if (!newPosition.trim()) {
@@ -408,6 +465,28 @@ export function Settings() {
       return methods
     })
   }
+  
+  const handleSaveBusinessInfo = () => {
+    if (!businessFormData.companyName.trim()) {
+      toast.error("Company name is required")
+      return
+    }
+    
+    if (!businessFormData.timezone) {
+      toast.error("Timezone is required")
+      return
+    }
+    
+    setBusinessInfo(businessFormData)
+    toast.success("Business information saved successfully")
+  }
+  
+  const handleBusinessInfoChange = (field: keyof BusinessInfo, value: string) => {
+    setBusinessFormData((prev) => ({
+      ...prev,
+      [field]: value
+    }))
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -417,7 +496,7 @@ export function Settings() {
             Settings
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Configure your PawHub application settings.
+            Configure your Scruffy Butts application settings.
           </p>
         </header>
 
@@ -566,10 +645,164 @@ export function Settings() {
           </TabsContent>
 
           <TabsContent value="business" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
-                Business settings will appear here.
-              </p>
+            <Card className="p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Business Information</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Configure your business details for receipts, invoices, and system-wide settings. Timezone is critical for appointments, schedules, and all time-based operations.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="company-name" className="text-sm font-medium flex items-center gap-1">
+                      Company Name
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="company-name"
+                      placeholder="Scruffy Butts Dog Grooming"
+                      value={businessFormData.companyName}
+                      onChange={(e) => handleBusinessInfoChange('companyName', e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">This will appear on all receipts and invoices</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="business-phone" className="text-sm font-medium">
+                      Business Phone
+                    </Label>
+                    <Input
+                      id="business-phone"
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={businessFormData.businessPhone}
+                      onChange={(e) => handleBusinessInfoChange('businessPhone', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="business-email" className="text-sm font-medium">
+                      Business Email
+                    </Label>
+                    <Input
+                      id="business-email"
+                      type="email"
+                      placeholder="info@scruffybutts.com"
+                      value={businessFormData.businessEmail}
+                      onChange={(e) => handleBusinessInfoChange('businessEmail', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="website" className="text-sm font-medium">
+                      Website
+                    </Label>
+                    <Input
+                      id="website"
+                      type="url"
+                      placeholder="www.scruffybutts.com"
+                      value={businessFormData.website}
+                      onChange={(e) => handleBusinessInfoChange('website', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="address" className="text-sm font-medium">
+                      Street Address
+                    </Label>
+                    <Input
+                      id="address"
+                      placeholder="123 Main Street"
+                      value={businessFormData.address}
+                      onChange={(e) => handleBusinessInfoChange('address', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="city" className="text-sm font-medium">
+                      City
+                    </Label>
+                    <Input
+                      id="city"
+                      placeholder="Springfield"
+                      value={businessFormData.city}
+                      onChange={(e) => handleBusinessInfoChange('city', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="state" className="text-sm font-medium">
+                      State
+                    </Label>
+                    <Input
+                      id="state"
+                      placeholder="CA"
+                      value={businessFormData.state}
+                      onChange={(e) => handleBusinessInfoChange('state', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="zip-code" className="text-sm font-medium">
+                      ZIP Code
+                    </Label>
+                    <Input
+                      id="zip-code"
+                      placeholder="12345"
+                      value={businessFormData.zipCode}
+                      onChange={(e) => handleBusinessInfoChange('zipCode', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="tax-id" className="text-sm font-medium">
+                      Tax ID / EIN
+                    </Label>
+                    <Input
+                      id="tax-id"
+                      placeholder="12-3456789"
+                      value={businessFormData.taxId}
+                      onChange={(e) => handleBusinessInfoChange('taxId', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="timezone" className="text-sm font-medium flex items-center gap-1">
+                      Business Timezone
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={businessFormData.timezone}
+                      onValueChange={(value) => handleBusinessInfoChange('timezone', value)}
+                    >
+                      <SelectTrigger id="timezone" className="w-full">
+                        <SelectValue placeholder="Select timezone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIMEZONES.map((tz) => (
+                          <SelectItem key={tz.value} value={tz.value}>
+                            {tz.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      ⚠️ Critical: This timezone will be used for all appointments, staff schedules, drop-off/pick-up times, and system metrics
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-border">
+                  <Button
+                    onClick={handleSaveBusinessInfo}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                  >
+                    Save Business Information
+                  </Button>
+                </div>
+              </div>
             </Card>
           </TabsContent>
 
