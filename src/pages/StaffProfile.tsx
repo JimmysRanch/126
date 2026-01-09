@@ -466,7 +466,8 @@ export function StaffProfile() {
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 <h4 className="font-semibold">{apt.client}</h4>
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                  <PawPrint size={12} weight="fill" />
                                   {apt.pet}
                                 </Badge>
                                 <Badge 
