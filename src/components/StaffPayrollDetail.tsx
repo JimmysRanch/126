@@ -144,49 +144,31 @@ export function StaffPayrollDetail({ staffId, staffName, hourlyRate }: StaffPayr
         </Button>
       </div>
 
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-2 sm:gap-4`}>
-        <Card className="p-3 sm:p-5 bg-card border-border">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendUp size={20} className="text-primary" />
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
-              YTD Gross Pay
+      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD GROSS PAY</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${yearToDateStats.grossPay.toLocaleString()}</p>
             </div>
-          </div>
-          <div className="text-xl sm:text-3xl font-bold text-primary">
-            ${yearToDateStats.grossPay.toLocaleString()}
-          </div>
-          <div className="text-xs sm:text-sm text-muted-foreground mt-1">
-            {yearToDateStats.totalHours} total hours
           </div>
         </Card>
 
-        <Card className="p-3 sm:p-5 bg-card border-border">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendUp size={20} className="text-primary" />
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
-              YTD Net Pay
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD NET PAY</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${yearToDateStats.netPay.toLocaleString()}</p>
             </div>
-          </div>
-          <div className="text-xl sm:text-3xl font-bold">
-            ${yearToDateStats.netPay.toLocaleString()}
-          </div>
-          <div className="text-xs sm:text-sm text-muted-foreground mt-1">
-            After all deductions
           </div>
         </Card>
 
-        <Card className={`p-3 sm:p-5 bg-card border-border ${isMobile ? 'col-span-2' : ''}`}>
-          <div className="flex items-center gap-2 mb-2">
-            <TrendUp size={20} className="text-primary" />
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
-              YTD Tips + Bonuses
+        <Card className={`p-2 md:p-2.5 border-border ${isMobile ? 'col-span-2' : ''}`}>
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD TIPS + BONUSES</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${(yearToDateStats.tips + yearToDateStats.bonuses).toLocaleString()}</p>
             </div>
-          </div>
-          <div className="text-xl sm:text-3xl font-bold text-primary">
-            ${(yearToDateStats.tips + yearToDateStats.bonuses).toLocaleString()}
-          </div>
-          <div className="text-xs sm:text-sm text-muted-foreground mt-1">
-            ${yearToDateStats.tips.toLocaleString()} tips, ${yearToDateStats.bonuses.toLocaleString()} bonuses
           </div>
         </Card>
       </div>

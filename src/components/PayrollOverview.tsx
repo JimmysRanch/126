@@ -140,36 +140,36 @@ export function PayrollOverview() {
     <div className="space-y-3">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 flex-1`}>
-          <Card className="p-3 bg-card rounded-xl border border-border">
-            <div className="text-xs text-muted-foreground mb-1.5">
-              Current Period
-            </div>
-            <div className="text-lg font-bold">
-              Jan 16 - 31
-            </div>
-          </Card>
-          <Card className="p-3 bg-card rounded-xl border border-border">
-            <div className="text-xs text-muted-foreground mb-1.5">
-              Gross Pay
-            </div>
-            <div className="text-lg font-bold text-primary">
-              ${currentPeriodGross.toLocaleString()}
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">Jan 16 - 31</p>
+              </div>
             </div>
           </Card>
-          <Card className="p-3 bg-card rounded-xl border border-border">
-            <div className="text-xs text-muted-foreground mb-1.5">
-              Deductions
-            </div>
-            <div className="text-lg font-bold">
-              ${currentPeriodDeductions.toLocaleString()}
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">GROSS PAY</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodGross.toLocaleString()}</p>
+              </div>
             </div>
           </Card>
-          <Card className="p-3 bg-card rounded-xl border border-border">
-            <div className="text-xs text-muted-foreground mb-1.5">
-              Net Pay
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">DEDUCTIONS</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodDeductions.toLocaleString()}</p>
+              </div>
             </div>
-            <div className="text-lg font-bold text-primary">
-              ${currentPeriodTotal.toLocaleString()}
+          </Card>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NET PAY</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodTotal.toLocaleString()}</p>
+              </div>
             </div>
           </Card>
         </div>
