@@ -349,64 +349,49 @@ export function StaffPayrollBreakdown() {
         </div>
 
         <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-5'} gap-3`}>
-          <Card className="p-2 md:p-2.5 bg-card border-border">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-              APPOINTMENTS
-            </p>
-            <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">
-              {appointments.length}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              All completed
-            </p>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">APPOINTMENTS</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{appointments.length}</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className="p-2 md:p-2.5 bg-card border-border">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-              COMMISSION
-            </p>
-            <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">
-              ${totalEarnings.toFixed(2)}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              From services
-            </p>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">COMMISSION</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${totalEarnings.toFixed(2)}</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className="p-2 md:p-2.5 bg-card border-border">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-              TIPS RECEIVED
-            </p>
-            <p className="text-lg md:text-xl font-bold mt-0.5">
-              ${totalTips.toFixed(2)}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              ${(totalTips / appointments.length).toFixed(2)} avg
-            </p>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">TIPS RECEIVED</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${totalTips.toFixed(2)}</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className="p-2 md:p-2.5 bg-card border-border">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-              TOTAL REVENUE
-            </p>
-            <p className="text-lg md:text-xl font-bold mt-0.5">
-              ${totalRevenue.toFixed(2)}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              From services
-            </p>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">TOTAL REVENUE</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${totalRevenue.toFixed(2)}</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`p-2 md:p-2.5 bg-card border-border ${isMobile ? 'col-span-2' : ''}`}>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-              DISCOUNTS
-            </p>
-            <p className="text-lg md:text-xl font-bold mt-0.5">
-              ${totalDiscounts.toFixed(2)}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              {appointmentsWithDiscount} appointments
-            </p>
+          <Card className={`p-2 md:p-2.5 border-border ${isMobile ? 'col-span-2' : ''}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">DISCOUNTS</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">${totalDiscounts.toFixed(2)}</p>
+              </div>
+            </div>
           </Card>
         </div>
 
