@@ -137,38 +137,38 @@ export function PayrollOverview() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2 sm:gap-4 flex-1`}>
-          <Card className="p-3 sm:p-4 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+    <div className="space-y-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 flex-1`}>
+          <Card className="p-3 bg-card rounded-xl border border-border">
+            <div className="text-xs text-muted-foreground mb-1.5">
               Current Period
             </div>
-            <div className="text-lg sm:text-2xl font-bold">
+            <div className="text-lg font-bold">
               Jan 16 - 31
             </div>
           </Card>
-          <Card className="p-3 sm:p-4 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+          <Card className="p-3 bg-card rounded-xl border border-border">
+            <div className="text-xs text-muted-foreground mb-1.5">
               Gross Pay
             </div>
-            <div className="text-lg sm:text-2xl font-bold text-primary">
+            <div className="text-lg font-bold text-primary">
               ${currentPeriodGross.toLocaleString()}
             </div>
           </Card>
-          <Card className="p-3 sm:p-4 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+          <Card className="p-3 bg-card rounded-xl border border-border">
+            <div className="text-xs text-muted-foreground mb-1.5">
               Deductions
             </div>
-            <div className="text-lg sm:text-2xl font-bold">
+            <div className="text-lg font-bold">
               ${currentPeriodDeductions.toLocaleString()}
             </div>
           </Card>
-          <Card className="p-3 sm:p-4 bg-card border-border">
-            <div className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mb-1">
+          <Card className="p-3 bg-card rounded-xl border border-border">
+            <div className="text-xs text-muted-foreground mb-1.5">
               Net Pay
             </div>
-            <div className="text-lg sm:text-2xl font-bold text-primary">
+            <div className="text-lg font-bold text-primary">
               ${currentPeriodTotal.toLocaleString()}
             </div>
           </Card>
@@ -182,7 +182,7 @@ export function PayrollOverview() {
       </div>
 
       <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
-        <div className="flex justify-center mb-4">
+        <div className="flex justify-center mb-3">
           <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-3 w-full' : ''}`}>
             <TabsTrigger 
               value="current" 
@@ -205,18 +205,18 @@ export function PayrollOverview() {
           </TabsList>
         </div>
 
-        <TabsContent value="current" className="mt-0 space-y-3">
+        <TabsContent value="current" className="mt-0 space-y-2">
           {mockPayrollData.map((payroll) => (
             <Card
               key={payroll.staffId}
-              className="p-3 sm:p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
+              className="p-3 bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
               onClick={() => navigate(`/staff/${payroll.staffId}/payroll-breakdown`)}
             >
               {isMobile ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold mb-1.5">{payroll.staffName}</h3>
+                      <h3 className="text-sm font-semibold mb-1">{payroll.staffName}</h3>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <Badge variant="secondary" className="text-xs">
                           {payroll.role}
@@ -231,17 +231,17 @@ export function PayrollOverview() {
                       </div>
                     </div>
                     <div className="text-right shrink-0">
-                      <div className="text-lg font-bold text-primary">${payroll.netPay.toLocaleString()}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Net Pay</div>
+                      <div className="text-base font-bold text-primary">${payroll.netPay.toLocaleString()}</div>
+                      <div className="text-[10px] text-muted-foreground">Net Pay</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                     <div className="bg-secondary/30 rounded-md p-2">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">
                         Hours
                       </div>
-                      <div className="text-sm font-semibold">
+                      <div className="text-xs font-semibold">
                         {payroll.regularHours}h
                         {payroll.overtimeHours > 0 && (
                           <span className="text-primary ml-1">+{payroll.overtimeHours} OT</span>
@@ -249,22 +249,22 @@ export function PayrollOverview() {
                       </div>
                     </div>
                     <div className="bg-secondary/30 rounded-md p-2">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">
                         Gross Pay
                       </div>
-                      <div className="text-sm font-semibold">${payroll.grossPay.toLocaleString()}</div>
+                      <div className="text-xs font-semibold">${payroll.grossPay.toLocaleString()}</div>
                     </div>
                     <div className="bg-secondary/30 rounded-md p-2">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">
                         Appointments
                       </div>
-                      <div className="text-sm font-semibold">{payroll.appointmentsCompleted}</div>
+                      <div className="text-xs font-semibold">{payroll.appointmentsCompleted}</div>
                     </div>
                     <div className="bg-secondary/30 rounded-md p-2">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                      <div className="text-[10px] text-muted-foreground mb-0.5">
                         Tips
                       </div>
-                      <div className="text-sm font-semibold text-primary">${payroll.tips.toLocaleString()}</div>
+                      <div className="text-xs font-semibold text-primary">${payroll.tips.toLocaleString()}</div>
                     </div>
                   </div>
                 </div>
