@@ -530,8 +530,8 @@ export function StaffPayrollBreakdown() {
                             </Tooltip>
                           </TooltipProvider>
                         )}
-                      </div>
-                    </td>
+                      <div className="text-xs font-bold text-primary">
+                    </td> apt.tipAmount : 0)).toFixed(2)}
                     <td className="p-2 text-right">
                       <div className="text-xs font-medium">${apt.staffEarnings.toFixed(2)}</div>
                       <div className="text-[10px] text-muted-foreground">{apt.commissionRate}%</div>
@@ -541,17 +541,10 @@ export function StaffPayrollBreakdown() {
                         ${(apt.staffEarnings + (apt.tipPaidInPayroll ? apt.tipAmount : 0)).toFixed(2)}
                       </div>
                     </td>
-                  </tr>
-                ))}
+                  </tr>y/10 border-2 border-primary">
+                ))}sm:flex-row items-stretch sm:items-center justify-between gap-4">
               </tbody>
             </table>
-          </div>
-        </Card>
-
-        <Card className="p-4 sm:p-6 bg-primary/10 border-2 border-primary">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-            <div>
-              <div className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">
                 Total Payroll Amount (Commission + Tips in Payroll)
               </div>
               <div className="text-2xl sm:text-4xl font-bold text-primary">
