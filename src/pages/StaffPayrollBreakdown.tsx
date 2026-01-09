@@ -418,139 +418,133 @@ export function StaffPayrollBreakdown() {
             </Badge>
           </div>
 
-          <div className="space-y-3">
-            {appointments.map((apt) => (
-              <Card
-                key={apt.id}
-                className="p-3 sm:p-4 bg-secondary/20 border-border hover:border-primary/50 transition-all duration-200"
-              >
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <h3 className="font-semibold text-sm sm:text-base">{apt.clientName}</h3>
-                        <Badge variant="outline" className="text-xs flex items-center gap-1">
-                          <PawPrint size={12} weight="fill" className="text-primary" />
-                          {apt.petName} - {apt.petBreed}
-                        </Badge>
-                        <Badge variant="secondary" className="text-xs">
-                          {apt.id}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs sm:text-sm text-muted-foreground mb-2">
-                        <span>{apt.date} at {apt.time}</span>
-                        <span>•</span>
-                        <span>{apt.serviceDuration}</span>
-                      </div>
-                      <div className="text-sm font-medium mb-2">
-                        <Receipt size={16} className="inline mr-2" />
-                        {apt.service}
-                      </div>
-                    </div>
-
-                    <div className="text-left sm:text-right">
-                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        Staff Earnings
-                      </div>
-                      <div className="text-xl sm:text-2xl font-bold text-primary">
-                        ${(apt.staffEarnings + (apt.tipPaidInPayroll ? apt.tipAmount : 0)).toFixed(2)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {apt.commissionRate}% commission{apt.tipPaidInPayroll ? ' + tips' : ''}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-2 sm:gap-3`}>
-                    <div className="bg-background rounded-md p-2 sm:p-3">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                        Base Price
-                      </div>
-                      <div className="text-sm font-semibold">
-                        ${apt.basePrice.toFixed(2)}
-                      </div>
-                    </div>
-
-                    <div className="bg-background rounded-md p-2 sm:p-3">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                        Final Price
-                      </div>
-                      <div className="text-sm font-semibold text-primary">
-                        ${apt.finalPrice.toFixed(2)}
-                      </div>
-                    </div>
-
-                    <div className="bg-background rounded-md p-2 sm:p-3">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                        Tip Amount
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <div className="text-sm font-semibold">
-                          ${apt.tipAmount.toFixed(2)}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-secondary/50 sticky top-0">
+                <tr className="border-b border-border">
+                  <th className="text-left p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Date/Time</th>
+                  <th className="text-left p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Client</th>
+                  <th className="text-left p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Pet</th>
+                  <th className="text-left p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Service</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Base</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Discount</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Final</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Tip</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Commission</th>
+                  <th className="text-right p-2 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Total Earned</th>
+                </tr>
+              </thead>
+              <tbody>
+                {appointments.map((apt, index) => (
+                  <tr 
+                    key={apt.id}
+                    className={`border-b border-border hover:bg-secondary/20 transition-colors ${index % 2 === 0 ? 'bg-secondary/5' : ''}`}
+                  >
+                    <td className="p-2 whitespace-nowrap">
+                      <div className="text-xs font-medium">{apt.date}</div>
+                      <div className="text-xs text-muted-foreground">{apt.time}</div>
+                    </td>
+                    <td className="p-2">
+                      <div className="text-xs font-medium">{apt.clientName}</div>
+                    </td>
+                    <td className="p-2">
+                      <div className="flex items-center gap-1">
+                        <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
+                        <div>
+                          <div className="text-xs font-medium">{apt.petName}</div>
+                          <div className="text-[10px] text-muted-foreground">{apt.petBreed}</div>
                         </div>
+                      </div>
+                    </td>
+                    <td className="p-2">
+                      <div className="text-xs">{apt.service}</div>
+                      {apt.discountApplied && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                type="button"
+                                className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline mt-0.5"
+                              >
+                                <Tag size={10} weight="fill" />
+                                {apt.discountReason}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-[300px]">
+                              <p className="text-xs font-semibold mb-1">{apt.discountReason}</p>
+                              {apt.discountNotes && (
+                                <p className="text-xs text-muted-foreground">{apt.discountNotes}</p>
+                              )}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </td>
+                    <td className="p-2 text-right">
+                      <div className="text-xs font-medium">${apt.basePrice.toFixed(2)}</div>
+                    </td>
+                    <td className="p-2 text-right">
+                      {apt.discountApplied ? (
+                        <div className="text-xs font-medium text-primary">-${apt.discountAmount.toFixed(2)}</div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">—</div>
+                      )}
+                    </td>
+                    <td className="p-2 text-right">
+                      <div className="text-xs font-semibold">${apt.finalPrice.toFixed(2)}</div>
+                    </td>
+                    <td className="p-2 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <div className="text-xs font-medium">${apt.tipAmount.toFixed(2)}</div>
                         {apt.tipPaymentMethod === "Cash" && (
-                          <>
-                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                              Cash
-                            </Badge>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button 
-                                    type="button"
-                                    className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                                  >
-                                    <Info size={14} weight="fill" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-[250px]">
-                                  <p className="text-xs">This cash tip was paid directly to the groomer at time of service and is not included in payroll.</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button 
+                                  type="button"
+                                  className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                  <Money size={12} weight="fill" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Cash tip - already paid</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                        {apt.tipPaymentMethod === "Card" && apt.tipPaidInPayroll && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button 
+                                  type="button"
+                                  className="inline-flex items-center justify-center text-primary hover:text-primary/80 transition-colors"
+                                >
+                                  <CreditCard size={12} weight="fill" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Card tip - in payroll</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                       </div>
-                    </div>
-
-                    <div className="bg-background rounded-md p-2 sm:p-3">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                        Payment
+                    </td>
+                    <td className="p-2 text-right">
+                      <div className="text-xs font-medium">${apt.staffEarnings.toFixed(2)}</div>
+                      <div className="text-[10px] text-muted-foreground">{apt.commissionRate}%</div>
+                    </td>
+                    <td className="p-2 text-right">
+                      <div className="text-xs font-bold text-primary">
+                        ${(apt.staffEarnings + (apt.tipPaidInPayroll ? apt.tipAmount : 0)).toFixed(2)}
                       </div>
-                      <div className="text-sm font-semibold">
-                        {apt.paymentMethod}
-                      </div>
-                    </div>
-                  </div>
-
-                  {apt.discountApplied && (
-                    <div className="mt-3 border-t border-border pt-3">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <span className="font-semibold text-sm">Discount Applied</span>
-                            <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
-                              -${apt.discountAmount.toFixed(2)}
-                            </Badge>
-                          </div>
-                          <div className="text-xs sm:text-sm font-medium text-primary mb-1">
-                            {apt.discountReason}
-                          </div>
-                        </div>
-                      </div>
-                      {apt.discountNotes && (
-                        <div className="flex items-start gap-2 ml-6 mt-2">
-                          <WarningCircle size={16} className="text-muted-foreground mt-0.5 shrink-0" />
-                          <p className="text-xs sm:text-sm text-muted-foreground italic">
-                            {apt.discountNotes}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </Card>
 
