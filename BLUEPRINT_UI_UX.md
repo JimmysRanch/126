@@ -1754,3 +1754,1212 @@ Located in `src/lib/`:
 **END OF SECTIONS 5-7**
 
 _Additional sections will be added per user instruction._
+
+---
+
+## 8) Interaction States
+
+This section documents all interactive element states, their visual treatments, and touch target requirements.
+
+### Button States
+
+**Primary Button (`variant="default"`):**
+
+```tsx
+<Button>Label</Button>
+```
+
+- **Default (Rest):**
+  - Background: `bg-primary` (teal oklch(0.75 0.15 195))
+  - Text: `text-primary-foreground` (dark blue-gray)
+  - Border: None
+  - Shadow: None
+  - Cursor: `cursor-pointer`
+
+- **Hover:**
+  - Background: Slightly lighter teal (handled by shadcn internal hover state)
+  - Visual: Subtle brightness increase
+  - Transition: 200ms ease
+  - Cursor: `cursor-pointer`
+
+- **Active/Pressed:**
+  - Background: Slightly darker than default
+  - Visual: Appears depressed
+  - Scale: No scale transform used
+  - Duration: Instant feedback
+
+- **Focus (Keyboard):**
+  - Outline: `ring-2 ring-ring ring-offset-2`
+  - Ring Color: `--ring` (teal oklch(0.75 0.15 195))
+  - Ring Offset: 2px background-colored gap
+  - Visible focus indicator for accessibility
+
+- **Disabled:**
+  - Background: `bg-muted` (desaturated)
+  - Text: `text-muted-foreground` (dimmed)
+  - Opacity: 50% (`opacity-50`)
+  - Cursor: `cursor-not-allowed`
+  - No hover effects
+  - Non-interactive
+
+- **Loading:**
+  - Background: Same as default
+  - Icon: Spinner or loading icon replaces or prepends text
+  - Cursor: `cursor-wait` or `cursor-not-allowed`
+  - Button remains pressable or disabled depending on implementation
+
+**Secondary Button (`variant="secondary"`):**
+
+- **Default:** `bg-secondary` / `text-secondary-foreground`
+- **Hover:** Slightly lighter background
+- **Active:** Slightly darker background
+- **Focus:** Same ring treatment as primary
+- **Disabled:** Same as primary disabled state
+
+**Outline Button (`variant="outline"`):**
+
+- **Default:**
+  - Background: Transparent
+  - Border: `border border-input`
+  - Text: `text-foreground`
+
+- **Hover:**
+  - Background: `bg-accent` (teal accent)
+  - Border: Same
+  - Text: `text-accent-foreground`
+
+- **Active:** Slightly darker background
+- **Focus:** Same ring treatment
+- **Disabled:** Muted border and text
+
+**Ghost Button (`variant="ghost"`):**
+
+- **Default:**
+  - Background: Transparent
+  - Border: None
+  - Text: `text-foreground`
+
+- **Hover:**
+  - Background: `bg-accent` (subtle teal highlight)
+  - Text: `text-accent-foreground`
+
+- **Active:** Slightly darker background
+- **Focus:** Same ring treatment
+- **Disabled:** Muted text only
+
+**Destructive Button (`variant="destructive"`):**
+
+- **Default:** `bg-destructive` / `text-destructive-foreground` (red-orange)
+- **Hover:** Slightly lighter or more saturated red
+- **Active:** Darker red
+- **Focus:** Ring with destructive color or standard ring
+- **Disabled:** Muted, non-interactive
+
+**Link Button (`variant="link"`):**
+
+- **Default:**
+  - Background: Transparent
+  - Text: `text-primary` (teal, underlined)
+  - Underline: `underline-offset-4`
+
+- **Hover:**
+  - Text: Slightly lighter or no change
+  - Underline: Remains
+
+- **Active:** Darker text
+- **Focus:** Ring around text area
+- **Disabled:** Muted text, no underline
+
+**Touch Targets:**
+- Minimum height: `h-10` (40px) for default size
+- Small buttons: `h-9` (36px) - still meets accessibility minimums with padding
+- Large buttons: `h-11` or `h-12` (44px–48px)
+- Horizontal padding ensures adequate width for tap targets
+
+### Input Field States
+
+**Text Input (`<Input />`):**
+
+```tsx
+<Input placeholder="Enter text" />
+```
+
+- **Default (Rest):**
+  - Background: Transparent or `bg-background`
+  - Border: `border border-input` (subtle gray)
+  - Text: `text-foreground`
+  - Placeholder: `text-muted-foreground`
+  - Padding: `px-3 py-2`
+
+- **Hover:**
+  - Border: Slightly lighter or same (minimal change)
+  - Cursor: `cursor-text`
+
+- **Focus (Active Input):**
+  - Border: `border-input` (no color change)
+  - Ring: `ring-2 ring-ring` (teal focus ring)
+  - Outline: None (replaced by ring)
+  - Background: Same as default
+
+- **Filled (Has Value):**
+  - Visual: Same as default
+  - Text: `text-foreground`
+
+- **Error/Invalid:**
+  - Border: `border-destructive` (red-orange)
+  - Ring (on focus): `ring-destructive`
+  - Text: `text-destructive` (optional for error message below)
+
+- **Disabled:**
+  - Background: `bg-muted` or slightly darker
+  - Border: `border-border` (dimmed)
+  - Text: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+  - Non-editable
+
+- **Read-Only:**
+  - Background: Slightly different from default (optional)
+  - Border: Same as default
+  - Cursor: `cursor-default`
+  - Non-editable but appears active
+
+**Textarea (`<Textarea />`):**
+- States identical to `<Input />`
+- Min-height: Typically `min-h-[80px]` or larger
+- Resizable: `resize-y` or `resize-none` depending on use case
+
+**Touch Targets:**
+- Input height: `h-10` (40px) minimum
+- Vertical padding ensures comfortable tap area
+- Label click targets extend to input via `<Label htmlFor="...">`
+
+### Select / Dropdown States
+
+**Select Trigger (`<Select />`):**
+
+```tsx
+<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Choose option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="1">Option 1</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+- **Default (Closed):**
+  - Background: Transparent or `bg-background`
+  - Border: `border border-input`
+  - Text: `text-foreground` or `text-muted-foreground` (placeholder)
+  - Icon: Down chevron icon
+
+- **Hover (Closed):**
+  - Background: Slight highlight
+  - Border: Same
+
+- **Focus (Closed, Keyboard):**
+  - Ring: `ring-2 ring-ring`
+
+- **Open (Active):**
+  - Border: `border-input`
+  - Ring: `ring-2 ring-ring`
+  - Icon: Up chevron (rotated)
+  - Popover: Dropdown menu appears below/above trigger
+
+- **Disabled:**
+  - Background: `bg-muted`
+  - Text: `text-muted-foreground`
+  - Icon: Dimmed
+  - Cursor: `cursor-not-allowed`
+
+**Select Items (Options in Dropdown):**
+
+- **Default:**
+  - Background: Transparent
+  - Text: `text-foreground`
+  - Padding: `px-2 py-1.5`
+
+- **Hover:**
+  - Background: `bg-accent` (teal highlight)
+  - Text: `text-accent-foreground`
+
+- **Selected:**
+  - Background: `bg-accent` (persistent)
+  - Text: `text-accent-foreground`
+  - Checkmark icon: Visible indicator
+
+- **Focus (Keyboard):**
+  - Background: Same as hover
+  - Outline: Minimal or none (handled by parent popover)
+
+### Checkbox States
+
+**Checkbox (`<Checkbox />`):**
+
+```tsx
+<Checkbox id="terms" />
+```
+
+- **Unchecked (Default):**
+  - Background: Transparent
+  - Border: `border border-input` (gray)
+  - Size: `h-4 w-4` (16×16px)
+  - Icon: None
+
+- **Unchecked Hover:**
+  - Border: Slightly lighter or same
+  - Background: Subtle highlight
+
+- **Unchecked Focus:**
+  - Ring: `ring-2 ring-ring`
+
+- **Checked:**
+  - Background: `bg-primary` (teal)
+  - Border: `border-primary`
+  - Icon: White checkmark (Phosphor `Check` icon)
+
+- **Checked Hover:**
+  - Background: Slightly lighter teal
+
+- **Checked Focus:**
+  - Background: `bg-primary`
+  - Ring: `ring-2 ring-ring`
+
+- **Indeterminate (Partial):**
+  - Background: `bg-primary`
+  - Icon: Dash/minus icon
+  - Used for: "Select all" with partial selection
+
+- **Disabled (Unchecked):**
+  - Background: `bg-muted`
+  - Border: `border-border` (dimmed)
+  - Cursor: `cursor-not-allowed`
+
+- **Disabled (Checked):**
+  - Background: Dimmed primary color
+  - Icon: Dimmed checkmark
+  - Cursor: `cursor-not-allowed`
+
+**Touch Targets:**
+- Checkbox itself: 16×16px
+- Click target extended by label: Full `<label>` area (typically 44×44px minimum with padding)
+
+### Switch States
+
+**Switch (`<Switch />`):**
+
+```tsx
+<Switch id="notifications" />
+```
+
+- **Off (Default):**
+  - Track Background: `bg-input` (gray)
+  - Thumb: White circle, positioned left
+  - Size: `h-6 w-11` (24×44px)
+
+- **Off Hover:**
+  - Track: Slightly lighter
+
+- **Off Focus:**
+  - Ring: `ring-2 ring-ring`
+
+- **On:**
+  - Track Background: `bg-primary` (teal)
+  - Thumb: White circle, positioned right
+  - Animation: Smooth slide transition (150-200ms)
+
+- **On Hover:**
+  - Track: Slightly lighter teal
+
+- **On Focus:**
+  - Track: `bg-primary`
+  - Ring: `ring-2 ring-ring`
+
+- **Disabled (Off):**
+  - Track: `bg-muted`
+  - Thumb: Dimmed
+  - Cursor: `cursor-not-allowed`
+
+- **Disabled (On):**
+  - Track: Dimmed teal
+  - Thumb: Dimmed
+  - Cursor: `cursor-not-allowed`
+
+**Touch Targets:**
+- Switch dimensions (24×44px) exceed minimum requirements
+
+### Radio Button States
+
+**Radio Group (`<RadioGroup />`):**
+
+```tsx
+<RadioGroup>
+  <RadioGroupItem value="option1" id="opt1" />
+</RadioGroup>
+```
+
+- **Unselected (Default):**
+  - Background: Transparent
+  - Border: `border border-input` (gray circle)
+  - Size: `h-4 w-4` (16×16px)
+  - Dot: None
+
+- **Unselected Hover:**
+  - Border: Slightly lighter
+
+- **Unselected Focus:**
+  - Ring: `ring-2 ring-ring`
+
+- **Selected:**
+  - Border: `border-primary` (teal)
+  - Dot: Filled teal circle inside (60-70% of diameter)
+
+- **Selected Hover:**
+  - Border: Slightly lighter teal
+
+- **Selected Focus:**
+  - Border: `border-primary`
+  - Ring: `ring-2 ring-ring`
+
+- **Disabled (Unselected):**
+  - Border: `border-border` (dimmed)
+  - Cursor: `cursor-not-allowed`
+
+- **Disabled (Selected):**
+  - Border: Dimmed primary
+  - Dot: Dimmed
+  - Cursor: `cursor-not-allowed`
+
+**Touch Targets:**
+- Radio button: 16×16px
+- Extended by label click area
+
+### Link States
+
+**Navigation Link (`<Link>` from react-router-dom):**
+
+```tsx
+<Link to="/clients">Clients</Link>
+```
+
+- **Default:**
+  - Text: `text-foreground` or `text-primary` (depending on context)
+  - Underline: None (navigation links) or `underline` (inline links)
+  - Cursor: `cursor-pointer`
+
+- **Hover:**
+  - Text: `text-primary` or slightly lighter
+  - Underline: Appears if not present, or remains
+  - Background: Optional subtle highlight for nav items
+
+- **Active (Current Page):**
+  - Text: `text-primary` (teal)
+  - Font Weight: `font-semibold` or `font-bold`
+  - Background: `bg-accent` (in navigation bar)
+  - Underline: Optional
+
+- **Focus (Keyboard):**
+  - Outline: `ring-2 ring-ring`
+  - Offset: `ring-offset-2`
+
+- **Visited:**
+  - Same as default (no color change)
+
+- **Disabled:**
+  - Text: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+  - No underline
+  - No hover effects
+
+### Card Interactive States
+
+**Card (Clickable/Interactive):**
+
+Some cards act as navigation elements (e.g., PetCard, StatWidget with drill-down):
+
+- **Default:**
+  - Background: `bg-card`
+  - Border: `border border-border`
+  - Shadow: None
+  - Cursor: `cursor-default` (non-interactive) or `cursor-pointer` (interactive)
+
+- **Hover (Interactive):**
+  - Background: Slightly lighter (`bg-accent` or subtle highlight)
+  - Border: `border-primary` (teal) or same as default
+  - Shadow: `shadow-sm` or `shadow-md` (optional)
+  - Transition: 200ms ease
+
+- **Active/Pressed (Interactive):**
+  - Background: Slightly darker
+  - Scale: No scale effect (maintains layout stability)
+
+- **Focus (Keyboard, Interactive):**
+  - Ring: `ring-2 ring-ring`
+
+- **Selected/Active (State-based):**
+  - Border: `border-primary` (teal, thicker: `border-2`)
+  - Background: `bg-accent` or same as default
+  - Indicator: Optional checkmark or icon
+
+### Table Row States
+
+**Table Row (`<TableRow>`):**
+
+- **Default:**
+  - Background: Transparent or `bg-card`
+  - Border: `border-b border-border`
+  - Text: `text-foreground`
+
+- **Hover (if clickable):**
+  - Background: `bg-accent` (subtle teal highlight)
+  - Cursor: `cursor-pointer`
+  - Transition: 150ms ease
+
+- **Selected:**
+  - Background: `bg-accent` (persistent)
+  - Border: Same or slightly emphasized
+  - Checkmark: In first column (if multi-select)
+
+- **Focus (Keyboard):**
+  - Outline: `ring-2 ring-ring` (inset or around row)
+
+- **Active/Pressed:**
+  - Background: Slightly darker than hover
+
+### Badge States
+
+**Badge (`<Badge />`):**
+
+Badges are typically non-interactive, but can be dismissible:
+
+- **Default:**
+  - Background: `bg-primary` or variant color
+  - Text: `text-primary-foreground`
+  - Padding: `px-2.5 py-0.5`
+  - Border Radius: `rounded-full`
+
+- **Hover (Dismissible):**
+  - Background: Slightly lighter
+  - Cursor: `cursor-pointer` (on close icon)
+
+- **Active/Pressed (Dismissible):**
+  - Background: Slightly darker
+
+- **Disabled:**
+  - Background: `bg-muted`
+  - Text: `text-muted-foreground`
+
+### Icon Button States
+
+**Icon-Only Button (Common Pattern):**
+
+```tsx
+<Button variant="ghost" size="icon">
+  <PencilSimple />
+</Button>
+```
+
+- **Default:**
+  - Background: Transparent
+  - Icon Color: `text-foreground` or `text-muted-foreground`
+  - Size: `h-10 w-10` (40×40px)
+
+- **Hover:**
+  - Background: `bg-accent` (teal)
+  - Icon Color: `text-accent-foreground`
+
+- **Active/Pressed:**
+  - Background: Darker accent
+
+- **Focus:**
+  - Ring: `ring-2 ring-ring`
+
+- **Disabled:**
+  - Icon Color: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+
+**Touch Targets:**
+- Icon buttons: Minimum `h-10 w-10` (40×40px)
+- Larger if needed: `h-11 w-11` or `h-12 w-12`
+
+### Tab States
+
+**Tab Trigger (`<TabsTrigger />`):**
+
+```tsx
+<TabsTrigger value="tab1">Label</TabsTrigger>
+```
+
+- **Inactive (Default):**
+  - Background: Transparent
+  - Text: `text-muted-foreground`
+  - Border: None
+  - Cursor: `cursor-pointer`
+
+- **Inactive Hover:**
+  - Background: `bg-muted` (subtle)
+  - Text: `text-foreground`
+
+- **Active (Selected):**
+  - Background: `bg-background` or `bg-card`
+  - Text: `text-foreground`
+  - Border Bottom: `border-b-2 border-primary` (teal underline)
+  - Font Weight: `font-medium` or `font-semibold`
+
+- **Focus (Keyboard):**
+  - Ring: `ring-2 ring-ring`
+
+- **Disabled:**
+  - Text: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+  - No hover effects
+
+### Accordion States
+
+**Accordion Trigger (`<AccordionTrigger />`):**
+
+- **Collapsed (Default):**
+  - Background: Transparent
+  - Icon: Down chevron
+  - Text: `text-foreground`
+  - Cursor: `cursor-pointer`
+
+- **Collapsed Hover:**
+  - Background: `bg-muted` (subtle)
+  - Text: Same
+
+- **Expanded:**
+  - Background: Same as collapsed
+  - Icon: Up chevron (rotated 180°)
+  - Content: AccordionContent visible below
+
+- **Focus:**
+  - Ring: `ring-2 ring-ring`
+
+### Toast Notification States
+
+**Toast (Sonner `toast()`):**
+
+Toasts are non-interactive (except dismiss button):
+
+- **Visible:**
+  - Background: `bg-card` or `bg-background`
+  - Border: `border border-border`
+  - Shadow: `shadow-lg`
+  - Position: Bottom-right or top-right
+  - Animation: Slide in from right, fade in
+
+- **Hover (on Dismiss Button):**
+  - Close Icon: `text-muted-foreground` → `text-foreground`
+  - Background: Slight highlight on icon
+
+- **Dismissing:**
+  - Animation: Slide out to right, fade out
+  - Duration: 200-300ms
+
+### Calendar/Date Picker States
+
+**Calendar Day Cell:**
+
+- **Default (Selectable):**
+  - Background: Transparent
+  - Text: `text-foreground`
+  - Cursor: `cursor-pointer`
+
+- **Hover:**
+  - Background: `bg-accent` (teal)
+  - Text: `text-accent-foreground`
+
+- **Selected:**
+  - Background: `bg-primary` (teal)
+  - Text: `text-primary-foreground`
+  - Font Weight: `font-medium`
+
+- **Today (Unselected):**
+  - Border: `border border-primary` (teal outline)
+  - Background: Transparent
+
+- **Disabled/Unavailable:**
+  - Text: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+  - No hover effects
+
+- **Focus (Keyboard):**
+  - Ring: `ring-2 ring-ring`
+
+### Slider States
+
+**Slider (`<Slider />`):**
+
+- **Default:**
+  - Track: `bg-secondary` (gray)
+  - Filled Track: `bg-primary` (teal, up to thumb position)
+  - Thumb: White circle with `border-2 border-primary`
+  - Size: Track height `h-2`, thumb `h-5 w-5`
+
+- **Hover:**
+  - Thumb: Slightly larger or highlighted
+  - Cursor: `cursor-pointer`
+
+- **Active/Dragging:**
+  - Thumb: `ring-2 ring-ring`
+  - Cursor: `cursor-grab` or `cursor-grabbing`
+
+- **Focus (Keyboard):**
+  - Thumb: `ring-2 ring-ring`
+
+- **Disabled:**
+  - Track: `bg-muted`
+  - Filled Track: Dimmed primary
+  - Thumb: Dimmed, `cursor-not-allowed`
+
+### Progress Bar States
+
+**Progress (`<Progress />`):**
+
+Non-interactive component with visual states:
+
+- **Default:**
+  - Background: `bg-secondary` (gray track)
+  - Filled: `bg-primary` (teal, percentage-based width)
+  - Height: `h-2` or `h-4`
+
+- **Indeterminate (Loading):**
+  - Animated sliding bar or pulse effect
+  - Filled bar moves left-to-right repeatedly
+
+- **Complete (100%):**
+  - Filled: `bg-primary` (full width)
+  - Optional: Brief pulse or color change animation
+
+### Dropdown Menu States
+
+**Dropdown Menu Item (`<DropdownMenuItem />`):**
+
+```tsx
+<DropdownMenuItem>Action</DropdownMenuItem>
+```
+
+- **Default:**
+  - Background: Transparent
+  - Text: `text-foreground`
+  - Padding: `px-2 py-1.5`
+
+- **Hover:**
+  - Background: `bg-accent` (teal)
+  - Text: `text-accent-foreground`
+
+- **Active/Pressed:**
+  - Background: Darker accent
+
+- **Focus (Keyboard):**
+  - Background: Same as hover
+  - Outline: Minimal (handled by menu container)
+
+- **Disabled:**
+  - Text: `text-muted-foreground`
+  - Cursor: `cursor-not-allowed`
+  - No hover effects
+
+- **Destructive:**
+  - Text: `text-destructive` (red)
+  - Hover Background: `bg-destructive` with `text-destructive-foreground`
+
+### Touch Target Summary
+
+All interactive elements meet or exceed WCAG 2.1 minimum touch target size of **44×44px**:
+
+- **Buttons:** `h-10` (40px) minimum, with adequate horizontal padding
+- **Input Fields:** `h-10` (40px) minimum
+- **Checkboxes/Radios:** 16×16px visual, extended by label click area to 44×44px
+- **Icon Buttons:** `h-10 w-10` (40×40px) or larger
+- **Switches:** `h-6 w-11` (24×44px)
+- **Tabs:** Adequate padding ensures 44px minimum height
+- **Table Rows (clickable):** Minimum row height `h-12` or `h-14` (48-56px)
+
+---
+
+## 9) Motion & Animation
+
+This section defines all animation durations, easing functions, and triggers throughout the application.
+
+### Animation Philosophy
+
+The application uses **subtle, purposeful animations** to:
+- **Orient users** during navigation and state changes
+- **Provide feedback** for interactions (button clicks, form submissions)
+- **Guide attention** to important changes (new data, notifications)
+- **Establish relationships** between elements (accordion expand, dialog open)
+
+Animations should be **felt rather than seen** — quick, smooth, and never blocking user actions.
+
+### Global Timing Standards
+
+**Duration Guidelines:**
+
+```css
+/* Quick actions (50-150ms) */
+--duration-instant: 50ms;   /* Icon rotations, checkbox checks */
+--duration-fast: 100ms;     /* Button press feedback */
+--duration-quick: 150ms;    /* Hover states, ripple effects */
+
+/* Standard transitions (200-300ms) */
+--duration-normal: 200ms;   /* Default for most state changes */
+--duration-smooth: 250ms;   /* Card hovers, background changes */
+--duration-comfortable: 300ms; /* Accordions, collapsibles */
+
+/* Page transitions (300-500ms) */
+--duration-page: 350ms;     /* Route changes, view transitions */
+--duration-modal: 400ms;    /* Dialog/modal open/close */
+--duration-slow: 500ms;     /* Major layout shifts (rarely used) */
+```
+
+**Easing Functions:**
+
+```css
+/* CSS easing curves */
+ease-linear: linear;              /* Continuous motion (progress bars) */
+ease-in: cubic-bezier(0.4, 0, 1, 1);       /* Accelerating (exit animations) */
+ease-out: cubic-bezier(0, 0, 0.2, 1);      /* Decelerating (entrance animations) - DEFAULT */
+ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* Smooth start/end (state changes) */
+
+/* Custom easing (if using framer-motion) */
+spring-default: { type: "spring", stiffness: 300, damping: 30 }
+spring-gentle: { type: "spring", stiffness: 200, damping: 25 }
+spring-bouncy: { type: "spring", stiffness: 400, damping: 20 }
+```
+
+**Default Easing:**
+- **Entrances (elements appearing):** `ease-out` — starts fast, ends slow
+- **Exits (elements disappearing):** `ease-in` — starts slow, ends fast
+- **State changes (hovers, toggles):** `ease-in-out` — smooth symmetry
+- **Continuous (progress bars):** `linear` — constant speed
+
+### Component-Specific Animations
+
+**Button Press (100ms):**
+
+```tsx
+<Button className="transition-colors duration-100">
+```
+
+- **Property:** Background color, text color
+- **Duration:** 100ms
+- **Easing:** `ease-in-out`
+- **Trigger:** `:hover`, `:active`, `:focus`
+- **Effect:** Smooth color shift to hover/pressed state
+
+**Input Focus (150ms):**
+
+```tsx
+<Input className="transition-shadow duration-150" />
+```
+
+- **Property:** Box shadow (focus ring)
+- **Duration:** 150ms
+- **Easing:** `ease-out`
+- **Trigger:** `:focus`
+- **Effect:** Ring appears smoothly on focus
+
+**Card Hover (200ms):**
+
+```tsx
+<Card className="transition-all duration-200 hover:shadow-md hover:border-primary">
+```
+
+- **Property:** Border color, box shadow, background
+- **Duration:** 200ms
+- **Easing:** `ease-in-out`
+- **Trigger:** `:hover`
+- **Effect:** Subtle elevation and border highlight
+
+**Switch Toggle (150ms):**
+
+```tsx
+<Switch />
+```
+
+- **Property:** Thumb position (translate-x), track background
+- **Duration:** 150ms
+- **Easing:** `ease-in-out`
+- **Trigger:** State change (on/off)
+- **Effect:** Thumb slides smoothly from left to right
+
+**Checkbox/Radio Check (100ms):**
+
+```tsx
+<Checkbox />
+```
+
+- **Property:** Background color, checkmark opacity/scale
+- **Duration:** 100ms
+- **Easing:** `ease-out`
+- **Trigger:** State change (checked/unchecked)
+- **Effect:** Checkmark appears with subtle scale-up
+
+**Accordion Expand/Collapse (300ms):**
+
+```tsx
+<Accordion />
+```
+
+- **Property:** Content height (0 → auto)
+- **Duration:** 300ms
+- **Easing:** `ease-out` (expand), `ease-in` (collapse)
+- **Trigger:** AccordionTrigger click
+- **Effect:** Smooth reveal/hide of content
+
+```css
+/* From main.css */
+@keyframes accordion-down {
+  from { height: 0; }
+  to { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to { height: 0; }
+}
+
+--animate-accordion-down: accordion-down 0.2s ease-out;
+--animate-accordion-up: accordion-up 0.2s ease-out;
+```
+
+**Note:** Actual duration is 200ms (0.2s) per CSS definition.
+
+**Tab Switch (200ms):**
+
+```tsx
+<TabsTrigger />
+```
+
+- **Property:** Background color, border-bottom (active indicator)
+- **Duration:** 200ms
+- **Easing:** `ease-in-out`
+- **Trigger:** Tab click
+- **Effect:** Active underline slides/fades in, background changes
+
+**Dropdown Menu Open/Close (150ms):**
+
+```tsx
+<DropdownMenu />
+```
+
+- **Property:** Opacity, scale (subtle zoom-in)
+- **Duration:** 150ms
+- **Easing:** `ease-out` (open), `ease-in` (close)
+- **Trigger:** Trigger button click, outside click (close)
+- **Effect:** Menu appears with subtle scale and fade
+
+**Dialog/Modal Open/Close (400ms):**
+
+```tsx
+<Dialog />
+```
+
+- **Property:** Opacity (overlay), scale + opacity (content)
+- **Duration:** 400ms
+- **Easing:** `ease-out` (open), `ease-in` (close)
+- **Trigger:** Dialog state change
+- **Effect:**
+  - **Open:** Overlay fades in, content scales from 95% to 100% with fade-in
+  - **Close:** Content scales down to 95% with fade-out, overlay fades out
+
+**Drawer Open/Close (Mobile, 300ms):**
+
+```tsx
+<Drawer />
+```
+
+- **Property:** Transform (translate-y), overlay opacity
+- **Duration:** 300ms
+- **Easing:** `ease-out` (open), `ease-in` (close)
+- **Trigger:** Drawer state change, swipe gesture
+- **Effect:** Drawer slides up from bottom (mobile), overlay fades in
+
+**Toast Notification Enter/Exit (250ms):**
+
+```tsx
+toast("Message")
+```
+
+- **Property:** Transform (translate-x), opacity
+- **Duration:** 250ms
+- **Easing:** `ease-out` (enter), `ease-in` (exit)
+- **Trigger:** `toast()` call, auto-dismiss, manual dismiss
+- **Effect:**
+  - **Enter:** Slides in from right with fade-in
+  - **Exit:** Slides out to right with fade-out
+
+**Tooltip Show/Hide (100ms):**
+
+```tsx
+<Tooltip />
+```
+
+- **Property:** Opacity, slight translate-y
+- **Duration:** 100ms
+- **Easing:** `ease-out` (show), `ease-in` (hide)
+- **Trigger:** Hover (200ms delay before show), mouse leave
+- **Effect:** Tooltip fades in with subtle upward movement
+
+**Popover Open/Close (150ms):**
+
+```tsx
+<Popover />
+```
+
+- **Property:** Opacity, scale (subtle)
+- **Duration:** 150ms
+- **Easing:** `ease-out` (open), `ease-in` (close)
+- **Trigger:** Trigger click, outside click (close)
+- **Effect:** Popover appears with subtle scale and fade
+
+**Progress Bar Fill (300ms):**
+
+```tsx
+<Progress value={percentage} />
+```
+
+- **Property:** Width of filled portion
+- **Duration:** 300ms
+- **Easing:** `ease-out`
+- **Trigger:** Value prop change
+- **Effect:** Smooth width transition to new percentage
+
+**Skeleton Pulse (1500ms loop):**
+
+```tsx
+<Skeleton />
+```
+
+- **Property:** Opacity (pulse effect)
+- **Duration:** 1500ms (looping)
+- **Easing:** `ease-in-out`
+- **Trigger:** Component mount (auto-plays)
+- **Effect:** Continuous gentle pulse to indicate loading
+
+```css
+/* Tailwind default: */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+```
+
+**Badge Dismiss (100ms):**
+
+```tsx
+<Badge dismissible />
+```
+
+- **Property:** Opacity, scale
+- **Duration:** 100ms
+- **Easing:** `ease-in`
+- **Trigger:** Close icon click
+- **Effect:** Badge shrinks slightly and fades out
+
+**Icon Rotation (150ms):**
+
+Used for chevrons, expand/collapse indicators:
+
+```tsx
+<ChevronDown className="transition-transform duration-150" />
+```
+
+- **Property:** Transform (rotate)
+- **Duration:** 150ms
+- **Easing:** `ease-in-out`
+- **Trigger:** State change (open/close)
+- **Effect:** Smooth 180° rotation (down → up)
+
+**Hover Elevation (Card, 200ms):**
+
+```tsx
+<Card className="transition-shadow duration-200 hover:shadow-md">
+```
+
+- **Property:** Box shadow
+- **Duration:** 200ms
+- **Easing:** `ease-in-out`
+- **Trigger:** `:hover`
+- **Effect:** Subtle shadow appears, creating elevation
+
+**Page Transition (Route Change, 350ms):**
+
+Not explicitly implemented in current routing, but recommended pattern:
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -10 }}
+  transition={{ duration: 0.35, ease: "easeOut" }}
+>
+  {children}
+</motion.div>
+```
+
+- **Property:** Opacity, transform (translate-y)
+- **Duration:** 350ms
+- **Easing:** `ease-out`
+- **Trigger:** Route change
+- **Effect:** New page fades in with subtle upward movement, old page fades out downward
+
+### Loading States & Skeletons
+
+**Skeleton Loader:**
+
+```tsx
+<Skeleton className="h-4 w-32" />
+```
+
+- **Animation:** Continuous pulse (opacity 1 ↔ 0.5)
+- **Duration:** 2000ms (Tailwind default pulse)
+- **Easing:** `ease-in-out`
+- **Trigger:** Auto-play on mount
+- **Usage:** Placeholder for loading content (text, images, cards)
+
+**Spinner (Button Loading):**
+
+```tsx
+<Button disabled>
+  <Loader2 className="animate-spin" />
+  Loading...
+</Button>
+```
+
+- **Animation:** 360° rotation (continuous)
+- **Duration:** 1000ms per rotation
+- **Easing:** `linear`
+- **Trigger:** Loading state active
+- **Usage:** Button loading state, full-page loaders
+
+```css
+/* Tailwind default: */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+```
+
+### Reduced Motion (Accessibility)
+
+All animations respect user preferences via `prefers-reduced-motion` media query:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+**Effect:**
+- Users with motion sensitivity settings enabled will see instant state changes
+- All animations are effectively disabled (1ms = imperceptible)
+- Functionality remains intact, only visual motion is removed
+
+### Animation Triggers Summary
+
+**User Interactions:**
+- Mouse hover → Hover state animations (200ms)
+- Button click → Press feedback (100ms)
+- Keyboard focus → Focus ring (150ms)
+- Form submit → Loading spinner, button disabled state
+- Checkbox/switch toggle → State change animation (100-150ms)
+
+**State Changes:**
+- Accordion expand/collapse → Height animation (300ms)
+- Tab switch → Active indicator animation (200ms)
+- Dialog open/close → Scale + fade (400ms)
+- Toast appear/dismiss → Slide + fade (250ms)
+- Progress update → Width transition (300ms)
+
+**System Events:**
+- Route change → Page transition (350ms, if implemented)
+- Data loading → Skeleton pulse (2000ms loop)
+- Auto-dismiss toast → Exit animation after delay (250ms)
+
+**Scroll Events:**
+- Sticky header → No animation (instant)
+- Infinite scroll → New content fades in (200ms, optional)
+
+### Framer Motion Usage
+
+Framer Motion is installed but used sparingly. Recommended for:
+
+- **Page transitions** (route changes)
+- **Complex gestures** (drag-to-reorder, swipe-to-dismiss)
+- **Orchestrated animations** (staggered list items)
+
+Example pattern:
+
+```tsx
+import { motion } from "framer-motion"
+
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3, ease: "easeOut" }}
+>
+  {content}
+</motion.div>
+```
+
+**Default pattern for staggered children:**
+
+```tsx
+<motion.div variants={containerVariants} initial="hidden" animate="visible">
+  {items.map(item => (
+    <motion.div key={item.id} variants={itemVariants}>
+      {item.content}
+    </motion.div>
+  ))}
+</motion.div>
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+}
+```
+
+### Performance Considerations
+
+**Prefer CSS Transitions:**
+- Use Tailwind `transition-*` utilities for simple state changes
+- CSS transitions are more performant than JS animations
+- GPU-accelerated properties: `transform`, `opacity`
+
+**Avoid Animating:**
+- `width`, `height` (use `scale` or `max-height` with caution)
+- `margin`, `padding` (use `transform` instead)
+- `background-position` (expensive repaints)
+
+**Optimize for 60fps:**
+- Keep animations under 300ms for snappy feel
+- Use `will-change` sparingly for complex animations
+- Debounce scroll-triggered animations
+
+---
+
+**END OF SECTIONS 8-9**
+
