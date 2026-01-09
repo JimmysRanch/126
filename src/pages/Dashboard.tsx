@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { KpiCard } from './dashboard/components/KpiCard'
 import { BookedGauge } from './dashboard/components/BookedGauge'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
@@ -52,13 +51,13 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress()
 
   return (
-    <div className="h-[calc(100vh-57px)] md:h-[calc(100vh-57px)] overflow-hidden bg-background text-foreground p-3">
+    <div className="h-[calc(100vh-57px)] overflow-hidden bg-background p-3">
       <div className="h-full grid grid-rows-3 gap-3">
         
-        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+        <div className="grid grid-cols-4 gap-3">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Appointments Today</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden">
+            <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-xs flex-shrink-0">
                 <div className="flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
@@ -118,7 +117,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Booked</h2>
             <div className="flex-1 min-h-0 flex items-center justify-center">
               <BookedGauge 
@@ -129,9 +128,9 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Expected Revenue</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between overflow-hidden">
+            <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div className="flex-shrink-0">
                 <div className="text-2xl font-bold">
                   <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
@@ -164,9 +163,9 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Issues</h2>
-            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1 overflow-hidden">
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1">
               <div className="flex items-center justify-between p-1.5 bg-destructive/10 rounded-lg flex-shrink-0">
                 <div className="flex items-center gap-1.5">
                   <Clock size={14} className="text-yellow-500 flex-shrink-0" weight="duotone" />
@@ -200,8 +199,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
-          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden h-full">
+        <div className="grid grid-cols-4 gap-3">
+          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
             <div className="p-3 pb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
@@ -210,7 +209,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomers Workload</h2>
               <p className="text-[10px] text-muted-foreground">Today's Schedule</p>
@@ -220,7 +219,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomer Avg</h2>
               <p className="text-[10px] text-muted-foreground">Daily Metrics</p>
@@ -231,8 +230,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 min-h-0 h-full">
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+        <div className="grid grid-cols-4 gap-3">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Expenses</h2>
               <p className="text-[10px] text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
@@ -242,7 +241,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Completed Appointments</h2>
               <p className="text-[10px] text-muted-foreground">Appointment History</p>
@@ -252,7 +251,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Booked %</h2>
               <p className="text-[10px] text-muted-foreground">Store Capacity</p>
@@ -262,7 +261,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden h-full">
+          <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Clients</h2>
               <p className="text-[10px] text-muted-foreground">Client Metrics</p>
