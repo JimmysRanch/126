@@ -904,3 +904,428 @@ Custom scrollbar styling for a polished experience:
 **END OF SECTION 1**
 
 _Additional sections will be added per user instruction._
+
+
+## 5) App Shell & Global Layout Rules
+
+### Global Application Shell
+
+The application uses a consistent shell pattern across all pages:
+
+```tsx
+<div className="min-h-screen bg-background text-foreground">
+  <TopNav />
+  <Routes>
+    {/* Page components render here */}
+  </Routes>
+</div>
+```
+
+**TopNav Component:**
+- Fixed height navigation bar at the top of all pages
+- Contains application logo/title and main navigation links
+- Persists across all routes
+- Dark background (`bg-card` or similar) with border separation
+- Responsive: Collapses to mobile menu on smaller screens
+
+### Page Container Pattern
+
+Each page follows a standard container structure:
+
+```tsx
+<div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+  <h1 className="text-2xl md:text-3xl font-bold">{Page Title}</h1>
+  {/* Page content */}
+</div>
+```
+
+**Container Rules:**
+- **Max Width:** Uses Tailwind's `container` class with responsive breakpoints
+- **Horizontal Padding:** `p-4` (16px) on mobile, `p-6` (24px) on tablet/desktop
+- **Vertical Spacing:** `space-y-4` (16px) on mobile, `space-y-6` (24px) on desktop
+- **Center Alignment:** `mx-auto` centers content within viewport
+
+### Layout Patterns by Page Type
+
+**Dashboard Pattern (Grid-Based):**
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+  {/* Cards arranged in responsive grid */}
+</div>
+```
+- Fixed 11-card grid on Dashboard
+- Always `gap-3` (12px) between cards
+- Responsive columns: 1 → 2 → 3 based on breakpoint
+
+**List/Table Pattern:**
+```tsx
+<Card>
+  <CardHeader>{/* Title and actions */}</CardHeader>
+  <CardContent>
+    <Table>{/* Data rows */}</Table>
+  </CardContent>
+</Card>
+```
+- Full-width card container
+- Scrollable table content with `scrollbar-thin` utility
+- Sticky headers for long lists
+
+**Form Pattern:**
+```tsx
+<Card>
+  <CardHeader>{/* Form title */}</CardHeader>
+  <CardContent>
+    <form className="space-y-4">
+      {/* Form fields */}
+    </form>
+  </CardContent>
+  <CardFooter>{/* Submit/Cancel buttons */}</CardFooter>
+</Card>
+```
+- Vertical spacing between fields: `space-y-4` (16px)
+- Consistent field grouping using `<div>` wrappers
+- Action buttons right-aligned in footer
+
+**Tabbed Content Pattern:**
+```tsx
+<Tabs defaultValue="tab1">
+  <TabsList>{/* Tab triggers */}</TabsList>
+  <TabsContent value="tab1">{/* Content */}</TabsContent>
+  <TabsContent value="tab2">{/* Content */}</TabsContent>
+</Tabs>
+```
+- Used on: Appointments, Staff, Finances, Settings pages
+- Tab content inherits page container padding
+- Tabs component from shadcn/ui
+
+### Z-Index Hierarchy
+
+```css
+/* Layering order (lowest to highest): */
+z-0:    Base page content
+z-10:   Cards and elevated content
+z-20:   Sticky headers, floating action buttons
+z-30:   Dropdowns, popovers
+z-40:   Modals, dialogs
+z-50:   Toast notifications (Sonner)
+```
+
+**Application:**
+- TopNav: `z-20` or higher for sticky behavior
+- Dialogs/Modals: `z-40` via shadcn default
+- Toast notifications: `z-50` via Sonner default
+- Popovers/Dropdowns: `z-30` via Radix UI defaults
+
+### Scrolling Behavior
+
+**Page-Level Scrolling:**
+- Default: Entire viewport scrolls (body scroll)
+- No fixed headers within page content (except tables)
+
+**Container-Level Scrolling:**
+- Used for: Long tables, Recent Activity lists, overflow panels
+- Class: `overflow-auto scrollbar-thin`
+- Max height constraints applied via `max-h-[Xpx]` or `h-[calc(...)]`
+
+**Scroll-to-Top:**
+- Not implemented; standard browser behavior
+- Could be added as floating button if needed
+
+---
+
+## 6) Responsive Breakpoints & Grid Rules
+
+### Breakpoint System
+
+The application uses Tailwind's default breakpoints:
+
+```css
+/* Mobile-first breakpoints */
+sm: 640px   /* Small tablets, large phones (landscape) */
+md: 768px   /* Tablets */
+lg: 1024px  /* Laptops, small desktops */
+xl: 1280px  /* Desktops */
+2xl: 1536px /* Large desktops */
+```
+
+**Mobile Detection:**
+- Custom hook: `useIsMobile()` from `@/hooks/use-mobile.ts`
+- Threshold: `768px` (matches `md` breakpoint)
+- Returns `true` when `window.innerWidth < 768px`
+
+### Responsive Layout Rules
+
+**Dashboard Grid:**
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+```
+- **Mobile (<768px):** 1 column, full-width cards
+- **Tablet (≥768px):** 2 columns
+- **Desktop (≥1024px):** 3 columns
+- **Gap:** Always `gap-3` (12px), does not change with breakpoint
+
+**Appointments Grid (Groomers View):**
+```tsx
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+```
+- **Mobile:** 1 column
+- **Small (≥640px):** 2 columns
+- **Large (≥1024px):** 3 columns
+- **XL (≥1280px):** 4 columns
+
+**Pet Cards Grid (Client Profile):**
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+```
+- **Mobile:** 1 column
+- **Tablet (≥768px):** 2 columns
+- **Desktop (≥1024px):** 3 columns
+
+**Form Layouts:**
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+```
+- **Mobile:** Stacked (1 column)
+- **Tablet+ (≥768px):** Side-by-side (2 columns)
+- Used for: Name fields, contact info, etc.
+
+### Typography Responsiveness
+
+**Page Titles:**
+```tsx
+<h1 className="text-2xl md:text-3xl font-bold">
+```
+- **Mobile:** `text-2xl` (24px)
+- **Tablet+ (≥768px):** `text-3xl` (30px)
+
+**Section Headers:**
+- Generally non-responsive (`text-xl` or `text-lg` across all breakpoints)
+- Exception: Major headers may use `text-lg md:text-xl`
+
+**Body Text:**
+- Remains consistent across breakpoints (`text-sm` or `text-base`)
+- Line height adjustments handled by Tailwind defaults
+
+### Spacing Responsiveness
+
+**Container Padding:**
+```tsx
+<div className="p-4 md:p-6">
+```
+- **Mobile:** `p-4` (16px)
+- **Tablet+ (≥768px):** `p-6` (24px)
+
+**Vertical Spacing:**
+```tsx
+<div className="space-y-4 md:space-y-6">
+```
+- **Mobile:** `space-y-4` (16px)
+- **Tablet+ (≥768px):** `space-y-6` (24px)
+
+**Grid Gaps:**
+- Dashboard: `gap-3` (fixed, no change)
+- Forms/Content: `gap-4` (fixed, no change)
+- Exception: Some complex layouts use `gap-3 md:gap-4`
+
+### Component Visibility
+
+**Show/Hide by Breakpoint:**
+```tsx
+<div className="hidden md:block">Desktop only</div>
+<div className="md:hidden">Mobile only</div>
+```
+
+**Common Patterns:**
+- Mobile nav burger: `md:hidden`
+- Desktop nav links: `hidden md:flex`
+- Condensed mobile cards vs. detailed desktop cards
+
+### Table Responsiveness
+
+**Horizontal Scrolling:**
+```tsx
+<div className="overflow-x-auto">
+  <Table>{/* Full-width table */}</Table>
+</div>
+```
+- Tables do not stack on mobile
+- Horizontal scroll enabled for narrow viewports
+- Applied on: ClientsList, Staff, PaymentHistory, Inventory
+
+**Column Hiding (Optional):**
+- Lower-priority columns can use `hidden md:table-cell`
+- Not widely implemented; scroll preferred
+
+### Touch Target Sizes
+
+All interactive elements meet minimum touch target requirements:
+
+- **Buttons:** Minimum `h-10` (40px) or larger
+- **Links:** Adequate padding for 44×44px hit area
+- **Icons:** Default Phosphor size (24×24px) with padding
+- **Form inputs:** Standard shadcn sizing ensures accessibility
+
+### Mobile-Specific Considerations
+
+**Navigation:**
+- TopNav adjusts for mobile (collapsible menu or simplified layout)
+- Back buttons and breadcrumbs for deep navigation
+
+**Forms:**
+- Single-column stacking on mobile
+- Larger touch targets for inputs and buttons
+- Full-width buttons for primary actions
+
+**Modals/Dialogs:**
+- Full-screen or near-full-screen on mobile
+- Standard centered dialogs on desktop
+- Handled by shadcn Dialog/Drawer components
+
+**Cards:**
+- Reduced padding on mobile (`p-3` vs. `p-6`)
+- Stacked content vs. horizontal layouts
+
+---
+
+## 7) Component Catalog
+
+This section provides an inventory of all custom and shadcn components used throughout the application.
+
+### Custom Application Components
+
+Located in `src/components/`:
+
+**Navigation:**
+- `TopNav.tsx` - Main application navigation bar with links and branding
+
+**Dashboard & Metrics:**
+- `StatWidget.tsx` - Metric display widget for dashboard cards (revenue, clients, appointments, etc.)
+- `FinancialChart.tsx` - Financial data visualization component (likely using Recharts)
+
+**Client & Pet Management:**
+- `PetCard.tsx` - Individual pet display card with photo, name, breed, and action buttons
+- `EditPetDialog.tsx` - Modal dialog for editing pet information
+- `BreedCombobox.tsx` - Searchable breed selection combobox (uses Command component)
+- `GroomingPreferencesCard.tsx` - Display card for pet grooming preferences and notes
+- `MedicalInfoCard.tsx` - Display card for pet medical information and alerts
+- `PhotoGalleryCard.tsx` - Before/after photo gallery for pet grooming sessions
+- `ServiceHistoryCard.tsx` - Timeline/list of past grooming services for a pet
+
+**Staff & Payroll:**
+- `PayrollOverview.tsx` - Summary component for payroll totals and breakdown
+- `StaffPayrollDetail.tsx` - Detailed payroll information for individual staff members
+- `StaffScheduleView.tsx` - Staff scheduling and calendar interface
+
+**Payments:**
+- `PaymentHistoryDialog.tsx` - Legacy modal for viewing client payment history (may be deprecated)
+
+**Appointments:**
+- `appointments/` directory - Contains appointment-specific subcomponents (groomers view, list view, calendar view components)
+
+### shadcn/ui Components (Pre-installed)
+
+Located in `src/components/ui/`:
+
+**Layout & Structure:**
+- `card.tsx` - Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+- `separator.tsx` - Horizontal/vertical divider lines
+- `scroll-area.tsx` - Custom scrollbar container
+- `resizable.tsx` - Resizable panel layouts
+- `aspect-ratio.tsx` - Aspect ratio container wrapper
+
+**Navigation:**
+- `tabs.tsx` - Tabs, TabsList, TabsTrigger, TabsContent
+- `breadcrumb.tsx` - Breadcrumb navigation
+- `navigation-menu.tsx` - Complex navigation menus
+- `menubar.tsx` - Application menu bar
+- `pagination.tsx` - Page navigation controls
+- `sidebar.tsx` - Collapsible sidebar navigation (shadcn v4)
+
+**Forms & Inputs:**
+- `input.tsx` - Text input field
+- `textarea.tsx` - Multi-line text input
+- `label.tsx` - Form field label
+- `button.tsx` - Button component with variants (default, destructive, outline, ghost, link)
+- `checkbox.tsx` - Checkbox input
+- `radio-group.tsx` - Radio button group
+- `select.tsx` - Dropdown select menu
+- `switch.tsx` - Toggle switch
+- `slider.tsx` - Range slider input
+- `calendar.tsx` - Date picker calendar
+- `command.tsx` - Command palette/searchable list (used in BreedCombobox)
+- `form.tsx` - Form wrapper with react-hook-form integration
+- `input-otp.tsx` - One-time password input
+
+**Feedback & Overlays:**
+- `dialog.tsx` - Modal dialog
+- `alert-dialog.tsx` - Confirmation/alert dialog
+- `drawer.tsx` - Mobile-friendly bottom drawer (Vaul)
+- `sheet.tsx` - Side panel overlay
+- `popover.tsx` - Floating popover container
+- `tooltip.tsx` - Hover tooltip
+- `hover-card.tsx` - Hover-triggered card popover
+- `alert.tsx` - Alert/notification banner
+- `sonner.tsx` - Toast notification provider (Sonner library)
+- `skeleton.tsx` - Loading skeleton placeholder
+
+**Data Display:**
+- `table.tsx` - Table, TableHeader, TableBody, TableRow, TableCell, etc.
+- `badge.tsx` - Badge/tag component
+- `avatar.tsx` - User/pet avatar component
+- `progress.tsx` - Progress bar
+- `chart.tsx` - Chart component wrapper (Recharts integration)
+- `carousel.tsx` - Image/content carousel (Embla)
+
+**Disclosure & Grouping:**
+- `accordion.tsx` - Collapsible accordion sections
+- `collapsible.tsx` - Simple collapsible container
+- `toggle.tsx` - Toggle button
+- `toggle-group.tsx` - Group of toggle buttons
+
+**Menus:**
+- `dropdown-menu.tsx` - Dropdown action menu
+- `context-menu.tsx` - Right-click context menu
+
+### Third-Party Component Libraries
+
+**Icons:**
+- `@phosphor-icons/react` - Primary icon library (imported directly, e.g., `import { Plus } from "@phosphor-icons/react"`)
+
+**Charts:**
+- `recharts` - Charting library (wrapped via shadcn `chart.tsx`)
+- Used in: FinancialChart component, Finances page
+
+**Form Management:**
+- `react-hook-form` - Form state and validation
+- `@hookform/resolvers` - Validation resolver (Zod integration)
+- Used in: NewAppointment, AddClient, AddPet, Settings forms
+
+**Date Handling:**
+- `date-fns` - Date formatting and manipulation
+- `react-day-picker` - Date picker (wrapped in shadcn `calendar.tsx`)
+
+**Routing:**
+- `react-router-dom` v7 - Client-side routing (BrowserRouter, Routes, Route, Link, useNavigate, useParams)
+
+### Utility Hooks
+
+Located in `src/hooks/`:
+
+**Custom Hooks:**
+- `use-mobile.ts` - `useIsMobile()` - Detects mobile breakpoint (<768px)
+
+**Spark Runtime Hooks:**
+- `useKV()` from `@github/spark/hooks` - Key-value persistence hook
+
+### Utility Functions
+
+Located in `src/lib/`:
+
+**Class Name Utilities:**
+- `utils.ts` - `cn()` function - Merges and deduplicates Tailwind classes (clsx + tailwind-merge)
+
+---
+
+**END OF SECTIONS 5-7**
+
+_Additional sections will be added per user instruction._
