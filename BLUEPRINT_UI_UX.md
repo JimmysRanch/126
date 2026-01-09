@@ -4768,3 +4768,174 @@ Coming soon pages with PlaceholderPage component
 **END OF SECTION 10**
 
 
+_Additional sections will be added per user instruction._
+
+---
+
+## 10) Screen-by-Screen Blueprint
+
+This section documents the UI structure, layout, and interactive elements for every route in the application.
+
+### `/` - Dashboard
+
+**Purpose:** Main overview displaying key business metrics.
+
+**Layout:** 11-card grid (`grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3`)
+
+**Cards:** Revenue, Clients, Appointments, Pets Groomed, Average Ticket, Services, Activity, Staff Performance, Quick Actions
+
+---
+
+### `/appointments` - Appointments Management
+
+**Tabs:** Groomers View | List View | Calendar View
+
+**Groomers:** Grid of groomer cards with daily appointments
+**List:** Sortable table with filters
+**Calendar:** Full calendar with color-coded appointments
+
+**Actions:** New Appointment, Edit, Cancel, Complete
+
+---
+
+### `/appointments/new` - New Appointment
+
+**Multi-step form:** Select Client → Pet → Service → Date/Time → Groomer → Notes → Confirm
+
+**Footer:** Back, Next/Submit, Cancel
+
+---
+
+### `/appointments/:id/edit` - Edit Appointment
+
+**Form fields:** Client (read-only), Pet (read-only), Service, Date/Time, Groomer, Status, Notes
+
+**Actions:** Save, Cancel, Delete
+
+---
+
+### `/clients` - Client Directory
+
+**Table columns:** Name, Email, Phone, # Pets, Last Visit, Total Spent
+
+**Actions:** Add Client, Search, Edit, View Profile
+
+---
+
+### `/clients/new` - Add Client
+
+**Sections:** Personal Info, Address, Preferences
+
+**Fields:** Name, Email, Phone, Address, Contact Method, Notes
+
+---
+
+### `/clients/:id` - Client Profile
+
+**Sections:** Client Info, Pets Grid, Appointment History, Payment Summary
+
+**Actions:** Edit Client, Add Pet, View Payments, Contact
+
+---
+
+### `/clients/:id/edit` - Edit Client
+
+Same form as Add Client, pre-filled with data
+
+---
+
+### `/clients/:id/add-pet` - Add Pet
+
+**Fields:** Name, Breed (searchable), Age, Weight, Gender, Color, Medical Notes, Grooming Preferences, Photo
+
+---
+
+### `/clients/:id/payment-history` - Payment History
+
+**Table:** Date, Appointment, Amount, Payment Method, Status
+
+**Filters:** Date range, Payment method
+
+---
+
+### `/clients/:id/contact` - Contact Info
+
+Full contact details with copy-to-clipboard buttons
+
+---
+
+### `/staff` - Staff Management
+
+**Tabs:** Staff List | Payroll
+
+**Staff List:** Table with Add Staff action
+**Payroll:** Summary cards and breakdown by staff member
+
+---
+
+### `/staff/:id` - Staff Profile
+
+**Sections:** Personal Info, Schedule, Performance, Payroll Summary
+
+**Actions:** Edit, View Schedule, Delete
+
+---
+
+### `/staff/:id/payroll-breakdown` - Payroll Detail
+
+Earnings breakdown, deductions, net pay, payment history
+
+---
+
+### `/pos` - Point of Sale
+
+**Layout:** Product selection (left) | Cart & checkout (right)
+
+**Actions:** Add items, select client, choose payment method, complete sale
+
+---
+
+### `/inventory` - Inventory Management
+
+**Table:** Items with quantity, price, reorder levels
+
+**Actions:** Add Item, Edit, Delete, Adjust Quantity
+
+---
+
+### `/finances` - Financial Dashboard
+
+**Tabs:** Dashboard | Expenses | Payments | Payroll | Taxes
+
+**Dashboard:** Chart + metric cards
+**Other tabs:** Tables with filters and export options
+
+---
+
+### `/settings` - Settings
+
+**Tabs:** Business Info | Staff Positions | Payment Methods
+
+Configure business details, manage positions, enable payment methods
+
+---
+
+### `/messages` & `/reports` - Placeholders
+
+Coming soon pages with PlaceholderPage component
+
+---
+
+### Common Patterns
+
+**Navigation:** TopNav + breadcrumbs on detail pages
+**Responsive:** Grids collapse to 1 column, tables scroll horizontally
+**Loading:** Skeletons + spinners + toast notifications
+**Empty States:** Friendly messages with CTAs
+**Errors:** Inline validation + toast notifications
+
+---
+
+**END OF SECTION 10**
+
+
