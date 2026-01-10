@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Plus, Trash, PencilSimple, CaretUp, CaretDown } from "@phosphor-icons/react"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
@@ -81,6 +82,13 @@ const TIMEZONES = [
   { value: "America/Puerto_Rico", label: "Atlantic Time (AST)" }
 ]
 
+interface HoursOfOperation {
+  day: string
+  isOpen: boolean
+  openTime: string
+  closeTime: string
+}
+
 interface BusinessInfo {
   companyName: string
   businessPhone: string
@@ -92,6 +100,7 @@ interface BusinessInfo {
   timezone: string
   taxId: string
   website: string
+  hoursOfOperation: HoursOfOperation[]
 }
 
 export function Settings() {
@@ -133,6 +142,16 @@ export function Settings() {
     giantPrice: ""
   })
   
+  const defaultHoursOfOperation: HoursOfOperation[] = [
+    { day: 'Monday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+    { day: 'Tuesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+    { day: 'Wednesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+    { day: 'Thursday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+    { day: 'Friday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+    { day: 'Saturday', isOpen: true, openTime: '10:00', closeTime: '16:00' },
+    { day: 'Sunday', isOpen: false, openTime: '09:00', closeTime: '17:00' }
+  ]
+  
   const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", {
     companyName: "",
     businessPhone: "",
@@ -143,7 +162,8 @@ export function Settings() {
     zipCode: "",
     timezone: "America/New_York",
     taxId: "",
-    website: ""
+    website: "",
+    hoursOfOperation: defaultHoursOfOperation
   })
   
   const [businessFormData, setBusinessFormData] = useState<BusinessInfo>({
@@ -156,7 +176,8 @@ export function Settings() {
     zipCode: "",
     timezone: "America/New_York",
     taxId: "",
-    website: ""
+    website: "",
+    hoursOfOperation: defaultHoursOfOperation
   })
   
   useEffect(() => {
@@ -487,6 +508,14 @@ export function Settings() {
       [field]: value
     }))
   }
+  
+  const handleHoursChange = (index: number, field: keyof HoursOfOperation, value: string | boolean) => {
+    setBusinessFormData((prev) => {
+      const newHours = [...prev.hoursOfOperation]
+      newHours[index] = { ...newHours[index], [field]: value }
+      return { ...prev, hoursOfOperation: newHours }
+    })
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -791,6 +820,66 @@ export function Settings() {
                     <p className="text-xs text-muted-foreground">
                       ⚠️ Critical: This timezone will be used for all appointments, staff schedules, drop-off/pick-up times, and system metrics
                     </p>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-6 space-y-4">
+                  <div>
+                    <h3 className="text-base font-semibold mb-1">Hours of Operation</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Set your business hours for each day of the week
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {businessFormData.hoursOfOperation.map((hours, index) => (
+                      <div key={hours.day} className="flex items-center gap-4 p-4 rounded-lg bg-secondary/20 border border-border">
+                        <div className="w-28">
+                          <span className="font-medium">{hours.day}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id={`open-${hours.day}`}
+                            checked={hours.isOpen}
+                            onCheckedChange={(checked) => handleHoursChange(index, 'isOpen', checked)}
+                          />
+                          <Label htmlFor={`open-${hours.day}`} className="text-sm cursor-pointer">
+                            {hours.isOpen ? 'Open' : 'Closed'}
+                          </Label>
+                        </div>
+                        
+                        {hours.isOpen && (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor={`open-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
+                                From
+                              </Label>
+                              <Input
+                                id={`open-time-${hours.day}`}
+                                type="time"
+                                value={hours.openTime}
+                                onChange={(e) => handleHoursChange(index, 'openTime', e.target.value)}
+                                className="w-32"
+                              />
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <Label htmlFor={`close-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
+                                To
+                              </Label>
+                              <Input
+                                id={`close-time-${hours.day}`}
+                                type="time"
+                                value={hours.closeTime}
+                                onChange={(e) => handleHoursChange(index, 'closeTime', e.target.value)}
+                                className="w-32"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
