@@ -182,7 +182,10 @@ export function Settings() {
   
   useEffect(() => {
     if (businessInfo) {
-      setBusinessFormData(businessInfo)
+      setBusinessFormData({
+        ...businessInfo,
+        hoursOfOperation: businessInfo.hoursOfOperation || defaultHoursOfOperation
+      })
     }
   }, [businessInfo])
 
@@ -511,7 +514,8 @@ export function Settings() {
   
   const handleHoursChange = (index: number, field: keyof HoursOfOperation, value: string | boolean) => {
     setBusinessFormData((prev) => {
-      const newHours = [...prev.hoursOfOperation]
+      const currentHours = prev.hoursOfOperation || defaultHoursOfOperation
+      const newHours = [...currentHours]
       newHours[index] = { ...newHours[index], [field]: value }
       return { ...prev, hoursOfOperation: newHours }
     })
@@ -832,7 +836,7 @@ export function Settings() {
                   </div>
                   
                   <div className="space-y-3">
-                    {businessFormData.hoursOfOperation.map((hours, index) => (
+                    {(businessFormData.hoursOfOperation || defaultHoursOfOperation).map((hours, index) => (
                       <div key={hours.day} className="flex items-center gap-4 p-4 rounded-lg bg-secondary/20 border border-border">
                         <div className="w-28">
                           <span className="font-medium">{hours.day}</span>
