@@ -96,7 +96,6 @@ export function isConfigurationError(error: any): boolean {
     errorText.includes('MISSING_GITHUB_TOKEN') ||
     errorText.includes('not configured') ||
     errorText.includes('503') ||
-    errorText.includes('400') ||
     errorText.includes('401') ||
     errorText.includes('403') ||
     errorText.includes('authentication') ||
