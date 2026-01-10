@@ -56,17 +56,17 @@ export function getConfigErrorMessage(error: any): string {
     return 'Missing GITHUB_TOKEN: Please set the GITHUB_TOKEN environment variable with a valid GitHub personal access token.';
   }
   
-  // Parse status codes
+  // Parse status codes (401 is now returned for missing token)
+  if (errorText.includes('401') || errorText.includes('Unauthorized')) {
+    return 'Authentication failed: GITHUB_TOKEN is missing, invalid, or expired. Please set or update your environment variable.';
+  }
+  
   if (errorText.includes('503') || errorText.includes('Service Unavailable')) {
     return 'Service unavailable: GitHub Spark is not properly configured. Please ensure GITHUB_TOKEN is set.';
   }
   
   if (errorText.includes('400') || errorText.includes('Bad Request')) {
-    return 'API request failed: Invalid request format or missing authentication. Please ensure GITHUB_TOKEN is set in your environment variables.';
-  }
-  
-  if (errorText.includes('401') || errorText.includes('Unauthorized')) {
-    return 'Authentication failed: Your GITHUB_TOKEN is invalid or expired. Please update your environment variables.';
+    return 'API request failed: Invalid request format. Please check your prompt and model configuration.';
   }
   
   if (errorText.includes('403') || errorText.includes('Forbidden')) {
@@ -77,7 +77,7 @@ export function getConfigErrorMessage(error: any): string {
     return 'API endpoint not found: The GitHub Models API endpoint may be unavailable.';
   }
   
-  if (errorText.includes('GITHUB_TOKEN') || errorText.includes('github.*token')) {
+  if (errorText.includes('GITHUB_TOKEN')) {
     return 'Missing GITHUB_TOKEN: Please set the GITHUB_TOKEN environment variable with a valid GitHub personal access token.';
   }
   

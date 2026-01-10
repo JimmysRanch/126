@@ -28,7 +28,8 @@ export function sparkConfigValidationPlugin(): Plugin {
             const githubToken = process.env.GITHUB_TOKEN;
             
             if (!githubToken) {
-              res.statusCode = 503; // Service Unavailable is more appropriate than 500
+              // 401 Unauthorized is semantically correct for missing authentication
+              res.statusCode = 401;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({
                 error: {

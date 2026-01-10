@@ -71,7 +71,8 @@ export function useLLM(options: UseLLMOptions = {}): UseLLMResult {
     setIsConfigError(false);
 
     try {
-      const result = await sparkLLM(prompt, modelName, jsonMode);
+      // Provide default values for optional parameters to ensure reliability
+      const result = await sparkLLM(prompt, modelName || 'openai/gpt-4o', jsonMode || false);
       return result;
     } catch (err) {
       const errorObj = err instanceof Error ? err : new Error(String(err));
