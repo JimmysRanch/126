@@ -39,7 +39,28 @@ export function validateSparkConfig(): SparkConfigValidation {
 export function getConfigErrorMessage(error: any): string {
   const errorText = typeof error === 'string' ? error : error?.message || '';
   
+  // Check for structured error response from our validation plugin
+  if (error?.response) {
+    try {
+      const data = typeof error.response === 'string' ? JSON.parse(error.response) : error.response;
+      if (data?.error?.message) {
+        return `${data.error.message}: ${data.error.details || ''}`;
+      }
+    } catch (e) {
+      // Fall through to text parsing
+    }
+  }
+  
+  // Parse for specific error codes
+  if (errorText.includes('MISSING_GITHUB_TOKEN') || errorText.includes('not configured')) {
+    return 'Missing GITHUB_TOKEN: Please set the GITHUB_TOKEN environment variable with a valid GitHub personal access token.';
+  }
+  
   // Parse status codes
+  if (errorText.includes('503') || errorText.includes('Service Unavailable')) {
+    return 'Service unavailable: GitHub Spark is not properly configured. Please ensure GITHUB_TOKEN is set.';
+  }
+  
   if (errorText.includes('400') || errorText.includes('Bad Request')) {
     return 'API request failed: Invalid request format or missing authentication. Please ensure GITHUB_TOKEN is set in your environment variables.';
   }
@@ -72,6 +93,9 @@ export function isConfigurationError(error: any): boolean {
   
   return (
     errorText.includes('GITHUB_TOKEN') ||
+    errorText.includes('MISSING_GITHUB_TOKEN') ||
+    errorText.includes('not configured') ||
+    errorText.includes('503') ||
     errorText.includes('400') ||
     errorText.includes('401') ||
     errorText.includes('403') ||

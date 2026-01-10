@@ -19,6 +19,7 @@ import { NewAppointment } from '@/pages/NewAppointment'
 import { EditAppointment } from '@/pages/EditAppointment'
 import { POS } from '@/pages/POS'
 import { Inventory } from '@/pages/Inventory'
+import { AITestPage } from '@/pages/AITestPage'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <TopNav />
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/ai-test" element={<AITestPage />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/appointments/new" element={<NewAppointment />} />
           <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
