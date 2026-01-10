@@ -157,19 +157,6 @@ export function Finances() {
                 </div>
               )}
             </Card>
-
-            <Card className="p-4 md:p-6 border-border">
-              <div className="mb-4">
-                <h3 className="text-base md:text-lg font-bold">FEES</h3>
-                <p className="text-xs md:text-sm text-muted-foreground">MTD PROCESSOR FEES</p>
-              </div>
-              <div className="mt-3">
-                <p className="text-2xl md:text-3xl font-bold">$0</p>
-              </div>
-              <Button variant="outline" size="sm" className="mt-4 text-xs h-8 w-full md:w-auto">
-                REVIEW
-              </Button>
-            </Card>
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-3">
