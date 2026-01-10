@@ -4,6 +4,7 @@ import { defineConfig, PluginOption } from "vite";
 
 import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
+import { sparkConfigValidationPlugin } from "./src/plugins/spark-config-validation-plugin";
 import { resolve } from 'path'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
@@ -16,6 +17,7 @@ export default defineConfig({
     // DO NOT REMOVE
     createIconImportProxy() as PluginOption,
     sparkPlugin() as PluginOption,
+    sparkConfigValidationPlugin() as PluginOption,
   ],
   resolve: {
     alias: {
