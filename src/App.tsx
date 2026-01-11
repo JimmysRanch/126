@@ -9,6 +9,7 @@ import { AddPet } from '@/pages/AddPet'
 import { PaymentHistory } from '@/pages/PaymentHistory'
 import { ContactInfo } from '@/pages/ContactInfo'
 import { Finances } from '@/pages/Finances'
+import { ExpensesDetail } from '@/pages/ExpensesDetail'
 import { AddExpense } from '@/pages/AddExpense'
 import { RecordPayment } from '@/pages/RecordPayment'
 import { FileTaxes } from '@/pages/FileTaxes'
@@ -48,6 +49,7 @@ function App() {
           <Route path="/pos" element={<POS />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/finances" element={<Finances />} />
+          <Route path="/finances/expenses" element={<ExpensesDetail />} />
           <Route path="/finances/add-expense" element={<AddExpense />} />
           <Route path="/finances/record-payment" element={<RecordPayment />} />
           <Route path="/finances/file-taxes" element={<FileTaxes />} />

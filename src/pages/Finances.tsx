@@ -221,7 +221,7 @@ export function Finances() {
                   { date: '12/05/2024', category: 'Supplies', vendor: 'Grooming Warehouse', amount: 180.00, status: 'Pending' },
                   { date: '12/01/2024', category: 'Rent', vendor: 'Property Management LLC', amount: 1200.00, status: 'Pending' },
                 ].map((expense, i) => (
-                  <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
+                  <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate('/finances/expenses')}>
                     <div className="flex items-start md:items-center justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
@@ -245,6 +245,11 @@ export function Finances() {
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="p-3 md:p-4 border-t border-border text-center">
+                <Button variant="ghost" onClick={() => navigate('/finances/expenses')}>
+                  View All Expenses
+                </Button>
               </div>
             </Card>
           </TabsContent>

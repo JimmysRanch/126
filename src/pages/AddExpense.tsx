@@ -40,7 +40,7 @@ export function AddExpense() {
     }
 
     toast.success('Expense added successfully')
-    navigate('/finances?tab=expenses')
+    navigate('/finances/expenses')
   }
 
   return (
@@ -50,7 +50,7 @@ export function AddExpense() {
           <Button 
             variant="ghost" 
             className="gap-2 -ml-2 mb-3 md:mb-4"
-            onClick={() => navigate('/finances?tab=expenses')}
+            onClick={() => navigate('/finances/expenses')}
           >
             <ArrowLeft size={18} />
             Back to Expenses
@@ -162,7 +162,7 @@ export function AddExpense() {
               <Button 
                 type="button" 
                 variant="outline"
-                onClick={() => navigate('/finances?tab=expenses')}
+                onClick={() => navigate('/finances/expenses')}
               >
                 Cancel
               </Button>
