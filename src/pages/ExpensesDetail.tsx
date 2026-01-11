@@ -263,18 +263,15 @@ export function ExpensesDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           <Card className="border-border flex flex-col">
             <div className="p-3 md:p-4 border-b border-border flex items-center justify-between flex-shrink-0">
-              <div>
-                <h3 className="text-base md:text-lg font-bold">Expense Breakdown</h3>
-                <p className="text-xs text-muted-foreground">Last 6 Months</p>
-              </div>
+              <h3 className="text-base md:text-lg font-bold">Expense Breakdown</h3>
               <Button variant="ghost" size="sm" className="gap-1 text-xs">
                 View All
                 <CaretDown size={14} />
               </Button>
             </div>
-            <div className="p-4 md:p-6 flex-1 flex flex-col">
-              <div className="relative w-full flex-1 mb-6">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+            <div className="p-4 md:p-6 flex-1 flex items-center gap-6">
+              <div className="relative flex-1 aspect-square max-w-[280px]">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
                   {breakdownData.map((item, i) => {
                     const offset = currentOffset
                     const dashArray = (item.percentage / 100) * circumference
@@ -287,27 +284,54 @@ export function ExpensesDetail() {
                         r="80"
                         fill="none"
                         stroke={item.color}
-                        strokeWidth="32"
+                        strokeWidth="40"
                         strokeDasharray={`${dashArray} ${circumference}`}
                         strokeDashoffset={-offset}
                         className="transition-all hover:opacity-80 cursor-pointer"
                       />
                     )
                   })}
+                  {(() => {
+                    let labelOffset = 0
+                    return breakdownData.map((item, i) => {
+                      const startAngle = (labelOffset / 100) * 360
+                      const angle = startAngle + (item.percentage / 100) * 360 / 2
+                      const radians = (angle * Math.PI) / 180
+                      const x = 100 + Math.cos(radians) * 60
+                      const y = 100 + Math.sin(radians) * 60
+                      labelOffset += item.percentage
+                      
+                      if (item.percentage < 10) return null
+                      
+                      return (
+                        <text
+                          key={`label-${i}`}
+                          x={x}
+                          y={y}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          className="fill-background font-bold text-[14px] rotate-90"
+                          style={{ transformOrigin: `${x}px ${y}px` }}
+                        >
+                          ${item.amount.toLocaleString()}
+                        </text>
+                      )
+                    })
+                  })()}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl md:text-3xl lg:text-4xl font-bold">${breakdownData.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</span>
+                  <span className="text-3xl md:text-4xl font-bold">${breakdownData.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</span>
                 </div>
               </div>
               
               <div className="space-y-2 flex-shrink-0">
                 {breakdownData.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div key={i} className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                      <span className="text-sm font-medium truncate">{item.category}</span>
+                      <span className="text-sm font-medium whitespace-nowrap">{item.category}</span>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-3">
                       <span className="text-sm font-bold">${item.amount.toLocaleString()}</span>
                       <span className="text-xs text-muted-foreground w-8 text-right">{item.percentage}%</span>
                     </div>
