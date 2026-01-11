@@ -437,8 +437,6 @@ export function Finances() {
                         }`}>
                           {expense.status}
                         </span>
-                        <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
-                      </div>
                     ))}
                   </div>
                 </div>
