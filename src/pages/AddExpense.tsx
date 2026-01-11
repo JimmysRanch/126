@@ -58,7 +58,7 @@ export function AddExpense() {
           <div className="flex items-center gap-3">
             <Receipt size={28} className="text-primary" />
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Add Expense</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">What did you spend money on?</h1>
               <p className="text-sm text-muted-foreground">Record a new business expense</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export function AddExpense() {
             <div className="p-4 md:p-6 space-y-4 md:space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="vendor">Vendor / Payee *</Label>
+                  <Label htmlFor="vendor">Who did you pay? *</Label>
                   <Input
                     id="vendor"
                     placeholder="e.g., Pet Supply Co"
@@ -80,7 +80,7 @@ export function AddExpense() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="amount">Amount *</Label>
+                  <Label htmlFor="amount">How much did you pay? *</Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                     <Input
@@ -94,12 +94,13 @@ export function AddExpense() {
                       required
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground">Enter the total you paid, including tax.</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="category">What type of expense was this? *</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
@@ -118,7 +119,7 @@ export function AddExpense() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="date">Date *</Label>
+                  <Label htmlFor="date">When did you pay it? *</Label>
                   <Input
                     id="date"
                     type="date"
@@ -130,7 +131,7 @@ export function AddExpense() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status">Payment Status</Label>
+                <Label htmlFor="status">Has this been paid yet?</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
@@ -146,10 +147,10 @@ export function AddExpense() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description / Notes</Label>
+                <Label htmlFor="description">What was this for?</Label>
                 <Textarea
                   id="description"
-                  placeholder="Add any additional details about this expense..."
+                  placeholder="Dog shampoo, grooming table, dryer repair, etc."
                   rows={4}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -167,7 +168,7 @@ export function AddExpense() {
               </Button>
               <Button type="submit" className="gap-2">
                 <Receipt size={18} />
-                Add Expense
+                Save Expense
               </Button>
             </div>
           </form>
