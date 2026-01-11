@@ -169,7 +169,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="expenses" className="space-y-4">
+          <TabsContent value="expenses" className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold">Expense Overview</h2>
@@ -189,123 +189,104 @@ export function Finances() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <Card className="p-4 border-border">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">MTD EXPENSES</p>
-                <p className="text-2xl font-bold">$400</p>
-                <p className="text-xs text-muted-foreground mt-1">Month to Date</p>
-              </Card>
-              <Card className="p-4 border-border">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">YTD EXPENSES</p>
-                <p className="text-2xl font-bold">$4,850</p>
-                <p className="text-xs text-muted-foreground mt-1">Year to Date</p>
-              </Card>
-              <Card className="p-4 border-border">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">PENDING</p>
-                <p className="text-2xl font-bold">$1,380</p>
-              </Card>
-              <Card className="p-4 border-border">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">AVG MONTHLY</p>
-                <p className="text-2xl font-bold">$485</p>
-                <div className="w-full h-1 bg-primary/30 rounded-full mt-2">
-                  <div className="h-full bg-primary rounded-full" style={{ width: '75%' }} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD EXPENSES</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$400</p>
+                  </div>
                 </div>
               </Card>
-              <Card className="p-4 border-border">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">LAST 6 MONTHS</p>
-                <p className="text-2xl font-bold">$485</p>
-                <p className="text-xs text-muted-foreground mt-1">Last 6 Months</p>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD EXPENSES</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$4,850</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$1,380</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG MONTHLY</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">LAST 6 MONTHS</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+                  </div>
+                </div>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <Card className="lg:col-span-2 border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Card className="border-border">
+                <div className="p-3 border-b border-border flex items-center justify-between">
                   <div>
-                    <h3 className="text-base font-bold">Expenses Trend</h3>
-                    <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                    <h3 className="text-sm font-bold">Upcoming Bills</h3>
+                    <p className="text-xs text-muted-foreground">Next 30 Days</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="text-xs">
-                      Last 6 Months
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-xs">
-                      All Categories
-                    </Button>
-                  </div>
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    View All
+                  </Button>
                 </div>
-                <div className="p-6">
-                  <div className="relative h-64">
-                    <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs text-muted-foreground">
-                      <span>$1,200</span>
-                      <span>$1,000</span>
-                      <span>$700</span>
-                      <span>$400</span>
+                <div className="p-3">
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
+                      <span>Vendor</span>
+                      <span className="text-center">Due In</span>
+                      <span className="text-right">Amount</span>
+                      <span className="text-right">Status</span>
                     </div>
-                    <div className="absolute inset-0 flex items-end justify-between gap-3 pb-8 pl-12">
-                      {[
-                        { month: 'Aug', amount: 650, avgMonthly: 485 },
-                        { month: 'Sep', amount: 720, avgMonthly: 485 },
-                        { month: 'Oct', amount: 850, avgMonthly: 485 },
-                        { month: 'Nov', amount: 920, avgMonthly: 485 },
-                        { month: 'Dec', amount: 1100, avgMonthly: 485 },
-                        { month: 'Jan', amount: 700, avgMonthly: 485 },
-                      ].map((data, i) => {
-                        const maxExpense = 1200
-                        const height = (data.amount / maxExpense) * 100
-                        return (
-                          <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                            <div className="relative w-full" style={{ height: `${height}%`, minHeight: '30px' }}>
-                              <div 
-                                className="absolute bottom-0 w-full rounded-t transition-all hover:opacity-80 cursor-pointer"
-                                style={{ 
-                                  height: '100%',
-                                  backgroundColor: 'oklch(0.75 0.15 195)'
-                                }}
-                              />
-                            </div>
-                            <span className="text-xs font-medium text-muted-foreground">{data.month}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <div className="absolute inset-x-0 flex items-center pointer-events-none pl-12" style={{ bottom: '40%' }}>
-                      <div className="w-full border-t-2 border-dashed border-primary opacity-50" />
-                      <div className="absolute -right-1 flex items-center gap-2">
-                        <Circle size={8} className="text-primary" weight="fill" />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">Avg Monthly</span>
+                    {[
+                      { vendor: 'City Electric', dueIn: '3 days', warning: true, amount: 312, status: 312 },
+                      { vendor: 'Grooming Warehouse', dueIn: '5 days', warning: false, amount: 190, status: 190 },
+                      { vendor: 'Rent', dueIn: '9 days', warning: false, amount: 1200, status: 1200 },
+                    ].map((bill, i) => (
+                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                        <span className="text-sm font-medium truncate">{bill.vendor}</span>
+                        <span className="text-sm text-center flex items-center justify-center gap-1">
+                          {bill.dueIn}
+                          {bill.warning && <Circle size={8} className="text-yellow-500" weight="fill" />}
+                        </span>
+                        <span className="text-sm font-bold text-right">${bill.amount}</span>
+                        <span className="text-sm font-bold text-right">${bill.status}</span>
                       </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex items-center gap-4 justify-center">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded" style={{ backgroundColor: 'oklch(0.75 0.15 195)' }} />
-                      <span className="text-xs font-medium">Monthly Expenses</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 border-t-2 border-dashed border-primary" />
-                      <span className="text-xs font-medium">Avg Monthly</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Circle size={12} className="text-primary" weight="fill" />
-                      <span className="text-xs font-medium">Monthly larger</span>
+                    ))}
+                    <div className="pt-2 border-t border-border mt-2">
+                      <Button variant="ghost" size="sm" className="w-full text-xs">
+                        View All
+                      </Button>
                     </div>
                   </div>
                 </div>
               </Card>
 
-              <Card className="border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between">
+              <Card className="lg:col-span-2 border-border">
+                <div className="p-3 border-b border-border flex items-center justify-between">
                   <div>
-                    <h3 className="text-base font-bold">Expense Breakdown</h3>
+                    <h3 className="text-sm font-bold">Expense Breakdown</h3>
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
                   <Button variant="ghost" size="sm" className="text-xs">
                     View All
                   </Button>
                 </div>
-                <div className="p-6">
-                  <div className="relative w-full aspect-square max-w-[200px] mx-auto mb-6">
+                <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
+                  <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
@@ -340,11 +321,11 @@ export function Finances() {
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-2xl font-bold">$4,850</span>
-                      <span className="text-xs text-muted-foreground">Tent</span>
+                      <span className="text-xs text-muted-foreground">Total</span>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2 flex-1 w-full">
                     {[
                       { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
                       { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
@@ -368,91 +349,50 @@ export function Finances() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card className="border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between">
-                  <h3 className="text-base font-bold">Upcoming Bills</h3>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
-                </div>
-                <div className="p-4">
-                  <div className="space-y-1">
-                    <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
-                      <span>Vendor</span>
-                      <span className="text-center">Due In</span>
-                      <span className="text-right">Amount</span>
-                      <span className="text-right">Status</span>
-                    </div>
-                    {[
-                      { vendor: 'City Electric', dueIn: '3 days', warning: true, amount: 312, status: 312 },
-                      { vendor: 'Grooming Warehouse', dueIn: '5 days', warning: false, amount: 190, status: 190 },
-                      { vendor: 'Rent', dueIn: '9 days', warning: false, amount: 1200, status: 1200 },
-                    ].map((bill, i) => (
-                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                        <span className="text-sm font-medium truncate">{bill.vendor}</span>
-                        <span className="text-sm text-center flex items-center justify-center gap-1">
-                          {bill.dueIn}
-                          {bill.warning && <Circle size={8} className="text-yellow-500" weight="fill" />}
-                        </span>
-                        <span className="text-sm font-bold text-right">${bill.amount}</span>
-                        <span className="text-sm font-bold text-right">${bill.status}</span>
-                      </div>
-                    ))}
-                    <div className="pt-2 border-t border-border mt-2">
-                      <Button variant="ghost" size="sm" className="w-full text-xs">
-                        View All
-                      </Button>
-                    </div>
+            <Card className="border-border">
+              <div className="p-3 border-b border-border flex items-center justify-between">
+                <h3 className="text-sm font-bold">Recent Expenses</h3>
+                <Button variant="ghost" size="sm" className="text-xs">
+                  View All
+                </Button>
+              </div>
+              <div className="p-3">
+                <div className="space-y-1">
+                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
+                    <span>Category</span>
+                    <span>Vendor</span>
+                    <span className="text-center">Date</span>
+                    <span className="text-right">Amount</span>
                   </div>
-                </div>
-              </Card>
-
-              <Card className="border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between">
-                  <h3 className="text-base font-bold">Recent Expenses</h3>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
-                </div>
-                <div className="p-4">
-                  <div className="space-y-1">
-                    <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
-                      <span>Category</span>
-                      <span>Vendor</span>
-                      <span className="text-center">Date</span>
-                      <span className="text-right">Amount</span>
+                  {[
+                    { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
+                    { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
+                    { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
+                    { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
+                    { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
+                  ].map((expense, i) => (
+                    <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                      <span className={`text-xs px-2 py-1 rounded-full w-fit ${
+                        expense.status === 'Paid' 
+                          ? 'bg-green-500/20 text-green-500' 
+                          : 'bg-yellow-500/20 text-yellow-500'
+                      }`}>
+                        {expense.category}
+                      </span>
+                      <span className="text-sm truncate">{expense.vendor}</span>
+                      <span className="text-sm text-center">{expense.date}</span>
+                      <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
                     </div>
-                    {[
-                      { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
-                      { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
-                      { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
-                      { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
-                      { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
-                    ].map((expense, i) => (
-                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                        <span className={`text-xs px-2 py-1 rounded-full w-fit ${
-                          expense.status === 'Paid' 
-                            ? 'bg-green-500/20 text-green-500' 
-                            : 'bg-yellow-500/20 text-yellow-500'
-                        }`}>
-                          {expense.category}
-                        </span>
-                        <span className="text-sm truncate">{expense.vendor}</span>
-                        <span className="text-sm text-center">{expense.date}</span>
-                        <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
-                      </div>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-                <div className="border-t border-border p-3 flex justify-end">
-                  <Button className="gap-2 bg-primary text-primary-foreground">
-                    <Circle size={16} />
-                    Add Expense
-                  </Button>
-                </div>
-              </Card>
-            </div>
+              </div>
+              <div className="border-t border-border p-3 flex justify-end">
+                <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
+                  <Circle size={16} />
+                  Add Expense
+                </Button>
+              </div>
+            </Card>
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-3">
