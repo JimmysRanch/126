@@ -338,123 +338,125 @@ export function Finances() {
               </Card>
             </div>
 
-            <Card className="border-border">
-              <div className="p-3 border-b border-border flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-bold">Expense Breakdown</h3>
-                  <p className="text-xs text-muted-foreground">Last 6 Months</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <Card className="border-border">
+                <div className="p-3 border-b border-border flex items-center justify-between">
+                  <div>
+                    <h3 className="text-sm font-bold">Expense Breakdown</h3>
+                    <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    View All
+                  </Button>
                 </div>
-                <Button variant="ghost" size="sm" className="text-xs">
-                  View All
-                </Button>
-              </div>
-              <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
-                <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
-                    {(() => {
-                      const breakdownData = [
-                        { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                        { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                        { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
-                        { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                        { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
-                      ]
-                      const circumference = 2 * Math.PI * 70
-                      let currentOffset = 0
-                      return breakdownData.map((item, i) => {
-                        const offset = currentOffset
-                        const dashArray = (item.percentage / 100) * circumference
-                        currentOffset += dashArray
-                        return (
-                          <circle
-                            key={i}
-                            cx="100"
-                            cy="100"
-                            r="70"
-                            fill="none"
-                            stroke={item.color}
-                            strokeWidth="40"
-                            strokeDasharray={`${dashArray} ${circumference}`}
-                            strokeDashoffset={-offset}
-                            className="transition-all hover:opacity-80 cursor-pointer"
-                          />
-                        )
-                      })
-                    })()}
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold">$4,850</span>
-                    <span className="text-xs text-muted-foreground">Total</span>
+                <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
+                  <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                      {(() => {
+                        const breakdownData = [
+                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                        ]
+                        const circumference = 2 * Math.PI * 70
+                        let currentOffset = 0
+                        return breakdownData.map((item, i) => {
+                          const offset = currentOffset
+                          const dashArray = (item.percentage / 100) * circumference
+                          currentOffset += dashArray
+                          return (
+                            <circle
+                              key={i}
+                              cx="100"
+                              cy="100"
+                              r="70"
+                              fill="none"
+                              stroke={item.color}
+                              strokeWidth="40"
+                              strokeDasharray={`${dashArray} ${circumference}`}
+                              strokeDashoffset={-offset}
+                              className="transition-all hover:opacity-80 cursor-pointer"
+                            />
+                          )
+                        })
+                      })()}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold">$4,850</span>
+                      <span className="text-xs text-muted-foreground">Total</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 flex-1 w-full">
+                    {[
+                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <span className="font-medium truncate">{item.category}</span>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className="font-bold">${item.amount.toLocaleString()}</span>
+                          <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                
-                <div className="space-y-2 flex-1 w-full">
-                  {[
-                    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
-                    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                        <span className="font-medium truncate">{item.category}</span>
-                      </div>
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        <span className="font-bold">${item.amount.toLocaleString()}</span>
-                        <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="border-border">
-              <div className="p-3 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-bold">Recent Expenses</h3>
-                <Button variant="ghost" size="sm" className="text-xs">
-                  View All
-                </Button>
-              </div>
-              <div className="p-3">
-                <div className="space-y-1">
-                  <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
-                    <span>Category</span>
-                    <span>Vendor</span>
-                    <span className="text-center">Date</span>
-                    <span className="text-right">Amount</span>
-                  </div>
-                  {[
-                    { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
-                    { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
-                    { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
-                    { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
-                    { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
-                  ].map((expense, i) => (
-                    <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                      <span className={`text-xs px-2 py-1 rounded-full w-fit ${
-                        expense.status === 'Paid' 
-                          ? 'bg-green-500/20 text-green-500' 
-                          : 'bg-yellow-500/20 text-yellow-500'
-                      }`}>
-                        {expense.category}
-                      </span>
-                      <span className="text-sm truncate">{expense.vendor}</span>
-                      <span className="text-sm text-center">{expense.date}</span>
-                      <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
-                    </div>
-                  ))}
+              <Card className="border-border">
+                <div className="p-3 border-b border-border flex items-center justify-between">
+                  <h3 className="text-sm font-bold">Recent Expenses</h3>
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    View All
+                  </Button>
                 </div>
-              </div>
-              <div className="border-t border-border p-3 flex justify-end">
-                <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
-                  <Circle size={16} />
-                  Add Expense
-                </Button>
-              </div>
-            </Card>
+                <div className="p-3">
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
+                      <span>Category</span>
+                      <span>Vendor</span>
+                      <span className="text-center">Date</span>
+                      <span className="text-right">Amount</span>
+                    </div>
+                    {[
+                      { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
+                      { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
+                      { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
+                      { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
+                      { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
+                    ].map((expense, i) => (
+                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                        <span className={`text-xs px-2 py-1 rounded-full w-fit ${
+                          expense.status === 'Paid' 
+                            ? 'bg-green-500/20 text-green-500' 
+                            : 'bg-yellow-500/20 text-yellow-500'
+                        }`}>
+                          {expense.category}
+                        </span>
+                        <span className="text-sm truncate">{expense.vendor}</span>
+                        <span className="text-sm text-center">{expense.date}</span>
+                        <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t border-border p-3 flex justify-end">
+                  <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
+                    <Circle size={16} />
+                    Add Expense
+                  </Button>
+                </div>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-3">
