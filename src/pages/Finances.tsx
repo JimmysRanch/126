@@ -170,88 +170,208 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD EXPENSES</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD EXPENSES</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$400</p>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD EXPENSES</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$4,850</p>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$1,380</p>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG MONTHLY</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+              </Card>
+              <Card className="p-2 md:p-2.5 border-border">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">LAST 6 MONTHS</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Card className="lg:col-span-2 border-border">
+                <div className="p-3 border-b border-border flex items-center justify-between">
+                  <h3 className="text-sm font-bold">Expenses Trend</h3>
+                  <Button className="gap-2 h-8 text-xs" onClick={() => navigate('/finances/add-expense')}>
+                    <Circle size={16} />
+                    Add Expense
+                  </Button>
+                </div>
+                <div className="p-4">
+                  <div className="relative h-48">
+                    <div className="absolute inset-0 flex items-end justify-between gap-2 pb-6">
+                      {[
+                        { month: 'Aug', amount: 650 },
+                        { month: 'Sep', amount: 720 },
+                        { month: 'Oct', amount: 850 },
+                        { month: 'Nov', amount: 920 },
+                        { month: 'Dec', amount: 1100 },
+                        { month: 'Jan', amount: 1200 },
+                      ].map((data, i) => {
+                        const maxExpense = 1200
+                        const height = (data.amount / maxExpense) * 100
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                            <div className="relative w-full" style={{ height: `${height}%`, minHeight: '30px' }}>
+                              <div 
+                                className="absolute bottom-0 w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
+                                style={{ 
+                                  height: '100%',
+                                  backgroundColor: 'oklch(0.75 0.15 195)'
+                                }}
+                              />
+                            </div>
+                            <span className="text-[10px] font-medium text-muted-foreground">{data.month}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: '38%' }}>
+                      <div className="w-full border-t-2 border-dashed border-primary opacity-60" />
+                    </div>
                   </div>
                 </div>
               </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD EXPENSES</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
-                  </div>
+
+              <Card className="border-border">
+                <div className="p-3 border-b border-border">
+                  <h3 className="text-sm font-bold">Expense Breakdown</h3>
                 </div>
-              </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
+                <div className="p-4">
+                  <div className="relative w-full aspect-square max-w-[180px] mx-auto mb-4">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                      {(() => {
+                        const breakdownData = [
+                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                        ]
+                        const circumference = 2 * Math.PI * 80
+                        let currentOffset = 0
+                        return breakdownData.map((item, i) => {
+                          const offset = currentOffset
+                          const dashArray = (item.percentage / 100) * circumference
+                          currentOffset += dashArray
+                          return (
+                            <circle
+                              key={i}
+                              cx="100"
+                              cy="100"
+                              r="80"
+                              fill="none"
+                              stroke={item.color}
+                              strokeWidth="32"
+                              strokeDasharray={`${dashArray} ${circumference}`}
+                              strokeDashoffset={-offset}
+                              className="transition-all hover:opacity-80 cursor-pointer"
+                            />
+                          )
+                        })
+                      })()}
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-xl font-bold">$4,850</span>
+                      <span className="text-[10px] text-muted-foreground">Total</span>
+                    </div>
                   </div>
-                </div>
-              </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG MONTHLY</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$400.00</p>
+                  
+                  <div className="space-y-2">
+                    {[
+                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <span className="font-medium truncate">{item.category}</span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="font-bold">${item.amount.toLocaleString()}</span>
+                          <span className="text-muted-foreground w-6 text-right">{item.percentage}%</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </Card>
             </div>
 
-            <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm md:text-base font-bold">Recent Expenses</h3>
-                <Button className="gap-2" onClick={() => navigate('/finances/add-expense')}>
-                  <Circle size={18} />
-                  Add Expense
-                </Button>
-              </div>
-              <div className="divide-y divide-border">
-                {[
-                  { date: '12/15/2024', category: 'Supplies', vendor: 'Pet Supply Co', amount: 250.00, status: 'Paid' },
-                  { date: '12/10/2024', category: 'Utilities', vendor: 'City Electric', amount: 85.00, status: 'Paid' },
-                  { date: '12/08/2024', category: 'Software', vendor: 'Business Tools Inc', amount: 65.00, status: 'Paid' },
-                  { date: '12/05/2024', category: 'Supplies', vendor: 'Grooming Warehouse', amount: 180.00, status: 'Pending' },
-                  { date: '12/01/2024', category: 'Rent', vendor: 'Property Management LLC', amount: 1200.00, status: 'Pending' },
-                ].map((expense, i) => (
-                  <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => navigate('/finances/expenses')}>
-                    <div className="flex items-start md:items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
-                          <p className="font-medium text-sm md:text-base truncate">{expense.vendor}</p>
-                          <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground w-fit">
-                            {expense.category}
-                          </span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              <Card className="border-border">
+                <div className="p-3 border-b border-border">
+                  <h3 className="text-sm font-bold">Recent Expenses</h3>
+                </div>
+                <div className="divide-y divide-border">
+                  {[
+                    { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
+                    { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
+                    { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
+                    { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
+                  ].map((expense, i) => (
+                    <div key={i} className="p-2 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                              {expense.category}
+                            </span>
+                            <span className="text-xs font-medium truncate">{expense.vendor}</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{expense.date}</p>
                         </div>
-                        <p className="text-xs md:text-sm text-muted-foreground mt-1">{expense.date}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0 flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          expense.status === 'Paid' 
-                            ? 'bg-green-500/20 text-green-500' 
-                            : 'bg-yellow-500/20 text-yellow-500'
-                        }`}>
-                          {expense.status}
-                        </span>
-                        <p className="text-base md:text-lg font-bold">${expense.amount.toFixed(2)}</p>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                            expense.status === 'Paid' 
+                              ? 'bg-green-500/20 text-green-500' 
+                              : 'bg-yellow-500/20 text-yellow-500'
+                          }`}>
+                            {expense.status}
+                          </span>
+                          <span className="text-sm font-bold w-16 text-right">${expense.amount.toFixed(2)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              <div className="p-3 md:p-4 border-t border-border text-center">
-                <Button variant="ghost" onClick={() => navigate('/finances/expenses')}>
-                  View All Expenses
-                </Button>
-              </div>
-            </Card>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="border-border">
+                <div className="p-3 border-b border-border">
+                  <h3 className="text-sm font-bold">Upcoming Bills</h3>
+                </div>
+                <div className="divide-y divide-border">
+                  {[
+                    { vendor: 'City Electric', dueIn: '3 days', warning: true, amount: 312 },
+                    { vendor: 'Grooming Warehouse', dueIn: '5 days', warning: false, amount: 190 },
+                    { vendor: 'Rent', dueIn: '9 days', warning: false, amount: 1200 },
+                    { vendor: 'Pet Supply Co', dueIn: '12 days', warning: false, amount: 250 },
+                  ].map((bill, i) => (
+                    <div key={i} className="p-2 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-medium flex-1 truncate">{bill.vendor}</span>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                            {bill.dueIn}
+                            {bill.warning && <Circle size={8} className="text-yellow-500" weight="fill" />}
+                          </span>
+                          <span className="text-sm font-bold w-16 text-right">${bill.amount}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="payments" className="space-y-3">
