@@ -238,8 +238,8 @@ export function Finances() {
                   <h3 className="text-sm font-bold">Expense Trend</h3>
                   <p className="text-xs text-muted-foreground">Last 6 Months</p>
                 </div>
-                <div className="p-4">
-                  <div className="relative h-48">
+                <div className="p-3">
+                  <div className="relative h-[200px]">
                     <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
                       {(() => {
                         const monthlyExpenses = [
@@ -257,7 +257,7 @@ export function Finances() {
                           const height = (data.amount / maxExpense) * 100
                           return (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '40px' }}>
+                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '30px' }}>
                                 <div 
                                   className="absolute bottom-0 w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
                                   style={{ 
@@ -301,9 +301,6 @@ export function Finances() {
                     <h3 className="text-sm font-bold">Upcoming Bills</h3>
                     <p className="text-xs text-muted-foreground">Next 30 Days</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
                 </div>
                 <div className="p-3">
                   <div className="space-y-1">
@@ -328,29 +325,19 @@ export function Finances() {
                         <span className="text-sm font-bold text-right">${bill.status}</span>
                       </div>
                     ))}
-                    <div className="pt-2 border-t border-border mt-2">
-                      <Button variant="ghost" size="sm" className="w-full text-xs">
-                        View All
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </Card>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               <Card className="border-border">
                 <div className="p-3 border-b border-border flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-bold">Expense Breakdown</h3>
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
                 </div>
-                <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
-                  <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
+                <div className="p-3 flex flex-col lg:flex-row items-center gap-4">
+                  <div className="relative w-full aspect-square max-w-[140px] flex-shrink-0">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
@@ -384,12 +371,12 @@ export function Finances() {
                       })()}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold">$4,850</span>
+                      <span className="text-xl font-bold">$4,850</span>
                       <span className="text-xs text-muted-foreground">Total</span>
                     </div>
                   </div>
                   
-                  <div className="space-y-2 flex-1 w-full">
+                  <div className="space-y-1.5 flex-1 w-full">
                     {[
                       { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
                       { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
@@ -397,12 +384,12 @@ export function Finances() {
                       { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
                       { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between text-sm">
+                      <div key={i} className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
                           <span className="font-medium truncate">{item.category}</span>
                         </div>
-                        <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                           <span className="font-bold">${item.amount.toLocaleString()}</span>
                           <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
                         </div>
@@ -412,7 +399,7 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border">
+              <Card className="lg:col-span-2 border-border">
                 <div className="p-3 border-b border-border flex items-center justify-between">
                   <h3 className="text-sm font-bold">Recent Expenses</h3>
                   <Button variant="ghost" size="sm" className="text-xs">
