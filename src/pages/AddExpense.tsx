@@ -17,7 +17,7 @@ export function AddExpense() {
     category: '',
     date: new Date().toISOString().split('T')[0],
     description: '',
-    status: 'pending'
+    status: 'yes'
   })
 
   const categories = [
@@ -40,7 +40,7 @@ export function AddExpense() {
     }
 
     toast.success('Expense added successfully')
-    navigate('/finances')
+    navigate('/finances?tab=expenses')
   }
 
   return (
@@ -50,15 +50,15 @@ export function AddExpense() {
           <Button 
             variant="ghost" 
             className="gap-2 -ml-2 mb-3 md:mb-4"
-            onClick={() => navigate('/finances')}
+            onClick={() => navigate('/finances?tab=expenses')}
           >
             <ArrowLeft size={18} />
-            Back to Finances
+            Back to Expenses
           </Button>
           <div className="flex items-center gap-3">
             <Receipt size={28} className="text-primary" />
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">What did you spend money on?</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">Add Expense</h1>
               <p className="text-sm text-muted-foreground">Record a new business expense</p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export function AddExpense() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category">What type of expense was this? *</Label>
+                  <Label htmlFor="category">Category *</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
@@ -140,8 +140,8 @@ export function AddExpense() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -162,7 +162,7 @@ export function AddExpense() {
               <Button 
                 type="button" 
                 variant="outline"
-                onClick={() => navigate('/finances')}
+                onClick={() => navigate('/finances?tab=expenses')}
               >
                 Cancel
               </Button>
