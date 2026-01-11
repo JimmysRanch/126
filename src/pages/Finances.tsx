@@ -169,7 +169,7 @@ export function Finances() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="expenses" className="space-y-3">
+          <TabsContent value="expenses" className="space-y-2">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl md:text-2xl font-bold">Expense Overview</h2>
@@ -232,14 +232,14 @@ export function Finances() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <Card className="lg:col-span-2 border-border">
-                <div className="p-3 border-b border-border">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-h-[calc(100vh-280px)]">
+              <Card className="lg:col-span-2 border-border flex flex-col">
+                <div className="p-2.5 border-b border-border flex-shrink-0">
                   <h3 className="text-sm font-bold">Expense Trend</h3>
                   <p className="text-xs text-muted-foreground">Last 6 Months</p>
                 </div>
-                <div className="p-3">
-                  <div className="relative h-[200px]">
+                <div className="p-2.5 flex-1 min-h-0">
+                  <div className="relative h-full min-h-[160px]">
                     <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
                       {(() => {
                         const monthlyExpenses = [
@@ -257,7 +257,7 @@ export function Finances() {
                           const height = (data.amount / maxExpense) * 100
                           return (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '30px' }}>
+                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '20px' }}>
                                 <div 
                                   className="absolute bottom-0 w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
                                   style={{ 
@@ -295,14 +295,14 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border">
-                <div className="p-3 border-b border-border flex items-center justify-between">
+              <Card className="border-border flex flex-col">
+                <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Upcoming Bills</h3>
                     <p className="text-xs text-muted-foreground">Next 30 Days</p>
                   </div>
                 </div>
-                <div className="p-3">
+                <div className="p-2.5 flex-1 min-h-0 overflow-auto">
                   <div className="space-y-1">
                     <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
                       <span>Vendor</span>
@@ -329,15 +329,15 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border">
-                <div className="p-3 border-b border-border flex items-center justify-between">
+              <Card className="border-border flex flex-col">
+                <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Expense Breakdown</h3>
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
                 </div>
-                <div className="p-3 flex flex-col lg:flex-row items-center gap-4">
-                  <div className="relative w-full aspect-square max-w-[140px] flex-shrink-0">
+                <div className="p-2.5 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
+                  <div className="relative w-full aspect-square max-w-[120px] flex-shrink-0">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
@@ -371,12 +371,12 @@ export function Finances() {
                       })()}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl font-bold">$4,850</span>
+                      <span className="text-lg font-bold">$4,850</span>
                       <span className="text-xs text-muted-foreground">Total</span>
                     </div>
                   </div>
                   
-                  <div className="space-y-1.5 flex-1 w-full">
+                  <div className="space-y-1 flex-1 w-full">
                     {[
                       { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
                       { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
@@ -399,14 +399,14 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="lg:col-span-2 border-border">
-                <div className="p-3 border-b border-border flex items-center justify-between">
+              <Card className="lg:col-span-2 border-border flex flex-col">
+                <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <h3 className="text-sm font-bold">Recent Expenses</h3>
                   <Button variant="ghost" size="sm" className="text-xs">
                     View All
                   </Button>
                 </div>
-                <div className="p-3">
+                <div className="p-2.5 flex-1 min-h-0 overflow-auto">
                   <div className="space-y-1">
                     <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
                       <span>Category</span>
@@ -435,12 +435,6 @@ export function Finances() {
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="border-t border-border p-3 flex justify-end">
-                  <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
-                    <Circle size={16} />
-                    Add Expense
-                  </Button>
                 </div>
               </Card>
             </div>
