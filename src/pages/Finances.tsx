@@ -337,7 +337,7 @@ export function Finances() {
                   </div>
                 </div>
                 <div className="p-3 flex flex-col lg:flex-row items-center gap-4 flex-1 min-h-0">
-                  <div className="relative flex-shrink-0" style={{ width: '160px', height: '160px' }}>
+                  <div className="relative flex-shrink-0" style={{ width: '180px', height: '180px' }}>
                     <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
