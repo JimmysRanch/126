@@ -12,6 +12,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
+interface WeightRange {
+  min: number
+  max: number | null
+}
+
+interface WeightRanges {
+  small: WeightRange
+  medium: WeightRange
+  large: WeightRange
+  giant: WeightRange
+}
+
 interface ServicePricing {
   small: number
   medium: number
@@ -19,11 +31,18 @@ interface ServicePricing {
   giant: number
 }
 
+interface BreedPricing {
+  breedName: string
+  price: number
+}
+
 interface MainService {
   id: string
   name: string
   description: string
   pricing: ServicePricing
+  pricingStrategy: 'weight' | 'breed' | 'mixed'
+  breedPricing?: BreedPricing[]
 }
 
 interface AddOn {
@@ -34,24 +53,34 @@ interface AddOn {
   hasSizePricing: boolean
 }
 
+const DEFAULT_WEIGHT_RANGES: WeightRanges = {
+  small: { min: 1, max: 25 },
+  medium: { min: 26, max: 50 },
+  large: { min: 51, max: 80 },
+  giant: { min: 81, max: null }
+}
+
 const DEFAULT_MAIN_SERVICES: MainService[] = [
   {
     id: "fresh-bath",
     name: "Fresh Bath",
     description: "Includes Shampoo, Blow Out, Brush Out, Ear Cleaning, Nail Trim",
-    pricing: { small: 45, medium: 55, large: 65, giant: 75 }
+    pricing: { small: 45, medium: 55, large: 65, giant: 75 },
+    pricingStrategy: 'weight'
   },
   {
     id: "trim-up",
     name: "Trim Up",
     description: "Bath + Trim Up: Round Out Paws, Neaten Face, Sanitary Trim",
-    pricing: { small: 50, medium: 60, large: 70, giant: 80 }
+    pricing: { small: 50, medium: 60, large: 70, giant: 80 },
+    pricingStrategy: 'weight'
   },
   {
     id: "deluxe-groom",
     name: "Deluxe Groom",
     description: "Bath + Trim Up + Custom Haircut",
-    pricing: { small: 70, medium: 80, large: 90, giant: 100 }
+    pricing: { small: 70, medium: 80, large: 90, giant: 100 },
+    pricingStrategy: 'weight'
   }
 ]
 
@@ -112,6 +141,19 @@ export function Settings() {
   
   const [mainServices, setMainServices] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
   const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
+  const [weightRanges, setWeightRanges] = useKV<WeightRanges>("weight-ranges", DEFAULT_WEIGHT_RANGES)
+  
+  const [weightRangeForm, setWeightRangeForm] = useState({
+    smallMin: "",
+    smallMax: "",
+    mediumMin: "",
+    mediumMax: "",
+    largeMin: "",
+    largeMax: "",
+    giantMin: ""
+  })
+  
+  const [weightRangeDialogOpen, setWeightRangeDialogOpen] = useState(false)
   
   const [paymentMethods, setPaymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", DEFAULT_PAYMENT_METHODS)
   const [newPaymentMethod, setNewPaymentMethod] = useState("")
@@ -126,10 +168,12 @@ export function Settings() {
   const [mainServiceForm, setMainServiceForm] = useState({
     name: "",
     description: "",
+    pricingStrategy: "weight" as 'weight' | 'breed' | 'mixed',
     smallPrice: "",
     mediumPrice: "",
     largePrice: "",
-    giantPrice: ""
+    giantPrice: "",
+    breedPricing: [] as BreedPricing[]
   })
   
   const [addOnForm, setAddOnForm] = useState({
@@ -247,23 +291,67 @@ export function Settings() {
       setMainServiceForm({
         name: service.name,
         description: service.description,
+        pricingStrategy: service.pricingStrategy || 'weight',
         smallPrice: service.pricing.small.toString(),
         mediumPrice: service.pricing.medium.toString(),
         largePrice: service.pricing.large.toString(),
-        giantPrice: service.pricing.giant.toString()
+        giantPrice: service.pricing.giant.toString(),
+        breedPricing: service.breedPricing || []
       })
     } else {
       setEditingMainService(null)
       setMainServiceForm({
         name: "",
         description: "",
+        pricingStrategy: 'weight',
         smallPrice: "",
         mediumPrice: "",
         largePrice: "",
-        giantPrice: ""
+        giantPrice: "",
+        breedPricing: []
       })
     }
     setMainServiceDialogOpen(true)
+  }
+  
+  const openWeightRangeDialog = () => {
+    const ranges = weightRanges || DEFAULT_WEIGHT_RANGES
+    setWeightRangeForm({
+      smallMin: ranges.small.min.toString(),
+      smallMax: ranges.small.max?.toString() || "",
+      mediumMin: ranges.medium.min.toString(),
+      mediumMax: ranges.medium.max?.toString() || "",
+      largeMin: ranges.large.min.toString(),
+      largeMax: ranges.large.max?.toString() || "",
+      giantMin: ranges.giant.min.toString()
+    })
+    setWeightRangeDialogOpen(true)
+  }
+  
+  const handleSaveWeightRanges = () => {
+    const smallMin = parseFloat(weightRangeForm.smallMin)
+    const smallMax = parseFloat(weightRangeForm.smallMax)
+    const mediumMin = parseFloat(weightRangeForm.mediumMin)
+    const mediumMax = parseFloat(weightRangeForm.mediumMax)
+    const largeMin = parseFloat(weightRangeForm.largeMin)
+    const largeMax = parseFloat(weightRangeForm.largeMax)
+    const giantMin = parseFloat(weightRangeForm.giantMin)
+    
+    if (isNaN(smallMin) || isNaN(smallMax) || isNaN(mediumMin) || isNaN(mediumMax) || 
+        isNaN(largeMin) || isNaN(largeMax) || isNaN(giantMin)) {
+      toast.error("All weight values must be valid numbers")
+      return
+    }
+    
+    setWeightRanges({
+      small: { min: smallMin, max: smallMax },
+      medium: { min: mediumMin, max: mediumMax },
+      large: { min: largeMin, max: largeMax },
+      giant: { min: giantMin, max: null }
+    })
+    
+    setWeightRangeDialogOpen(false)
+    toast.success("Weight ranges updated successfully")
   }
   
   const openAddOnDialog = (addOn?: AddOn) => {
@@ -313,12 +401,14 @@ export function Settings() {
       id: editingMainService?.id || `service-${Date.now()}`,
       name: mainServiceForm.name.trim(),
       description: mainServiceForm.description.trim(),
+      pricingStrategy: mainServiceForm.pricingStrategy,
       pricing: {
         small: smallPrice,
         medium: mediumPrice,
         large: largePrice,
         giant: giantPrice
-      }
+      },
+      breedPricing: mainServiceForm.breedPricing
     }
     
     if (editingMainService) {
@@ -905,9 +995,57 @@ export function Settings() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
+                      <h2 className="text-lg font-semibold mb-2">Weight Size Configuration</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Define weight ranges for each size category
+                      </p>
+                    </div>
+                    <Button
+                      onClick={openWeightRangeDialog}
+                      variant="outline"
+                      className="font-semibold"
+                    >
+                      <PencilSimple size={18} className="mr-2" />
+                      Edit Weight Ranges
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
+                      <div className="text-xs text-muted-foreground mb-1">Small</div>
+                      <div className="text-sm font-semibold">
+                        {weightRanges?.small.min || 1}-{weightRanges?.small.max || 25} lbs
+                      </div>
+                    </div>
+                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
+                      <div className="text-xs text-muted-foreground mb-1">Medium</div>
+                      <div className="text-sm font-semibold">
+                        {weightRanges?.medium.min || 26}-{weightRanges?.medium.max || 50} lbs
+                      </div>
+                    </div>
+                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
+                      <div className="text-xs text-muted-foreground mb-1">Large</div>
+                      <div className="text-sm font-semibold">
+                        {weightRanges?.large.min || 51}-{weightRanges?.large.max || 80} lbs
+                      </div>
+                    </div>
+                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
+                      <div className="text-xs text-muted-foreground mb-1">Giant</div>
+                      <div className="text-sm font-semibold">
+                        {weightRanges?.giant.min || 81}+ lbs
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6 bg-card border-border">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
                       <h2 className="text-lg font-semibold mb-2">Main Services</h2>
                       <p className="text-sm text-muted-foreground">
-                        Core grooming services with size-based pricing
+                        Core grooming services with flexible pricing strategies
                       </p>
                     </div>
                     <Button
@@ -932,7 +1070,12 @@ export function Settings() {
                         >
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
-                              <h3 className="font-semibold text-lg">{service.name}</h3>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-semibold text-lg">{service.name}</h3>
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
+                                  {service.pricingStrategy === 'weight' ? 'By Weight' : service.pricingStrategy === 'breed' ? 'By Breed' : 'Mixed Pricing'}
+                                </span>
+                              </div>
                               <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
                             </div>
                             <div className="flex gap-2">
@@ -1240,7 +1383,7 @@ export function Settings() {
         </Tabs>
         
         <Dialog open={mainServiceDialogOpen} onOpenChange={setMainServiceDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingMainService ? "Edit Main Service" : "Add Main Service"}</DialogTitle>
             </DialogHeader>
@@ -1266,11 +1409,37 @@ export function Settings() {
                 />
               </div>
               
+              <div className="space-y-2">
+                <Label htmlFor="pricing-strategy">Pricing Strategy</Label>
+                <Select
+                  value={mainServiceForm.pricingStrategy}
+                  onValueChange={(value: 'weight' | 'breed' | 'mixed') => 
+                    setMainServiceForm({ ...mainServiceForm, pricingStrategy: value })
+                  }
+                >
+                  <SelectTrigger id="pricing-strategy">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="weight">By Weight Only</SelectItem>
+                    <SelectItem value="breed">By Breed Only</SelectItem>
+                    <SelectItem value="mixed">Mixed (Weight + Breed Exceptions)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {mainServiceForm.pricingStrategy === 'weight' && "Price based on dog's weight using size categories"}
+                  {mainServiceForm.pricingStrategy === 'breed' && "Set specific prices for certain breeds (e.g., Doodles cost more)"}
+                  {mainServiceForm.pricingStrategy === 'mixed' && "Use weight-based pricing with breed-specific overrides"}
+                </p>
+              </div>
+              
               <div className="space-y-3">
-                <Label>Size-Based Pricing</Label>
+                <Label>Base Weight-Based Pricing</Label>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="small-price" className="text-sm text-muted-foreground">Small (1-25 lbs)</Label>
+                    <Label htmlFor="small-price" className="text-sm text-muted-foreground">
+                      Small ({weightRanges?.small.min || 1}-{weightRanges?.small.max || 25} lbs)
+                    </Label>
                     <Input
                       id="small-price"
                       type="number"
@@ -1280,7 +1449,9 @@ export function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="medium-price" className="text-sm text-muted-foreground">Medium (26-50 lbs)</Label>
+                    <Label htmlFor="medium-price" className="text-sm text-muted-foreground">
+                      Medium ({weightRanges?.medium.min || 26}-{weightRanges?.medium.max || 50} lbs)
+                    </Label>
                     <Input
                       id="medium-price"
                       type="number"
@@ -1290,7 +1461,9 @@ export function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="large-price" className="text-sm text-muted-foreground">Large (51-80 lbs)</Label>
+                    <Label htmlFor="large-price" className="text-sm text-muted-foreground">
+                      Large ({weightRanges?.large.min || 51}-{weightRanges?.large.max || 80} lbs)
+                    </Label>
                     <Input
                       id="large-price"
                       type="number"
@@ -1300,7 +1473,9 @@ export function Settings() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="giant-price" className="text-sm text-muted-foreground">Giant (81+ lbs)</Label>
+                    <Label htmlFor="giant-price" className="text-sm text-muted-foreground">
+                      Giant ({weightRanges?.giant.min || 81}+ lbs)
+                    </Label>
                     <Input
                       id="giant-price"
                       type="number"
@@ -1311,6 +1486,18 @@ export function Settings() {
                   </div>
                 </div>
               </div>
+              
+              {(mainServiceForm.pricingStrategy === 'breed' || mainServiceForm.pricingStrategy === 'mixed') && (
+                <div className="space-y-3 p-4 rounded-lg bg-secondary/20 border border-border">
+                  <div className="flex items-center justify-between">
+                    <Label>Breed-Specific Pricing</Label>
+                    <p className="text-xs text-muted-foreground">Coming soon: Add breed exceptions</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    This feature will allow you to set custom prices for specific breeds (e.g., Goldendoodles, Poodles).
+                  </p>
+                </div>
+              )}
             </div>
             
             <DialogFooter>
@@ -1319,6 +1506,122 @@ export function Settings() {
               </Button>
               <Button onClick={handleSaveMainService} className="bg-primary text-primary-foreground">
                 {editingMainService ? "Update Service" : "Add Service"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        <Dialog open={weightRangeDialogOpen} onOpenChange={setWeightRangeDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Weight Ranges</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-5 py-4">
+              <p className="text-sm text-muted-foreground">
+                Define the weight ranges for each size category. These ranges are used for pricing throughout the app.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="font-semibold">Small</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="small-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
+                      <Input
+                        id="small-min"
+                        type="number"
+                        value={weightRangeForm.smallMin}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, smallMin: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="small-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
+                      <Input
+                        id="small-max"
+                        type="number"
+                        value={weightRangeForm.smallMax}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, smallMax: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="font-semibold">Medium</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="medium-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
+                      <Input
+                        id="medium-min"
+                        type="number"
+                        value={weightRangeForm.mediumMin}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, mediumMin: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="medium-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
+                      <Input
+                        id="medium-max"
+                        type="number"
+                        value={weightRangeForm.mediumMax}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, mediumMax: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="font-semibold">Large</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="large-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
+                      <Input
+                        id="large-min"
+                        type="number"
+                        value={weightRangeForm.largeMin}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, largeMin: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="large-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
+                      <Input
+                        id="large-max"
+                        type="number"
+                        value={weightRangeForm.largeMax}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, largeMax: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="font-semibold">Giant</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="giant-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
+                      <Input
+                        id="giant-min"
+                        type="number"
+                        value={weightRangeForm.giantMin}
+                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, giantMin: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Max</Label>
+                      <Input disabled value="No max" className="bg-muted" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setWeightRangeDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveWeightRanges} className="bg-primary text-primary-foreground">
+                Save Weight Ranges
               </Button>
             </DialogFooter>
           </DialogContent>
