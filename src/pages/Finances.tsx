@@ -232,8 +232,8 @@ export function Finances() {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 max-h-[calc(100vh-280px)]">
-              <Card className="lg:col-span-2 border-border flex flex-col">
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 max-h-[calc(100vh-280px)]">
+              <Card className="lg:col-span-4 border-border flex flex-col">
                 <div className="p-2.5 border-b border-border flex-shrink-0">
                   <h3 className="text-sm font-bold">Expense Trend</h3>
                   <p className="text-xs text-muted-foreground">Last 6 Months</p>
@@ -295,7 +295,7 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border flex flex-col">
+              <Card className="lg:col-span-3 border-border flex flex-col">
                 <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Upcoming Bills</h3>
@@ -329,7 +329,7 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border/60 flex flex-col bg-card/80 backdrop-blur-sm overflow-hidden">
+              <Card className="lg:col-span-3 border-border/60 flex flex-col bg-card/80 backdrop-blur-sm overflow-hidden">
                 <div className="p-2.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Expense Breakdown</h3>
@@ -403,7 +403,7 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="lg:col-span-2 border-border flex flex-col">
+              <Card className="lg:col-span-4 border-border flex flex-col">
                 <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <h3 className="text-sm font-bold">Recent Expenses</h3>
                   <Button variant="ghost" size="sm" className="text-xs">
