@@ -255,60 +255,92 @@ export function ExpensesDetail() {
             <div className="p-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expense Breakdown</h3>
-                <p className="text-xs text-muted-foreground">By category</p>
+                <p className="text-xs text-muted-foreground">Last 6 Months</p>
               </div>
+              <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2 hover:bg-primary/10 hover:text-primary transition-all">
+                View All
+                <CaretRight size={12} weight="bold" />
+              </Button>
             </div>
-            <div className="p-3 flex-1 min-h-0 flex gap-3">
-              <div className="flex-shrink-0" style={{ width: 'clamp(120px, 45%, 160px)', aspectRatio: '1/1' }}>
-                <div className="relative w-full h-full">
+            <div className="p-4 flex-1 min-h-0 flex gap-4 items-center">
+              <div className="flex-1 flex items-center justify-center">
+                <div className="relative" style={{ width: 'min(280px, 100%)', aspectRatio: '1/1' }}>
                   <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
-                    {breakdownData.map((item, i) => {
-                      const offset = currentOffset
-                      const dashArray = (item.percentage / 100) * circumference
-                      currentOffset += dashArray
-                      return (
-                        <circle
-                          key={i}
-                          cx="100"
-                          cy="100"
-                          r="75"
-                          fill="none"
-                          stroke={item.color}
-                          strokeWidth="40"
-                          strokeDasharray={`${dashArray} ${circumference}`}
-                          strokeDashoffset={-offset}
-                          className="transition-all duration-300 hover:opacity-90 cursor-pointer"
-                          style={{ filter: `drop-shadow(0 0 6px ${item.color}60)` }}
-                        />
-                      )
-                    })}
+                    {(() => {
+                      let offset = 0
+                      return breakdownData.map((item, i) => {
+                        const dashArray = (item.percentage / 100) * circumference
+                        const currentOff = offset
+                        offset += dashArray
+                        
+                        const angle = ((currentOff + dashArray / 2) / circumference) * 2 * Math.PI
+                        const labelRadius = 85
+                        const labelX = 100 + labelRadius * Math.cos(angle)
+                        const labelY = 100 + labelRadius * Math.sin(angle)
+                        
+                        return (
+                          <g key={i}>
+                            <circle
+                              cx="100"
+                              cy="100"
+                              r="75"
+                              fill="none"
+                              stroke={item.color}
+                              strokeWidth="50"
+                              strokeDasharray={`${dashArray} ${circumference}`}
+                              strokeDashoffset={-currentOff}
+                              className="transition-all duration-300 hover:opacity-90 cursor-pointer"
+                              style={{ filter: `drop-shadow(0 0 8px ${item.color}60)` }}
+                            />
+                            <text
+                              x={labelX}
+                              y={labelY}
+                              className="text-[10px] font-bold fill-foreground"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              transform={`rotate(90 ${labelX} ${labelY})`}
+                            >
+                              {item.percentage}%
+                            </text>
+                            {i === 0 && (
+                              <text
+                                x="100"
+                                y="92"
+                                className="text-[14px] font-bold tabular-nums"
+                                textAnchor="middle"
+                                transform="rotate(90 100 92)"
+                                style={{ fill: item.color }}
+                              >
+                                ${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k
+                              </text>
+                            )}
+                          </g>
+                        )
+                      })
+                    })()}
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-bold bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent tabular-nums">
-                      ${(breakdownData.reduce((sum, item) => sum + item.amount, 0) / 1000).toFixed(1)}k
+                    <span className="text-2xl font-bold tabular-nums">
+                      ${(breakdownData.reduce((sum, item) => sum + item.amount, 0) / 1000).toFixed(1).replace(/\.0$/, '')}k
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Total</span>
+                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total</span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex-1 min-w-0 flex flex-col">
-                <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin">
-                  <div className="space-y-2">
-                    {breakdownData.map((item, i) => (
-                      <div key={i} className="flex items-center justify-between gap-2 p-1.5 rounded-lg hover:bg-muted/40 transition-all cursor-pointer group">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }} />
-                          <span className="text-xs font-bold truncate">{item.category}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <span className="text-xs font-bold tabular-nums">${(item.amount / 1000).toFixed(1)}k</span>
-                          <span className="text-[10px] text-muted-foreground w-7 text-right font-bold">{item.percentage}%</span>
-                        </div>
-                      </div>
-                    ))}
+              <div className="flex-shrink-0 flex flex-col gap-2 min-w-[140px]">
+                {breakdownData.map((item, i) => (
+                  <div key={i} className="flex items-center justify-between gap-3 hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }} />
+                      <span className="text-xs font-semibold truncate">{item.category}</span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
+                      <span className="text-xs text-muted-foreground w-8 text-right font-semibold">{item.percentage}%</span>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
           </Card>
