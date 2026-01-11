@@ -233,6 +233,68 @@ export function Finances() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Card className="lg:col-span-2 border-border">
+                <div className="p-3 border-b border-border">
+                  <h3 className="text-sm font-bold">Expense Trend</h3>
+                  <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                </div>
+                <div className="p-4">
+                  <div className="relative h-48">
+                    <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
+                      {(() => {
+                        const monthlyExpenses = [
+                          { month: 'Aug', amount: 650 },
+                          { month: 'Sep', amount: 720 },
+                          { month: 'Oct', amount: 850 },
+                          { month: 'Nov', amount: 920 },
+                          { month: 'Dec', amount: 1100 },
+                          { month: 'Jan', amount: 1200 },
+                        ]
+                        const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
+                        const avgMonthly = 485
+                        
+                        return monthlyExpenses.map((data, i) => {
+                          const height = (data.amount / maxExpense) * 100
+                          return (
+                            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '40px' }}>
+                                <div 
+                                  className="absolute bottom-0 w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
+                                  style={{ 
+                                    height: '100%',
+                                    backgroundColor: 'oklch(0.75 0.15 195)'
+                                  }}
+                                />
+                              </div>
+                              <span className="text-xs font-medium text-muted-foreground">{data.month}</span>
+                            </div>
+                          )
+                        })
+                      })()}
+                    </div>
+                    
+                    <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: '45%' }}>
+                      <div className="w-full border-t-2 border-dashed border-primary opacity-60" />
+                      <div className="absolute right-0 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-xs font-medium text-primary whitespace-nowrap">Avg</span>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 flex items-center justify-start gap-4 pt-2 border-t border-border mt-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-3 rounded" style={{ backgroundColor: 'oklch(0.75 0.15 195)' }} />
+                        <span className="text-xs font-medium">Expenses</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                        <span className="text-xs font-medium">Average</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
               <Card className="border-border">
                 <div className="p-3 border-b border-border flex items-center justify-between">
                   <div>
@@ -274,80 +336,80 @@ export function Finances() {
                   </div>
                 </div>
               </Card>
-
-              <Card className="lg:col-span-2 border-border">
-                <div className="p-3 border-b border-border flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold">Expense Breakdown</h3>
-                    <p className="text-xs text-muted-foreground">Last 6 Months</p>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
-                </div>
-                <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
-                  <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
-                      {(() => {
-                        const breakdownData = [
-                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
-                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
-                        ]
-                        const circumference = 2 * Math.PI * 70
-                        let currentOffset = 0
-                        return breakdownData.map((item, i) => {
-                          const offset = currentOffset
-                          const dashArray = (item.percentage / 100) * circumference
-                          currentOffset += dashArray
-                          return (
-                            <circle
-                              key={i}
-                              cx="100"
-                              cy="100"
-                              r="70"
-                              fill="none"
-                              stroke={item.color}
-                              strokeWidth="40"
-                              strokeDasharray={`${dashArray} ${circumference}`}
-                              strokeDashoffset={-offset}
-                              className="transition-all hover:opacity-80 cursor-pointer"
-                            />
-                          )
-                        })
-                      })()}
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold">$4,850</span>
-                      <span className="text-xs text-muted-foreground">Total</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2 flex-1 w-full">
-                    {[
-                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
-                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                          <span className="font-medium truncate">{item.category}</span>
-                        </div>
-                        <div className="flex items-center gap-3 flex-shrink-0">
-                          <span className="font-bold">${item.amount.toLocaleString()}</span>
-                          <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Card>
             </div>
+
+            <Card className="border-border">
+              <div className="p-3 border-b border-border flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold">Expense Breakdown</h3>
+                  <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                </div>
+                <Button variant="ghost" size="sm" className="text-xs">
+                  View All
+                </Button>
+              </div>
+              <div className="p-4 flex flex-col lg:flex-row items-center gap-6">
+                <div className="relative w-full aspect-square max-w-[180px] flex-shrink-0">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                    {(() => {
+                      const breakdownData = [
+                        { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                        { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                        { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                        { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                        { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                      ]
+                      const circumference = 2 * Math.PI * 70
+                      let currentOffset = 0
+                      return breakdownData.map((item, i) => {
+                        const offset = currentOffset
+                        const dashArray = (item.percentage / 100) * circumference
+                        currentOffset += dashArray
+                        return (
+                          <circle
+                            key={i}
+                            cx="100"
+                            cy="100"
+                            r="70"
+                            fill="none"
+                            stroke={item.color}
+                            strokeWidth="40"
+                            strokeDasharray={`${dashArray} ${circumference}`}
+                            strokeDashoffset={-offset}
+                            className="transition-all hover:opacity-80 cursor-pointer"
+                          />
+                        )
+                      })
+                    })()}
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold">$4,850</span>
+                    <span className="text-xs text-muted-foreground">Total</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 flex-1 w-full">
+                  {[
+                    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
+                    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
+                    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
+                    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                        <span className="font-medium truncate">{item.category}</span>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span className="font-bold">${item.amount.toLocaleString()}</span>
+                        <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
 
             <Card className="border-border">
               <div className="p-3 border-b border-border flex items-center justify-between">
