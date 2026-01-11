@@ -432,8 +432,8 @@ export function Finances() {
                         <span className="text-sm">{expense.date}</span>
                         <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ${
                           expense.status === 'Paid' 
-                            ? 'bg-green-500/20 text-green-500' 
-                            : 'bg-yellow-500/20 text-yellow-500'
+                            ? 'bg-green-500/30 text-green-400' 
+                            : 'bg-amber-500/30 text-amber-400'
                         }`}>
                           {expense.status}
                         </span>
