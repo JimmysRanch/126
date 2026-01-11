@@ -385,15 +385,15 @@ export function Finances() {
                       { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
                       { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div key={i} className="flex items-center hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           <div 
                             className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" 
                             style={{ backgroundColor: item.color }} 
                           />
-                          <span className="text-xs font-semibold truncate">{item.category}</span>
+                          <span className="text-xs font-semibold">{item.category}</span>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
                           <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
                           <span className="text-xs text-muted-foreground w-7 text-right font-semibold">{item.percentage}%</span>
                         </div>
