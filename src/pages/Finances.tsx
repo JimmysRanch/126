@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -8,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 export function Finances() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('dashboard')
   const isMobile = useIsMobile()
 
@@ -198,7 +200,7 @@ export function Finances() {
             <Card className="border-border">
               <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Recent Expenses</h3>
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => navigate('/finances/add-expense')}>
                   <Circle size={18} />
                   Add Expense
                 </Button>
@@ -278,7 +280,7 @@ export function Finances() {
             <Card className="border-border">
               <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Recent Payments</h3>
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => navigate('/finances/record-payment')}>
                   <CreditCard size={18} />
                   Record Payment
                 </Button>
@@ -354,7 +356,7 @@ export function Finances() {
             <Card className="border-border">
               <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Staff Members</h3>
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => navigate('/finances/run-payroll')}>
                   <Users size={18} />
                   Run Payroll
                 </Button>
@@ -437,7 +439,7 @@ export function Finances() {
             <Card className="border-border">
               <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
                 <h3 className="text-sm md:text-base font-bold">Tax Periods</h3>
-                <Button className="gap-2">
+                <Button className="gap-2" onClick={() => navigate('/finances/file-taxes')}>
                   <Receipt size={18} />
                   File Taxes
                 </Button>

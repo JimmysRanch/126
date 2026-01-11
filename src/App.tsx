@@ -9,6 +9,10 @@ import { AddPet } from '@/pages/AddPet'
 import { PaymentHistory } from '@/pages/PaymentHistory'
 import { ContactInfo } from '@/pages/ContactInfo'
 import { Finances } from '@/pages/Finances'
+import { AddExpense } from '@/pages/AddExpense'
+import { RecordPayment } from '@/pages/RecordPayment'
+import { FileTaxes } from '@/pages/FileTaxes'
+import { RunPayroll } from '@/pages/RunPayroll'
 import { Staff } from '@/pages/Staff'
 import { StaffProfile } from '@/pages/StaffProfile'
 import { StaffPayrollBreakdown } from '@/pages/StaffPayrollBreakdown'
@@ -44,6 +48,10 @@ function App() {
           <Route path="/pos" element={<POS />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/finances" element={<Finances />} />
+          <Route path="/finances/add-expense" element={<AddExpense />} />
+          <Route path="/finances/record-payment" element={<RecordPayment />} />
+          <Route path="/finances/file-taxes" element={<FileTaxes />} />
+          <Route path="/finances/run-payroll" element={<RunPayroll />} />
           <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
