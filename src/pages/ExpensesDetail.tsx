@@ -339,12 +339,8 @@ export function ExpensesDetail() {
                       <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
                       <span className="text-xs text-muted-foreground w-8 text-right font-semibold">{item.percentage}%</span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </Card>
-
+                ))}
           <Card className="col-span-2 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
             <div className="p-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
