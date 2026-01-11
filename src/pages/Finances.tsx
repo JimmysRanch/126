@@ -329,25 +329,25 @@ export function Finances() {
                 </div>
               </Card>
 
-              <Card className="border-border flex flex-col">
-                <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
+              <Card className="border-border/60 flex flex-col bg-card/80 backdrop-blur-sm overflow-hidden">
+                <div className="p-2.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Expense Breakdown</h3>
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
                 </div>
-                <div className="p-2.5 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
-                  <div className="relative w-full aspect-square max-w-[120px] flex-shrink-0">
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                <div className="p-3 flex flex-col lg:flex-row items-center gap-4 flex-1 min-h-0">
+                  <div className="relative flex-shrink-0" style={{ width: '160px', height: '160px' }}>
+                    <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
                           { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
+                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.70 0.18 85)' },
                           { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
                         ]
-                        const circumference = 2 * Math.PI * 70
+                        const circumference = 2 * Math.PI * 75
                         let currentOffset = 0
                         return breakdownData.map((item, i) => {
                           const offset = currentOffset
@@ -358,40 +358,44 @@ export function Finances() {
                               key={i}
                               cx="100"
                               cy="100"
-                              r="70"
+                              r="75"
                               fill="none"
                               stroke={item.color}
-                              strokeWidth="40"
+                              strokeWidth="50"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-offset}
-                              className="transition-all hover:opacity-80 cursor-pointer"
+                              className="transition-all duration-300 hover:opacity-90 cursor-pointer"
+                              style={{ filter: `drop-shadow(0 0 8px ${item.color}60)` }}
                             />
                           )
                         })
                       })()}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-lg font-bold">$4,850</span>
-                      <span className="text-xs text-muted-foreground">Total</span>
+                      <span className="text-2xl font-bold tabular-nums">$4.9k</span>
+                      <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total</span>
                     </div>
                   </div>
                   
-                  <div className="space-y-1 flex-1 w-full">
+                  <div className="flex-1 w-full space-y-2">
                     {[
                       { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.85 0.10 120)' },
-                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.90 0.08 85)' },
+                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
+                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.70 0.18 85)' },
                       { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.80 0.12 40)' },
+                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs">
+                      <div key={i} className="flex items-center justify-between hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
-                          <span className="font-medium truncate">{item.category}</span>
+                          <div 
+                            className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" 
+                            style={{ backgroundColor: item.color }} 
+                          />
+                          <span className="text-xs font-semibold truncate">{item.category}</span>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="font-bold">${item.amount.toLocaleString()}</span>
-                          <span className="text-muted-foreground w-8 text-right">{item.percentage}%</span>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
+                          <span className="text-xs text-muted-foreground w-8 text-right font-semibold">{item.percentage}%</span>
                         </div>
                       </div>
                     ))}
