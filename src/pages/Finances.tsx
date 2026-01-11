@@ -412,10 +412,11 @@ export function Finances() {
                 </div>
                 <div className="p-2.5 flex-1 min-h-0 overflow-auto">
                   <div className="space-y-1">
-                    <div className="grid grid-cols-4 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
+                    <div className="grid grid-cols-5 gap-2 text-xs font-medium text-muted-foreground px-2 pb-2">
                       <span>Category</span>
                       <span>Vendor</span>
-                      <span className="text-center">Date</span>
+                      <span>Date</span>
+                      <span>Status</span>
                       <span className="text-right">Amount</span>
                     </div>
                     {[
@@ -425,16 +426,17 @@ export function Finances() {
                       { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
                       { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
                     ].map((expense, i) => (
-                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                        <span className={`text-xs px-2 py-1 rounded-full w-fit ${
+                      <div key={i} className="grid grid-cols-5 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                        <span className="text-sm truncate">{expense.category}</span>
+                        <span className="text-sm truncate">{expense.vendor}</span>
+                        <span className="text-sm">{expense.date}</span>
+                        <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ${
                           expense.status === 'Paid' 
                             ? 'bg-green-500/20 text-green-500' 
                             : 'bg-yellow-500/20 text-yellow-500'
                         }`}>
-                          {expense.category}
+                          {expense.status}
                         </span>
-                        <span className="text-sm truncate">{expense.vendor}</span>
-                        <span className="text-sm text-center">{expense.date}</span>
                         <span className="text-sm font-bold text-right">${expense.amount.toFixed(2)}</span>
                       </div>
                     ))}
