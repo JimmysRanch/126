@@ -261,8 +261,8 @@ export function ExpensesDetail() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          <Card className="border-border">
-            <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
+          <Card className="border-border flex flex-col">
+            <div className="p-3 md:p-4 border-b border-border flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base md:text-lg font-bold">Expense Breakdown</h3>
                 <p className="text-xs text-muted-foreground">Last 6 Months</p>
@@ -272,9 +272,9 @@ export function ExpensesDetail() {
                 <CaretDown size={14} />
               </Button>
             </div>
-            <div className="p-4 md:p-6">
-              <div className="relative w-full aspect-square max-w-[280px] mx-auto mb-6">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+            <div className="p-4 md:p-6 flex-1 flex flex-col">
+              <div className="relative w-full flex-1 mb-6">
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                   {breakdownData.map((item, i) => {
                     const offset = currentOffset
                     const dashArray = (item.percentage / 100) * circumference
@@ -296,12 +296,11 @@ export function ExpensesDetail() {
                   })}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl md:text-3xl font-bold">${breakdownData.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</span>
-                  <span className="text-xs text-muted-foreground">Tent</span>
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-bold">${breakdownData.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}</span>
                 </div>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-2 flex-shrink-0">
                 {breakdownData.map((item, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
