@@ -336,8 +336,8 @@ export function Finances() {
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
                 </div>
-                <div className="p-3 flex flex-col lg:flex-row items-center gap-4 flex-1 min-h-0">
-                  <div className="relative flex-shrink-0" style={{ width: '180px', height: '180px' }}>
+                <div className="p-3 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
+                  <div className="relative flex-shrink-0" style={{ width: '200px', height: '200px' }}>
                     <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200">
                       {(() => {
                         const breakdownData = [
@@ -377,7 +377,7 @@ export function Finances() {
                     </div>
                   </div>
                   
-                  <div className="flex-1 w-full space-y-2">
+                  <div className="flex-1 w-full space-y-0.5">
                     {[
                       { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
                       { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
@@ -385,17 +385,17 @@ export function Finances() {
                       { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
                       { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div key={i} className="flex items-center justify-between hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
                           <div 
-                            className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" 
                             style={{ backgroundColor: item.color }} 
                           />
                           <span className="text-xs font-semibold truncate">{item.category}</span>
                         </div>
-                        <div className="flex items-center gap-3 flex-shrink-0">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                           <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
-                          <span className="text-xs text-muted-foreground w-8 text-right font-semibold">{item.percentage}%</span>
+                          <span className="text-xs text-muted-foreground w-7 text-right font-semibold">{item.percentage}%</span>
                         </div>
                       </div>
                     ))}
