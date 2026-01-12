@@ -251,20 +251,23 @@ export function Finances() {
                           { month: 'Jan', amount: 1200 },
                         ]
                         const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
-                        const avgMonthly = 485
                         
                         return monthlyExpenses.map((data, i) => {
                           const height = (data.amount / maxExpense) * 100
                           return (
-                            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                            <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                               <div className="relative w-full" style={{ height: `${height}%`, minHeight: '20px' }}>
                                 <div 
-                                  className="absolute bottom-0 w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
+                                  className="absolute bottom-0 w-full rounded-t-lg transition-all hover:brightness-110 cursor-pointer"
                                   style={{ 
                                     height: '100%',
-                                    backgroundColor: 'oklch(0.75 0.15 195)'
+                                    backgroundColor: 'oklch(0.70 0.20 195)',
+                                    boxShadow: '0 0 15px oklch(0.70 0.20 195 / 0.3)'
                                   }}
                                 />
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <span className="text-xs font-bold text-foreground whitespace-nowrap">${data.amount}</span>
+                                </div>
                               </div>
                               <span className="text-xs font-medium text-muted-foreground">{data.month}</span>
                             </div>
@@ -283,7 +286,7 @@ export function Finances() {
 
                     <div className="absolute bottom-0 left-0 right-0 flex items-center justify-start gap-4 pt-2 border-t border-border mt-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-3 rounded" style={{ backgroundColor: 'oklch(0.75 0.15 195)' }} />
+                        <div className="w-8 h-3 rounded" style={{ backgroundColor: 'oklch(0.70 0.20 195)' }} />
                         <span className="text-xs font-medium">Expenses</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -338,14 +341,51 @@ export function Finances() {
                 </div>
                 <div className="p-3 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
                   <div className="relative flex-shrink-0" style={{ width: '200px', height: '200px' }}>
-                    <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
+                      <defs>
+                        <filter id="glow-supplies">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <filter id="glow-rent">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <filter id="glow-utilities">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <filter id="glow-software">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <filter id="glow-other">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                      </defs>
                       {(() => {
                         const breakdownData = [
-                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
-                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.70 0.18 85)' },
-                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
+                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)', filter: 'url(#glow-supplies)' },
+                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)', filter: 'url(#glow-rent)' },
+                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)', filter: 'url(#glow-utilities)' },
+                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)', filter: 'url(#glow-software)' },
+                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)', filter: 'url(#glow-other)' },
                         ]
                         const circumference = 2 * Math.PI * 75
                         let currentOffset = 0
@@ -364,8 +404,8 @@ export function Finances() {
                               strokeWidth="50"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-offset}
-                              className="transition-all duration-300 hover:opacity-90 cursor-pointer"
-                              style={{ filter: `drop-shadow(0 0 8px ${item.color}60)` }}
+                              filter={item.filter}
+                              className="transition-all duration-300 hover:brightness-110 cursor-pointer"
                             />
                           )
                         })
@@ -379,17 +419,20 @@ export function Finances() {
                   
                   <div className="flex-1 w-full space-y-0.5">
                     {[
-                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
-                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.70 0.18 85)' },
-                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
+                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)' },
+                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)' },
+                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)' },
+                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)' },
+                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)' },
                     ].map((item, i) => (
                       <div key={i} className="flex items-center hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                           <div 
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" 
-                            style={{ backgroundColor: item.color }} 
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform" 
+                            style={{ 
+                              backgroundColor: item.color,
+                              boxShadow: `0 0 8px ${item.color}`
+                            }} 
                           />
                           <span className="text-xs font-semibold">{item.category}</span>
                         </div>
@@ -432,8 +475,8 @@ export function Finances() {
                         <span className="text-sm">{expense.date}</span>
                         <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ${
                           expense.status === 'Paid' 
-                            ? 'bg-green-500/30 text-green-400' 
-                            : 'bg-amber-500/30 text-amber-400'
+                            ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_oklch(0.65_0.20_155/0.3)]' 
+                            : 'bg-amber-500/20 text-amber-300 shadow-[0_0_10px_oklch(0.75_0.18_85/0.3)]'
                         }`}>
                           {expense.status}
                         </span>
