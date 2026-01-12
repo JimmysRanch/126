@@ -633,10 +633,44 @@ export function Settings() {
   }
   
   const handlePayrollChange = (field: keyof PayPeriodSettings, value: string) => {
+    setPayrollFormData((prev) => {
+      const updated = { ...prev, [field]: value }
+      
+      if (field === 'anchorStartDate' && (updated.type === 'weekly' || updated.type === 'bi-weekly')) {
+        const startDate = new Date(value)
+        if (!isNaN(startDate.getTime())) {
+          const periodLength = updated.type === 'weekly' ? 6 : 13
+          const endDate = new Date(startDate)
+          endDate.setDate(endDate.getDate() + periodLength)
+          
+          const originalStart = new Date(prev.anchorStartDate)
+          const originalEnd = new Date(prev.anchorEndDate)
+          const originalPay = new Date(prev.anchorPayDate)
+          
+          if (!isNaN(originalStart.getTime()) && !isNaN(originalEnd.getTime()) && !isNaN(originalPay.getTime())) {
+            const daysBetweenEndAndPay = Math.round((originalPay.getTime() - originalEnd.getTime()) / (1000 * 60 * 60 * 24))
+            
+            const payDate = new Date(endDate)
+            payDate.setDate(payDate.getDate() + daysBetweenEndAndPay)
+            
+            updated.anchorEndDate = format(endDate, 'yyyy-MM-dd')
+            updated.anchorPayDate = format(payDate, 'yyyy-MM-dd')
+          }
+        }
+      }
+      
+      return updated
+    })
+  }
+  
+  const handleResetPayrollDates = () => {
     setPayrollFormData((prev) => ({
       ...prev,
-      [field]: value
+      anchorStartDate: defaultPayrollSettings.anchorStartDate,
+      anchorEndDate: defaultPayrollSettings.anchorEndDate,
+      anchorPayDate: defaultPayrollSettings.anchorPayDate
     }))
+    toast.success("Anchor dates reset to defaults")
   }
   
   const handleSavePayrollSettings = () => {
@@ -1063,62 +1097,192 @@ export function Settings() {
                     </p>
                   </div>
 
-                  <div className="border-t border-border pt-6 space-y-4">
-                    <div>
-                      <h3 className="text-base font-semibold mb-1">Anchor Pay Period</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Define a reference pay period. The system will calculate all future pay periods based on these dates.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="anchor-start-date" className="text-sm font-medium">
-                          Period Start Date
-                        </Label>
-                        <Input
-                          id="anchor-start-date"
-                          type="date"
-                          value={payrollFormData.anchorStartDate}
-                          onChange={(e) => handlePayrollChange('anchorStartDate', e.target.value)}
-                        />
-                        <p className="text-xs text-muted-foreground">First day of the pay period</p>
+                  {(payrollFormData.type === 'weekly' || payrollFormData.type === 'bi-weekly') && (
+                    <div className="border-t border-border pt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold mb-1">Anchor Pay Period</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Define a reference pay period. The system will calculate all future pay periods based on these dates.
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleResetPayrollDates}
+                          className="text-sm"
+                        >
+                          Reset to Defaults
+                        </Button>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="anchor-end-date" className="text-sm font-medium">
-                          Period End Date
-                        </Label>
-                        <Input
-                          id="anchor-end-date"
-                          type="date"
-                          value={payrollFormData.anchorEndDate}
-                          onChange={(e) => handlePayrollChange('anchorEndDate', e.target.value)}
-                        />
-                        <p className="text-xs text-muted-foreground">Last day of the pay period</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="anchor-start-date" className="text-sm font-medium">
+                            Period Start Date
+                          </Label>
+                          <Input
+                            id="anchor-start-date"
+                            type="date"
+                            value={payrollFormData.anchorStartDate}
+                            onChange={(e) => handlePayrollChange('anchorStartDate', e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">First day of the pay period</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="anchor-end-date" className="text-sm font-medium">
+                            Period End Date
+                          </Label>
+                          <Input
+                            id="anchor-end-date"
+                            type="date"
+                            value={payrollFormData.anchorEndDate}
+                            onChange={(e) => handlePayrollChange('anchorEndDate', e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">Auto-updates when start date changes</p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="anchor-pay-date" className="text-sm font-medium">
+                            Pay Date
+                          </Label>
+                          <Input
+                            id="anchor-pay-date"
+                            type="date"
+                            value={payrollFormData.anchorPayDate}
+                            onChange={(e) => handlePayrollChange('anchorPayDate', e.target.value)}
+                          />
+                          <p className="text-xs text-muted-foreground">Auto-updates when start date changes</p>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="anchor-pay-date" className="text-sm font-medium">
-                          Pay Date
-                        </Label>
-                        <Input
-                          id="anchor-pay-date"
-                          type="date"
-                          value={payrollFormData.anchorPayDate}
-                          onChange={(e) => handlePayrollChange('anchorPayDate', e.target.value)}
-                        />
-                        <p className="text-xs text-muted-foreground">When staff get paid</p>
+                      <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <p className="text-sm text-blue-400">
+                          <strong>Tip:</strong> When you change the Period Start Date, the Period End Date and Pay Date will automatically update to maintain the {payrollFormData.type === 'weekly' ? '7-day' : '14-day'} cycle and payment delay.
+                        </p>
                       </div>
                     </div>
+                  )}
 
-                    <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                      <p className="text-sm text-blue-400">
-                        <strong>Example:</strong> If you set the anchor period as Dec 30, 2024 - Jan 12, 2025 with payday on Jan 17, 2025, 
-                        the system will automatically calculate all future pay periods maintaining the same schedule and delay between period end and payday.
-                      </p>
+                  {(payrollFormData.type === 'semi-monthly' || payrollFormData.type === 'monthly') && (
+                    <div className="border-t border-border pt-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold mb-1">Payment Schedule</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {payrollFormData.type === 'semi-monthly' 
+                              ? 'Configure when staff get paid for each half of the month (1st-15th and 16th-end of month)'
+                              : 'Configure when staff get paid each month'
+                            }
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleResetPayrollDates}
+                          className="text-sm"
+                        >
+                          Reset to Defaults
+                        </Button>
+                      </div>
+
+                      {payrollFormData.type === 'semi-monthly' ? (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="first-half-pay-day" className="text-sm font-medium">
+                                First Half Pay Day (Day of Month)
+                              </Label>
+                              <Input
+                                id="first-half-pay-day"
+                                type="number"
+                                min="1"
+                                max="31"
+                                placeholder="e.g., 20"
+                                value={payrollFormData.anchorPayDate ? new Date(payrollFormData.anchorPayDate).getDate() : ''}
+                                onChange={(e) => {
+                                  const day = parseInt(e.target.value)
+                                  if (day >= 1 && day <= 31) {
+                                    const date = new Date()
+                                    date.setDate(day)
+                                    handlePayrollChange('anchorPayDate', format(date, 'yyyy-MM-dd'))
+                                  }
+                                }}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Pay day for the 1st-15th period (e.g., 20 means the 20th of each month)
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="second-half-pay-day" className="text-sm font-medium">
+                                Second Half Pay Day (Day of Month)
+                              </Label>
+                              <Input
+                                id="second-half-pay-day"
+                                type="number"
+                                min="1"
+                                max="31"
+                                placeholder="e.g., 5"
+                                value={payrollFormData.anchorEndDate ? new Date(payrollFormData.anchorEndDate).getDate() : ''}
+                                onChange={(e) => {
+                                  const day = parseInt(e.target.value)
+                                  if (day >= 1 && day <= 31) {
+                                    const date = new Date()
+                                    date.setDate(day)
+                                    handlePayrollChange('anchorEndDate', format(date, 'yyyy-MM-dd'))
+                                  }
+                                }}
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Pay day for the 16th-end period (e.g., 5 means the 5th of the next month)
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                            <p className="text-sm text-blue-400">
+                              <strong>Example:</strong> If you set first half pay day as 20 and second half as 5, staff will be paid on the 20th for work from the 1st-15th, and on the 5th of the next month for work from the 16th-end of month.
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="monthly-pay-day" className="text-sm font-medium">
+                              Monthly Pay Day (Day of Month)
+                            </Label>
+                            <Input
+                              id="monthly-pay-day"
+                              type="number"
+                              min="1"
+                              max="31"
+                              placeholder="e.g., 1"
+                              value={payrollFormData.anchorPayDate ? new Date(payrollFormData.anchorPayDate).getDate() : ''}
+                              onChange={(e) => {
+                                const day = parseInt(e.target.value)
+                                if (day >= 1 && day <= 31) {
+                                  const date = new Date()
+                                  date.setDate(day)
+                                  handlePayrollChange('anchorPayDate', format(date, 'yyyy-MM-dd'))
+                                }
+                              }}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              The day of each month when staff get paid (e.g., 1 means the 1st of the next month)
+                            </p>
+                          </div>
+                          
+                          <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                            <p className="text-sm text-blue-400">
+                              <strong>Example:</strong> If you set the pay day as 1, staff will be paid on the 1st of each month for the previous month's work.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-border">
