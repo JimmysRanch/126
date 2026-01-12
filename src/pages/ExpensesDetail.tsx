@@ -251,8 +251,8 @@ export function ExpensesDetail() {
             </div>
           </Card>
 
-          <Card className="col-span-1 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
-            <div className="px-3 pb-2 pt-1.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+          <Card className="col-span-1 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden p-0">
+            <div className="px-3 pb-2 pt-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expense Breakdown</h3>
                 <p className="text-xs text-muted-foreground">Last 6 Months</p>
