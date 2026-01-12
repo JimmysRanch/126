@@ -226,18 +226,25 @@ export function Settings() {
     hoursOfOperation: defaultHoursOfOperation
   })
   
-  const defaultPayrollSettings: PayPeriodSettings = {
+  const defaultBiWeeklySettings: PayPeriodSettings = {
     type: 'bi-weekly',
     anchorStartDate: '2024-12-30',
     anchorEndDate: '2025-01-12',
     anchorPayDate: '2025-01-17'
   }
   
+  const defaultWeeklySettings: PayPeriodSettings = {
+    type: 'weekly',
+    anchorStartDate: '2024-12-30',
+    anchorEndDate: '2025-01-05',
+    anchorPayDate: '2025-01-10'
+  }
+  
   const [payrollSettings, setPayrollSettings] = useKV<{ payPeriod: PayPeriodSettings }>("payroll-settings", {
-    payPeriod: defaultPayrollSettings
+    payPeriod: defaultBiWeeklySettings
   })
   
-  const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(defaultPayrollSettings)
+  const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(defaultBiWeeklySettings)
   
   useEffect(() => {
     if (businessInfo) {
@@ -250,7 +257,7 @@ export function Settings() {
   
   useEffect(() => {
     if (payrollSettings) {
-      setPayrollFormData(payrollSettings.payPeriod || defaultPayrollSettings)
+      setPayrollFormData(payrollSettings.payPeriod || defaultBiWeeklySettings)
     }
   }, [payrollSettings])
 
@@ -636,6 +643,20 @@ export function Settings() {
     setPayrollFormData((prev) => {
       const updated = { ...prev, [field]: value }
       
+      if (field === 'type') {
+        const newType = value as PayPeriodType
+        if (newType === 'weekly') {
+          updated.anchorStartDate = defaultWeeklySettings.anchorStartDate
+          updated.anchorEndDate = defaultWeeklySettings.anchorEndDate
+          updated.anchorPayDate = defaultWeeklySettings.anchorPayDate
+        } else if (newType === 'bi-weekly') {
+          updated.anchorStartDate = defaultBiWeeklySettings.anchorStartDate
+          updated.anchorEndDate = defaultBiWeeklySettings.anchorEndDate
+          updated.anchorPayDate = defaultBiWeeklySettings.anchorPayDate
+        }
+        return updated
+      }
+      
       if (field === 'anchorStartDate' && (updated.type === 'weekly' || updated.type === 'bi-weekly')) {
         const startDate = new Date(value)
         if (!isNaN(startDate.getTime())) {
@@ -664,11 +685,12 @@ export function Settings() {
   }
   
   const handleResetPayrollDates = () => {
+    const defaults = payrollFormData.type === 'weekly' ? defaultWeeklySettings : defaultBiWeeklySettings
     setPayrollFormData((prev) => ({
       ...prev,
-      anchorStartDate: defaultPayrollSettings.anchorStartDate,
-      anchorEndDate: defaultPayrollSettings.anchorEndDate,
-      anchorPayDate: defaultPayrollSettings.anchorPayDate
+      anchorStartDate: defaults.anchorStartDate,
+      anchorEndDate: defaults.anchorEndDate,
+      anchorPayDate: defaults.anchorPayDate
     }))
     toast.success("Anchor dates reset to defaults")
   }
