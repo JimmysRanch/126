@@ -109,7 +109,8 @@ export function Inventory() {
     description: ""
   })
 
-  // Initialize inventory with default items if empty (Critical Issue #1)
+  // Initialize inventory with default items if empty (Critical Issue #1 from AUDIT_REPORT.md)
+  // setInventory is stable from useKV hook, safe to omit from dependencies
   useEffect(() => {
     if (!inventory || inventory.length === 0) {
       setInventory(DEFAULT_INVENTORY)
