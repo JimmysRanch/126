@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getTodayInBusinessTimezone } from "@/lib/date-utils"
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,7 @@ interface StaffMember {
 
 export function RunPayroll() {
   const navigate = useNavigate()
-  const [payrollDate, setPayrollDate] = useState(new Date().toISOString().split('T')[0])
+  const [payrollDate, setPayrollDate] = useState(getTodayInBusinessTimezone())
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>([
     { id: '1', name: 'Jessica Anderson', role: 'Lead Groomer', rate: 25.00, hours: 40, selected: true },
     { id: '2', name: 'Michael Chen', role: 'Groomer', rate: 20.00, hours: 35, selected: true },

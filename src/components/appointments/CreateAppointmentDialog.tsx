@@ -13,6 +13,7 @@ import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
 import { PawPrint, Receipt, User } from "@phosphor-icons/react"
+import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 interface CreateAppointmentDialogProps {
   open: boolean
@@ -185,7 +186,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
       totalPrice: calculateTotal(),
       status: 'scheduled',
       notes,
-      createdAt: new Date().toISOString()
+      createdAt: getNowInBusinessTimezone()
     }
 
     setAppointments((current) => [...(current || []), newAppointment])
@@ -361,7 +362,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
                   type="date"
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={getTodayInBusinessTimezone()}
                 />
               </div>
 

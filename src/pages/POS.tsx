@@ -12,6 +12,7 @@ import { toast } from "sonner"
 import { Appointment, Transaction, TransactionItem, InventoryItem } from "@/lib/types"
 import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 export function POS() {
   const [appointments] = useKV<Appointment[]>("appointments", [])
@@ -38,7 +39,7 @@ export function POS() {
   const enabledPaymentMethods = (paymentMethods || []).filter(pm => pm.enabled)
 
   const todayAppointments = (appointments || []).filter(apt => {
-    const today = new Date().toISOString().split('T')[0]
+    const today = getTodayInBusinessTimezone()
     return apt.date === today && apt.status === 'completed'
   })
 
@@ -116,7 +117,7 @@ export function POS() {
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       appointmentId: selectedAppointment?.id,
-      date: new Date().toISOString(),
+      date: getNowInBusinessTimezone(),
       clientId: selectedAppointment?.clientId || "",
       clientName: selectedAppointment?.clientName || "Walk-in",
       items: cartItems,
