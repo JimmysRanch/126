@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -108,6 +108,14 @@ export function Inventory() {
     supplier: "",
     description: ""
   })
+
+  // Initialize inventory with default items if empty (Critical Issue #1 from AUDIT_REPORT.md)
+  // setInventory is stable from useKV hook, safe to omit from dependencies
+  useEffect(() => {
+    if (!inventory || inventory.length === 0) {
+      setInventory(DEFAULT_INVENTORY)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredInventory = (inventory || []).filter(item => {
     const matchesSearch = 

@@ -16,6 +16,7 @@ import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
 import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X, Check, CaretUpDown } from "@phosphor-icons/react"
+import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 interface Client {
   id: string
@@ -244,7 +245,7 @@ export function NewAppointment() {
         status: 'scheduled',
         notes,
         groomingPreferences,
-        createdAt: new Date().toISOString()
+        createdAt: getNowInBusinessTimezone()
       }
     })
 
@@ -646,7 +647,7 @@ export function NewAppointment() {
                   type="date"
                   value={appointmentDate}
                   onChange={(e) => setAppointmentDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={getTodayInBusinessTimezone()}
                   className="h-9"
                 />
               </div>

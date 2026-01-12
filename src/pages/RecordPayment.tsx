@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getTodayInBusinessTimezone } from "@/lib/date-utils"
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -16,7 +17,7 @@ export function RecordPayment() {
     amount: '',
     tip: '',
     method: 'card',
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayInBusinessTimezone(),
     service: '',
     notes: ''
   })

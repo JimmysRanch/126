@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getTodayInBusinessTimezone } from "@/lib/date-utils"
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,7 @@ export function FileTaxes() {
     period: '',
     taxCollected: '',
     taxRate: '8.25',
-    filingDate: new Date().toISOString().split('T')[0],
+    filingDate: getTodayInBusinessTimezone(),
     confirmationNumber: '',
     notes: ''
   })
