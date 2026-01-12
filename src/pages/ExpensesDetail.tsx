@@ -33,11 +33,11 @@ export function ExpensesDetail() {
   const avgMonthly = 485
 
   const breakdownData = [
-    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.30 280)' },
-    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.72 0.28 160)' },
-    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.28 50)' },
-    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.28 320)' },
-    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.70 0.28 25)' },
+    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.65 0.30 260)' },
+    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.70 0.28 330)' },
+    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.26 150)' },
+    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.72 0.25 50)' },
+    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.68 0.24 25)' },
   ]
 
   const recentExpenses = [
@@ -281,13 +281,13 @@ export function ExpensesDetail() {
                               r="75"
                               fill="none"
                               stroke={item.color}
-                              strokeWidth="48"
+                              strokeWidth="50"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-currentOff}
-                              className="transition-all duration-300 hover:stroke-[52] cursor-pointer"
+                              className="transition-all duration-500 hover:stroke-[54] cursor-pointer"
                               style={{ 
-                                filter: `drop-shadow(0 4px 16px ${item.color}cc) drop-shadow(0 0 24px ${item.color}66)`,
-                                strokeLinecap: 'butt'
+                                filter: `drop-shadow(0 6px 20px ${item.color}dd) drop-shadow(0 0 32px ${item.color}88)`,
+                                strokeLinecap: 'round'
                               }}
                             />
                           </g>
@@ -296,10 +296,10 @@ export function ExpensesDetail() {
                     })()}
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-2xl font-bold tabular-nums">
+                    <span className="text-3xl font-bold tabular-nums bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">
                       ${(breakdownData.reduce((sum, item) => sum + item.amount, 0) / 1000).toFixed(1).replace(/\.0$/, '')}k
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total</span>
+                    <span className="text-[11px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Total</span>
                   </div>
                 </div>
               </div>
@@ -309,10 +309,10 @@ export function ExpensesDetail() {
                   <div key={i} className="flex items-center justify-between gap-2 hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
                     <div className="flex items-center gap-2 min-w-0">
                       <div 
-                        className="w-3 h-3 rounded-full flex-shrink-0 shadow-lg group-hover:scale-125 transition-transform" 
+                        className="w-3.5 h-3.5 rounded-full flex-shrink-0 shadow-lg group-hover:scale-125 transition-transform" 
                         style={{ 
                           backgroundColor: item.color,
-                          boxShadow: `0 0 12px ${item.color}cc, 0 0 24px ${item.color}66`
+                          boxShadow: `0 0 16px ${item.color}dd, 0 0 28px ${item.color}88`
                         }} 
                       />
                       <span className="text-xs font-semibold truncate">{item.category}</span>
@@ -358,8 +358,8 @@ export function ExpensesDetail() {
                         <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{expense.date}</span>
                         <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-lg ${
                           expense.status === 'Paid' 
-                            ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-emerald-500/70' 
-                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-orange-500/70'
+                            ? 'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-500/90' 
+                            : 'bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-orange-500/90'
                         }`}>
                           {expense.status}
                         </span>
