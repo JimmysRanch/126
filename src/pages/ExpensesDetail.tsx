@@ -33,11 +33,11 @@ export function ExpensesDetail() {
   const avgMonthly = 485
 
   const breakdownData = [
-    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.25 280)' },
-    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.70 0.25 160)' },
-    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.25 60)' },
-    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.70 0.25 320)' },
-    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.75 0.25 25)' },
+    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.30 280)' },
+    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.28 160)' },
+    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.78 0.28 60)' },
+    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.72 0.28 320)' },
+    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.75 0.28 25)' },
   ]
 
   const recentExpenses = [
@@ -281,13 +281,13 @@ export function ExpensesDetail() {
                               r="75"
                               fill="none"
                               stroke={item.color}
-                              strokeWidth="45"
+                              strokeWidth="48"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-currentOff}
-                              className="transition-all duration-500 hover:stroke-[48] cursor-pointer"
+                              className="transition-all duration-300 hover:stroke-[52] cursor-pointer"
                               style={{ 
-                                filter: `drop-shadow(0 2px 12px ${item.color}80)`,
-                                strokeLinecap: 'round'
+                                filter: `drop-shadow(0 4px 16px ${item.color}cc) drop-shadow(0 0 24px ${item.color}66)`,
+                                strokeLinecap: 'butt'
                               }}
                             />
                           </g>
@@ -312,7 +312,7 @@ export function ExpensesDetail() {
                         className="w-3 h-3 rounded-full flex-shrink-0 shadow-lg group-hover:scale-125 transition-transform" 
                         style={{ 
                           backgroundColor: item.color,
-                          boxShadow: `0 0 8px ${item.color}80`
+                          boxShadow: `0 0 12px ${item.color}cc, 0 0 24px ${item.color}66`
                         }} 
                       />
                       <span className="text-xs font-semibold truncate">{item.category}</span>
@@ -358,8 +358,8 @@ export function ExpensesDetail() {
                         <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{expense.date}</span>
                         <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-sm ${
                           expense.status === 'Paid' 
-                            ? 'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-500/50' 
-                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-500/50'
+                            ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-emerald-400/60' 
+                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-400/60'
                         }`}>
                           {expense.status}
                         </span>
