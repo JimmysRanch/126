@@ -33,11 +33,11 @@ export function ExpensesDetail() {
   const avgMonthly = 485
 
   const breakdownData = [
-    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.30 280)' },
-    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.28 160)' },
-    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.78 0.28 60)' },
-    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.72 0.28 320)' },
-    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.75 0.28 25)' },
+    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.30 280)' },
+    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.72 0.28 160)' },
+    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.28 50)' },
+    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.28 320)' },
+    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.70 0.28 25)' },
   ]
 
   const recentExpenses = [
@@ -356,10 +356,10 @@ export function ExpensesDetail() {
                         </span>
                         <span className="text-sm font-bold truncate group-hover:text-primary transition-colors">{expense.vendor}</span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{expense.date}</span>
-                        <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-sm ${
+                        <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-lg ${
                           expense.status === 'Paid' 
-                            ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-emerald-400/60' 
-                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-400/60'
+                            ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-emerald-500/70' 
+                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-orange-500/70'
                         }`}>
                           {expense.status}
                         </span>
