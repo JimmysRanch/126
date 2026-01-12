@@ -33,11 +33,11 @@ export function ExpensesDetail() {
   const avgMonthly = 485
 
   const breakdownData = [
-    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.15 195)' },
-    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.68 0.20 150)' },
-    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.70 0.18 85)' },
-    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.65 0.18 270)' },
-    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.72 0.16 40)' },
+    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.75 0.25 280)' },
+    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.70 0.25 160)' },
+    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.25 60)' },
+    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.70 0.25 320)' },
+    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.75 0.25 25)' },
   ]
 
   const recentExpenses = [
@@ -164,18 +164,18 @@ export function ExpensesDetail() {
                       <div key={i} className="flex-1 flex flex-col items-center gap-2">
                         <div className="relative w-full group" style={{ height: `${height}%`, minHeight: '30px' }}>
                           <div 
-                            className="absolute bottom-0 w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 cursor-pointer"
+                            className="absolute bottom-0 w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 cursor-pointer relative overflow-visible"
                             style={{ 
                               height: '100%',
                               background: isHighest 
-                                ? 'linear-gradient(to top, oklch(0.75 0.15 195), oklch(0.80 0.18 200))'
-                                : 'linear-gradient(to top, oklch(0.75 0.15 195 / 0.7), oklch(0.75 0.15 195 / 0.9))',
+                                ? 'linear-gradient(to top, oklch(0.70 0.25 200), oklch(0.75 0.28 210))'
+                                : 'linear-gradient(to top, oklch(0.68 0.22 200 / 0.8), oklch(0.72 0.24 205))',
                               boxShadow: isHighest 
-                                ? '0 0 20px oklch(0.75 0.15 195 / 0.4)' 
-                                : '0 0 10px oklch(0.75 0.15 195 / 0.2)'
+                                ? '0 4px 24px oklch(0.70 0.25 200 / 0.5), 0 0 32px oklch(0.75 0.28 210 / 0.3)' 
+                                : '0 2px 16px oklch(0.70 0.22 200 / 0.3)'
                             }}
                           >
-                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-primary text-primary-foreground px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-lg">
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gradient-to-br from-primary to-primary/90 text-primary-foreground px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap shadow-lg">
                               ${data.amount}
                             </div>
                           </div>
@@ -252,7 +252,7 @@ export function ExpensesDetail() {
           </Card>
 
           <Card className="col-span-1 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden p-0">
-            <div className="px-3 pb-2 pt-3 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+            <div className="px-3 pb-2 pt-1.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expense Breakdown</h3>
                 <p className="text-xs text-muted-foreground">Last 6 Months</p>
@@ -265,18 +265,13 @@ export function ExpensesDetail() {
             <div className="px-4 pb-4 flex-1 min-h-0 flex gap-4 items-center">
               <div className="flex-1 flex items-center justify-center">
                 <div className="relative" style={{ width: 'min(280px, 100%)', aspectRatio: '1/1' }}>
-                  <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                     {(() => {
                       let offset = 0
                       return breakdownData.map((item, i) => {
                         const dashArray = (item.percentage / 100) * circumference
                         const currentOff = offset
                         offset += dashArray
-                        
-                        const angle = ((currentOff + dashArray / 2) / circumference) * 2 * Math.PI
-                        const labelRadius = 85
-                        const labelX = 100 + labelRadius * Math.cos(angle)
-                        const labelY = 100 + labelRadius * Math.sin(angle)
                         
                         return (
                           <g key={i}>
@@ -286,34 +281,15 @@ export function ExpensesDetail() {
                               r="75"
                               fill="none"
                               stroke={item.color}
-                              strokeWidth="50"
+                              strokeWidth="45"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-currentOff}
-                              className="transition-all duration-300 hover:opacity-90 cursor-pointer"
-                              style={{ filter: `drop-shadow(0 0 8px ${item.color}60)` }}
+                              className="transition-all duration-500 hover:stroke-[48] cursor-pointer"
+                              style={{ 
+                                filter: `drop-shadow(0 2px 12px ${item.color}80)`,
+                                strokeLinecap: 'round'
+                              }}
                             />
-                            <text
-                              x={labelX}
-                              y={labelY}
-                              className="text-[10px] font-bold fill-foreground"
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              transform={`rotate(90 ${labelX} ${labelY})`}
-                            >
-                              {item.percentage}%
-                            </text>
-                            {i === 0 && (
-                              <text
-                                x="100"
-                                y="92"
-                                className="text-[14px] font-bold tabular-nums"
-                                textAnchor="middle"
-                                transform="rotate(90 100 92)"
-                                style={{ fill: item.color }}
-                              >
-                                ${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k
-                              </text>
-                            )}
                           </g>
                         )
                       })
@@ -328,11 +304,17 @@ export function ExpensesDetail() {
                 </div>
               </div>
               
-              <div className="flex-shrink-0 flex flex-col gap-2 min-w-[140px]">
+              <div className="flex-shrink-0 flex flex-col gap-1.5 min-w-[140px]">
                 {breakdownData.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between gap-3 hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
+                  <div key={i} className="flex items-center justify-between gap-2 hover:bg-muted/40 p-1.5 rounded-md transition-all cursor-pointer group">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-3 h-3 rounded-full flex-shrink-0 shadow-sm group-hover:scale-125 transition-transform" style={{ backgroundColor: item.color }} />
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0 shadow-lg group-hover:scale-125 transition-transform" 
+                        style={{ 
+                          backgroundColor: item.color,
+                          boxShadow: `0 0 8px ${item.color}80`
+                        }} 
+                      />
                       <span className="text-xs font-semibold truncate">{item.category}</span>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -374,10 +356,10 @@ export function ExpensesDetail() {
                         </span>
                         <span className="text-sm font-bold truncate group-hover:text-primary transition-colors">{expense.vendor}</span>
                         <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{expense.date}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-md whitespace-nowrap font-bold ${
+                        <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-sm ${
                           expense.status === 'Paid' 
-                            ? 'bg-green-500/15 text-green-500 ring-1 ring-green-500/20' 
-                            : 'bg-yellow-500/15 text-yellow-500 ring-1 ring-yellow-500/20'
+                            ? 'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-500/50' 
+                            : 'bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-amber-500/50'
                         }`}>
                           {expense.status}
                         </span>
