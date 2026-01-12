@@ -332,7 +332,7 @@ export function Finances() {
               <Card className="lg:col-span-3 border-border/60 flex flex-col bg-card/80 backdrop-blur-sm overflow-hidden">
                 <div className="p-2.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                   <div>
-                    <h3 className="text-sm font-bold">Expense Breakdowns</h3>
+                    <h3 className="text-sm font-bold">Expense Breakdown</h3>
                     <p className="text-xs text-muted-foreground">Last 6 Months</p>
                   </div>
                 </div>
