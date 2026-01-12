@@ -11,6 +11,8 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from "@/lib/payroll-utils"
+import { format } from 'date-fns'
 
 interface WeightRange {
   min: number
@@ -224,6 +226,19 @@ export function Settings() {
     hoursOfOperation: defaultHoursOfOperation
   })
   
+  const defaultPayrollSettings: PayPeriodSettings = {
+    type: 'bi-weekly',
+    anchorStartDate: '2024-12-30',
+    anchorEndDate: '2025-01-12',
+    anchorPayDate: '2025-01-17'
+  }
+  
+  const [payrollSettings, setPayrollSettings] = useKV<{ payPeriod: PayPeriodSettings }>("payroll-settings", {
+    payPeriod: defaultPayrollSettings
+  })
+  
+  const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(defaultPayrollSettings)
+  
   useEffect(() => {
     if (businessInfo) {
       setBusinessFormData({
@@ -232,6 +247,12 @@ export function Settings() {
       })
     }
   }, [businessInfo])
+  
+  useEffect(() => {
+    if (payrollSettings) {
+      setPayrollFormData(payrollSettings.payPeriod || defaultPayrollSettings)
+    }
+  }, [payrollSettings])
 
   const handleAddPosition = () => {
     if (!newPosition.trim()) {
@@ -610,6 +631,18 @@ export function Settings() {
       return { ...prev, hoursOfOperation: newHours }
     })
   }
+  
+  const handlePayrollChange = (field: keyof PayPeriodSettings, value: string) => {
+    setPayrollFormData((prev) => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+  
+  const handleSavePayrollSettings = () => {
+    setPayrollSettings({ payPeriod: payrollFormData })
+    toast.success("Payroll settings saved successfully")
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
@@ -636,6 +669,12 @@ export function Settings() {
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               Business
+            </TabsTrigger>
+            <TabsTrigger 
+              value="payroll" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              Payroll
             </TabsTrigger>
             <TabsTrigger 
               value="services" 
@@ -983,6 +1022,111 @@ export function Settings() {
                     className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
                   >
                     Save Business Information
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="payroll" className="mt-0">
+            <Card className="p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Payroll Settings</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Configure your payroll schedule. The system will automatically calculate when payday is based on your pay period settings.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="pay-period-type" className="text-sm font-medium flex items-center gap-1">
+                      Pay Period Frequency
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={payrollFormData.type}
+                      onValueChange={(value) => handlePayrollChange('type', value as PayPeriodType)}
+                    >
+                      <SelectTrigger id="pay-period-type" className="w-full md:w-64">
+                        <SelectValue placeholder="Select pay period" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="weekly">Weekly</SelectItem>
+                        <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
+                        <SelectItem value="semi-monthly">Semi-Monthly</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      How often you pay your staff members
+                    </p>
+                  </div>
+
+                  <div className="border-t border-border pt-6 space-y-4">
+                    <div>
+                      <h3 className="text-base font-semibold mb-1">Anchor Pay Period</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Define a reference pay period. The system will calculate all future pay periods based on these dates.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="anchor-start-date" className="text-sm font-medium">
+                          Period Start Date
+                        </Label>
+                        <Input
+                          id="anchor-start-date"
+                          type="date"
+                          value={payrollFormData.anchorStartDate}
+                          onChange={(e) => handlePayrollChange('anchorStartDate', e.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">First day of the pay period</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="anchor-end-date" className="text-sm font-medium">
+                          Period End Date
+                        </Label>
+                        <Input
+                          id="anchor-end-date"
+                          type="date"
+                          value={payrollFormData.anchorEndDate}
+                          onChange={(e) => handlePayrollChange('anchorEndDate', e.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">Last day of the pay period</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="anchor-pay-date" className="text-sm font-medium">
+                          Pay Date
+                        </Label>
+                        <Input
+                          id="anchor-pay-date"
+                          type="date"
+                          value={payrollFormData.anchorPayDate}
+                          onChange={(e) => handlePayrollChange('anchorPayDate', e.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">When staff get paid</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <p className="text-sm text-blue-400">
+                        <strong>Example:</strong> If you set the anchor period as Dec 30, 2024 - Jan 12, 2025 with payday on Jan 17, 2025, 
+                        the system will automatically calculate all future pay periods maintaining the same schedule and delay between period end and payday.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-border">
+                  <Button
+                    onClick={handleSavePayrollSettings}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                  >
+                    Save Payroll Settings
                   </Button>
                 </div>
               </div>
