@@ -28,9 +28,10 @@ import { Inventory } from '@/pages/Inventory'
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-background text-foreground flex flex-col">
         <TopNav />
-        <Routes>
+        <div className="flex-1 min-h-0">
+          <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/appointments/new" element={<NewAppointment />} />
@@ -57,6 +58,7 @@ function App() {
           <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
+        </div>
       </div>
     </Router>
   )

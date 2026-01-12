@@ -58,7 +58,7 @@ export function ExpensesDetail() {
   let currentOffset = 0
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col">
+    <div className="h-full min-h-0 overflow-hidden bg-background flex flex-col">
       <div className="flex-1 min-h-0 flex flex-col gap-3 p-3">
         <div className="flex items-center justify-between flex-shrink-0">
           <div>
