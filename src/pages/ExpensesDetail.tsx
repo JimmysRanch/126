@@ -148,7 +148,7 @@ export function ExpensesDetail() {
 
         <div className="flex-1 min-h-0 grid grid-cols-3 grid-rows-2 gap-3">
           <Card className="col-span-2 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
-            <div className="px-3 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+            <div className="px-3 pt-2 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expenses Trend</h3>
                 <p className="text-xs text-muted-foreground">Monthly comparison</p>
@@ -216,7 +216,7 @@ export function ExpensesDetail() {
           </Card>
 
           <Card className="col-span-1 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
-            <div className="px-3 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+            <div className="px-3 pt-2 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Upcoming Bills</h3>
                 <p className="text-xs text-muted-foreground">Next 30 days</p>
@@ -252,7 +252,7 @@ export function ExpensesDetail() {
           </Card>
 
           <Card className="col-span-1 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
-            <div className="px-3 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+            <div className="px-3 pt-2 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expense Breakdown</h3>
                 <p className="text-xs text-muted-foreground">Last 6 Months</p>
@@ -346,7 +346,7 @@ export function ExpensesDetail() {
           </Card>
 
           <Card className="col-span-2 row-span-1 border-border/60 flex flex-col min-h-0 bg-card/80 backdrop-blur-sm overflow-hidden">
-            <div className="px-3 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+            <div className="px-3 pt-2 pb-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Recent Expenses</h3>
                 <p className="text-xs text-muted-foreground">Last 30 days</p>
