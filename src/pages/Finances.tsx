@@ -341,53 +341,17 @@ export function Finances() {
                 </div>
                 <div className="p-3 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
                   <div className="relative flex-shrink-0" style={{ width: '200px', height: '200px' }}>
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200">
-                      <defs>
-                        <filter id="glow-supplies">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                          <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                          </feMerge>
-                        </filter>
-                        <filter id="glow-rent">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                          <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                          </feMerge>
-                        </filter>
-                        <filter id="glow-utilities">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                          <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                          </feMerge>
-                        </filter>
-                        <filter id="glow-software">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                          <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                          </feMerge>
-                        </filter>
-                        <filter id="glow-other">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                          <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                          </feMerge>
-                        </filter>
-                      </defs>
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                       {(() => {
                         const breakdownData = [
-                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)', filter: 'url(#glow-supplies)' },
-                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)', filter: 'url(#glow-rent)' },
-                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)', filter: 'url(#glow-utilities)' },
-                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)', filter: 'url(#glow-software)' },
-                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)', filter: 'url(#glow-other)' },
+                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)' },
+                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)' },
+                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)' },
+                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)' },
+                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)' },
                         ]
-                        const circumference = 2 * Math.PI * 75
+                        const radius = 65
+                        const circumference = 2 * Math.PI * radius
                         let currentOffset = 0
                         return breakdownData.map((item, i) => {
                           const offset = currentOffset
@@ -398,13 +362,12 @@ export function Finances() {
                               key={i}
                               cx="100"
                               cy="100"
-                              r="75"
+                              r={radius}
                               fill="none"
                               stroke={item.color}
-                              strokeWidth="50"
+                              strokeWidth="35"
                               strokeDasharray={`${dashArray} ${circumference}`}
                               strokeDashoffset={-offset}
-                              filter={item.filter}
                               className="transition-all duration-300 hover:brightness-110 cursor-pointer"
                             />
                           )
@@ -475,8 +438,8 @@ export function Finances() {
                         <span className="text-sm">{expense.date}</span>
                         <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ${
                           expense.status === 'Paid' 
-                            ? 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_oklch(0.65_0.20_155/0.3)]' 
-                            : 'bg-amber-500/20 text-amber-300 shadow-[0_0_10px_oklch(0.75_0.18_85/0.3)]'
+                            ? 'bg-green-500/30 text-green-400' 
+                            : 'bg-yellow-500/30 text-yellow-300'
                         }`}>
                           {expense.status}
                         </span>
