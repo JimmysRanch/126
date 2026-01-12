@@ -154,7 +154,7 @@ export function ExpensesDetail() {
                 <p className="text-xs text-muted-foreground">Monthly comparison</p>
               </div>
             </div>
-            <div className="px-4 pb-4 pt-2 flex-1 min-h-0">
+            <div className="px-4 pb-4 flex-1 min-h-0">
               <div className="relative h-full">
                 <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
                   {monthlyExpenses.map((data, i) => {
@@ -262,7 +262,7 @@ export function ExpensesDetail() {
                 <CaretRight size={12} weight="bold" />
               </Button>
             </div>
-            <div className="px-4 pb-4 pt-2 flex-1 min-h-0 flex gap-4 items-center">
+            <div className="px-4 pb-4 flex-1 min-h-0 flex gap-4 items-center">
               <div className="flex-1 flex items-center justify-center">
                 <div className="relative" style={{ width: 'min(280px, 100%)', aspectRatio: '1/1' }}>
                   <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
