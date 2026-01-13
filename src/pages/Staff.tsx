@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
-import { PayrollOverview } from "@/components/PayrollOverview"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 const mockStaff = [
@@ -85,7 +84,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'performance'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -119,17 +118,6 @@ export function Staff() {
                 }`}
               >
                 Schedule
-              </Button>
-              <Button
-                onClick={() => setActiveTab("payroll")}
-                variant={activeTab === "payroll" ? "default" : "secondary"}
-                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                  activeTab === "payroll" 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                    : "bg-secondary/50 hover:bg-secondary"
-                }`}
-              >
-                Payroll
               </Button>
               <Button
                 onClick={() => setActiveTab("performance")}
@@ -286,10 +274,6 @@ export function Staff() {
 
           <TabsContent value="schedule" className="mt-0">
             <StaffScheduleView />
-          </TabsContent>
-
-          <TabsContent value="payroll" className="mt-0">
-            <PayrollOverview />
           </TabsContent>
 
           <TabsContent value="performance" className="mt-0">
