@@ -7,6 +7,7 @@ import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, TrendDown } f
 import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { PayrollOverview } from '@/components/PayrollOverview'
 
 export function Finances() {
   const navigate = useNavigate()
@@ -529,86 +530,7 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="payroll" className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NEXT RUN</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">Not Scheduled</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD PAYROLL</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD PAYROLL</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">ACTIVE STAFF</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">3</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm md:text-base font-bold">Staff Members</h3>
-                <Button className="gap-2" onClick={() => navigate('/finances/run-payroll')}>
-                  <Users size={18} />
-                  Run Payroll
-                </Button>
-              </div>
-              <div className="divide-y divide-border">
-                {[
-                  { name: 'Jessica Anderson', role: 'Lead Groomer', status: 'Active', hours: 40, rate: 25.00, ytd: 0 },
-                  { name: 'Michael Chen', role: 'Groomer', status: 'Active', hours: 35, rate: 20.00, ytd: 0 },
-                  { name: 'Amanda Rodriguez', role: 'Bather', status: 'Active', hours: 30, rate: 15.00, ytd: 0 },
-                ].map((staff, i) => (
-                  <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
-                    <div className="flex items-start md:items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
-                          <p className="font-medium text-sm md:text-base truncate">{staff.name}</p>
-                          <span className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-500 w-fit">
-                            {staff.status}
-                          </span>
-                        </div>
-                        <p className="text-xs md:text-sm text-muted-foreground mt-1">{staff.role}</p>
-                        <p className="text-xs text-muted-foreground">Rate: ${staff.rate.toFixed(2)}/hr</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-xs md:text-sm text-muted-foreground">YTD Earnings</p>
-                        <p className="text-base md:text-lg font-bold">${staff.ytd.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="border-border">
-              <div className="p-3 md:p-4 border-b border-border">
-                <h3 className="text-sm md:text-base font-bold">Payroll History</h3>
-              </div>
-              <div className="p-8 md:p-12 text-center text-muted-foreground">
-                <p className="text-sm md:text-base">No payroll runs yet</p>
-                <p className="text-xs md:text-sm mt-2">Click "Run Payroll" to get started</p>
-              </div>
-            </Card>
+            <PayrollOverview />
           </TabsContent>
 
           <TabsContent value="taxes" className="space-y-3">
