@@ -262,6 +262,25 @@ export function formatPayPeriodType(type: PayPeriodType): string {
   }
 }
 
+export function calculateOvertimePay(
+  hourlyRate: number,
+  regularHours: number,
+  totalHours: number,
+  overtimeThreshold: number = 40
+): { regularPay: number; overtimePay: number; totalPay: number } {
+  const overtimeHours = Math.max(0, totalHours - overtimeThreshold)
+  const regularHoursWorked = Math.min(totalHours, overtimeThreshold)
+  
+  const regularPay = regularHoursWorked * hourlyRate
+  const overtimePay = overtimeHours * hourlyRate * 1.5
+  
+  return {
+    regularPay,
+    overtimePay,
+    totalPay: regularPay + overtimePay
+  }
+}
+
 export function calculateStaffPay(
   compensation: StaffCompensation,
   hours: number,
@@ -269,8 +288,10 @@ export function calculateStaffPay(
   overrideCommissionAmount?: number
 ): number {
   switch (compensation.type) {
-    case 'hourly':
-      return hours * (compensation.hourlyRate || 0)
+    case 'hourly': {
+      const overtime = calculateOvertimePay(compensation.hourlyRate || 0, hours, hours)
+      return overtime.totalPay
+    }
     
     case 'salary':
       return compensation.salaryAmount || 0
@@ -278,10 +299,11 @@ export function calculateStaffPay(
     case 'commission':
       return commissionableAmount * ((compensation.commissionRate || 0) / 100)
     
-    case 'hourly-plus-commission':
-      const hourlyPay = hours * (compensation.hourlyRate || 0)
+    case 'hourly-plus-commission': {
+      const overtime = calculateOvertimePay(compensation.hourlyRate || 0, hours, hours)
       const commissionPay = commissionableAmount * ((compensation.commissionRate || 0) / 100)
-      return hourlyPay + commissionPay
+      return overtime.totalPay + commissionPay
+    }
     
     case 'salary-plus-commission':
       const salary = compensation.salaryAmount || 0

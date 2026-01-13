@@ -1119,6 +1119,34 @@ export function Settings() {
                     </p>
                   </div>
 
+                  {payrollFormData.type === 'weekly' && (
+                    <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                      <h4 className="text-sm font-semibold mb-2 text-primary">Weekly Payroll Rules</h4>
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        <li>• Work week: Monday → Sunday</li>
+                        <li>• Payday: Friday</li>
+                        <li>• Payroll locks: When the ACH file is sent (default Wednesday night)</li>
+                        <li>• Holidays: If Friday is a bank holiday, pay Thursday</li>
+                        <li>• Overtime: Over 40 hours in the week = 1.5×</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  {payrollFormData.type === 'bi-weekly' && (
+                    <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                      <h4 className="text-sm font-semibold mb-2 text-primary">Bi-Weekly Payroll Rules</h4>
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        <li>• Pay period: 2 weeks</li>
+                        <li>• Work weeks: Monday → Sunday</li>
+                        <li>• Payday: Friday</li>
+                        <li>• Payroll locks: When the ACH file is sent (default Wednesday night)</li>
+                        <li>• Holidays: If Friday is a bank holiday, pay Thursday</li>
+                        <li>• Overtime: Over 40 hours in a week = 1.5×</li>
+                        <li>• User sets: Which Friday is their next payday</li>
+                      </ul>
+                    </div>
+                  )}
+
                   {(payrollFormData.type === 'weekly' || payrollFormData.type === 'bi-weekly') && (
                     <div className="border-t border-border pt-6 space-y-4">
                       <div className="flex items-center justify-between">
