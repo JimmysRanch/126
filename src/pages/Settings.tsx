@@ -1859,6 +1859,9 @@ export function Settings() {
               <Button variant="outline" onClick={() => setWeightRangeDialogOpen(false)}>
                 Done
               </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         
         <Dialog open={addOnDialogOpen} onOpenChange={setAddOnDialogOpen}>
           <DialogContent className="max-w-2xl">
