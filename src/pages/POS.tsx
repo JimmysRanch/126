@@ -162,11 +162,6 @@ export function POS() {
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Point of Sale</h1>
-        <p className="text-sm text-muted-foreground mt-1">Process transactions and sell products</p>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <Card className="p-4">

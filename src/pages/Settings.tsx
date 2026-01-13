@@ -828,15 +828,6 @@ export function Settings() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-6">
       <div className="max-w-[1400px] mx-auto">
-        <header className="mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-[32px] font-bold tracking-tight leading-none">
-            Settings
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure your Scruffy Butts application settings.
-          </p>
-        </header>
-
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="overflow-x-auto -mx-6 px-6 mb-6">
             <TabsList className="bg-secondary/50 w-full md:w-auto inline-flex">
@@ -1324,19 +1315,18 @@ export function Settings() {
                     </div>
                     <Button
                       onClick={openWeightRangeDialog}
-                      variant="outline"
-                      className="font-semibold w-full md:w-auto"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
                     >
                       <PencilSimple size={18} className="mr-2" />
                       Edit Weight Ranges
                     </Button>
                   </div>
                   
-                  <div className="flex flex-wrap gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {weightRanges.map((range) => (
-                      <div key={range.id} className="bg-secondary/20 p-3 rounded-md border border-border">
+                      <div key={range.id} className="bg-background/50 p-3 rounded-md">
                         <div className="text-xs text-muted-foreground mb-1">{range.name}</div>
-                        <div className="text-sm font-semibold">
+                        <div className="text-lg font-semibold">
                           {formatWeightRange(range)}
                         </div>
                       </div>

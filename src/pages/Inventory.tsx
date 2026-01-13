@@ -211,10 +211,6 @@ export function Inventory() {
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Inventory</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage retail products and supplies</p>
-        </div>
         <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
           <Plus className="mr-2" />
           Add Item

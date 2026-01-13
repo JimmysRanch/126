@@ -16,12 +16,7 @@ export function Appointments() {
     <div className="min-h-screen bg-background p-3 sm:p-6">
       <div className="max-w-[1600px] mx-auto">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-          <div className={isMobile ? 'order-1' : ''}>
-            <h1 className="text-2xl sm:text-3xl font-bold">Appointments</h1>
-            <p className="text-sm text-muted-foreground mt-1">Manage your grooming schedule</p>
-          </div>
-          
-          <div className={`flex ${isMobile ? 'flex-row' : 'items-center'} gap-2 sm:gap-3 ${isMobile ? 'order-3' : ''}`}>
+          <div className={`flex ${isMobile ? 'flex-row' : 'items-center'} gap-2 sm:gap-3 ${isMobile ? 'order-2' : ''}`}>
             <Button
               onClick={() => setActiveView("groomer")}
               variant={activeView === "groomer" ? "default" : "secondary"}
@@ -57,7 +52,7 @@ export function Appointments() {
             </Button>
           </div>
 
-          <div className={`${isMobile ? 'w-full order-2' : ''}`}>
+          <div className={`${isMobile ? 'w-full order-1' : ''}`}>
             <Button 
               onClick={() => navigate('/appointments/new')}
               className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'w-full' : ''}`}
