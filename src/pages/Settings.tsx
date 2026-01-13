@@ -826,10 +826,10 @@ export function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-6">
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-6">
       <div className="max-w-[1400px] mx-auto">
-        <header className="mb-8">
-          <h1 className="text-[32px] font-bold tracking-tight leading-none">
+        <header className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-[32px] font-bold tracking-tight leading-none">
             Settings
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -838,47 +838,49 @@ export function Settings() {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="bg-secondary/50 mb-6">
-            <TabsTrigger 
-              value="staff" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Staff
-            </TabsTrigger>
-            <TabsTrigger 
-              value="business" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Business
-            </TabsTrigger>
-            <TabsTrigger 
-              value="payroll" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Payroll
-            </TabsTrigger>
-            <TabsTrigger 
-              value="services" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Services
-            </TabsTrigger>
-            <TabsTrigger 
-              value="notifications" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger 
-              value="pos" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              POS
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-6 px-6 mb-6">
+            <TabsList className="bg-secondary/50 w-full md:w-auto inline-flex">
+              <TabsTrigger 
+                value="staff" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Staff
+              </TabsTrigger>
+              <TabsTrigger 
+                value="business" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Business
+              </TabsTrigger>
+              <TabsTrigger 
+                value="payroll" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Payroll
+              </TabsTrigger>
+              <TabsTrigger 
+                value="services" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Services
+              </TabsTrigger>
+              <TabsTrigger 
+                value="notifications" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Notifications
+              </TabsTrigger>
+              <TabsTrigger 
+                value="pos" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                POS
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="staff" className="mt-0">
-            <Card className="p-6 bg-card border-border">
+            <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Staff Positions</h2>
@@ -888,7 +890,7 @@ export function Settings() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex gap-3">
+                  <div className="flex flex-col md:flex-row gap-3">
                     <div className="flex-1">
                       <Label htmlFor="new-position" className="sr-only">New Position</Label>
                       <Input
@@ -905,7 +907,7 @@ export function Settings() {
                     </div>
                     <Button
                       onClick={handleAddPosition}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
                     >
                       <Plus size={18} className="mr-2" />
                       Add Position
@@ -938,7 +940,7 @@ export function Settings() {
                                 className="flex-1 mr-3"
                                 autoFocus
                               />
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 shrink-0">
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -957,8 +959,8 @@ export function Settings() {
                             </>
                           ) : (
                             <>
-                              <span className="font-medium">{position}</span>
-                              <div className="flex gap-2">
+                              <span className="font-medium break-all">{position}</span>
+                              <div className="flex gap-2 shrink-0">
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -988,7 +990,7 @@ export function Settings() {
           </TabsContent>
 
           <TabsContent value="business" className="mt-0">
-            <Card className="p-6 bg-card border-border">
+            <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Business Information</h2>
@@ -1147,8 +1149,8 @@ export function Settings() {
                   
                   <div className="space-y-3">
                     {(businessFormData.hoursOfOperation || defaultHoursOfOperation).map((hours, index) => (
-                      <div key={hours.day} className="flex items-center gap-4 p-4 rounded-lg bg-secondary/20 border border-border">
-                        <div className="w-28">
+                      <div key={hours.day} className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 p-4 rounded-lg bg-secondary/20 border border-border">
+                        <div className="w-full md:w-28">
                           <span className="font-medium">{hours.day}</span>
                         </div>
                         
@@ -1164,8 +1166,8 @@ export function Settings() {
                         </div>
                         
                         {hours.isOpen && (
-                          <>
-                            <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 md:flex-1">
+                            <div className="flex items-center gap-2 flex-1">
                               <Label htmlFor={`open-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
                                 From
                               </Label>
@@ -1174,11 +1176,11 @@ export function Settings() {
                                 type="time"
                                 value={hours.openTime}
                                 onChange={(e) => handleHoursChange(index, 'openTime', e.target.value)}
-                                className="w-32"
+                                className="w-full sm:w-32"
                               />
                             </div>
                             
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-1">
                               <Label htmlFor={`close-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
                                 To
                               </Label>
@@ -1187,10 +1189,10 @@ export function Settings() {
                                 type="time"
                                 value={hours.closeTime}
                                 onChange={(e) => handleHoursChange(index, 'closeTime', e.target.value)}
-                                className="w-32"
+                                className="w-full sm:w-32"
                               />
                             </div>
-                          </>
+                          </div>
                         )}
                       </div>
                     ))}
@@ -1210,7 +1212,7 @@ export function Settings() {
           </TabsContent>
 
           <TabsContent value="payroll" className="mt-0">
-            <Card className="p-6 bg-card border-border">
+            <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Payroll Settings</h2>
@@ -1311,9 +1313,9 @@ export function Settings() {
 
           <TabsContent value="services" className="mt-0">
             <div className="space-y-6">
-              <Card className="p-6 bg-card border-border">
+              <Card className="p-4 md:p-6 bg-card border-border">
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h2 className="text-lg font-semibold mb-2">Weight Size Configuration</h2>
                       <p className="text-sm text-muted-foreground">
@@ -1323,7 +1325,7 @@ export function Settings() {
                     <Button
                       onClick={openWeightRangeDialog}
                       variant="outline"
-                      className="font-semibold"
+                      className="font-semibold w-full md:w-auto"
                     >
                       <PencilSimple size={18} className="mr-2" />
                       Edit Weight Ranges
@@ -1343,9 +1345,9 @@ export function Settings() {
                 </div>
               </Card>
               
-              <Card className="p-6 bg-card border-border">
+              <Card className="p-4 md:p-6 bg-card border-border">
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h2 className="text-lg font-semibold mb-2">Main Services</h2>
                       <p className="text-sm text-muted-foreground">
@@ -1354,7 +1356,7 @@ export function Settings() {
                     </div>
                     <Button
                       onClick={() => openMainServiceDialog()}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
                     >
                       <Plus size={18} className="mr-2" />
                       Add Main Service
@@ -1372,9 +1374,9 @@ export function Settings() {
                           key={service.id}
                           className="p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
                         >
-                          <div className="flex items-start justify-between mb-4">
+                          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex flex-wrap items-center gap-2 mb-1">
                                 <h3 className="font-semibold text-lg">{service.name}</h3>
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium">
                                   {service.pricingStrategy === 'weight' ? 'By Weight' : service.pricingStrategy === 'breed' ? 'By Breed' : 'Mixed Pricing'}
@@ -1382,7 +1384,7 @@ export function Settings() {
                               </div>
                               <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 self-end md:self-start">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -1426,9 +1428,9 @@ export function Settings() {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-card border-border">
+              <Card className="p-4 md:p-6 bg-card border-border">
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h2 className="text-lg font-semibold mb-2">Add-On Services</h2>
                       <p className="text-sm text-muted-foreground">
@@ -1437,7 +1439,7 @@ export function Settings() {
                     </div>
                     <Button
                       onClick={() => openAddOnDialog()}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
                     >
                       <Plus size={18} className="mr-2" />
                       Add Add-On
@@ -1453,15 +1455,15 @@ export function Settings() {
                       addOns.map((addOn) => (
                         <div
                           key={addOn.id}
-                          className={addOn.hasSizePricing ? "p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors" : "flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"}
+                          className={addOn.hasSizePricing ? "p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors" : "flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"}
                         >
                           {addOn.hasSizePricing && addOn.pricing ? (
                             <>
-                              <div className="flex items-start justify-between mb-4">
+                              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-4">
                                 <div className="flex-1">
                                   <h3 className="font-semibold text-base">{addOn.name}</h3>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 self-end md:self-start">
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -1502,10 +1504,10 @@ export function Settings() {
                           ) : (
                             <>
                               <div className="flex items-center gap-4">
-                                <span className="font-medium">{addOn.name}</span>
-                                <span className="text-primary font-semibold">${addOn.price}</span>
+                                <span className="font-medium break-all">{addOn.name}</span>
+                                <span className="text-primary font-semibold shrink-0">${addOn.price}</span>
                               </div>
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 shrink-0 self-end md:self-auto">
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -1535,7 +1537,7 @@ export function Settings() {
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
+            <Card className="p-8 md:p-12 bg-card border-border text-center">
               <p className="text-muted-foreground">
                 Notification settings will appear here.
               </p>
@@ -1543,7 +1545,7 @@ export function Settings() {
           </TabsContent>
           
           <TabsContent value="pos" className="mt-0">
-            <Card className="p-6 bg-card border-border">
+            <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Payment Methods</h2>
@@ -1553,7 +1555,7 @@ export function Settings() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex gap-3">
+                  <div className="flex flex-col md:flex-row gap-3">
                     <div className="flex-1">
                       <Label htmlFor="new-payment-method" className="sr-only">New Payment Method</Label>
                       <Input
@@ -1570,7 +1572,7 @@ export function Settings() {
                     </div>
                     <Button
                       onClick={handleAddPaymentMethod}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
                     >
                       <Plus size={18} className="mr-2" />
                       Add Method
@@ -1586,14 +1588,14 @@ export function Settings() {
                       paymentMethods.map((method, index) => (
                         <div
                           key={method.id}
-                          className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                          className={`flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-lg border transition-colors ${
                             method.enabled 
                               ? 'bg-secondary/20 border-border hover:border-primary/50' 
                               : 'bg-muted/30 border-border/50 opacity-60'
                           }`}
                         >
                           <div className="flex items-center gap-3 flex-1">
-                            <div className="flex flex-col">
+                            <div className="flex flex-col shrink-0">
                               <button
                                 onClick={() => handleMovePaymentMethod(method.id, 'up')}
                                 disabled={index === 0}
@@ -1621,15 +1623,15 @@ export function Settings() {
                                     handleCancelEditPaymentMethod()
                                   }
                                 }}
-                                className="flex-1 mr-3"
+                                className="flex-1"
                                 autoFocus
                               />
                             ) : (
-                              <span className="font-medium">{method.name}</span>
+                              <span className="font-medium break-all">{method.name}</span>
                             )}
                           </div>
                           
-                          <div className="flex gap-2 items-center">
+                          <div className="flex gap-2 items-center self-end md:self-auto">
                             {editingPaymentMethod?.id === method.id ? (
                               <>
                                 <Button
@@ -1687,7 +1689,7 @@ export function Settings() {
         </Tabs>
         
         <Dialog open={mainServiceDialogOpen} onOpenChange={setMainServiceDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-full">
             <DialogHeader>
               <DialogTitle>{editingMainService ? "Edit Main Service" : "Add Main Service"}</DialogTitle>
             </DialogHeader>
@@ -1785,20 +1787,20 @@ export function Settings() {
         </Dialog>
         
         <Dialog open={weightRangeDialogOpen} onOpenChange={setWeightRangeDialogOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg w-[95vw] md:w-full max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Weight Ranges</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-5 py-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <p className="text-sm text-muted-foreground">
                   Define weight ranges for size categories. These ranges are used for pricing throughout the app.
                 </p>
                 <Button
                   onClick={handleAddWeightRange}
                   size="sm"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 w-full md:w-auto shrink-0"
                 >
                   <Plus size={16} className="mr-2" />
                   Add Range
@@ -1814,11 +1816,11 @@ export function Settings() {
                   weightRanges.map((range) => (
                     <div
                       key={range.id}
-                      className="flex items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
+                      className="flex flex-col md:flex-row md:items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
                     >
                       {editingWeightRangeId === range.id ? (
                         <>
-                          <div className="flex-1 grid grid-cols-3 gap-3">
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div className="space-y-1">
                               <Label htmlFor={`edit-name-${range.id}`} className="text-xs text-muted-foreground">
                                 Name
@@ -1851,7 +1853,7 @@ export function Settings() {
                             </div>
                             <div className="space-y-1">
                               <Label htmlFor={`edit-max-${range.id}`} className="text-xs text-muted-foreground">
-                                Max (lbs) - leave empty for no max
+                                Max (lbs)
                               </Label>
                               <Input
                                 id={`edit-max-${range.id}`}
@@ -1866,7 +1868,7 @@ export function Settings() {
                               />
                             </div>
                           </div>
-                          <div className="flex gap-2 pt-5">
+                          <div className="flex gap-2 self-end md:self-start shrink-0">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1889,7 +1891,7 @@ export function Settings() {
                             <div className="font-semibold text-base mb-1">{range.name}</div>
                             <div className="text-sm text-muted-foreground">{formatWeightRange(range)}</div>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 shrink-0 self-end md:self-start">
                             <Button
                               variant="ghost"
                               size="icon"
@@ -1924,7 +1926,7 @@ export function Settings() {
         </Dialog>
         
         <Dialog open={addOnDialogOpen} onOpenChange={setAddOnDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl w-[95vw] md:w-full max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingAddOn ? "Edit Add-On" : "Add Add-On"}</DialogTitle>
             </DialogHeader>
