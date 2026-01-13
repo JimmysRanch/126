@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
@@ -94,6 +95,7 @@ export function Inventory() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const isMobile = useIsMobile()
 
@@ -198,6 +200,12 @@ export function Inventory() {
   const handleDelete = (id: string) => {
     setInventory((current) => (current || []).filter(item => item.id !== id))
     toast.success("Item deleted")
+    setDeleteDialogOpen(false)
+    setDialogOpen(false)
+  }
+
+  const handleOpenDeleteDialog = () => {
+    setDeleteDialogOpen(true)
   }
 
   const handleUpdateQuantity = (id: string, newQuantity: number) => {
@@ -297,7 +305,7 @@ export function Inventory() {
                 <th className="text-right p-3 text-sm font-medium text-muted-foreground">Stock</th>
                 <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
                 <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Actions</th>
+                <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -351,18 +359,12 @@ export function Inventory() {
                       {item.category === 'retail' ? `$${item.price.toFixed(2)}` : '—'}
                     </td>
                     <td className="p-3">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-center">
                         <button
                           onClick={() => handleOpenDialog(item)}
                           className="text-primary hover:opacity-80"
                         >
                           <PencilSimple size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="text-destructive hover:opacity-80"
-                        >
-                          <Trash size={18} />
                         </button>
                       </div>
                     </td>
@@ -491,6 +493,16 @@ export function Inventory() {
           </div>
 
           <DialogFooter>
+            {editingItem && (
+              <Button 
+                variant="destructive" 
+                onClick={handleOpenDeleteDialog}
+                className="mr-auto"
+              >
+                <Trash className="mr-2" />
+                Delete Item
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel
             </Button>
@@ -500,6 +512,26 @@ export function Inventory() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete "{editingItem?.name}" from your inventory. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => editingItem && handleDelete(editingItem.id)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
