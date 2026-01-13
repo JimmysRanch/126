@@ -210,13 +210,6 @@ export function Inventory() {
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
-          <Plus className="mr-2" />
-          Add Item
-        </Button>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <Card className="p-4">
           <div className="flex items-center justify-between">
@@ -279,13 +272,19 @@ export function Inventory() {
               className="pl-10"
             />
           </div>
-          <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)} className="w-full sm:w-auto">
-            <TabsList className="grid grid-cols-3 w-full sm:w-auto">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="retail">Retail</TabsTrigger>
-              <TabsTrigger value="supply">Supply</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex gap-3">
+            <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)} className="w-full sm:w-auto">
+              <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="retail">Retail</TabsTrigger>
+                <TabsTrigger value="supply">Supply</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
+              <Plus className="mr-2" />
+              Add Item
+            </Button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
