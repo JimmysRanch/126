@@ -15,22 +15,14 @@ import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from 
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 
 interface WeightRange {
+  id: string
+  name: string
   min: number
   max: number | null
 }
 
-interface WeightRanges {
-  small: WeightRange
-  medium: WeightRange
-  large: WeightRange
-  giant: WeightRange
-}
-
 interface ServicePricing {
-  small: number
-  medium: number
-  large: number
-  giant: number
+  [key: string]: number
 }
 
 interface BreedPricing {
@@ -55,12 +47,12 @@ interface AddOn {
   hasSizePricing: boolean
 }
 
-const DEFAULT_WEIGHT_RANGES: WeightRanges = {
-  small: { min: 1, max: 25 },
-  medium: { min: 26, max: 50 },
-  large: { min: 51, max: 80 },
-  giant: { min: 81, max: null }
-}
+const DEFAULT_WEIGHT_RANGES: WeightRange[] = [
+  { id: 'small', name: 'Small', min: 1, max: 25 },
+  { id: 'medium', name: 'Medium', min: 26, max: 50 },
+  { id: 'large', name: 'Large', min: 51, max: 80 },
+  { id: 'giant', name: 'Giant', min: 81, max: null }
+]
 
 const DEFAULT_MAIN_SERVICES: MainService[] = [
   {
@@ -143,16 +135,13 @@ export function Settings() {
   
   const [mainServices, setMainServices] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
   const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
-  const [weightRanges, setWeightRanges] = useKV<WeightRanges>("weight-ranges", DEFAULT_WEIGHT_RANGES)
+  const [weightRanges, setWeightRanges] = useKV<WeightRange[]>("weight-ranges", DEFAULT_WEIGHT_RANGES)
   
-  const [weightRangeForm, setWeightRangeForm] = useState({
-    smallMin: "",
-    smallMax: "",
-    mediumMin: "",
-    mediumMax: "",
-    largeMin: "",
-    largeMax: "",
-    giantMin: ""
+  const [editingWeightRangeId, setEditingWeightRangeId] = useState<string | null>(null)
+  const [editWeightRangeForm, setEditWeightRangeForm] = useState({
+    name: "",
+    min: "",
+    max: ""
   })
   
   const [weightRangeDialogOpen, setWeightRangeDialogOpen] = useState(false)
@@ -171,10 +160,7 @@ export function Settings() {
     name: "",
     description: "",
     pricingStrategy: "weight" as 'weight' | 'breed' | 'mixed',
-    smallPrice: "",
-    mediumPrice: "",
-    largePrice: "",
-    giantPrice: "",
+    pricing: {} as Record<string, string>,
     breedPricing: [] as BreedPricing[]
   })
   
@@ -182,10 +168,7 @@ export function Settings() {
     name: "",
     hasSizePricing: "false",
     price: "",
-    smallPrice: "",
-    mediumPrice: "",
-    largePrice: "",
-    giantPrice: ""
+    pricing: {} as Record<string, string>
   })
   
   const defaultHoursOfOperation: HoursOfOperation[] = [
@@ -361,26 +344,28 @@ export function Settings() {
   const openMainServiceDialog = (service?: MainService) => {
     if (service) {
       setEditingMainService(service)
+      const pricingForm: Record<string, string> = {}
+      Object.keys(service.pricing).forEach(key => {
+        pricingForm[key] = service.pricing[key].toString()
+      })
       setMainServiceForm({
         name: service.name,
         description: service.description,
         pricingStrategy: service.pricingStrategy || 'weight',
-        smallPrice: service.pricing.small.toString(),
-        mediumPrice: service.pricing.medium.toString(),
-        largePrice: service.pricing.large.toString(),
-        giantPrice: service.pricing.giant.toString(),
+        pricing: pricingForm,
         breedPricing: service.breedPricing || []
       })
     } else {
       setEditingMainService(null)
+      const pricingForm: Record<string, string> = {}
+      ;(weightRanges || []).forEach(range => {
+        pricingForm[range.id] = ""
+      })
       setMainServiceForm({
         name: "",
         description: "",
         pricingStrategy: 'weight',
-        smallPrice: "",
-        mediumPrice: "",
-        largePrice: "",
-        giantPrice: "",
+        pricing: pricingForm,
         breedPricing: []
       })
     }
@@ -388,67 +373,121 @@ export function Settings() {
   }
   
   const openWeightRangeDialog = () => {
-    const ranges = weightRanges || DEFAULT_WEIGHT_RANGES
-    setWeightRangeForm({
-      smallMin: ranges.small.min.toString(),
-      smallMax: ranges.small.max?.toString() || "",
-      mediumMin: ranges.medium.min.toString(),
-      mediumMax: ranges.medium.max?.toString() || "",
-      largeMin: ranges.large.min.toString(),
-      largeMax: ranges.large.max?.toString() || "",
-      giantMin: ranges.giant.min.toString()
-    })
     setWeightRangeDialogOpen(true)
   }
   
-  const handleSaveWeightRanges = () => {
-    const smallMin = parseFloat(weightRangeForm.smallMin)
-    const smallMax = parseFloat(weightRangeForm.smallMax)
-    const mediumMin = parseFloat(weightRangeForm.mediumMin)
-    const mediumMax = parseFloat(weightRangeForm.mediumMax)
-    const largeMin = parseFloat(weightRangeForm.largeMin)
-    const largeMax = parseFloat(weightRangeForm.largeMax)
-    const giantMin = parseFloat(weightRangeForm.giantMin)
+  const handleAddWeightRange = () => {
+    const newRange: WeightRange = {
+      id: `range-${Date.now()}`,
+      name: "",
+      min: 0,
+      max: null
+    }
+    setWeightRanges((current) => [...(current || []), newRange])
+    setEditingWeightRangeId(newRange.id)
+    setEditWeightRangeForm({
+      name: "",
+      min: "0",
+      max: ""
+    })
+  }
+  
+  const handleDeleteWeightRange = (id: string) => {
+    setWeightRanges((current) => (current || []).filter(range => range.id !== id))
+    toast.success("Weight range deleted successfully")
+  }
+  
+  const handleEditWeightRange = (range: WeightRange) => {
+    setEditingWeightRangeId(range.id)
+    setEditWeightRangeForm({
+      name: range.name,
+      min: range.min.toString(),
+      max: range.max?.toString() || ""
+    })
+  }
+  
+  const handleSaveWeightRange = () => {
+    if (!editingWeightRangeId) return
     
-    if (isNaN(smallMin) || isNaN(smallMax) || isNaN(mediumMin) || isNaN(mediumMax) || 
-        isNaN(largeMin) || isNaN(largeMax) || isNaN(giantMin)) {
-      toast.error("All weight values must be valid numbers")
+    if (!editWeightRangeForm.name.trim()) {
+      toast.error("Range name is required")
       return
     }
     
-    setWeightRanges({
-      small: { min: smallMin, max: smallMax },
-      medium: { min: mediumMin, max: mediumMax },
-      large: { min: largeMin, max: largeMax },
-      giant: { min: giantMin, max: null }
-    })
+    const min = parseFloat(editWeightRangeForm.min)
+    const max = editWeightRangeForm.max ? parseFloat(editWeightRangeForm.max) : null
     
-    setWeightRangeDialogOpen(false)
-    toast.success("Weight ranges updated successfully")
+    if (isNaN(min)) {
+      toast.error("Minimum weight must be a valid number")
+      return
+    }
+    
+    if (editWeightRangeForm.max && isNaN(max as number)) {
+      toast.error("Maximum weight must be a valid number")
+      return
+    }
+    
+    setWeightRanges((current) =>
+      (current || []).map(range =>
+        range.id === editingWeightRangeId
+          ? { ...range, name: editWeightRangeForm.name.trim(), min, max }
+          : range
+      )
+    )
+    
+    setEditingWeightRangeId(null)
+    setEditWeightRangeForm({ name: "", min: "", max: "" })
+    toast.success("Weight range updated successfully")
+  }
+  
+  const handleCancelEditWeightRange = () => {
+    if (editingWeightRangeId) {
+      const range = (weightRanges || []).find(r => r.id === editingWeightRangeId)
+      if (range && !range.name) {
+        setWeightRanges((current) => (current || []).filter(r => r.id !== editingWeightRangeId))
+      }
+    }
+    setEditingWeightRangeId(null)
+    setEditWeightRangeForm({ name: "", min: "", max: "" })
+  }
+  
+  const getWeightRangeById = (id: string) => {
+    return (weightRanges || []).find(r => r.id === id)
+  }
+  
+  const formatWeightRange = (range: WeightRange) => {
+    if (range.max === null) {
+      return `${range.min}+ lbs`
+    }
+    return `${range.min}-${range.max} lbs`
   }
   
   const openAddOnDialog = (addOn?: AddOn) => {
     if (addOn) {
       setEditingAddOn(addOn)
+      const pricingForm: Record<string, string> = {}
+      if (addOn.pricing) {
+        Object.keys(addOn.pricing).forEach(key => {
+          pricingForm[key] = addOn.pricing![key].toString()
+        })
+      }
       setAddOnForm({
         name: addOn.name,
         hasSizePricing: addOn.hasSizePricing ? "true" : "false",
         price: addOn.price?.toString() || "",
-        smallPrice: addOn.pricing?.small.toString() || "",
-        mediumPrice: addOn.pricing?.medium.toString() || "",
-        largePrice: addOn.pricing?.large.toString() || "",
-        giantPrice: addOn.pricing?.giant.toString() || ""
+        pricing: pricingForm
       })
     } else {
       setEditingAddOn(null)
+      const pricingForm: Record<string, string> = {}
+      ;(weightRanges || []).forEach(range => {
+        pricingForm[range.id] = ""
+      })
       setAddOnForm({
         name: "",
         hasSizePricing: "false",
         price: "",
-        smallPrice: "",
-        mediumPrice: "",
-        largePrice: "",
-        giantPrice: ""
+        pricing: pricingForm
       })
     }
     setAddOnDialogOpen(true)
@@ -460,12 +499,19 @@ export function Settings() {
       return
     }
     
-    const smallPrice = parseFloat(mainServiceForm.smallPrice)
-    const mediumPrice = parseFloat(mainServiceForm.mediumPrice)
-    const largePrice = parseFloat(mainServiceForm.largePrice)
-    const giantPrice = parseFloat(mainServiceForm.giantPrice)
+    const pricing: ServicePricing = {}
+    let hasInvalidPrice = false
     
-    if (isNaN(smallPrice) || isNaN(mediumPrice) || isNaN(largePrice) || isNaN(giantPrice)) {
+    Object.keys(mainServiceForm.pricing).forEach(key => {
+      const price = parseFloat(mainServiceForm.pricing[key])
+      if (isNaN(price)) {
+        hasInvalidPrice = true
+      } else {
+        pricing[key] = price
+      }
+    })
+    
+    if (hasInvalidPrice) {
       toast.error("All prices must be valid numbers")
       return
     }
@@ -475,12 +521,7 @@ export function Settings() {
       name: mainServiceForm.name.trim(),
       description: mainServiceForm.description.trim(),
       pricingStrategy: mainServiceForm.pricingStrategy,
-      pricing: {
-        small: smallPrice,
-        medium: mediumPrice,
-        large: largePrice,
-        giant: giantPrice
-      },
+      pricing,
       breedPricing: mainServiceForm.breedPricing
     }
     
@@ -506,12 +547,19 @@ export function Settings() {
     const hasSizePricing = addOnForm.hasSizePricing === "true"
     
     if (hasSizePricing) {
-      const smallPrice = parseFloat(addOnForm.smallPrice)
-      const mediumPrice = parseFloat(addOnForm.mediumPrice)
-      const largePrice = parseFloat(addOnForm.largePrice)
-      const giantPrice = parseFloat(addOnForm.giantPrice)
+      const pricing: ServicePricing = {}
+      let hasInvalidPrice = false
       
-      if (isNaN(smallPrice) || isNaN(mediumPrice) || isNaN(largePrice) || isNaN(giantPrice)) {
+      Object.keys(addOnForm.pricing).forEach(key => {
+        const price = parseFloat(addOnForm.pricing[key])
+        if (isNaN(price)) {
+          hasInvalidPrice = true
+        } else {
+          pricing[key] = price
+        }
+      })
+      
+      if (hasInvalidPrice) {
         toast.error("All prices must be valid numbers")
         return
       }
@@ -520,12 +568,7 @@ export function Settings() {
         id: editingAddOn?.id || `addon-${Date.now()}`,
         name: addOnForm.name.trim(),
         hasSizePricing: true,
-        pricing: {
-          small: smallPrice,
-          medium: mediumPrice,
-          large: largePrice,
-          giant: giantPrice
-        }
+        pricing
       }
       
       if (editingAddOn) {
@@ -1230,31 +1273,15 @@ export function Settings() {
                     </Button>
                   </div>
                   
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
-                      <div className="text-xs text-muted-foreground mb-1">Small</div>
-                      <div className="text-sm font-semibold">
-                        {weightRanges?.small.min || 1}-{weightRanges?.small.max || 25} lbs
+                  <div className="flex flex-wrap gap-3">
+                    {(weightRanges || []).map((range) => (
+                      <div key={range.id} className="bg-secondary/20 p-3 rounded-md border border-border">
+                        <div className="text-xs text-muted-foreground mb-1">{range.name}</div>
+                        <div className="text-sm font-semibold">
+                          {formatWeightRange(range)}
+                        </div>
                       </div>
-                    </div>
-                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
-                      <div className="text-xs text-muted-foreground mb-1">Medium</div>
-                      <div className="text-sm font-semibold">
-                        {weightRanges?.medium.min || 26}-{weightRanges?.medium.max || 50} lbs
-                      </div>
-                    </div>
-                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
-                      <div className="text-xs text-muted-foreground mb-1">Large</div>
-                      <div className="text-sm font-semibold">
-                        {weightRanges?.large.min || 51}-{weightRanges?.large.max || 80} lbs
-                      </div>
-                    </div>
-                    <div className="bg-secondary/20 p-3 rounded-md border border-border">
-                      <div className="text-xs text-muted-foreground mb-1">Giant</div>
-                      <div className="text-sm font-semibold">
-                        {weightRanges?.giant.min || 81}+ lbs
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </Card>
@@ -1317,23 +1344,19 @@ export function Settings() {
                               </Button>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div className="bg-background/50 p-3 rounded-md">
-                              <div className="text-xs text-muted-foreground mb-1">Small (1-25 lbs)</div>
-                              <div className="text-lg font-semibold">${service.pricing.small}</div>
-                            </div>
-                            <div className="bg-background/50 p-3 rounded-md">
-                              <div className="text-xs text-muted-foreground mb-1">Medium (26-50 lbs)</div>
-                              <div className="text-lg font-semibold">${service.pricing.medium}</div>
-                            </div>
-                            <div className="bg-background/50 p-3 rounded-md">
-                              <div className="text-xs text-muted-foreground mb-1">Large (51-80 lbs)</div>
-                              <div className="text-lg font-semibold">${service.pricing.large}</div>
-                            </div>
-                            <div className="bg-background/50 p-3 rounded-md">
-                              <div className="text-xs text-muted-foreground mb-1">Giant (81+ lbs)</div>
-                              <div className="text-lg font-semibold">${service.pricing.giant}</div>
-                            </div>
+                          <div className="flex flex-wrap gap-3">
+                            {(weightRanges || []).map((range) => {
+                              const price = service.pricing[range.id]
+                              if (price === undefined) return null
+                              return (
+                                <div key={range.id} className="bg-background/50 p-3 rounded-md min-w-[120px]">
+                                  <div className="text-xs text-muted-foreground mb-1">
+                                    {range.name} ({formatWeightRange(range)})
+                                  </div>
+                                  <div className="text-lg font-semibold">${price}</div>
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
                       ))
@@ -1396,23 +1419,19 @@ export function Settings() {
                                   </Button>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <div className="bg-background/50 p-3 rounded-md">
-                                  <div className="text-xs text-muted-foreground mb-1">Small (1-25 lbs)</div>
-                                  <div className="text-lg font-semibold">${addOn.pricing.small}</div>
-                                </div>
-                                <div className="bg-background/50 p-3 rounded-md">
-                                  <div className="text-xs text-muted-foreground mb-1">Medium (26-50 lbs)</div>
-                                  <div className="text-lg font-semibold">${addOn.pricing.medium}</div>
-                                </div>
-                                <div className="bg-background/50 p-3 rounded-md">
-                                  <div className="text-xs text-muted-foreground mb-1">Large (51-80 lbs)</div>
-                                  <div className="text-lg font-semibold">${addOn.pricing.large}</div>
-                                </div>
-                                <div className="bg-background/50 p-3 rounded-md">
-                                  <div className="text-xs text-muted-foreground mb-1">Giant (81+ lbs)</div>
-                                  <div className="text-lg font-semibold">${addOn.pricing.giant}</div>
-                                </div>
+                              <div className="flex flex-wrap gap-3">
+                                {(weightRanges || []).map((range) => {
+                                  const price = addOn.pricing?.[range.id]
+                                  if (price === undefined) return null
+                                  return (
+                                    <div key={range.id} className="bg-background/50 p-3 rounded-md min-w-[120px]">
+                                      <div className="text-xs text-muted-foreground mb-1">
+                                        {range.name} ({formatWeightRange(range)})
+                                      </div>
+                                      <div className="text-lg font-semibold">${price}</div>
+                                    </div>
+                                  )
+                                })}
                               </div>
                             </>
                           ) : (
@@ -1656,54 +1675,23 @@ export function Settings() {
               <div className="space-y-3">
                 <Label>Base Weight-Based Pricing</Label>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="small-price" className="text-sm text-muted-foreground">
-                      Small ({weightRanges?.small.min || 1}-{weightRanges?.small.max || 25} lbs)
-                    </Label>
-                    <Input
-                      id="small-price"
-                      type="number"
-                      placeholder="45"
-                      value={mainServiceForm.smallPrice}
-                      onChange={(e) => setMainServiceForm({ ...mainServiceForm, smallPrice: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="medium-price" className="text-sm text-muted-foreground">
-                      Medium ({weightRanges?.medium.min || 26}-{weightRanges?.medium.max || 50} lbs)
-                    </Label>
-                    <Input
-                      id="medium-price"
-                      type="number"
-                      placeholder="55"
-                      value={mainServiceForm.mediumPrice}
-                      onChange={(e) => setMainServiceForm({ ...mainServiceForm, mediumPrice: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="large-price" className="text-sm text-muted-foreground">
-                      Large ({weightRanges?.large.min || 51}-{weightRanges?.large.max || 80} lbs)
-                    </Label>
-                    <Input
-                      id="large-price"
-                      type="number"
-                      placeholder="65"
-                      value={mainServiceForm.largePrice}
-                      onChange={(e) => setMainServiceForm({ ...mainServiceForm, largePrice: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="giant-price" className="text-sm text-muted-foreground">
-                      Giant ({weightRanges?.giant.min || 81}+ lbs)
-                    </Label>
-                    <Input
-                      id="giant-price"
-                      type="number"
-                      placeholder="75"
-                      value={mainServiceForm.giantPrice}
-                      onChange={(e) => setMainServiceForm({ ...mainServiceForm, giantPrice: e.target.value })}
-                    />
-                  </div>
+                  {(weightRanges || []).map((range) => (
+                    <div key={range.id} className="space-y-2">
+                      <Label htmlFor={`${range.id}-price`} className="text-sm text-muted-foreground">
+                        {range.name} ({formatWeightRange(range)})
+                      </Label>
+                      <Input
+                        id={`${range.id}-price`}
+                        type="number"
+                        placeholder="0"
+                        value={mainServiceForm.pricing?.[range.id] || ""}
+                        onChange={(e) => setMainServiceForm({ 
+                          ...mainServiceForm, 
+                          pricing: { ...mainServiceForm.pricing, [range.id]: e.target.value }
+                        })}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
               
@@ -1738,110 +1726,133 @@ export function Settings() {
             </DialogHeader>
             
             <div className="space-y-5 py-4">
-              <p className="text-sm text-muted-foreground">
-                Define the weight ranges for each size category. These ranges are used for pricing throughout the app.
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Define weight ranges for size categories. These ranges are used for pricing throughout the app.
+                </p>
+                <Button
+                  onClick={handleAddWeightRange}
+                  size="sm"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <Plus size={16} className="mr-2" />
+                  Add Range
+                </Button>
+              </div>
               
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="font-semibold">Small</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="small-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
-                      <Input
-                        id="small-min"
-                        type="number"
-                        value={weightRangeForm.smallMin}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, smallMin: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="small-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
-                      <Input
-                        id="small-max"
-                        type="number"
-                        value={weightRangeForm.smallMax}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, smallMax: e.target.value })}
-                      />
-                    </div>
+              <div className="space-y-3">
+                {(weightRanges || []).length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No weight ranges configured. Add your first range above.
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="font-semibold">Medium</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="medium-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
-                      <Input
-                        id="medium-min"
-                        type="number"
-                        value={weightRangeForm.mediumMin}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, mediumMin: e.target.value })}
-                      />
+                ) : (
+                  (weightRanges || []).map((range) => (
+                    <div
+                      key={range.id}
+                      className="flex items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
+                    >
+                      {editingWeightRangeId === range.id ? (
+                        <>
+                          <div className="flex-1 grid grid-cols-3 gap-3">
+                            <div className="space-y-1">
+                              <Label htmlFor={`edit-name-${range.id}`} className="text-xs text-muted-foreground">
+                                Name
+                              </Label>
+                              <Input
+                                id={`edit-name-${range.id}`}
+                                placeholder="e.g., Small"
+                                value={editWeightRangeForm.name}
+                                onChange={(e) => setEditWeightRangeForm({ ...editWeightRangeForm, name: e.target.value })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveWeightRange()
+                                  if (e.key === 'Escape') handleCancelEditWeightRange()
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label htmlFor={`edit-min-${range.id}`} className="text-xs text-muted-foreground">
+                                Min (lbs)
+                              </Label>
+                              <Input
+                                id={`edit-min-${range.id}`}
+                                type="number"
+                                value={editWeightRangeForm.min}
+                                onChange={(e) => setEditWeightRangeForm({ ...editWeightRangeForm, min: e.target.value })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveWeightRange()
+                                  if (e.key === 'Escape') handleCancelEditWeightRange()
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label htmlFor={`edit-max-${range.id}`} className="text-xs text-muted-foreground">
+                                Max (lbs) - leave empty for no max
+                              </Label>
+                              <Input
+                                id={`edit-max-${range.id}`}
+                                type="number"
+                                placeholder="No max"
+                                value={editWeightRangeForm.max}
+                                onChange={(e) => setEditWeightRangeForm({ ...editWeightRangeForm, max: e.target.value })}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleSaveWeightRange()
+                                  if (e.key === 'Escape') handleCancelEditWeightRange()
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2 pt-5">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleCancelEditWeightRange}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-primary text-primary-foreground"
+                              onClick={handleSaveWeightRange}
+                            >
+                              Save
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex-1">
+                            <div className="font-semibold text-base mb-1">{range.name}</div>
+                            <div className="text-sm text-muted-foreground">{formatWeightRange(range)}</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-foreground hover:bg-primary/10"
+                              onClick={() => handleEditWeightRange(range)}
+                            >
+                              <PencilSimple size={18} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => handleDeleteWeightRange(range.id)}
+                            >
+                              <Trash size={18} />
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </div>
-                    <div>
-                      <Label htmlFor="medium-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
-                      <Input
-                        id="medium-max"
-                        type="number"
-                        value={weightRangeForm.mediumMax}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, mediumMax: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="font-semibold">Large</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="large-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
-                      <Input
-                        id="large-min"
-                        type="number"
-                        value={weightRangeForm.largeMin}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, largeMin: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="large-max" className="text-xs text-muted-foreground">Max (lbs)</Label>
-                      <Input
-                        id="large-max"
-                        type="number"
-                        value={weightRangeForm.largeMax}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, largeMax: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="font-semibold">Giant</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="giant-min" className="text-xs text-muted-foreground">Min (lbs)</Label>
-                      <Input
-                        id="giant-min"
-                        type="number"
-                        value={weightRangeForm.giantMin}
-                        onChange={(e) => setWeightRangeForm({ ...weightRangeForm, giantMin: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Max</Label>
-                      <Input disabled value="No max" className="bg-muted" />
-                    </div>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
             
             <DialogFooter>
               <Button variant="outline" onClick={() => setWeightRangeDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveWeightRanges} className="bg-primary text-primary-foreground">
-                Save Weight Ranges
+                Done
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -1895,46 +1906,23 @@ export function Settings() {
                 <div className="space-y-3">
                   <Label>Size-Based Pricing</Label>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-small-price" className="text-sm text-muted-foreground">Small (1-25 lbs)</Label>
-                      <Input
-                        id="addon-small-price"
-                        type="number"
-                        placeholder="20"
-                        value={addOnForm.smallPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, smallPrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-medium-price" className="text-sm text-muted-foreground">Medium (26-50 lbs)</Label>
-                      <Input
-                        id="addon-medium-price"
-                        type="number"
-                        placeholder="25"
-                        value={addOnForm.mediumPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, mediumPrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-large-price" className="text-sm text-muted-foreground">Large (51-80 lbs)</Label>
-                      <Input
-                        id="addon-large-price"
-                        type="number"
-                        placeholder="30"
-                        value={addOnForm.largePrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, largePrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-giant-price" className="text-sm text-muted-foreground">Giant (81+ lbs)</Label>
-                      <Input
-                        id="addon-giant-price"
-                        type="number"
-                        placeholder="40"
-                        value={addOnForm.giantPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, giantPrice: e.target.value })}
-                      />
-                    </div>
+                    {(weightRanges || []).map((range) => (
+                      <div key={range.id} className="space-y-2">
+                        <Label htmlFor={`addon-${range.id}-price`} className="text-sm text-muted-foreground">
+                          {range.name} ({formatWeightRange(range)})
+                        </Label>
+                        <Input
+                          id={`addon-${range.id}-price`}
+                          type="number"
+                          placeholder="0"
+                          value={addOnForm.pricing[range.id] || ""}
+                          onChange={(e) => setAddOnForm({ 
+                            ...addOnForm, 
+                            pricing: { ...addOnForm.pricing, [range.id]: e.target.value }
+                          })}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
