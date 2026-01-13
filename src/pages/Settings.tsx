@@ -128,14 +128,62 @@ interface BusinessInfo {
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState("staff")
-  const [staffPositions, setStaffPositions] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
+  const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
   const [editingPosition, setEditingPosition] = useState<string | null>(null)
   const [editPositionValue, setEditPositionValue] = useState("")
   
-  const [mainServices, setMainServices] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
-  const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
-  const [weightRanges, setWeightRanges] = useKV<WeightRange[]>("weight-ranges", DEFAULT_WEIGHT_RANGES)
+  const [mainServicesRaw, setMainServicesRaw] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
+  const [addOnsRaw, setAddOnsRaw] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
+  const [weightRangesRaw, setWeightRangesRaw] = useKV<WeightRange[]>("weight-ranges", DEFAULT_WEIGHT_RANGES)
+  
+  const staffPositions = Array.isArray(staffPositionsRaw) ? staffPositionsRaw : ["Owner", "Groomer", "Front Desk", "Bather"]
+  const setStaffPositions = (updater: string[] | ((current: string[]) => string[])) => {
+    if (typeof updater === 'function') {
+      setStaffPositionsRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : ["Owner", "Groomer", "Front Desk", "Bather"]
+        return updater(currentArray)
+      })
+    } else {
+      setStaffPositionsRaw(updater)
+    }
+  }
+  
+  const mainServices = Array.isArray(mainServicesRaw) ? mainServicesRaw : DEFAULT_MAIN_SERVICES
+  const setMainServices = (updater: MainService[] | ((current: MainService[]) => MainService[])) => {
+    if (typeof updater === 'function') {
+      setMainServicesRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : DEFAULT_MAIN_SERVICES
+        return updater(currentArray)
+      })
+    } else {
+      setMainServicesRaw(updater)
+    }
+  }
+  
+  const addOns = Array.isArray(addOnsRaw) ? addOnsRaw : DEFAULT_ADDONS
+  const setAddOns = (updater: AddOn[] | ((current: AddOn[]) => AddOn[])) => {
+    if (typeof updater === 'function') {
+      setAddOnsRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : DEFAULT_ADDONS
+        return updater(currentArray)
+      })
+    } else {
+      setAddOnsRaw(updater)
+    }
+  }
+  
+  const weightRanges = Array.isArray(weightRangesRaw) ? weightRangesRaw : DEFAULT_WEIGHT_RANGES
+  const setWeightRanges = (updater: WeightRange[] | ((current: WeightRange[]) => WeightRange[])) => {
+    if (typeof updater === 'function') {
+      setWeightRangesRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : DEFAULT_WEIGHT_RANGES
+        return updater(currentArray)
+      })
+    } else {
+      setWeightRangesRaw(updater)
+    }
+  }
   
   const [editingWeightRangeId, setEditingWeightRangeId] = useState<string | null>(null)
   const [editWeightRangeForm, setEditWeightRangeForm] = useState({
@@ -146,10 +194,22 @@ export function Settings() {
   
   const [weightRangeDialogOpen, setWeightRangeDialogOpen] = useState(false)
   
-  const [paymentMethods, setPaymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", DEFAULT_PAYMENT_METHODS)
+  const [paymentMethodsRaw, setPaymentMethodsRaw] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", DEFAULT_PAYMENT_METHODS)
   const [newPaymentMethod, setNewPaymentMethod] = useState("")
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<{ id: string; name: string } | null>(null)
   const [editPaymentMethodValue, setEditPaymentMethodValue] = useState("")
+  
+  const paymentMethods = Array.isArray(paymentMethodsRaw) ? paymentMethodsRaw : DEFAULT_PAYMENT_METHODS
+  const setPaymentMethods = (updater: Array<{ id: string; name: string; enabled: boolean }> | ((current: Array<{ id: string; name: string; enabled: boolean }>) => Array<{ id: string; name: string; enabled: boolean }>)) => {
+    if (typeof updater === 'function') {
+      setPaymentMethodsRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : DEFAULT_PAYMENT_METHODS
+        return updater(currentArray)
+      })
+    } else {
+      setPaymentMethodsRaw(updater)
+    }
+  }
   
   const [mainServiceDialogOpen, setMainServiceDialogOpen] = useState(false)
   const [addOnDialogOpen, setAddOnDialogOpen] = useState(false)
@@ -298,18 +358,18 @@ export function Settings() {
       return
     }
 
-    if ((staffPositions || []).includes(newPosition.trim())) {
+    if (staffPositions.includes(newPosition.trim())) {
       toast.error("This position already exists")
       return
     }
 
-    setStaffPositions((current) => [...(current || []), newPosition.trim()])
+    setStaffPositions((current) => [...current, newPosition.trim()])
     setNewPosition("")
     toast.success("Position added successfully")
   }
 
   const handleDeletePosition = (position: string) => {
-    setStaffPositions((current) => (current || []).filter(p => p !== position))
+    setStaffPositions((current) => current.filter(p => p !== position))
     toast.success("Position removed successfully")
   }
 
@@ -325,14 +385,14 @@ export function Settings() {
     }
 
     if (editingPosition && editPositionValue.trim() !== editingPosition) {
-      if ((staffPositions || []).includes(editPositionValue.trim())) {
+      if (staffPositions.includes(editPositionValue.trim())) {
         toast.error("This position already exists")
         return
       }
     }
 
     setStaffPositions((current) => 
-      (current || []).map(p => p === editingPosition ? editPositionValue.trim() : p)
+      current.map(p => p === editingPosition ? editPositionValue.trim() : p)
     )
     setEditingPosition(null)
     setEditPositionValue("")
@@ -361,7 +421,7 @@ export function Settings() {
     } else {
       setEditingMainService(null)
       const pricingForm: Record<string, string> = {}
-      ;(weightRanges || []).forEach(range => {
+      weightRanges.forEach(range => {
         pricingForm[range.id] = ""
       })
       setMainServiceForm({
@@ -386,7 +446,7 @@ export function Settings() {
       min: 0,
       max: null
     }
-    setWeightRanges((current) => [...(current || []), newRange])
+    setWeightRanges((current) => [...current, newRange])
     setEditingWeightRangeId(newRange.id)
     setEditWeightRangeForm({
       name: "",
@@ -396,7 +456,7 @@ export function Settings() {
   }
   
   const handleDeleteWeightRange = (id: string) => {
-    setWeightRanges((current) => (current || []).filter(range => range.id !== id))
+    setWeightRanges((current) => current.filter(range => range.id !== id))
     toast.success("Weight range deleted successfully")
   }
   
@@ -431,7 +491,7 @@ export function Settings() {
     }
     
     setWeightRanges((current) =>
-      (current || []).map(range =>
+      current.map(range =>
         range.id === editingWeightRangeId
           ? { ...range, name: editWeightRangeForm.name.trim(), min, max }
           : range
@@ -445,9 +505,9 @@ export function Settings() {
   
   const handleCancelEditWeightRange = () => {
     if (editingWeightRangeId) {
-      const range = (weightRanges || []).find(r => r.id === editingWeightRangeId)
+      const range = weightRanges.find(r => r.id === editingWeightRangeId)
       if (range && !range.name) {
-        setWeightRanges((current) => (current || []).filter(r => r.id !== editingWeightRangeId))
+        setWeightRanges((current) => current.filter(r => r.id !== editingWeightRangeId))
       }
     }
     setEditingWeightRangeId(null)
@@ -455,7 +515,7 @@ export function Settings() {
   }
   
   const getWeightRangeById = (id: string) => {
-    return (weightRanges || []).find(r => r.id === id)
+    return weightRanges.find(r => r.id === id)
   }
   
   const formatWeightRange = (range: WeightRange) => {
@@ -526,11 +586,11 @@ export function Settings() {
     
     if (editingMainService) {
       setMainServices((current) => 
-        (current || []).map(s => s.id === editingMainService.id ? newService : s)
+        current.map(s => s.id === editingMainService.id ? newService : s)
       )
       toast.success("Service updated successfully")
     } else {
-      setMainServices((current) => [...(current || []), newService])
+      setMainServices((current) => [...current, newService])
       toast.success("Service added successfully")
     }
     
@@ -570,11 +630,11 @@ export function Settings() {
       
       if (editingAddOn) {
         setAddOns((current) => 
-          (current || []).map(a => a.id === editingAddOn.id ? newAddOn : a)
+          current.map(a => a.id === editingAddOn.id ? newAddOn : a)
         )
         toast.success("Add-on updated successfully")
       } else {
-        setAddOns((current) => [...(current || []), newAddOn])
+        setAddOns((current) => [...current, newAddOn])
         toast.success("Add-on added successfully")
       }
     } else {
@@ -594,11 +654,11 @@ export function Settings() {
       
       if (editingAddOn) {
         setAddOns((current) => 
-          (current || []).map(a => a.id === editingAddOn.id ? newAddOn : a)
+          current.map(a => a.id === editingAddOn.id ? newAddOn : a)
         )
         toast.success("Add-on updated successfully")
       } else {
-        setAddOns((current) => [...(current || []), newAddOn])
+        setAddOns((current) => [...current, newAddOn])
         toast.success("Add-on added successfully")
       }
     }
@@ -607,12 +667,12 @@ export function Settings() {
   }
   
   const handleDeleteMainService = (id: string) => {
-    setMainServices((current) => (current || []).filter(s => s.id !== id))
+    setMainServices((current) => current.filter(s => s.id !== id))
     toast.success("Service deleted successfully")
   }
   
   const handleDeleteAddOn = (id: string) => {
-    setAddOns((current) => (current || []).filter(a => a.id !== id))
+    setAddOns((current) => current.filter(a => a.id !== id))
     toast.success("Add-on deleted successfully")
   }
   
@@ -622,13 +682,13 @@ export function Settings() {
       return
     }
 
-    if ((paymentMethods || []).some(pm => pm.name.toLowerCase() === newPaymentMethod.trim().toLowerCase())) {
+    if (paymentMethods.some(pm => pm.name.toLowerCase() === newPaymentMethod.trim().toLowerCase())) {
       toast.error("This payment method already exists")
       return
     }
 
     setPaymentMethods((current) => [
-      ...(current || []), 
+      ...current, 
       { id: `pm-${Date.now()}`, name: newPaymentMethod.trim(), enabled: true }
     ])
     setNewPaymentMethod("")
@@ -636,13 +696,13 @@ export function Settings() {
   }
 
   const handleDeletePaymentMethod = (id: string) => {
-    setPaymentMethods((current) => (current || []).filter(pm => pm.id !== id))
+    setPaymentMethods((current) => current.filter(pm => pm.id !== id))
     toast.success("Payment method removed successfully")
   }
 
   const handleTogglePaymentMethod = (id: string) => {
     setPaymentMethods((current) =>
-      (current || []).map(pm => pm.id === id ? { ...pm, enabled: !pm.enabled } : pm)
+      current.map(pm => pm.id === id ? { ...pm, enabled: !pm.enabled } : pm)
     )
   }
 
@@ -658,14 +718,14 @@ export function Settings() {
     }
 
     if (editingPaymentMethod && editPaymentMethodValue.trim() !== editingPaymentMethod.name) {
-      if ((paymentMethods || []).some(pm => pm.name.toLowerCase() === editPaymentMethodValue.trim().toLowerCase())) {
+      if (paymentMethods.some(pm => pm.name.toLowerCase() === editPaymentMethodValue.trim().toLowerCase())) {
         toast.error("This payment method already exists")
         return
       }
     }
 
     setPaymentMethods((current) =>
-      (current || []).map(pm => pm.id === editingPaymentMethod?.id ? { ...pm, name: editPaymentMethodValue.trim() } : pm)
+      current.map(pm => pm.id === editingPaymentMethod?.id ? { ...pm, name: editPaymentMethodValue.trim() } : pm)
     )
     setEditingPaymentMethod(null)
     setEditPaymentMethodValue("")
@@ -679,7 +739,7 @@ export function Settings() {
   
   const handleMovePaymentMethod = (id: string, direction: 'up' | 'down') => {
     setPaymentMethods((current) => {
-      const methods = [...(current || [])]
+      const methods = [...current]
       const index = methods.findIndex(pm => pm.id === id)
       if (index === -1) return methods
       
@@ -853,12 +913,12 @@ export function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    {(staffPositions || []).length === 0 ? (
+                    {staffPositions.length === 0 ? (
                       <div className="text-center py-12 text-muted-foreground">
                         No positions configured. Add your first position above.
                       </div>
                     ) : (
-                      (staffPositions || []).map((position) => (
+                      staffPositions.map((position) => (
                         <div
                           key={position}
                           className="flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
@@ -1271,7 +1331,7 @@ export function Settings() {
                   </div>
                   
                   <div className="flex flex-wrap gap-3">
-                    {(weightRanges || []).map((range) => (
+                    {weightRanges.map((range) => (
                       <div key={range.id} className="bg-secondary/20 p-3 rounded-md border border-border">
                         <div className="text-xs text-muted-foreground mb-1">{range.name}</div>
                         <div className="text-sm font-semibold">
@@ -1302,12 +1362,12 @@ export function Settings() {
                   </div>
 
                   <div className="space-y-4">
-                    {(mainServices || []).length === 0 ? (
+                    {mainServices.length === 0 ? (
                       <div className="text-center py-12 text-muted-foreground">
                         No main services configured. Add your first service above.
                       </div>
                     ) : (
-                      (mainServices || []).map((service) => (
+                      mainServices.map((service) => (
                         <div
                           key={service.id}
                           className="p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
@@ -1385,12 +1445,12 @@ export function Settings() {
                   </div>
 
                   <div className="space-y-3">
-                    {(addOns || []).length === 0 ? (
+                    {addOns.length === 0 ? (
                       <div className="text-center py-12 text-muted-foreground">
                         No add-ons configured. Add your first add-on above.
                       </div>
                     ) : (
-                      (addOns || []).map((addOn) => (
+                      addOns.map((addOn) => (
                         <div
                           key={addOn.id}
                           className={addOn.hasSizePricing ? "p-5 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors" : "flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"}
@@ -1518,12 +1578,12 @@ export function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    {(paymentMethods || []).length === 0 ? (
+                    {paymentMethods.length === 0 ? (
                       <div className="text-center py-12 text-muted-foreground">
                         No payment methods configured. Add your first payment method above.
                       </div>
                     ) : (
-                      (paymentMethods || []).map((method, index) => (
+                      paymentMethods.map((method, index) => (
                         <div
                           key={method.id}
                           className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
@@ -1543,7 +1603,7 @@ export function Settings() {
                               </button>
                               <button
                                 onClick={() => handleMovePaymentMethod(method.id, 'down')}
-                                disabled={index === (paymentMethods || []).length - 1}
+                                disabled={index === paymentMethods.length - 1}
                                 className="text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
                               >
                                 <CaretDown size={18} weight="bold" />
@@ -1680,7 +1740,7 @@ export function Settings() {
               <div className="space-y-3">
                 <Label>Base Weight-Based Pricing</Label>
                 <div className="grid grid-cols-2 gap-4">
-                  {(weightRanges || []).map((range) => (
+                  {weightRanges.map((range) => (
                     <div key={range.id} className="space-y-2">
                       <Label htmlFor={`${range.id}-price`} className="text-sm text-muted-foreground">
                         {range.name} ({formatWeightRange(range)})
@@ -1746,12 +1806,12 @@ export function Settings() {
               </div>
               
               <div className="space-y-3">
-                {(weightRanges || []).length === 0 ? (
+                {weightRanges.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     No weight ranges configured. Add your first range above.
                   </div>
                 ) : (
-                  (weightRanges || []).map((range) => (
+                  weightRanges.map((range) => (
                     <div
                       key={range.id}
                       className="flex items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
