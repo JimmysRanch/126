@@ -481,9 +481,9 @@ export function NewAppointment() {
               <div>
                 <Label className="text-sm font-medium mb-2 block">Overall length</Label>
                 <RadioGroup value={overallLength} onValueChange={setOverallLength}>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {["Short & neat", "Medium & neat", "Long & fluffy", "Groomer decides"].map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
+                      <div key={option} className="flex items-center space-x-1.5">
                         <RadioGroupItem value={option} id={`length-${option}`} />
                         <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
                           {option}
@@ -499,9 +499,9 @@ export function NewAppointment() {
               <div>
                 <Label className="text-sm font-medium mb-2 block">Face style</Label>
                 <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {["Round / teddy", "Short & neat", "Beard / mustache", "Breed standard", "Groomer decides"].map((option) => (
-                      <div key={option} className="flex items-center space-x-2">
+                      <div key={option} className="flex items-center space-x-1.5">
                         <RadioGroupItem value={option} id={`face-${option}`} />
                         <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
                           {option}
@@ -704,7 +704,8 @@ export function NewAppointment() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="p-4 sticky top-6">
+          <div className="sticky top-3">
+            <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Receipt size={18} className="text-primary" />
               <h3 className="font-semibold text-base">Summary</h3>
@@ -806,6 +807,7 @@ export function NewAppointment() {
               Create Appointment{selectedPets.length > 1 ? 's' : ''}
             </Button>
           </Card>
+          </div>
         </div>
       </div>
     </div>
