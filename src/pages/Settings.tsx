@@ -1816,7 +1816,7 @@ export function Settings() {
                   weightRanges.map((range) => (
                     <div
                       key={range.id}
-                      className="flex flex-col md:flex-row md:items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
+                      className="flex items-start gap-3 p-4 rounded-lg bg-secondary/20 border border-border"
                     >
                       {editingWeightRangeId === range.id ? (
                         <>
@@ -1853,7 +1853,7 @@ export function Settings() {
                             </div>
                             <div className="space-y-1">
                               <Label htmlFor={`edit-max-${range.id}`} className="text-xs text-muted-foreground">
-                                Max (lbs)
+                                Max (lbs) - leave empty for no max
                               </Label>
                               <Input
                                 id={`edit-max-${range.id}`}
@@ -1868,7 +1868,7 @@ export function Settings() {
                               />
                             </div>
                           </div>
-                          <div className="flex gap-2 self-end md:self-start shrink-0">
+                          <div className="flex gap-2 pt-0 md:pt-5 shrink-0">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1891,7 +1891,7 @@ export function Settings() {
                             <div className="font-semibold text-base mb-1">{range.name}</div>
                             <div className="text-sm text-muted-foreground">{formatWeightRange(range)}</div>
                           </div>
-                          <div className="flex gap-2 shrink-0 self-end md:self-start">
+                          <div className="flex gap-2 shrink-0">
                             <Button
                               variant="ghost"
                               size="icon"
