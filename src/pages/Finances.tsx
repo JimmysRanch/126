@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, TrendDown } from '@phosphor-icons/react'
+import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, TrendDown, PawPrint } from '@phosphor-icons/react'
 import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -505,26 +505,42 @@ export function Finances() {
                   { date: '12/13/2024', client: 'James Wilson', service: 'Full Groom - Rocky', amount: 85.00, tip: 15.00, method: 'Card' },
                   { date: '12/12/2024', client: 'Lisa Martinez', service: 'Deshed Treatment - Bear', amount: 95.00, tip: 15.00, method: 'Card' },
                   { date: '12/12/2024', client: 'Robert Brown', service: 'Bath Only - Buddy', amount: 45.00, tip: 8.00, method: 'Card' },
-                ].map((payment, i) => (
-                  <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
-                    <div className="flex items-start md:items-center justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
-                          <p className="font-medium text-sm md:text-base truncate">{payment.client}</p>
-                          <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground w-fit">
-                            {payment.method}
-                          </span>
+                ].map((payment, i) => {
+                  const serviceParts = payment.service.split(' - ')
+                  const serviceType = serviceParts[0]
+                  const dogNames = serviceParts[1] || ''
+                  const individualDogs = dogNames.split(' & ').map(name => name.trim())
+                  
+                  return (
+                    <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
+                      <div className="flex items-start md:items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
+                            <p className="font-medium text-sm md:text-base truncate">{payment.client}</p>
+                            <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground w-fit">
+                              {payment.method}
+                            </span>
+                          </div>
+                          <div className="text-xs md:text-sm text-muted-foreground mt-1 flex items-center gap-1 flex-wrap">
+                            <span>{serviceType} -</span>
+                            {individualDogs.map((dog, dogIndex) => (
+                              <span key={dogIndex} className="inline-flex items-center gap-1">
+                                <PawPrint size={14} weight="fill" className="text-primary flex-shrink-0" />
+                                <span>{dog}</span>
+                                {dogIndex < individualDogs.length - 1 && <span className="ml-1">&</span>}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-xs text-muted-foreground">{payment.date}</p>
                         </div>
-                        <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-1">{payment.service}</p>
-                        <p className="text-xs text-muted-foreground">{payment.date}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-base md:text-lg font-bold">${(payment.amount + payment.tip).toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">+${payment.tip.toFixed(2)} tip</p>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-base md:text-lg font-bold">${(payment.amount + payment.tip).toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">+${payment.tip.toFixed(2)} tip</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </Card>
           </TabsContent>
