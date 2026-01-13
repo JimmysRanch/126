@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
 import { Download, CalendarBlank, Clock, Check, X } from "@phosphor-icons/react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 interface PayrollData {
@@ -104,7 +104,10 @@ const mockPayrollData: PayrollData[] = [
 export function PayrollOverview() {
   const [activeView, setActiveView] = useState("current")
   const navigate = useNavigate()
+  const location = useLocation()
   const isMobile = useIsMobile()
+  
+  const isFinancesTab = location.pathname.startsWith('/finances')
 
   const currentPeriodTotal = mockPayrollData.reduce((acc, curr) => acc + curr.netPay, 0)
   const currentPeriodGross = mockPayrollData.reduce((acc, curr) => acc + curr.grossPay, 0)
@@ -210,7 +213,12 @@ export function PayrollOverview() {
             <Card
               key={payroll.staffId}
               className="p-3 bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
-              onClick={() => navigate(`/finances/staff/${payroll.staffId}/payroll-breakdown`)}
+              onClick={() => {
+                const path = isFinancesTab 
+                  ? `/finances/staff/${payroll.staffId}/payroll-breakdown`
+                  : `/staff/${payroll.staffId}/payroll-breakdown`
+                navigate(path)
+              }}
             >
               {isMobile ? (
                 <div className="space-y-2">
