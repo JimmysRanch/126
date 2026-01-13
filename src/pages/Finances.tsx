@@ -531,6 +531,8 @@ export function Finances() {
 
           <TabsContent value="payroll" className="space-y-3">
             <PayrollOverview />
+            <Card>
+              <div className="p-3 md:p-4">
                 <h3 className="text-sm md:text-base font-bold mb-2">Tax Settings</h3>
                 <div className="space-y-3">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
