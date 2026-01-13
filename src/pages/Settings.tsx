@@ -168,7 +168,10 @@ export function Settings() {
     name: "",
     hasSizePricing: "false",
     price: "",
-    pricing: {} as Record<string, string>
+    smallPrice: "",
+    mediumPrice: "",
+    largePrice: "",
+    giantPrice: ""
   })
   
   const defaultHoursOfOperation: HoursOfOperation[] = [
@@ -465,29 +468,25 @@ export function Settings() {
   const openAddOnDialog = (addOn?: AddOn) => {
     if (addOn) {
       setEditingAddOn(addOn)
-      const pricingForm: Record<string, string> = {}
-      if (addOn.pricing) {
-        Object.keys(addOn.pricing).forEach(key => {
-          pricingForm[key] = addOn.pricing![key].toString()
-        })
-      }
       setAddOnForm({
         name: addOn.name,
         hasSizePricing: addOn.hasSizePricing ? "true" : "false",
         price: addOn.price?.toString() || "",
-        pricing: pricingForm
+        smallPrice: addOn.pricing?.small.toString() || "",
+        mediumPrice: addOn.pricing?.medium.toString() || "",
+        largePrice: addOn.pricing?.large.toString() || "",
+        giantPrice: addOn.pricing?.giant.toString() || ""
       })
     } else {
       setEditingAddOn(null)
-      const pricingForm: Record<string, string> = {}
-      ;(weightRanges || []).forEach(range => {
-        pricingForm[range.id] = ""
-      })
       setAddOnForm({
         name: "",
         hasSizePricing: "false",
         price: "",
-        pricing: pricingForm
+        smallPrice: "",
+        mediumPrice: "",
+        largePrice: "",
+        giantPrice: ""
       })
     }
     setAddOnDialogOpen(true)
@@ -547,19 +546,12 @@ export function Settings() {
     const hasSizePricing = addOnForm.hasSizePricing === "true"
     
     if (hasSizePricing) {
-      const pricing: ServicePricing = {}
-      let hasInvalidPrice = false
+      const smallPrice = parseFloat(addOnForm.smallPrice)
+      const mediumPrice = parseFloat(addOnForm.mediumPrice)
+      const largePrice = parseFloat(addOnForm.largePrice)
+      const giantPrice = parseFloat(addOnForm.giantPrice)
       
-      Object.keys(addOnForm.pricing).forEach(key => {
-        const price = parseFloat(addOnForm.pricing[key])
-        if (isNaN(price)) {
-          hasInvalidPrice = true
-        } else {
-          pricing[key] = price
-        }
-      })
-      
-      if (hasInvalidPrice) {
+      if (isNaN(smallPrice) || isNaN(mediumPrice) || isNaN(largePrice) || isNaN(giantPrice)) {
         toast.error("All prices must be valid numbers")
         return
       }
@@ -568,7 +560,12 @@ export function Settings() {
         id: editingAddOn?.id || `addon-${Date.now()}`,
         name: addOnForm.name.trim(),
         hasSizePricing: true,
-        pricing
+        pricing: {
+          small: smallPrice,
+          medium: mediumPrice,
+          large: largePrice,
+          giant: giantPrice
+        }
       }
       
       if (editingAddOn) {
@@ -1344,19 +1341,23 @@ export function Settings() {
                               </Button>
                             </div>
                           </div>
-                          <div className="flex flex-wrap gap-3">
-                            {(weightRanges || []).map((range) => {
-                              const price = service.pricing[range.id]
-                              if (price === undefined) return null
-                              return (
-                                <div key={range.id} className="bg-background/50 p-3 rounded-md min-w-[120px]">
-                                  <div className="text-xs text-muted-foreground mb-1">
-                                    {range.name} ({formatWeightRange(range)})
-                                  </div>
-                                  <div className="text-lg font-semibold">${price}</div>
-                                </div>
-                              )
-                            })}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="bg-background/50 p-3 rounded-md">
+                              <div className="text-xs text-muted-foreground mb-1">Small (1-25 lbs)</div>
+                              <div className="text-lg font-semibold">${service.pricing.small}</div>
+                            </div>
+                            <div className="bg-background/50 p-3 rounded-md">
+                              <div className="text-xs text-muted-foreground mb-1">Medium (26-50 lbs)</div>
+                              <div className="text-lg font-semibold">${service.pricing.medium}</div>
+                            </div>
+                            <div className="bg-background/50 p-3 rounded-md">
+                              <div className="text-xs text-muted-foreground mb-1">Large (51-80 lbs)</div>
+                              <div className="text-lg font-semibold">${service.pricing.large}</div>
+                            </div>
+                            <div className="bg-background/50 p-3 rounded-md">
+                              <div className="text-xs text-muted-foreground mb-1">Giant (81+ lbs)</div>
+                              <div className="text-lg font-semibold">${service.pricing.giant}</div>
+                            </div>
                           </div>
                         </div>
                       ))
@@ -1419,19 +1420,23 @@ export function Settings() {
                                   </Button>
                                 </div>
                               </div>
-                              <div className="flex flex-wrap gap-3">
-                                {(weightRanges || []).map((range) => {
-                                  const price = addOn.pricing?.[range.id]
-                                  if (price === undefined) return null
-                                  return (
-                                    <div key={range.id} className="bg-background/50 p-3 rounded-md min-w-[120px]">
-                                      <div className="text-xs text-muted-foreground mb-1">
-                                        {range.name} ({formatWeightRange(range)})
-                                      </div>
-                                      <div className="text-lg font-semibold">${price}</div>
-                                    </div>
-                                  )
-                                })}
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="bg-background/50 p-3 rounded-md">
+                                  <div className="text-xs text-muted-foreground mb-1">Small (1-25 lbs)</div>
+                                  <div className="text-lg font-semibold">${addOn.pricing.small}</div>
+                                </div>
+                                <div className="bg-background/50 p-3 rounded-md">
+                                  <div className="text-xs text-muted-foreground mb-1">Medium (26-50 lbs)</div>
+                                  <div className="text-lg font-semibold">${addOn.pricing.medium}</div>
+                                </div>
+                                <div className="bg-background/50 p-3 rounded-md">
+                                  <div className="text-xs text-muted-foreground mb-1">Large (51-80 lbs)</div>
+                                  <div className="text-lg font-semibold">${addOn.pricing.large}</div>
+                                </div>
+                                <div className="bg-background/50 p-3 rounded-md">
+                                  <div className="text-xs text-muted-foreground mb-1">Giant (81+ lbs)</div>
+                                  <div className="text-lg font-semibold">${addOn.pricing.giant}</div>
+                                </div>
                               </div>
                             </>
                           ) : (
@@ -1854,9 +1859,6 @@ export function Settings() {
               <Button variant="outline" onClick={() => setWeightRangeDialogOpen(false)}>
                 Done
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
         
         <Dialog open={addOnDialogOpen} onOpenChange={setAddOnDialogOpen}>
           <DialogContent className="max-w-2xl">
@@ -1906,23 +1908,46 @@ export function Settings() {
                 <div className="space-y-3">
                   <Label>Size-Based Pricing</Label>
                   <div className="grid grid-cols-2 gap-4">
-                    {(weightRanges || []).map((range) => (
-                      <div key={range.id} className="space-y-2">
-                        <Label htmlFor={`addon-${range.id}-price`} className="text-sm text-muted-foreground">
-                          {range.name} ({formatWeightRange(range)})
-                        </Label>
-                        <Input
-                          id={`addon-${range.id}-price`}
-                          type="number"
-                          placeholder="0"
-                          value={addOnForm.pricing[range.id] || ""}
-                          onChange={(e) => setAddOnForm({ 
-                            ...addOnForm, 
-                            pricing: { ...addOnForm.pricing, [range.id]: e.target.value }
-                          })}
-                        />
-                      </div>
-                    ))}
+                    <div className="space-y-2">
+                      <Label htmlFor="addon-small-price" className="text-sm text-muted-foreground">Small (1-25 lbs)</Label>
+                      <Input
+                        id="addon-small-price"
+                        type="number"
+                        placeholder="20"
+                        value={addOnForm.smallPrice}
+                        onChange={(e) => setAddOnForm({ ...addOnForm, smallPrice: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="addon-medium-price" className="text-sm text-muted-foreground">Medium (26-50 lbs)</Label>
+                      <Input
+                        id="addon-medium-price"
+                        type="number"
+                        placeholder="25"
+                        value={addOnForm.mediumPrice}
+                        onChange={(e) => setAddOnForm({ ...addOnForm, mediumPrice: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="addon-large-price" className="text-sm text-muted-foreground">Large (51-80 lbs)</Label>
+                      <Input
+                        id="addon-large-price"
+                        type="number"
+                        placeholder="30"
+                        value={addOnForm.largePrice}
+                        onChange={(e) => setAddOnForm({ ...addOnForm, largePrice: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="addon-giant-price" className="text-sm text-muted-foreground">Giant (81+ lbs)</Label>
+                      <Input
+                        id="addon-giant-price"
+                        type="number"
+                        placeholder="40"
+                        value={addOnForm.giantPrice}
+                        onChange={(e) => setAddOnForm({ ...addOnForm, giantPrice: e.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
