@@ -867,6 +867,12 @@ export function Settings() {
               >
                 POS
               </TabsTrigger>
+              <TabsTrigger 
+                value="appearance" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Appearance
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -1534,6 +1540,25 @@ export function Settings() {
             </Card>
           </TabsContent>
           
+          <TabsContent value="appearance" className="mt-0">
+            <Card className="p-4 md:p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Appearance Settings</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Customize the look and feel of your Scruffy Butts application.
+                  </p>
+                </div>
+
+                <div className="p-8 md:p-12 text-center rounded-lg bg-secondary/20 border border-border">
+                  <p className="text-muted-foreground">
+                    Appearance customization options will appear here.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="pos" className="mt-0">
             <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
