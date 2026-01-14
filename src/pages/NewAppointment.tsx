@@ -704,7 +704,7 @@ export function NewAppointment() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-3">
+          <div className="sticky top-[72px] md:top-[68px]">
             <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Receipt size={18} className="text-primary" />
