@@ -1550,10 +1550,16 @@ export function Settings() {
                   </p>
                 </div>
 
-                <div className="p-8 md:p-12 text-center rounded-lg bg-secondary/20 border border-border">
-                  <p className="text-muted-foreground">
-                    Appearance customization options will appear here.
-                  </p>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-semibold mb-2">Appearance Mode</h3>
+                  </div>
+                  
+                  <div className="p-8 md:p-12 text-center rounded-lg bg-secondary/20 border border-border">
+                    <p className="text-muted-foreground">
+                      Appearance mode options will appear here.
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
