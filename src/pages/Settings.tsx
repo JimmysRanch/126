@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -127,7 +128,9 @@ interface BusinessInfo {
 }
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState("staff")
+  const [searchParams] = useSearchParams()
+  const tabFromUrl = searchParams.get('tab')
+  const [activeTab, setActiveTab] = useState(tabFromUrl || "staff")
   const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
   const [editingPosition, setEditingPosition] = useState<string | null>(null)
@@ -873,6 +876,12 @@ export function Settings() {
               >
                 Appearance
               </TabsTrigger>
+              <TabsTrigger 
+                value="dev-pages" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Dev Pages
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -1560,6 +1569,34 @@ export function Settings() {
                       Appearance mode options will appear here.
                     </p>
                   </div>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="dev-pages" className="mt-0">
+            <Card className="p-4 md:p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Dev Pages</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Pages that exist in the app but don't have navigation routes. These are typically accessed through email links or other external triggers.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <a
+                    href="/dev/staff-onboarding"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors flex flex-col gap-2"
+                  >
+                    <h3 className="font-semibold text-base">Staff Account Creation</h3>
+                    <p className="text-sm text-muted-foreground">
+                      First page a staff member sees when clicking the email link to create their account.
+                    </p>
+                    <span className="text-xs text-primary mt-2">Click to open in new tab →</span>
+                  </a>
                 </div>
               </div>
             </Card>
