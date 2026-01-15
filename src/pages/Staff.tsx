@@ -186,8 +186,8 @@ export function Staff() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-between gap-6">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-4 mb-2">
+                      <div className="flex-1 min-w-0 flex items-center">
+                        <div className="flex items-center gap-4">
                           <h3 className="text-lg font-semibold">{staff.name}</h3>
                           <Badge variant="secondary" className="text-xs">
                             {staff.role}
