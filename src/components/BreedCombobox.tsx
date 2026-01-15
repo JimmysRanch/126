@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Check, CaretUpDown } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -36,12 +36,6 @@ export function BreedCombobox({ value, onChange, onBlur, id, error }: BreedCombo
 
   const isValidSelection = DOG_BREEDS.includes(value as any)
 
-  useEffect(() => {
-    if (searchValue && filteredBreeds.length === 1 && filteredBreeds[0].toLowerCase() === searchValue.toLowerCase()) {
-      onChange(filteredBreeds[0])
-    }
-  }, [searchValue, filteredBreeds, onChange])
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
     if (!newOpen) {
@@ -51,11 +45,14 @@ export function BreedCombobox({ value, onChange, onBlur, id, error }: BreedCombo
     }
   }
 
-  const handleSelect = (selectedBreed: string) => {
-    onChange(selectedBreed)
-    setOpen(false)
-    setSearchValue("")
-    setHasInteracted(true)
+  const handleSelect = (currentValue: string) => {
+    const selectedBreed = DOG_BREEDS.find(breed => breed === currentValue)
+    if (selectedBreed) {
+      onChange(selectedBreed)
+      setOpen(false)
+      setSearchValue("")
+      setHasInteracted(true)
+    }
   }
 
   return (

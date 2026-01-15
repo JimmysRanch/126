@@ -241,25 +241,6 @@ export function PetCard({
                 </div>
               )}
 
-              {addOns.length > 0 && (
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1.5">
-                    Regular Add-ons
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {addOns.map((addOn) => (
-                      <Badge
-                        key={addOn}
-                        variant="secondary"
-                        className="text-xs bg-secondary/70"
-                      >
-                        {addOn}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {specialInstructions && (
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
