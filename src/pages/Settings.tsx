@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -127,6 +128,7 @@ interface BusinessInfo {
 }
 
 export function Settings() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState("staff")
   const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
@@ -1582,18 +1584,27 @@ export function Settings() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <a
-                    href="/dev/staff-onboarding"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors flex flex-col gap-2"
+                  <button
+                    onClick={() => navigate('/dev/staff-onboarding')}
+                    className="p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors flex flex-col gap-2 text-left"
                   >
                     <h3 className="font-semibold text-base">Staff Account Creation</h3>
                     <p className="text-sm text-muted-foreground">
                       First page a staff member sees when clicking the email link to create their account.
                     </p>
-                    <span className="text-xs text-primary mt-2">Click to open in new tab →</span>
-                  </a>
+                    <span className="text-xs text-primary mt-2">Click to view →</span>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/dev/staff-profile-setup')}
+                    className="p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors flex flex-col gap-2 text-left"
+                  >
+                    <h3 className="font-semibold text-base">Staff Profile Setup</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Page where staff members complete their profile after account creation.
+                    </p>
+                    <span className="text-xs text-primary mt-2">Click to view →</span>
+                  </button>
                 </div>
               </div>
             </Card>
