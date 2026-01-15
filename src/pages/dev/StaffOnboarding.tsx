@@ -50,92 +50,99 @@ export function StaffOnboarding() {
         Back to App
       </Button>
       
-      <div className="w-full max-w-6xl relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        <Card className="w-full p-8 bg-card/90 backdrop-blur-sm border-primary/20 shadow-2xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-              <Sparkle size={32} className="text-primary" weight="duotone" />
-            </div>
-            <h1 className="text-2xl font-bold mb-2">Welcome to Scruffy Butts!</h1>
-            <p className="text-muted-foreground text-sm">
-              Let's set up your account and get you started
-            </p>
-          </div>
-          
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                disabled
-                className="bg-muted/50"
-              />
-              <p className="text-xs text-muted-foreground">
-                This will be your username
-              </p>
+      <div className="w-full max-w-4xl relative z-10">
+        <Card className="w-full overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 shadow-2xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className="p-8 lg:p-10 order-2 lg:order-1">
+              <div className="text-center lg:text-left mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                  <Sparkle size={32} className="text-primary" weight="duotone" />
+                </div>
+                <h1 className="text-2xl font-bold mb-2">Welcome to Scruffy Butts!</h1>
+                <p className="text-muted-foreground text-sm">
+                  Let's set up your account and get you started
+                </p>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    disabled
+                    className="bg-muted/50"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    This will be your username
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    Create Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleCreateAccount()
+                    }}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password" className="text-sm font-medium">
+                    Confirm Password
+                  </Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="Re-enter your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleCreateAccount()
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Must be at least 8 characters
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={handleCreateAccount}
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-11 text-base"
+                >
+                  Create Account
+                </Button>
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-border text-center lg:text-left">
+                <p className="text-xs text-muted-foreground">
+                  By creating an account, you agree to our terms and conditions
+                </p>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                Create Password
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleCreateAccount()
-                }}
-              />
+            <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center p-8 order-1 lg:order-2 min-h-[280px] lg:min-h-0">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+                <img 
+                  src={accountImage} 
+                  alt="Welcome puppy mascot" 
+                  className="relative w-64 h-auto object-contain animate-[float_6s_ease-in-out_infinite]"
+                />
+              </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password" className="text-sm font-medium">
-                Confirm Password
-              </Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                placeholder="Re-enter your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleCreateAccount()
-                }}
-              />
-              <p className="text-xs text-muted-foreground">
-                Must be at least 8 characters
-              </p>
-            </div>
-            
-            <Button
-              onClick={handleCreateAccount}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-11 text-base"
-            >
-              Create Account
-            </Button>
-          </div>
-          
-          <div className="mt-8 pt-6 border-t border-border text-center">
-            <p className="text-xs text-muted-foreground">
-              By creating an account, you agree to our terms and conditions
-            </p>
           </div>
         </Card>
-        
-        <div className="hidden lg:flex justify-center items-center">
-          <img 
-            src={accountImage} 
-            alt="Welcome illustration" 
-            className="w-full max-w-md rounded-2xl shadow-xl"
-          />
-        </div>
       </div>
     </div>
   )
