@@ -15,6 +15,8 @@ const navItems = [
   { id: 'finances', label: 'Finances', path: '/finances' },
   { id: 'reports', label: 'Reports', path: '/reports' },
   { id: 'settings', label: 'Settings', path: '/settings' },
+  { id: 'staff-onboarding', label: 'Staff Onboarding', path: '/dev/staff-onboarding' },
+  { id: 'staff-profile-setup', label: 'Staff Profile', path: '/dev/staff-profile-setup' },
 ]
 
 export function TopNav() {
