@@ -6,7 +6,7 @@ export function PuppyMascot() {
       <motion.img
         src="/mascot/puppy.png"
         alt="Scruffy Butts Puppy Mascot"
-        className="w-[320px] select-none pointer-events-none drop-shadow-2xl"
+        className="w-[960px] select-none pointer-events-none drop-shadow-2xl"
         style={{ pointerEvents: 'none' }}
         animate={{
           y: [0, -20, 0],
