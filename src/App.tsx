@@ -17,6 +17,7 @@ import { RunPayroll } from '@/pages/RunPayroll'
 import { Staff } from '@/pages/Staff'
 import { StaffProfile } from '@/pages/StaffProfile'
 import { StaffPayrollBreakdown } from '@/pages/StaffPayrollBreakdown'
+import { EditStaff } from '@/pages/EditStaff'
 import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { Appointments } from '@/pages/Appointments'
@@ -49,6 +50,7 @@ function App() {
             <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
             <Route path="/staff" element={<Staff />} />
             <Route path="/staff/:staffId" element={<StaffProfile />} />
+            <Route path="/staff/:staffId/edit" element={<EditStaff />} />
             <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
             <Route path="/pos" element={<POS />} />
             <Route path="/inventory" element={<Inventory />} />
