@@ -698,7 +698,7 @@ export function Settings() {
   }
 
   const handleDeletePaymentMethod = (id: string) => {
-    setPaymentMethods((current) => current.filter(pm => pm.id !== id))
+    toast.success("Payment method removed successfully")
     toast.success("Payment method removed successfully")
   }
 
