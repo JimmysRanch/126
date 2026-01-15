@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, UserCircle } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { useKV } from "@github/spark/hooks"
@@ -38,7 +39,7 @@ export function StaffProfileSetup() {
     staffEmail: '',
     address: '',
     city: '',
-    state: '',
+    state: 'TX',
     zip: '',
     emergencyContactFirstName: '',
     emergencyContactLastName: '',
@@ -134,7 +135,7 @@ export function StaffProfileSetup() {
             <div className="space-y-2">
               <Label htmlFor="first-name" className="text-sm font-medium flex items-center gap-1">
                 First Name
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="first-name"
@@ -147,7 +148,7 @@ export function StaffProfileSetup() {
             <div className="space-y-2">
               <Label htmlFor="last-name" className="text-sm font-medium flex items-center gap-1">
                 Last Name
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="last-name"
@@ -162,7 +163,7 @@ export function StaffProfileSetup() {
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-1">
                 Phone Number
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="phone"
@@ -176,7 +177,7 @@ export function StaffProfileSetup() {
             <div className="space-y-2">
               <Label htmlFor="staff-email" className="text-sm font-medium flex items-center gap-1">
                 Email
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="staff-email"
@@ -191,11 +192,11 @@ export function StaffProfileSetup() {
           <div className="space-y-2">
             <Label htmlFor="address" className="text-sm font-medium flex items-center gap-1">
               Address
-              <span className="text-destructive">*</span>
+              <span className="text-muted-foreground">*</span>
             </Label>
             <Input
               id="address"
-              placeholder="123 Main Street"
+              placeholder="1234 Bark Lane"
               value={formData.address}
               onChange={(e) => handleChange('address', e.target.value)}
             />
@@ -205,11 +206,11 @@ export function StaffProfileSetup() {
             <div className="space-y-2 md:col-span-1">
               <Label htmlFor="city" className="text-sm font-medium flex items-center gap-1">
                 City
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="city"
-                placeholder="Springfield"
+                placeholder="Scruffyville"
                 value={formData.city}
                 onChange={(e) => handleChange('city', e.target.value)}
               />
@@ -218,20 +219,71 @@ export function StaffProfileSetup() {
             <div className="space-y-2">
               <Label htmlFor="state" className="text-sm font-medium flex items-center gap-1">
                 State
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
-              <Input
-                id="state"
-                placeholder="CA"
-                value={formData.state}
-                onChange={(e) => handleChange('state', e.target.value)}
-              />
+              <Select value={formData.state} onValueChange={(value) => handleChange('state', value)}>
+                <SelectTrigger id="state">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AL">Alabama</SelectItem>
+                  <SelectItem value="AK">Alaska</SelectItem>
+                  <SelectItem value="AZ">Arizona</SelectItem>
+                  <SelectItem value="AR">Arkansas</SelectItem>
+                  <SelectItem value="CA">California</SelectItem>
+                  <SelectItem value="CO">Colorado</SelectItem>
+                  <SelectItem value="CT">Connecticut</SelectItem>
+                  <SelectItem value="DE">Delaware</SelectItem>
+                  <SelectItem value="FL">Florida</SelectItem>
+                  <SelectItem value="GA">Georgia</SelectItem>
+                  <SelectItem value="HI">Hawaii</SelectItem>
+                  <SelectItem value="ID">Idaho</SelectItem>
+                  <SelectItem value="IL">Illinois</SelectItem>
+                  <SelectItem value="IN">Indiana</SelectItem>
+                  <SelectItem value="IA">Iowa</SelectItem>
+                  <SelectItem value="KS">Kansas</SelectItem>
+                  <SelectItem value="KY">Kentucky</SelectItem>
+                  <SelectItem value="LA">Louisiana</SelectItem>
+                  <SelectItem value="ME">Maine</SelectItem>
+                  <SelectItem value="MD">Maryland</SelectItem>
+                  <SelectItem value="MA">Massachusetts</SelectItem>
+                  <SelectItem value="MI">Michigan</SelectItem>
+                  <SelectItem value="MN">Minnesota</SelectItem>
+                  <SelectItem value="MS">Mississippi</SelectItem>
+                  <SelectItem value="MO">Missouri</SelectItem>
+                  <SelectItem value="MT">Montana</SelectItem>
+                  <SelectItem value="NE">Nebraska</SelectItem>
+                  <SelectItem value="NV">Nevada</SelectItem>
+                  <SelectItem value="NH">New Hampshire</SelectItem>
+                  <SelectItem value="NJ">New Jersey</SelectItem>
+                  <SelectItem value="NM">New Mexico</SelectItem>
+                  <SelectItem value="NY">New York</SelectItem>
+                  <SelectItem value="NC">North Carolina</SelectItem>
+                  <SelectItem value="ND">North Dakota</SelectItem>
+                  <SelectItem value="OH">Ohio</SelectItem>
+                  <SelectItem value="OK">Oklahoma</SelectItem>
+                  <SelectItem value="OR">Oregon</SelectItem>
+                  <SelectItem value="PA">Pennsylvania</SelectItem>
+                  <SelectItem value="RI">Rhode Island</SelectItem>
+                  <SelectItem value="SC">South Carolina</SelectItem>
+                  <SelectItem value="SD">South Dakota</SelectItem>
+                  <SelectItem value="TN">Tennessee</SelectItem>
+                  <SelectItem value="TX">Texas</SelectItem>
+                  <SelectItem value="UT">Utah</SelectItem>
+                  <SelectItem value="VT">Vermont</SelectItem>
+                  <SelectItem value="VA">Virginia</SelectItem>
+                  <SelectItem value="WA">Washington</SelectItem>
+                  <SelectItem value="WV">West Virginia</SelectItem>
+                  <SelectItem value="WI">Wisconsin</SelectItem>
+                  <SelectItem value="WY">Wyoming</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="zip" className="text-sm font-medium flex items-center gap-1">
                 ZIP Code
-                <span className="text-destructive">*</span>
+                <span className="text-muted-foreground">*</span>
               </Label>
               <Input
                 id="zip"
@@ -250,7 +302,7 @@ export function StaffProfileSetup() {
                 <div className="space-y-2">
                   <Label htmlFor="emergency-first-name" className="text-sm font-medium flex items-center gap-1">
                     First Name
-                    <span className="text-destructive">*</span>
+                    <span className="text-muted-foreground">*</span>
                   </Label>
                   <Input
                     id="emergency-first-name"
@@ -263,7 +315,7 @@ export function StaffProfileSetup() {
                 <div className="space-y-2">
                   <Label htmlFor="emergency-last-name" className="text-sm font-medium flex items-center gap-1">
                     Last Name
-                    <span className="text-destructive">*</span>
+                    <span className="text-muted-foreground">*</span>
                   </Label>
                   <Input
                     id="emergency-last-name"
@@ -278,7 +330,7 @@ export function StaffProfileSetup() {
                 <div className="space-y-2">
                   <Label htmlFor="emergency-relation" className="text-sm font-medium flex items-center gap-1">
                     Relation
-                    <span className="text-destructive">*</span>
+                    <span className="text-muted-foreground">*</span>
                   </Label>
                   <Input
                     id="emergency-relation"
@@ -291,7 +343,7 @@ export function StaffProfileSetup() {
                 <div className="space-y-2">
                   <Label htmlFor="emergency-phone" className="text-sm font-medium flex items-center gap-1">
                     Phone Number
-                    <span className="text-destructive">*</span>
+                    <span className="text-muted-foreground">*</span>
                   </Label>
                   <Input
                     id="emergency-phone"
@@ -315,7 +367,7 @@ export function StaffProfileSetup() {
         
         <div className="mt-8 pt-6 border-t border-border text-center">
           <p className="text-xs text-muted-foreground">
-            All fields marked with <span className="text-destructive">*</span> are required
+            All fields marked with <span className="text-muted-foreground">*</span> are required
           </p>
         </div>
       </Card>
