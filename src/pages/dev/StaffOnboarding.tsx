@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Sparkle } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { PuppyMascot } from "@/components/PuppyMascot"
+import accountImage from '@/assets/images/13360FA3-D47D-48D3-A65A-6BB641E09F62.png'
 
 export function StaffOnboarding() {
   const navigate = useNavigate()
@@ -128,8 +129,12 @@ export function StaffOnboarding() {
           </div>
         </Card>
         
-        <div className="hidden lg:block">
-          <PuppyMascot />
+        <div className="hidden lg:flex justify-center items-center">
+          <img 
+            src={accountImage} 
+            alt="Welcome illustration" 
+            className="w-full max-w-md rounded-2xl shadow-xl"
+          />
         </div>
       </div>
     </div>
