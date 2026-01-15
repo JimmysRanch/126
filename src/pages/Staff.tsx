@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Plus, Envelope, Phone, Star } from "@phosphor-icons/react"
+import { Plus } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -171,40 +171,11 @@ export function Staff() {
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="flex items-center gap-1 text-primary mb-0.5">
-                            <Star size={14} weight="fill" />
-                            <span className="text-sm font-semibold">{staff.rating}</span>
-                          </div>
                           <div className="text-xs text-muted-foreground">{staff.totalAppointments} appts</div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <Envelope size={14} className="shrink-0" />
-                          <span className="truncate">{staff.email}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <Phone size={14} />
-                          <span>{staff.phone}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {staff.specialties.map((specialty, index) => (
-                          <Badge key={index} variant="outline" className="text-[10px] px-1.5 py-0.5">
-                            {specialty}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
-                        <div className="bg-secondary/30 rounded-md p-2">
-                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
-                            Rate
-                          </div>
-                          <div className="text-xs font-semibold">{staff.hourlyRate}</div>
-                        </div>
+                      <div className="grid grid-cols-1 gap-2 pt-2 border-t border-border">
                         <div className="bg-secondary/30 rounded-md p-2">
                           <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
                             Hired
@@ -228,27 +199,9 @@ export function Staff() {
                             {staff.status}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-6 text-sm text-muted-foreground mb-2">
-                          <span>{staff.email}</span>
-                          <span>{staff.phone}</span>
-                        </div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {staff.specialties.map((specialty, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {specialty}
-                            </Badge>
-                          ))}
-                        </div>
                       </div>
 
                       <div className="flex items-center gap-8 text-sm">
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                            Rate
-                          </div>
-                          <div className="font-semibold">{staff.hourlyRate}</div>
-                        </div>
-
                         <div className="text-center">
                           <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                             Appointments
