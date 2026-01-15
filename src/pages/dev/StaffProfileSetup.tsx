@@ -12,6 +12,8 @@ interface StaffProfile {
   email: string
   firstName: string
   lastName: string
+  phone: string
+  staffEmail: string
   address: string
   city: string
   state: string
@@ -19,6 +21,7 @@ interface StaffProfile {
   emergencyContactFirstName: string
   emergencyContactLastName: string
   emergencyContactRelation: string
+  emergencyContactPhone: string
 }
 
 export function StaffProfileSetup() {
@@ -31,13 +34,16 @@ export function StaffProfileSetup() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    phone: '',
+    staffEmail: '',
     address: '',
     city: '',
     state: '',
     zip: '',
     emergencyContactFirstName: '',
     emergencyContactLastName: '',
-    emergencyContactRelation: ''
+    emergencyContactRelation: '',
+    emergencyContactPhone: ''
   })
   
   const handleChange = (field: keyof typeof formData, value: string) => {
@@ -48,13 +54,16 @@ export function StaffProfileSetup() {
     const requiredFields: Array<keyof typeof formData> = [
       'firstName',
       'lastName',
+      'phone',
+      'staffEmail',
       'address',
       'city',
       'state',
       'zip',
       'emergencyContactFirstName',
       'emergencyContactLastName',
-      'emergencyContactRelation'
+      'emergencyContactRelation',
+      'emergencyContactPhone'
     ]
     
     for (const field of requiredFields) {
@@ -149,6 +158,36 @@ export function StaffProfileSetup() {
             </div>
           </div>
           
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-sm font-medium flex items-center gap-1">
+                Phone Number
+                <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="(555) 123-4567"
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="staff-email" className="text-sm font-medium flex items-center gap-1">
+                Email
+                <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="staff-email"
+                type="email"
+                placeholder="john.doe@example.com"
+                value={formData.staffEmail}
+                onChange={(e) => handleChange('staffEmail', e.target.value)}
+              />
+            </div>
+          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="address" className="text-sm font-medium flex items-center gap-1">
               Address
@@ -235,17 +274,33 @@ export function StaffProfileSetup() {
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="emergency-relation" className="text-sm font-medium flex items-center gap-1">
-                  Relation
-                  <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="emergency-relation"
-                  placeholder="Spouse, Parent, Sibling, Friend, etc."
-                  value={formData.emergencyContactRelation}
-                  onChange={(e) => handleChange('emergencyContactRelation', e.target.value)}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="emergency-relation" className="text-sm font-medium flex items-center gap-1">
+                    Relation
+                    <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="emergency-relation"
+                    placeholder="Spouse, Parent, Sibling, Friend, etc."
+                    value={formData.emergencyContactRelation}
+                    onChange={(e) => handleChange('emergencyContactRelation', e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="emergency-phone" className="text-sm font-medium flex items-center gap-1">
+                    Phone Number
+                    <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="emergency-phone"
+                    type="tel"
+                    placeholder="(555) 123-4567"
+                    value={formData.emergencyContactPhone}
+                    onChange={(e) => handleChange('emergencyContactPhone', e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
