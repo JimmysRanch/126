@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -37,11 +37,14 @@ interface Groomer {
 
 export function NewAppointment() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const preSelectedClientId = searchParams.get('clientId')
+  
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
 
-  const [selectedClient, setSelectedClient] = useState("")
+  const [selectedClient, setSelectedClient] = useState(preSelectedClientId || "")
   const [selectedPets, setSelectedPets] = useState<string[]>([])
   const [selectedMainService, setSelectedMainService] = useState("")
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
@@ -97,11 +100,38 @@ export function NewAppointment() {
   const client = mockClients.find(c => c.id === selectedClient)
   const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
   
+  const getLastAppointmentForPet = (petId: string) => {
+    const petAppointments = (appointments || [])
+      .filter(apt => apt.petId === petId && apt.groomingPreferences)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    
+    return petAppointments[0]
+  }
+  
+  const autoPopulatePreferences = (petId: string) => {
+    const lastAppointment = getLastAppointmentForPet(petId)
+    
+    if (lastAppointment?.groomingPreferences) {
+      const prefs = lastAppointment.groomingPreferences
+      
+      if (prefs.overallLength) setOverallLength(prefs.overallLength)
+      if (prefs.faceStyle) setFaceStyle(prefs.faceStyle)
+      if (prefs.handlingNotes) setHandlingNotes(prefs.handlingNotes)
+      if (prefs.sensitiveAreas) setSensitiveAreas(prefs.sensitiveAreas)
+      
+      toast.success("Preferences loaded from last appointment")
+    }
+  }
+  
   const togglePet = (petId: string) => {
     if (selectedPets.includes(petId)) {
       setSelectedPets(selectedPets.filter(id => id !== petId))
     } else {
       setSelectedPets([...selectedPets, petId])
+      
+      if (selectedPets.length === 0) {
+        autoPopulatePreferences(petId)
+      }
     }
   }
 

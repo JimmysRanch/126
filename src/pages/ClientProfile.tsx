@@ -327,7 +327,10 @@ export function ClientProfile() {
           
           {isMobile ? (
             <div className="grid grid-cols-2 gap-2 w-full">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200 text-sm">
+              <Button 
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200 text-sm"
+                onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
+              >
                 Add Appt
               </Button>
               <Button
@@ -355,7 +358,10 @@ export function ClientProfile() {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200">
+              <Button 
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200"
+                onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
+              >
                 Add Appointment
               </Button>
               <Button
