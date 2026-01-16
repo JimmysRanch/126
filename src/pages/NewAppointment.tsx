@@ -100,38 +100,11 @@ export function NewAppointment() {
   const client = mockClients.find(c => c.id === selectedClient)
   const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
   
-  const getLastAppointmentForPet = (petId: string) => {
-    const petAppointments = (appointments || [])
-      .filter(apt => apt.petId === petId && apt.groomingPreferences)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    
-    return petAppointments[0]
-  }
-  
-  const autoPopulatePreferences = (petId: string) => {
-    const lastAppointment = getLastAppointmentForPet(petId)
-    
-    if (lastAppointment?.groomingPreferences) {
-      const prefs = lastAppointment.groomingPreferences
-      
-      if (prefs.overallLength) setOverallLength(prefs.overallLength)
-      if (prefs.faceStyle) setFaceStyle(prefs.faceStyle)
-      if (prefs.handlingNotes) setHandlingNotes(prefs.handlingNotes)
-      if (prefs.sensitiveAreas) setSensitiveAreas(prefs.sensitiveAreas)
-      
-      toast.success("Preferences loaded from last appointment")
-    }
-  }
-  
   const togglePet = (petId: string) => {
     if (selectedPets.includes(petId)) {
       setSelectedPets(selectedPets.filter(id => id !== petId))
     } else {
       setSelectedPets([...selectedPets, petId])
-      
-      if (selectedPets.length === 0) {
-        autoPopulatePreferences(petId)
-      }
     }
   }
 
