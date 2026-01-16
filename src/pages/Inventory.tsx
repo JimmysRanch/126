@@ -11,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { InventoryItem } from "@/lib/types"
-import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning } from "@phosphor-icons/react"
+import { InventoryItem, InventoryValueSnapshot } from "@/lib/types"
+import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 const DEFAULT_INVENTORY: InventoryItem[] = [
   {
@@ -92,11 +93,13 @@ const DEFAULT_INVENTORY: InventoryItem[] = [
 
 export function Inventory() {
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
+  const [valueHistory, setValueHistory] = useKV<InventoryValueSnapshot[]>("inventory-value-history", [])
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
+  const [activeTab, setActiveTab] = useState<"inventory" | "reports">("inventory")
   const isMobile = useIsMobile()
 
   const [formData, setFormData] = useState({
@@ -118,6 +121,52 @@ export function Inventory() {
       setInventory(DEFAULT_INVENTORY)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Calculate and track inventory value snapshots
+  useEffect(() => {
+    if (inventory && inventory.length > 0) {
+      const retailItems = inventory.filter(item => item.category === 'retail')
+      const supplyItems = inventory.filter(item => item.category === 'supply')
+      
+      const retailValue = retailItems.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
+      const supplyValue = supplyItems.reduce((sum, item) => sum + (item.cost * item.quantity), 0)
+      const totalValue = retailValue + supplyValue
+      const retailPotentialProfit = retailItems.reduce((sum, item) => sum + ((item.price - item.cost) * item.quantity), 0)
+
+      const snapshot: InventoryValueSnapshot = {
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+        totalValue,
+        retailValue,
+        supplyValue,
+        retailPotentialProfit,
+        itemCount: inventory.length,
+        retailCount: retailItems.length,
+        supplyCount: supplyItems.length
+      }
+
+      setValueHistory((current) => {
+        const history = current || []
+        const lastSnapshot = history[history.length - 1]
+        
+        // Only add if value changed or it's been more than 24 hours
+        if (!lastSnapshot || 
+            Math.abs(lastSnapshot.totalValue - totalValue) > 0.01 ||
+            (new Date().getTime() - new Date(lastSnapshot.timestamp).getTime()) > 24 * 60 * 60 * 1000) {
+          return [...history, snapshot].slice(-90) // Keep last 90 days
+        }
+        return history
+      })
+    }
+  }, [inventory, setValueHistory])
+
+  const currentValue = inventory ? {
+    retail: inventory.filter(i => i.category === 'retail').reduce((sum, item) => sum + (item.cost * item.quantity), 0),
+    supply: inventory.filter(i => i.category === 'supply').reduce((sum, item) => sum + (item.cost * item.quantity), 0),
+    total: inventory.reduce((sum, item) => sum + (item.cost * item.quantity), 0),
+    potentialProfit: inventory.filter(i => i.category === 'retail').reduce((sum, item) => sum + ((item.price - item.cost) * item.quantity), 0),
+    potentialRevenue: inventory.filter(i => i.category === 'retail').reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  } : { retail: 0, supply: 0, total: 0, potentialProfit: 0, potentialRevenue: 0 }
 
   const filteredInventory = (inventory || []).filter(item => {
     const matchesSearch = 
@@ -276,64 +325,299 @@ export function Inventory() {
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      {lowStockItems.length > 0 && (
-        <Card className="p-4 mb-4 border-destructive/50 bg-destructive/5">
-          <div className="flex items-start gap-3">
-            <Warning size={24} className="text-destructive flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-destructive mb-2">Low Stock Alert</h3>
-              <div className="space-y-1">
-                {lowStockItems.map(item => (
-                  <div key={item.id} className="text-sm">
-                    <span className="font-medium">{item.name}</span>
-                    <span className="text-muted-foreground"> - {item.quantity} remaining (reorder at {item.reorderLevel})</span>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "inventory" | "reports")} className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="inventory">Inventory</TabsTrigger>
+          <TabsTrigger value="reports">Value Reports</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="inventory" className="space-y-4">
+          {lowStockItems.length > 0 && (
+            <Card className="p-4 border-destructive/50 bg-destructive/5">
+              <div className="flex items-start gap-3">
+                <Warning size={24} className="text-destructive flex-shrink-0 mt-1" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-destructive mb-2">Low Stock Alert</h3>
+                  <div className="space-y-1">
+                    {lowStockItems.map(item => (
+                      <div key={item.id} className="text-sm">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-muted-foreground"> - {item.quantity} remaining (reorder at {item.reorderLevel})</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-muted-foreground">Total Inventory Value</div>
+                <CurrencyDollar size={20} className="text-primary" />
+              </div>
+              <div className="text-2xl font-bold">${currentValue.total.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground mt-1">Cost basis of all items</div>
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-muted-foreground">Retail Value</div>
+                <Package size={20} className="text-primary" />
+              </div>
+              <div className="text-2xl font-bold">${currentValue.retail.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {inventory?.filter(i => i.category === 'retail').length || 0} items
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-muted-foreground">Supply Value</div>
+                <Package size={20} className="text-secondary" />
+              </div>
+              <div className="text-2xl font-bold">${currentValue.supply.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {inventory?.filter(i => i.category === 'supply').length || 0} items
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm text-muted-foreground">Potential Profit</div>
+                <TrendUp size={20} className="text-green-500" />
+              </div>
+              <div className="text-2xl font-bold text-green-500">${currentValue.potentialProfit.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                If all retail items sold
+              </div>
+            </Card>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+            <div className="relative flex-1">
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              <Input
+                placeholder="Search by name, SKU, or supplier..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
+              <Plus className="mr-2" />
+              Add Item
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold">Retail Products</h3>
+                  <p className="text-sm text-muted-foreground">Items for sale to customers</p>
+                </div>
+                <Package size={32} className="text-primary opacity-50" />
+              </div>
+              {renderInventoryTable(retailItems, 'Retail')}
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold">Supplies</h3>
+                  <p className="text-sm text-muted-foreground">Items for business use</p>
+                </div>
+                <Package size={32} className="text-secondary opacity-50" />
+              </div>
+              {renderInventoryTable(supplyItems, 'Supply')}
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card className="p-4">
+              <h3 className="text-lg font-bold mb-4">Inventory Value Trend</h3>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={valueHistory?.slice(-30) || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="timestamp" 
+                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      tickFormatter={(value) => `$${value.toFixed(0)}`}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--popover))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="totalValue" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={2}
+                      name="Total Value"
+                      dot={false}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="retailValue" 
+                      stroke="hsl(var(--chart-1))" 
+                      strokeWidth={2}
+                      name="Retail Value"
+                      dot={false}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="supplyValue" 
+                      stroke="hsl(var(--chart-2))" 
+                      strokeWidth={2}
+                      name="Supply Value"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="text-lg font-bold mb-4">Potential Profit Trend</h3>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={valueHistory?.slice(-30) || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="timestamp" 
+                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      tickFormatter={(value) => `$${value.toFixed(0)}`}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, 'Potential Profit']}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--popover))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="retailPotentialProfit" 
+                      stroke="#22c55e" 
+                      strokeWidth={2}
+                      name="Potential Profit"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="text-lg font-bold mb-4">Item Count Trend</h3>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={valueHistory?.slice(-30) || []}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="timestamp" 
+                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                    />
+                    <Tooltip 
+                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--popover))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="retailCount" fill="hsl(var(--chart-1))" name="Retail Items" />
+                    <Bar dataKey="supplyCount" fill="hsl(var(--chart-2))" name="Supply Items" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <h3 className="text-lg font-bold mb-4">Value Breakdown by Item</h3>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
+                {inventory && [...inventory]
+                  .sort((a, b) => (b.cost * b.quantity) - (a.cost * a.quantity))
+                  .slice(0, 15)
+                  .map(item => {
+                    const itemValue = item.cost * item.quantity
+                    const percentage = (itemValue / currentValue.total) * 100
+                    return (
+                      <div key={item.id} className="flex items-center justify-between border-b border-border pb-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">{item.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {item.quantity} × ${item.cost.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="text-right ml-3">
+                          <div className="font-bold">${itemValue.toFixed(2)}</div>
+                          <div className="text-xs text-muted-foreground">{percentage.toFixed(1)}%</div>
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+            </Card>
+          </div>
+
+          <Card className="p-4">
+            <h3 className="text-lg font-bold mb-4">Value Summary Statistics</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 bg-muted rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">Average Item Value</div>
+                <div className="text-xl font-bold">
+                  ${inventory && inventory.length > 0 ? (currentValue.total / inventory.length).toFixed(2) : '0.00'}
+                </div>
+              </div>
+              <div className="p-4 bg-muted rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">Retail Profit Margin</div>
+                <div className="text-xl font-bold">
+                  {currentValue.potentialRevenue > 0 
+                    ? ((currentValue.potentialProfit / currentValue.potentialRevenue) * 100).toFixed(1)
+                    : '0.0'}%
+                </div>
+              </div>
+              <div className="p-4 bg-muted rounded-lg">
+                <div className="text-sm text-muted-foreground mb-1">Total Retail Revenue Potential</div>
+                <div className="text-xl font-bold">${currentValue.potentialRevenue.toFixed(2)}</div>
               </div>
             </div>
-          </div>
-        </Card>
-      )}
-
-      <div className="flex flex-col sm:flex-row gap-3 mb-4 items-stretch sm:items-center">
-        <div className="relative flex-1">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-          <Input
-            placeholder="Search by name, SKU, or supplier..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
-          <Plus className="mr-2" />
-          Add Item
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold">Retail Products</h3>
-              <p className="text-sm text-muted-foreground">Items for sale to customers</p>
-            </div>
-            <Package size={32} className="text-primary opacity-50" />
-          </div>
-          {renderInventoryTable(retailItems, 'Retail')}
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-bold">Supplies</h3>
-              <p className="text-sm text-muted-foreground">Items for business use</p>
-            </div>
-            <Package size={32} className="text-secondary opacity-50" />
-          </div>
-          {renderInventoryTable(supplyItems, 'Supply')}
-        </Card>
-      </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">

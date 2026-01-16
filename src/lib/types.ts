@@ -96,6 +96,18 @@ export interface InventoryItem {
   description?: string
 }
 
+export interface InventoryValueSnapshot {
+  id: string
+  timestamp: string
+  totalValue: number
+  retailValue: number
+  supplyValue: number
+  retailPotentialProfit: number
+  itemCount: number
+  retailCount: number
+  supplyCount: number
+}
+
 export interface Transaction {
   id: string
   appointmentId?: string

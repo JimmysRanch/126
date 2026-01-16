@@ -97,11 +97,18 @@ This is a comprehensive multi-page business management application with navigati
 - Success criteria: Quick checkout flow, accurate totals, flexible payment options, transaction history tracking
 
 **Inventory Management**
-- Functionality: Track retail products and supplies with stock levels and reorder alerts
-- Purpose: Manage inventory for both retail sales and internal grooming supplies
+- Functionality: Track retail products and supplies with stock levels, reorder alerts, and comprehensive value tracking and reporting
+- Purpose: Manage inventory for both retail sales and internal grooming supplies while monitoring business asset value and potential profitability
 - Trigger: Navigate to Inventory tab
-- Progression: View all items → Filter by retail/supply → Search items → Add/edit items → Adjust quantities → View low stock alerts → Reorder items
-- Success criteria: Clear stock visibility, automatic low-stock warnings, easy quantity adjustments, retail vs supply categorization
+- Progression: View all items → Filter by retail/supply → Search items → Add/edit items → Adjust quantities → View low stock alerts → View value tracking metrics → Access detailed reports → Analyze trends over time → Monitor potential profit margins
+- Success criteria: Clear stock visibility, automatic low-stock warnings, easy quantity adjustments, retail vs supply categorization, real-time value calculations, historical value trending, profit margin visibility, comprehensive reporting
+
+**Inventory Value Tracking & Reporting**
+- Functionality: Automatic tracking of total inventory value, category breakdowns, potential profit, and historical trends with interactive charts
+- Purpose: Provide financial visibility into inventory as a business asset, track value changes over time, and calculate potential returns on retail inventory
+- Trigger: Viewing inventory page or accessing reports tab
+- Progression: Page loads → Value metrics calculate automatically → View current totals (Total Value, Retail Value, Supply Value, Potential Profit) → Switch to Reports tab → View historical trends via line charts → Analyze item count trends → Review value breakdown by individual items → View summary statistics including profit margins
+- Success criteria: Accurate real-time calculations, automatic snapshot creation (daily or on value change), up to 90 days of historical data retention, clear visual charts showing trends, sortable value breakdowns by item, profit margin calculations for retail items
 
 ## Edge Case Handling
 
