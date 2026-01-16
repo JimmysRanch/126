@@ -7,6 +7,14 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useKV } from '@github/spark/hooks'
+
+interface PendingStaff {
+  id: string
+  email: string
+  invitedAt: string
+  status: 'pending'
+}
 
 const mockStaff = [
   {
@@ -81,6 +89,7 @@ export function Staff() {
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
+  const [pendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
 
   useEffect(() => {
     const tab = searchParams.get('tab')
@@ -135,6 +144,7 @@ export function Staff() {
             {activeTab === "list" && (
               <div className={`${isMobile ? 'w-full order-1' : 'flex-1 flex justify-end'}`}>
                 <Button 
+                  onClick={() => navigate('/staff/invite')}
                   className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all duration-200 hover:scale-[1.02] ${isMobile ? 'w-full' : ''}`}
                 >
                   <Plus size={18} className="mr-2" />
@@ -147,6 +157,67 @@ export function Staff() {
 
           <TabsContent value="list" className="mt-0">
             <div className="grid grid-cols-1 gap-3">
+              {(pendingStaff || []).map((staff) => (
+                <Card
+                  key={staff.id}
+                  className="p-3 sm:p-5 bg-card border-border border-dashed opacity-75"
+                >
+                  {isMobile ? (
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold mb-1.5">{staff.email}</h3>
+                          <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                            <Badge 
+                              variant="secondary"
+                              className="text-xs bg-yellow-500/20 text-yellow-600 border-yellow-500/30"
+                            >
+                              Pending Invite
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-2 pt-2 border-t border-border">
+                        <div className="bg-secondary/30 rounded-md p-2">
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
+                            Invited
+                          </div>
+                          <div className="text-xs font-semibold">
+                            {new Date(staff.invitedAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between gap-6">
+                      <div className="flex-1 min-w-0 flex items-center">
+                        <div className="flex items-center gap-4">
+                          <h3 className="text-lg font-semibold">{staff.email}</h3>
+                          <Badge 
+                            variant="secondary"
+                            className="text-xs bg-yellow-500/20 text-yellow-600 border-yellow-500/30"
+                          >
+                            Pending Invite
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-8 text-sm">
+                        <div className="text-center">
+                          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                            Invited
+                          </div>
+                          <div className="font-semibold">
+                            {new Date(staff.invitedAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+              
               {mockStaff.map((staff) => (
                 <Card
                   key={staff.id}

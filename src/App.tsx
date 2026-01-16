@@ -28,6 +28,7 @@ import { Inventory } from '@/pages/Inventory'
 import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreakdown'
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
+import { InviteStaff } from '@/pages/InviteStaff'
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
             <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
             <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
             <Route path="/staff" element={<Staff />} />
+            <Route path="/staff/invite" element={<InviteStaff />} />
             <Route path="/staff/:staffId" element={<StaffProfile />} />
             <Route path="/staff/:staffId/edit" element={<EditStaff />} />
             <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
