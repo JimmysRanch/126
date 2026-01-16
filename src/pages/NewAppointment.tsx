@@ -502,8 +502,8 @@ export function NewAppointment() {
               <div>
                 <Label className="text-sm font-medium mb-2 block">Face style</Label>
                 <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {["Round / teddy", "Short & neat", "Beard / mustache", "Breed standard", "Groomer decides"].map((option) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
                       <div key={option} className="flex items-center space-x-1.5">
                         <RadioGroupItem value={option} id={`face-${option}`} />
                         <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
