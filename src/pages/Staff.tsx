@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Plus } from "@phosphor-icons/react"
+import { Plus, PaperPlaneRight, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
+import { toast } from 'sonner'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface PendingStaff {
   id: string
@@ -89,7 +100,9 @@ export function Staff() {
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
-  const [pendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
+  const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
+  const [staffToCancel, setStaffToCancel] = useState<string | null>(null)
 
   useEffect(() => {
     const tab = searchParams.get('tab')
@@ -97,6 +110,41 @@ export function Staff() {
       setActiveTab(tab)
     }
   }, [searchParams])
+
+  const handleResendInvite = (staffId: string, email: string) => {
+    setPendingStaff((current) => 
+      (current || []).map((staff) => 
+        staff.id === staffId 
+          ? { ...staff, invitedAt: new Date().toISOString() }
+          : staff
+      )
+    )
+    
+    toast.success(`Invitation resent to ${email}`, {
+      description: 'A new invitation email has been sent.'
+    })
+  }
+
+  const handleCancelInvite = (staffId: string) => {
+    setStaffToCancel(staffId)
+    setCancelDialogOpen(true)
+  }
+
+  const confirmCancelInvite = () => {
+    if (staffToCancel) {
+      const canceledStaff = (pendingStaff || []).find(s => s.id === staffToCancel)
+      setPendingStaff((current) => 
+        (current || []).filter((staff) => staff.id !== staffToCancel)
+      )
+      
+      toast.success('Invitation canceled', {
+        description: canceledStaff ? `The invitation to ${canceledStaff.email} has been canceled.` : undefined
+      })
+    }
+    
+    setCancelDialogOpen(false)
+    setStaffToCancel(null)
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
@@ -188,6 +236,27 @@ export function Staff() {
                           </div>
                         </div>
                       </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1"
+                          onClick={() => handleResendInvite(staff.id, staff.email)}
+                        >
+                          <PaperPlaneRight size={14} className="mr-1.5" />
+                          Resend
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => handleCancelInvite(staff.id)}
+                        >
+                          <Trash size={14} className="mr-1.5" />
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex items-center justify-between gap-6">
@@ -203,7 +272,7 @@ export function Staff() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-8 text-sm">
+                      <div className="flex items-center gap-6 text-sm">
                         <div className="text-center">
                           <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                             Invited
@@ -211,6 +280,26 @@ export function Staff() {
                           <div className="font-semibold">
                             {new Date(staff.invitedAt).toLocaleDateString()}
                           </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleResendInvite(staff.id, staff.email)}
+                          >
+                            <PaperPlaneRight size={16} className="mr-2" />
+                            Resend Invite
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => handleCancelInvite(staff.id)}
+                          >
+                            <Trash size={16} className="mr-2" />
+                            Cancel Invite
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -309,6 +398,26 @@ export function Staff() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Staff Invitation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently cancel the pending invitation. The staff member will no longer be able to use the invitation link to join your team.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCancelInvite}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Cancel Invitation
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
