@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Plus } from "@phosphor-icons/react"
 import { CalendarView } from "@/components/appointments/CalendarView"
 import { ListView } from "@/components/appointments/ListView"
@@ -61,6 +62,38 @@ export function Appointments() {
               New Appointment
             </Button>
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Scheduled</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">24</p>
+          </Card>
+          
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Checked In</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">8</p>
+          </Card>
+          
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Completed</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">15</p>
+          </Card>
+          
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">No Show</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">2</p>
+          </Card>
+          
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Canceled</p>
+            <p className="text-2xl sm:text-3xl font-bold text-foreground">3</p>
+          </Card>
+          
+          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Projected Revenue</p>
+            <p className="text-2xl sm:text-3xl font-bold text-primary">$2,450</p>
+          </Card>
         </div>
 
         <div className="mt-6">
