@@ -497,7 +497,46 @@ export function NewAppointment() {
 
               <Separator />
 
-              <div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Photo I Want</Label>
+                  {photoWant ? (
+                    <div className="border border-border rounded-lg p-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground truncate">{photoWant.name}</span>
+                        <div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setPhotoWant(null)}
+                            className="h-6 w-6 p-0 ml-2"
+                          >
+                            <X size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                      <Upload size={20} className="text-muted-foreground mb-1" />
+                      <span className="text-xs text-muted-foreground">Upload photo</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && setPhotoWant(e.target.files[0])}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Photo I Don't Want</Label>
+                  {photoDontWant ? (
+                    <div className="border border-border rounded-lg p-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground truncate">{photoDontWant.name}</span>
+                        <div>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -508,19 +547,19 @@ export function NewAppointment() {
                           </Button>
                         </div>
                       </div>
-                    ) : (
-                      <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                        <Upload size={20} className="text-muted-foreground mb-1" />
-                        <span className="text-xs text-muted-foreground">Upload photo</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => e.target.files?.[0] && setPhotoDontWant(e.target.files[0])}
-                        />
-                      </label>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                      <Upload size={20} className="text-muted-foreground mb-1" />
+                      <span className="text-xs text-muted-foreground">Upload photo</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && setPhotoDontWant(e.target.files[0])}
+                      />
+                    </label>
+                  )}
                 </div>
               </div>
 
