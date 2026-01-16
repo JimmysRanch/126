@@ -56,8 +56,8 @@ export function NewAppointment() {
 
   const [overallLength, setOverallLength] = useState("")
   const [faceStyle, setFaceStyle] = useState("")
-  const [trimEars, setTrimEars] = useState(false)
-  const [trimTail, setTrimTail] = useState(false)
+  const [skipEarTrim, setSkipEarTrim] = useState(false)
+  const [skipTailTrim, setSkipTailTrim] = useState(false)
   const [groomingNotes, setGroomingNotes] = useState("")
   const [photoWant, setPhotoWant] = useState<File | null>(null)
   const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
@@ -202,8 +202,8 @@ export function NewAppointment() {
     const groomingPreferences = {
       overallLength,
       faceStyle,
-      trimEars,
-      trimTail,
+      skipEarTrim,
+      skipTailTrim,
       groomingNotes,
       photoWant: photoWant?.name || null,
       photoDontWant: photoDontWant?.name || null
@@ -508,22 +508,22 @@ export function NewAppointment() {
                 <div className="flex flex-wrap gap-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="trim-ears"
-                      checked={trimEars}
-                      onCheckedChange={(checked) => setTrimEars(checked as boolean)}
+                      id="skip-ear-trim"
+                      checked={skipEarTrim}
+                      onCheckedChange={(checked) => setSkipEarTrim(checked as boolean)}
                     />
-                    <Label htmlFor="trim-ears" className="text-sm font-normal cursor-pointer">
-                      Trim Ears
+                    <Label htmlFor="skip-ear-trim" className="text-sm font-normal cursor-pointer">
+                      Skip Ear Trim
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox
-                      id="trim-tail"
-                      checked={trimTail}
-                      onCheckedChange={(checked) => setTrimTail(checked as boolean)}
+                      id="skip-tail-trim"
+                      checked={skipTailTrim}
+                      onCheckedChange={(checked) => setSkipTailTrim(checked as boolean)}
                     />
-                    <Label htmlFor="trim-tail" className="text-sm font-normal cursor-pointer">
-                      Trim Tail
+                    <Label htmlFor="skip-tail-trim" className="text-sm font-normal cursor-pointer">
+                      Skip Tail Trim
                     </Label>
                   </div>
                 </div>

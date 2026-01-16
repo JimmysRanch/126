@@ -65,6 +65,9 @@ export interface Appointment {
   groomingPreferences?: {
     overallLength?: string
     faceStyle?: string
+    skipEarTrim?: boolean
+    skipTailTrim?: boolean
+    groomingNotes?: string
     handlingNotes?: string[]
     sensitiveAreas?: string[]
     photoWant?: string | null
