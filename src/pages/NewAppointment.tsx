@@ -505,8 +505,8 @@ export function NewAppointment() {
 
               <div>
                 <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center space-x-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="flex items-center space-x-1.5">
                     <Checkbox
                       id="skip-ear-trim"
                       checked={skipEarTrim}
@@ -516,7 +516,7 @@ export function NewAppointment() {
                       Skip Ear Trim
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1.5">
                     <Checkbox
                       id="skip-tail-trim"
                       checked={skipTailTrim}
