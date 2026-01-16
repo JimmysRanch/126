@@ -303,142 +303,147 @@ export function ClientProfile() {
   const currentData = petData[selectedPet]
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
-      <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
-        <header className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
-          <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
-              onClick={() => navigate('/clients')}
-            >
-              <ArrowLeft size={24} />
-            </Button>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight leading-none">
-                George moodys
-              </h1>
-              <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                CLIENT SINCE DEC 5, 2025
-              </p>
-            </div>
-          </div>
-          
-          {isMobile ? (
-            <div className="grid grid-cols-2 gap-2 w-full">
-              <Button 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200 text-sm"
-                onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
-              >
-                Add Appt
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200 text-sm"
-                onClick={() => navigate(`/clients/${clientId}/add-pet`)}
-              >
-                <Plus size={16} className="mr-1" />
-                Add Pet
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200 text-sm"
-                onClick={() => navigate(`/clients/${clientId}/payment-history`)}
-              >
-                Payment History
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200 text-sm"
-                onClick={() => navigate(`/clients/${clientId}/contact`)}
-              >
-                Contact
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Button 
-                className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200"
-                onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
-              >
-                Add Appointment
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200"
-                onClick={() => navigate(`/clients/${clientId}/add-pet`)}
-              >
-                <Plus size={18} className="mr-2" />
-                Add Pet
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200"
-                onClick={() => navigate(`/clients/${clientId}/payment-history`)}
-              >
-                Payment History
-              </Button>
-              <Button
-                variant="secondary"
-                className="font-semibold transition-colors duration-200"
-                onClick={() => navigate(`/clients/${clientId}/contact`)}
-              >
-                Contact
-              </Button>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="bg-card/60 border-b border-border/50">
+        <div className="max-w-[1400px] mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
+          <header className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+            <div className="flex items-start gap-3 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-secondary transition-colors duration-200"
-                onClick={() => navigate(`/clients/${clientId}/edit`)}
+                className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
+                onClick={() => navigate('/clients')}
               >
-                <PencilSimple size={20} />
+                <ArrowLeft size={24} />
               </Button>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-2xl sm:text-[32px] font-bold tracking-tight leading-none">
+                  George moodys
+                </h1>
+                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-1">
+                  CLIENT SINCE DEC 5, 2025
+                </p>
+              </div>
             </div>
-          )}
-        </header>
+            
+            {isMobile ? (
+              <div className="grid grid-cols-2 gap-2 w-full">
+                <Button 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200 text-sm"
+                  onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
+                >
+                  Add Appt
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200 text-sm"
+                  onClick={() => navigate(`/clients/${clientId}/add-pet`)}
+                >
+                  <Plus size={16} className="mr-1" />
+                  Add Pet
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200 text-sm"
+                  onClick={() => navigate(`/clients/${clientId}/payment-history`)}
+                >
+                  Payment History
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200 text-sm"
+                  onClick={() => navigate(`/clients/${clientId}/contact`)}
+                >
+                  Contact
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Button 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-colors duration-200"
+                  onClick={() => navigate(`/appointments/new?clientId=${clientId}`)}
+                >
+                  Add Appointment
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200"
+                  onClick={() => navigate(`/clients/${clientId}/add-pet`)}
+                >
+                  <Plus size={18} className="mr-2" />
+                  Add Pet
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200"
+                  onClick={() => navigate(`/clients/${clientId}/payment-history`)}
+                >
+                  Payment History
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="font-semibold transition-colors duration-200"
+                  onClick={() => navigate(`/clients/${clientId}/contact`)}
+                >
+                  Contact
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-secondary transition-colors duration-200"
+                  onClick={() => navigate(`/clients/${clientId}/edit`)}
+                >
+                  <PencilSimple size={20} />
+                </Button>
+              </div>
+            )}
+          </header>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
-          <StatWidget
-            stats={[
-              { label: "LIFETIME", value: "$8,520" },
-              { label: "APPTS", value: "24" }
-            ]}
-            onClick={() => console.log('Lifetime Spend clicked')}
-          />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
+            <StatWidget
+              stats={[
+                { label: "LIFETIME", value: "$8,520" },
+                { label: "APPTS", value: "24" }
+              ]}
+              onClick={() => console.log('Lifetime Spend clicked')}
+            />
 
-          <StatWidget
-            stats={[
-              { label: "AVG VISIT", value: "$355" },
-              { label: "AVG TIP", value: "$45" }
-            ]}
-            onClick={() => console.log('Average per visit clicked')}
-          />
+            <StatWidget
+              stats={[
+                { label: "AVG VISIT", value: "$355" },
+                { label: "AVG TIP", value: "$45" }
+              ]}
+              onClick={() => console.log('Average per visit clicked')}
+            />
 
-          <StatWidget
-            stats={[
-              { label: "INTERVAL", value: "29" },
-              { label: "LAST VISIT", value: "12" }
-            ]}
-            onClick={() => console.log('Avg Interval clicked')}
-          />
+            <StatWidget
+              stats={[
+                { label: "INTERVAL", value: "29" },
+                { label: "LAST VISIT", value: "12" }
+              ]}
+              onClick={() => console.log('Avg Interval clicked')}
+            />
 
-          <StatWidget
-            stats={[
-              { label: "NO-SHOWS", value: "2" },
-              { label: "CANCELS", value: "4" }
-            ]}
-            onClick={() => console.log('No-shows clicked')}
-          />
+            <StatWidget
+              stats={[
+                { label: "NO-SHOWS", value: "2" },
+                { label: "CANCELS", value: "4" }
+              ]}
+              onClick={() => console.log('No-shows clicked')}
+            />
 
-          <StatWidget
-            stats={[
-              { label: "LATE", value: "3" },
-              { label: "LATE CANCELS", value: "1" }
-            ]}
-            onClick={() => console.log('Late arrivals clicked')}
-          />
+            <StatWidget
+              stats={[
+                { label: "LATE", value: "3" },
+                { label: "LATE CANCELS", value: "1" }
+              ]}
+              onClick={() => console.log('Late arrivals clicked')}
+            />
+          </div>
         </div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 pet-card-grid mb-6 sm:mb-8">
           {pets.map((pet, index) => (
