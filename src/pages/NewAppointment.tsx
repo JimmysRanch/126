@@ -261,13 +261,13 @@ export function NewAppointment() {
 
   const getStyleSummary = () => {
     const parts: string[] = []
-    if (overallLength && overallLength !== "Groomer decides") {
+    if (overallLength && overallLength !== "Breed standard") {
       parts.push(overallLength.toLowerCase() + " body")
     }
-    if (faceStyle && faceStyle !== "Groomer decides") {
+    if (faceStyle && faceStyle !== "Breed standard") {
       parts.push(faceStyle.toLowerCase() + " face")
     }
-    if (parts.length === 0) return "Groomer will decide on style"
+    if (parts.length === 0) return "Breed standard styling"
     return parts.join(", ").charAt(0).toUpperCase() + parts.join(", ").slice(1) + "."
   }
 
@@ -485,7 +485,7 @@ export function NewAppointment() {
                 <Label className="text-sm font-medium mb-2 block">Overall length</Label>
                 <RadioGroup value={overallLength} onValueChange={setOverallLength}>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {["Short & neat", "Medium & neat", "Long & fluffy", "Groomer decides"].map((option) => (
+                    {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
                       <div key={option} className="flex items-center space-x-1.5">
                         <RadioGroupItem value={option} id={`length-${option}`} />
                         <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
