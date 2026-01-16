@@ -11,7 +11,11 @@ import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMo
 
 type ViewMode = 'day' | 'week' | 'month'
 
-export function GroomerView() {
+interface GroomerViewProps {
+  statusFilter?: string
+}
+
+export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
@@ -52,7 +56,13 @@ export function GroomerView() {
     const { start, end } = getDateRange()
     return (appointments || [])
       .filter(apt => {
-        if (apt.groomerId !== groomerId || apt.status === 'cancelled') return false
+        if (apt.groomerId !== groomerId) return false
+        
+        const matchesStatus = !statusFilter || statusFilter === "all" || apt.status === statusFilter
+        if (!matchesStatus) return false
+        
+        if (apt.status === 'cancelled' && (!statusFilter || statusFilter === "all")) return false
+        
         const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
           const dateStr = currentDate.toISOString().split('T')[0]

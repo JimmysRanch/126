@@ -10,12 +10,18 @@ import { MagnifyingGlass, PawPrint, User } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format } from "date-fns"
 
-export function ListView() {
+interface ListViewProps {
+  statusFilter?: string
+}
+
+export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [localStatusFilter, setLocalStatusFilter] = useState("all")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  
+  const statusFilter = externalStatusFilter || localStatusFilter
 
   const filteredAppointments = (appointments || [])
     .filter(apt => {
@@ -58,7 +64,7 @@ export function ListView() {
               className="pl-10"
             />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select value={statusFilter} onValueChange={setLocalStatusFilter}>
             <SelectTrigger className="w-full sm:w-[200px]">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>

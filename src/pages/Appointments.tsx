@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 
 export function Appointments() {
   const [activeView, setActiveView] = useState("groomer")
+  const [statusFilter, setStatusFilter] = useState("all")
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
@@ -65,41 +66,76 @@ export function Appointments() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card 
+            className={`p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+              statusFilter === "scheduled" 
+                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
+                : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+            }`}
+            onClick={() => setStatusFilter(statusFilter === "scheduled" ? "all" : "scheduled")}
+          >
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Scheduled</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground">24</p>
           </Card>
           
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card 
+            className={`p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+              statusFilter === "checked-in" 
+                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
+                : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+            }`}
+            onClick={() => setStatusFilter(statusFilter === "checked-in" ? "all" : "checked-in")}
+          >
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Checked In</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground">8</p>
           </Card>
           
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card 
+            className={`p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+              statusFilter === "completed" 
+                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
+                : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+            }`}
+            onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")}
+          >
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Completed</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground">15</p>
           </Card>
           
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card 
+            className={`p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+              statusFilter === "no-show" 
+                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
+                : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+            }`}
+            onClick={() => setStatusFilter(statusFilter === "no-show" ? "all" : "no-show")}
+          >
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">No Show</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground">2</p>
           </Card>
           
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card 
+            className={`p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+              statusFilter === "cancelled" 
+                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
+                : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+            }`}
+            onClick={() => setStatusFilter(statusFilter === "cancelled" ? "all" : "cancelled")}
+          >
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Canceled</p>
             <p className="text-2xl sm:text-3xl font-bold text-foreground">3</p>
           </Card>
           
-          <Card className="p-4 flex flex-col items-center justify-center text-center hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200">
+          <Card className="p-4 flex flex-col items-center justify-center text-center">
             <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2">Projected Revenue</p>
             <p className="text-2xl sm:text-3xl font-bold text-primary">$2,450</p>
           </Card>
         </div>
 
         <div className="mt-6">
-          {activeView === "calendar" && <CalendarView />}
-          {activeView === "list" && <ListView />}
-          {activeView === "groomer" && <GroomerView />}
+          {activeView === "calendar" && <CalendarView statusFilter={statusFilter} />}
+          {activeView === "list" && <ListView statusFilter={statusFilter} />}
+          {activeView === "groomer" && <GroomerView statusFilter={statusFilter} />}
         </div>
       </div>
     </div>

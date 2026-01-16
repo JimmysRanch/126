@@ -9,7 +9,11 @@ import { Calendar, CaretLeft, CaretRight, PawPrint } from "@phosphor-icons/react
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, addWeeks, isSameDay } from "date-fns"
 
-export function CalendarView() {
+interface CalendarViewProps {
+  statusFilter?: string
+}
+
+export function CalendarView({ statusFilter }: CalendarViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
@@ -29,7 +33,9 @@ export function CalendarView() {
   const getAppointmentsForSlot = (day: Date, timeSlot: string) => {
     return (appointments || []).filter(apt => {
       const aptDate = new Date(apt.date + 'T00:00:00')
-      return isSameDay(aptDate, day) && apt.startTime === timeSlot
+      const matchesDate = isSameDay(aptDate, day) && apt.startTime === timeSlot
+      const matchesStatus = !statusFilter || statusFilter === "all" || apt.status === statusFilter
+      return matchesDate && matchesStatus
     })
   }
 
