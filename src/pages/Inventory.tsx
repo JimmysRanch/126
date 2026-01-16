@@ -131,8 +131,8 @@ export function Inventory() {
   })
 
   const lowStockItems = (inventory || []).filter(item => item.quantity <= item.reorderLevel)
-  const retailItems = (inventory || []).filter(item => item.category === 'retail')
-  const supplyItems = (inventory || []).filter(item => item.category === 'supply')
+  const retailItems = filteredInventory.filter(item => item.category === 'retail')
+  const supplyItems = filteredInventory.filter(item => item.category === 'supply')
 
   const handleOpenDialog = (item?: InventoryItem) => {
     if (item) {
@@ -208,40 +208,74 @@ export function Inventory() {
     setDeleteDialogOpen(true)
   }
 
+  const renderInventoryTable = (items: InventoryItem[], categoryLabel: string) => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-border">
+            <th className="text-left p-3 text-sm font-medium text-muted-foreground">Item</th>
+            <th className="text-left p-3 text-sm font-medium text-muted-foreground">SKU</th>
+            <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
+            <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
+            {categoryLabel === 'Retail' && (
+              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
+            )}
+            <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.length === 0 ? (
+            <tr>
+              <td colSpan={categoryLabel === 'Retail' ? 6 : 5} className="text-center py-12 text-muted-foreground">
+                <Package size={48} className="mx-auto mb-3 opacity-50" />
+                <p>No items found</p>
+              </td>
+            </tr>
+          ) : (
+            items.map(item => (
+              <tr key={item.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                <td className="p-3">
+                  <div className="font-medium">{item.name}</div>
+                  {item.description && (
+                    <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                      {item.description}
+                    </div>
+                  )}
+                </td>
+                <td className="p-3 text-sm">{item.sku}</td>
+                <td className="p-3 text-right">
+                  <span className={`font-medium ${
+                    item.quantity <= item.reorderLevel ? 'text-destructive' : ''
+                  }`}>
+                    {item.quantity}
+                  </span>
+                </td>
+                <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
+                {categoryLabel === 'Retail' && (
+                  <td className="p-3 text-right font-medium">
+                    ${item.price.toFixed(2)}
+                  </td>
+                )}
+                <td className="p-3">
+                  <div className="flex items-center justify-center">
+                    <button
+                      onClick={() => handleOpenDialog(item)}
+                      className="text-primary hover:opacity-80"
+                    >
+                      <PencilSimple size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-muted-foreground">Total Items</div>
-              <div className="text-2xl font-bold mt-1">{(inventory || []).length}</div>
-            </div>
-            <Package size={32} className="text-primary opacity-50" />
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-muted-foreground">Retail Products</div>
-              <div className="text-2xl font-bold mt-1">{retailItems.length}</div>
-            </div>
-            <Package size={32} className="text-green-500 opacity-50" />
-          </div>
-        </Card>
-
-        <Card className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-muted-foreground">Low Stock</div>
-              <div className="text-2xl font-bold mt-1 text-destructive">{lowStockItems.length}</div>
-            </div>
-            <Warning size={32} className="text-destructive opacity-50" />
-          </div>
-        </Card>
-      </div>
-
       {lowStockItems.length > 0 && (
         <Card className="p-4 mb-4 border-destructive/50 bg-destructive/5">
           <div className="flex items-start gap-3">
@@ -261,98 +295,45 @@ export function Inventory() {
         </Card>
       )}
 
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <div className="relative flex-1">
-            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-            <Input
-              placeholder="Search by name, SKU, or supplier..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <div className="flex gap-3">
-            <Tabs value={activeCategory} onValueChange={(v) => setActiveCategory(v as any)} className="w-full sm:w-auto">
-              <TabsList className="grid grid-cols-3 w-full sm:w-auto">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="retail">Retail</TabsTrigger>
-                <TabsTrigger value="supply">Supply</TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
-              <Plus className="mr-2" />
-              Add Item
-            </Button>
-          </div>
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 items-stretch sm:items-center">
+        <div className="relative flex-1">
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <Input
+            placeholder="Search by name, SKU, or supplier..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
         </div>
+        <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
+          <Plus className="mr-2" />
+          Add Item
+        </Button>
+      </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Item</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">SKU</th>
-                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Category</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
-                <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInventory.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-muted-foreground">
-                    <Package size={48} className="mx-auto mb-3 opacity-50" />
-                    <p>No items found</p>
-                  </td>
-                </tr>
-              ) : (
-                filteredInventory.map(item => (
-                  <tr key={item.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                    <td className="p-3">
-                      <div className="font-medium">{item.name}</div>
-                      {item.description && (
-                        <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                          {item.description}
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-3 text-sm">{item.sku}</td>
-                    <td className="p-3">
-                      <Badge variant={item.category === 'retail' ? 'default' : 'secondary'}>
-                        {item.category}
-                      </Badge>
-                    </td>
-                    <td className="p-3 text-right">
-                      <span className={`font-medium ${
-                        item.quantity <= item.reorderLevel ? 'text-destructive' : ''
-                      }`}>
-                        {item.quantity}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
-                    <td className="p-3 text-right font-medium">
-                      {item.category === 'retail' ? `$${item.price.toFixed(2)}` : '—'}
-                    </td>
-                    <td className="p-3">
-                      <div className="flex items-center justify-center">
-                        <button
-                          onClick={() => handleOpenDialog(item)}
-                          className="text-primary hover:opacity-80"
-                        >
-                          <PencilSimple size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold">Retail Products</h3>
+              <p className="text-sm text-muted-foreground">Items for sale to customers</p>
+            </div>
+            <Package size={32} className="text-primary opacity-50" />
+          </div>
+          {renderInventoryTable(retailItems, 'Retail')}
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold">Supplies</h3>
+              <p className="text-sm text-muted-foreground">Items for business use</p>
+            </div>
+            <Package size={32} className="text-secondary opacity-50" />
+          </div>
+          {renderInventoryTable(supplyItems, 'Supply')}
+        </Card>
+      </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">
