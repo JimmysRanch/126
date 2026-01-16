@@ -56,8 +56,6 @@ export function NewAppointment() {
 
   const [overallLength, setOverallLength] = useState("")
   const [faceStyle, setFaceStyle] = useState("")
-  const [handlingNotes, setHandlingNotes] = useState<string[]>([])
-  const [sensitiveAreas, setSensitiveAreas] = useState<string[]>([])
   const [photoWant, setPhotoWant] = useState<File | null>(null)
   const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
   const [styleConfirmed, setStyleConfirmed] = useState(false)
@@ -201,8 +199,6 @@ export function NewAppointment() {
     const groomingPreferences = {
       overallLength,
       faceStyle,
-      handlingNotes,
-      sensitiveAreas,
       photoWant: photoWant?.name || null,
       photoDontWant: photoDontWant?.name || null
     }
@@ -269,22 +265,6 @@ export function NewAppointment() {
     }
     if (parts.length === 0) return "Breed standard styling"
     return parts.join(", ").charAt(0).toUpperCase() + parts.join(", ").slice(1) + "."
-  }
-
-  const toggleHandlingNote = (note: string) => {
-    if (handlingNotes.includes(note)) {
-      setHandlingNotes(handlingNotes.filter(n => n !== note))
-    } else {
-      setHandlingNotes([...handlingNotes, note])
-    }
-  }
-
-  const toggleSensitiveArea = (area: string) => {
-    if (sensitiveAreas.includes(area)) {
-      setSensitiveAreas(sensitiveAreas.filter(a => a !== area))
-    } else {
-      setSensitiveAreas([...sensitiveAreas, area])
-    }
   }
 
   const timeSlots = Array.from({ length: 10 }, (_, i) => {
@@ -513,43 +493,6 @@ export function NewAppointment() {
                     ))}
                   </div>
                 </RadioGroup>
-              </div>
-
-              <Separator />
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">Handling notes</Label>
-                <div className="space-y-2">
-                  {["First groom", "Nervous / anxious", "History of biting or snapping"].map((note) => (
-                    <div key={note} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`handling-${note}`}
-                        checked={handlingNotes.includes(note)}
-                        onCheckedChange={() => toggleHandlingNote(note)}
-                      />
-                      <Label htmlFor={`handling-${note}`} className="text-sm font-normal cursor-pointer">
-                        {note}
-                      </Label>
-                    </div>
-                  ))}
-                  <div className="mt-2">
-                    <Label className="text-xs text-muted-foreground mb-1 block">Sensitive areas</Label>
-                    <div className="flex gap-2 flex-wrap">
-                      {["Feet", "Face", "Nails"].map((area) => (
-                        <div key={area} className="flex items-center space-x-1.5">
-                          <Checkbox
-                            id={`sensitive-${area}`}
-                            checked={sensitiveAreas.includes(area)}
-                            onCheckedChange={() => toggleSensitiveArea(area)}
-                          />
-                          <Label htmlFor={`sensitive-${area}`} className="text-xs font-normal cursor-pointer">
-                            {area}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
               </div>
 
               <Separator />
