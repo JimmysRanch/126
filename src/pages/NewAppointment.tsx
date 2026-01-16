@@ -56,6 +56,9 @@ export function NewAppointment() {
 
   const [overallLength, setOverallLength] = useState("")
   const [faceStyle, setFaceStyle] = useState("")
+  const [trimEars, setTrimEars] = useState(false)
+  const [trimTail, setTrimTail] = useState(false)
+  const [groomingNotes, setGroomingNotes] = useState("")
   const [photoWant, setPhotoWant] = useState<File | null>(null)
   const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
   const [styleConfirmed, setStyleConfirmed] = useState(false)
@@ -199,6 +202,9 @@ export function NewAppointment() {
     const groomingPreferences = {
       overallLength,
       faceStyle,
+      trimEars,
+      trimTail,
+      groomingNotes,
       photoWant: photoWant?.name || null,
       photoDontWant: photoDontWant?.name || null
     }
@@ -493,6 +499,48 @@ export function NewAppointment() {
                     ))}
                   </div>
                 </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="trim-ears"
+                      checked={trimEars}
+                      onCheckedChange={(checked) => setTrimEars(checked as boolean)}
+                    />
+                    <Label htmlFor="trim-ears" className="text-sm font-normal cursor-pointer">
+                      Trim Ears
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="trim-tail"
+                      checked={trimTail}
+                      onCheckedChange={(checked) => setTrimTail(checked as boolean)}
+                    />
+                    <Label htmlFor="trim-tail" className="text-sm font-normal cursor-pointer">
+                      Trim Tail
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Additional notes</Label>
+                <Textarea
+                  id="grooming-notes"
+                  value={groomingNotes}
+                  onChange={(e) => setGroomingNotes(e.target.value)}
+                  placeholder="Any special grooming instructions..."
+                  rows={2}
+                  className="text-sm"
+                />
               </div>
 
               <Separator />
