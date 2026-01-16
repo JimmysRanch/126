@@ -498,43 +498,6 @@ export function NewAppointment() {
               <Separator />
 
               <div>
-                <Label className="text-sm font-medium mb-2 block">Reference photos (Optional)</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">What I want</Label>
-                    {photoWant ? (
-                      <div className="relative border border-border rounded-lg p-2 bg-muted/50">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs truncate flex-1">{photoWant.name}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setPhotoWant(null)}
-                            className="h-6 w-6 p-0 ml-2"
-                          >
-                            <X size={14} />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <label className="border border-dashed border-border rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                        <Upload size={20} className="text-muted-foreground mb-1" />
-                        <span className="text-xs text-muted-foreground">Upload photo</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => e.target.files?.[0] && setPhotoWant(e.target.files[0])}
-                        />
-                      </label>
-                    )}
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground mb-1.5 block">What I don't want</Label>
-                    {photoDontWant ? (
-                      <div className="relative border border-border rounded-lg p-2 bg-muted/50">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs truncate flex-1">{photoDontWant.name}</span>
                           <Button
                             variant="ghost"
                             size="sm"
