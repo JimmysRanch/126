@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { InventoryItem } from "@/lib/types"
-import { Plus, Minus, MagnifyingGlass, PencilSimple, Trash, Package, Warning } from "@phosphor-icons/react"
+import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 const DEFAULT_INVENTORY: InventoryItem[] = [
@@ -208,14 +208,6 @@ export function Inventory() {
     setDeleteDialogOpen(true)
   }
 
-  const handleUpdateQuantity = (id: string, newQuantity: number) => {
-    setInventory((current) =>
-      (current || []).map(item =>
-        item.id === id ? { ...item, quantity: Math.max(0, newQuantity) } : item
-      )
-    )
-  }
-
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
@@ -302,7 +294,7 @@ export function Inventory() {
                 <th className="text-left p-3 text-sm font-medium text-muted-foreground">Item</th>
                 <th className="text-left p-3 text-sm font-medium text-muted-foreground">SKU</th>
                 <th className="text-left p-3 text-sm font-medium text-muted-foreground">Category</th>
-                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Stock</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
                 <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
                 <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
                 <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
@@ -334,25 +326,11 @@ export function Inventory() {
                       </Badge>
                     </td>
                     <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 rounded border border-border hover:border-primary flex items-center justify-center"
-                        >
-                          <Minus size={12} />
-                        </button>
-                        <span className={`font-medium min-w-[40px] text-center ${
-                          item.quantity <= item.reorderLevel ? 'text-destructive' : ''
-                        }`}>
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                          className="w-6 h-6 rounded border border-border hover:border-primary flex items-center justify-center"
-                        >
-                          <Plus size={12} />
-                        </button>
-                      </div>
+                      <span className={`font-medium ${
+                        item.quantity <= item.reorderLevel ? 'text-destructive' : ''
+                      }`}>
+                        {item.quantity}
+                      </span>
                     </td>
                     <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
                     <td className="p-3 text-right font-medium">
