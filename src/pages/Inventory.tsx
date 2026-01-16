@@ -311,7 +311,7 @@ export function Inventory() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <Card className="p-4">
           <div className="flex items-center justify-between mb-4">
             <div>
