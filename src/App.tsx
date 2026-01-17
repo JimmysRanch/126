@@ -6,6 +6,7 @@ import { ClientProfile } from '@/pages/ClientProfile'
 import { AddClient } from '@/pages/AddClient'
 import { EditClient } from '@/pages/EditClient'
 import { AddPet } from '@/pages/AddPet'
+import { EditPet } from '@/pages/EditPet'
 import { PaymentHistory } from '@/pages/PaymentHistory'
 import { ContactInfo } from '@/pages/ContactInfo'
 import { Finances } from '@/pages/Finances'
@@ -47,6 +48,7 @@ function App() {
             <Route path="/clients/:clientId" element={<ClientProfile />} />
             <Route path="/clients/:clientId/edit" element={<EditClient />} />
             <Route path="/clients/:clientId/add-pet" element={<AddPet />} />
+            <Route path="/clients/:clientId/pets/:petId/edit" element={<EditPet />} />
             <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
             <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
             <Route path="/staff" element={<Staff />} />

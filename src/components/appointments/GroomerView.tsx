@@ -120,9 +120,24 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
           <div className="flex items-center gap-3 flex-wrap">
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
               <TabsList className="grid grid-cols-3">
-                <TabsTrigger value="day">Day</TabsTrigger>
-                <TabsTrigger value="week">Week</TabsTrigger>
-                <TabsTrigger value="month">Month</TabsTrigger>
+                <TabsTrigger 
+                  value="day"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Day
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="week"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Week
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="month"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  Month
+                </TabsTrigger>
               </TabsList>
             </Tabs>
             <div className="flex gap-2">

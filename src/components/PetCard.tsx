@@ -1,9 +1,9 @@
 import { useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import { PawPrint, PencilSimple, Calendar, Scissors, Star } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { EditPetDialog } from "@/components/EditPetDialog"
 
 interface PetCardProps {
   id: string
@@ -45,6 +45,13 @@ export function PetCard({
   favoriteGroomer
 }: PetCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const { clientId } = useParams()
+  const navigate = useNavigate()
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    navigate(`/clients/${clientId}/pets/${id}/edit`)
+  }
 
   return (
     <div
@@ -73,22 +80,15 @@ export function PetCard({
           >
             <div 
               className="absolute top-2 right-2 z-10"
-              onClick={(e) => e.stopPropagation()}
+              onClick={handleEditClick}
             >
-              <EditPetDialog
-                petId={id}
-                petName={name}
-                breed={breed}
-                age={age || ''}
-                weight={weight || ''}
-                color={color || ''}
-                sex={sex || ''}
-                haircut={haircut}
-                shampoo={shampoo}
-                favoriteGroomer={favoriteGroomer}
-                specialInstructions={specialInstructions}
-                temperament={temperament}
-              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 hover:bg-secondary transition-all duration-200"
+              >
+                <PencilSimple size={14} />
+              </Button>
             </div>
 
             <div className="mb-3">
@@ -197,21 +197,14 @@ export function PetCard({
                 <Scissors size={18} className="text-primary" weight="fill" />
                 Grooming Preferences
               </h3>
-              <div onClick={(e) => e.stopPropagation()}>
-                <EditPetDialog
-                  petId={id}
-                  petName={name}
-                  breed={breed}
-                  age={age || ''}
-                  weight={weight || ''}
-                  color={color || ''}
-                  sex={sex || ''}
-                  haircut={haircut}
-                  shampoo={shampoo}
-                  favoriteGroomer={favoriteGroomer}
-                  specialInstructions={specialInstructions}
-                  temperament={temperament}
-                />
+              <div onClick={handleEditClick}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 hover:bg-secondary transition-all duration-200"
+                >
+                  <PencilSimple size={14} />
+                </Button>
               </div>
             </div>
 
