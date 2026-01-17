@@ -375,6 +375,71 @@ export function NewAppointment() {
           </Card>
 
           <Card className="p-4">
+            <h2 className="text-base font-semibold mb-3">Schedule & Details</h2>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="date" className="text-sm">Date *</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={appointmentDate}
+                  onChange={(e) => setAppointmentDate(e.target.value)}
+                  min={getTodayInBusinessTimezone()}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="time" className="text-sm">Time *</Label>
+                <Select value={appointmentTime} onValueChange={setAppointmentTime}>
+                  <SelectTrigger id="time" className="h-9">
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeSlots.map(slot => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 mb-3">
+              <Label htmlFor="groomer" className="text-sm">Groomer</Label>
+              <Select value={selectedGroomer} onValueChange={setSelectedGroomer}>
+                <SelectTrigger id="groomer" className="h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
+                  {mockGroomers.map(groomer => (
+                    <SelectItem key={groomer.id} value={groomer.id}>
+                      {groomer.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedGroomer !== "auto" && (
+                <p className="text-xs text-muted-foreground">Client requested this specific groomer</p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="notes" className="text-sm">Notes (Optional)</Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any special instructions or notes..."
+                rows={2}
+                className="text-sm"
+              />
+            </div>
+          </Card>
+
+          <Card className="p-4">
             <h2 className="text-base font-semibold mb-3">Main Service *</h2>
             <div className="space-y-1.5">
               {(mainServices || []).map(service => {
@@ -630,71 +695,6 @@ export function NewAppointment() {
                   </Label>
                 </div>
               </div>
-            </div>
-          </Card>
-
-          <Card className="p-4">
-            <h2 className="text-base font-semibold mb-3">Schedule & Details</h2>
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="date" className="text-sm">Date *</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={appointmentDate}
-                  onChange={(e) => setAppointmentDate(e.target.value)}
-                  min={getTodayInBusinessTimezone()}
-                  className="h-9"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="time" className="text-sm">Time *</Label>
-                <Select value={appointmentTime} onValueChange={setAppointmentTime}>
-                  <SelectTrigger id="time" className="h-9">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map(slot => (
-                      <SelectItem key={slot} value={slot}>
-                        {slot}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 mb-3">
-              <Label htmlFor="groomer" className="text-sm">Groomer</Label>
-              <Select value={selectedGroomer} onValueChange={setSelectedGroomer}>
-                <SelectTrigger id="groomer" className="h-9">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
-                  {mockGroomers.map(groomer => (
-                    <SelectItem key={groomer.id} value={groomer.id}>
-                      {groomer.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedGroomer !== "auto" && (
-                <p className="text-xs text-muted-foreground">Client requested this specific groomer</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="notes" className="text-sm">Notes (Optional)</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any special instructions or notes..."
-                rows={2}
-                className="text-sm"
-              />
             </div>
           </Card>
         </div>
