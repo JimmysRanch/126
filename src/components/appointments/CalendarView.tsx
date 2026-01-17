@@ -212,7 +212,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
               <div className="border border-border rounded-lg overflow-hidden">
                 {timeSlots.map((slot, slotIdx) => (
                   <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
-                    <div className="text-xs text-muted-foreground p-2 border-r border-border w-[70px]">
+                    <div className="text-xs text-muted-foreground p-2 border-r border-border w-[85px]">
                       {slot}
                     </div>
                     {weekDays.map((day, dayIdx) => {
