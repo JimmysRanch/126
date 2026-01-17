@@ -84,11 +84,14 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
       
       const matchesStatus = statusFilter === "all" || apt.status === statusFilter
 
-      const aptDate = new Date(apt.date + 'T00:00:00')
       const currentDateStr = format(currentDate, 'yyyy-MM-dd')
       const matchesDate = viewMode === 'day' 
         ? apt.date === currentDateStr
-        : isWithinInterval(aptDate, { start, end })
+        : (() => {
+            const [year, month, day] = apt.date.split('-').map(Number)
+            const aptDate = new Date(year, month - 1, day)
+            return isWithinInterval(aptDate, { start, end })
+          })()
 
       return matchesSearch && matchesStatus && matchesDate
     })

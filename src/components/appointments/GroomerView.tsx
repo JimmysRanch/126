@@ -63,11 +63,13 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
         
         if (apt.status === 'cancelled' && (!statusFilter || statusFilter === "all")) return false
         
-        const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
           const currentDateStr = format(currentDate, 'yyyy-MM-dd')
           return apt.date === currentDateStr
         }
+        
+        const [year, month, day] = apt.date.split('-').map(Number)
+        const aptDate = new Date(year, month - 1, day)
         return isWithinInterval(aptDate, { start, end })
       })
       .sort((a, b) => {
