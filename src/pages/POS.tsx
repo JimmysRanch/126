@@ -40,7 +40,10 @@ export function POS() {
 
   const todayAppointments = (appointments || []).filter(apt => {
     const today = getTodayInBusinessTimezone()
-    return apt.date === today && apt.status === 'completed'
+    const isPaidFor = (transactions || []).some(
+      transaction => transaction.appointmentId === apt.id && transaction.status === 'completed'
+    )
+    return apt.date === today && !isPaidFor
   })
 
   const retailProducts = (inventory || []).filter(item => item.category === 'retail')
@@ -165,10 +168,10 @@ export function POS() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-3">Today's Completed Appointments</h2>
+            <h2 className="text-lg font-semibold mb-3">Today's Open Appointments</h2>
             <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
               {todayAppointments.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No completed appointments today</p>
+                <p className="text-center text-muted-foreground py-8">No open appointments today</p>
               ) : (
                 todayAppointments.map(apt => (
                   <button
