@@ -1,4 +1,4 @@
-import { Staff } from './types'
+import { Staff, Appointment } from './types'
 
 export async function initializeStaffData() {
   try {
@@ -70,7 +70,62 @@ export async function initializeStaffData() {
         console.log('Staff data migrated with isGroomer property')
       }
     }
+
+    await migrateAppointmentGroomerIds()
   } catch (error) {
     console.error('Failed to initialize staff data:', error)
+  }
+}
+
+async function migrateAppointmentGroomerIds() {
+  try {
+    const appointments = await window.spark.kv.get<Appointment[]>('appointments')
+    const staff = await window.spark.kv.get<Staff[]>('staff')
+    
+    if (!appointments || !staff || appointments.length === 0) {
+      return
+    }
+
+    const groomers = staff.filter(s => s.isGroomer)
+    
+    if (groomers.length === 0) {
+      console.warn('No groomers found in staff data')
+      return
+    }
+
+    let needsUpdate = false
+    const updatedAppointments = appointments.map(apt => {
+      const groomerExists = groomers.some(g => g.id === apt.groomerId)
+      
+      if (!groomerExists) {
+        needsUpdate = true
+        const matchingGroomer = groomers.find(g => g.name === apt.groomerName)
+        
+        if (matchingGroomer) {
+          console.log(`Migrating appointment ${apt.id} groomer ID from ${apt.groomerId} to ${matchingGroomer.id}`)
+          return {
+            ...apt,
+            groomerId: matchingGroomer.id
+          }
+        } else {
+          const firstGroomer = groomers[0]
+          console.log(`Assigning appointment ${apt.id} to default groomer ${firstGroomer.id}`)
+          return {
+            ...apt,
+            groomerId: firstGroomer.id,
+            groomerName: firstGroomer.name
+          }
+        }
+      }
+      
+      return apt
+    })
+
+    if (needsUpdate) {
+      await window.spark.kv.set('appointments', updatedAppointments)
+      console.log('Appointment groomer IDs migrated successfully')
+    }
+  } catch (error) {
+    console.error('Failed to migrate appointment groomer IDs:', error)
   }
 }

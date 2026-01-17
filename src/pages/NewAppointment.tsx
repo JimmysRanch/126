@@ -14,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
+import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight, Staff } from "@/lib/types"
 import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X, Check, CaretUpDown } from "@phosphor-icons/react"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
@@ -43,6 +43,7 @@ export function NewAppointment() {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
+  const [staff] = useKV<Staff[]>("staff", [])
 
   const [selectedClient, setSelectedClient] = useState(preSelectedClientId || "")
   const [selectedPets, setSelectedPets] = useState<string[]>([])
@@ -92,11 +93,13 @@ export function NewAppointment() {
     }
   ]
 
-  const mockGroomers: Groomer[] = [
-    { id: "1", name: "Sarah Johnson", appointmentCount: 0 },
-    { id: "2", name: "Mike Torres", appointmentCount: 0 },
-    { id: "3", name: "Emma Roberts", appointmentCount: 0 }
-  ]
+  const groomers: Groomer[] = (staff || [])
+    .filter(s => s.isGroomer && s.status === 'Active')
+    .map(s => ({
+      id: s.id,
+      name: s.name,
+      appointmentCount: 0
+    }))
 
   const client = mockClients.find(c => c.id === selectedClient)
   const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
@@ -173,7 +176,7 @@ export function NewAppointment() {
   }
 
   const getAutoGroomer = () => {
-    const groomerCounts = mockGroomers.map(g => ({
+    const groomerCounts = groomers.map(g => ({
       ...g,
       count: (appointments || []).filter(apt => apt.groomerId === g.id && apt.status !== 'cancelled').length
     }))
@@ -193,7 +196,7 @@ export function NewAppointment() {
       return
     }
 
-    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
+    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : groomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
       return
@@ -414,7 +417,7 @@ export function NewAppointment() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
-                  {mockGroomers.map(groomer => (
+                  {groomers.map(groomer => (
                     <SelectItem key={groomer.id} value={groomer.id}>
                       {groomer.name}
                     </SelectItem>
@@ -788,7 +791,7 @@ export function NewAppointment() {
                 <div className="pt-2 border-t border-border">
                   <div className="text-xs text-muted-foreground mb-1">Groomer</div>
                   <div className="font-medium text-sm">
-                    {mockGroomers.find(g => g.id === selectedGroomer)?.name}
+                    {groomers.find(g => g.id === selectedGroomer)?.name}
                   </div>
                   <Badge variant="secondary" className="text-xs mt-1">Client Requested</Badge>
                 </div>
