@@ -65,8 +65,8 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
         
         const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
-          const dateStr = currentDate.toISOString().split('T')[0]
-          return apt.date === dateStr
+          const currentDateStr = format(currentDate, 'yyyy-MM-dd')
+          return apt.date === currentDateStr
         }
         return isWithinInterval(aptDate, { start, end })
       })
