@@ -15,7 +15,7 @@ export function Appointments() {
   const isMobile = useIsMobile()
 
   return (
-    <div className="min-h-screen bg-background p-3 sm:p-6">
+    <div className="min-h-screen bg-background px-3 sm:px-6 pt-2 sm:pt-3 pb-3 sm:pb-6">
       <div className="max-w-[1600px] mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <Card 
