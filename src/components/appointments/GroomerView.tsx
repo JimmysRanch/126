@@ -8,6 +8,8 @@ import { Appointment, Staff } from "@/lib/types"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+import { toZonedTime } from "date-fns-tz"
+import { getBusinessTimezone, getTodayInBusinessTimezone } from "@/lib/date-utils"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -19,7 +21,8 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const timezone = getBusinessTimezone()
+  const [currentDate, setCurrentDate] = useState(() => toZonedTime(new Date(), timezone))
   const [viewMode, setViewMode] = useState<ViewMode>('day')
 
   const groomers = Array.from(
@@ -146,7 +149,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
               <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
                 <CaretLeft />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}>
                 Today
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>

@@ -8,6 +8,8 @@ import { Appointment } from "@/lib/types"
 import { Calendar, CaretLeft, CaretRight, PawPrint } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, addWeeks, subWeeks, addMonths, subMonths, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns"
+import { toZonedTime } from "date-fns-tz"
+import { getBusinessTimezone, getTodayInBusinessTimezone } from "@/lib/date-utils"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -17,7 +19,8 @@ interface CalendarViewProps {
 
 export function CalendarView({ statusFilter }: CalendarViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const timezone = getBusinessTimezone()
+  const [currentDate, setCurrentDate] = useState(() => toZonedTime(new Date(), timezone))
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('week')
@@ -127,7 +130,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
               <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
                 <CaretLeft />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(toZonedTime(new Date(), timezone))}>
                 Today
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
@@ -149,7 +152,8 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
             {getMonthDays().map((day, idx) => {
               const dayAppointments = getAppointmentsForDay(day)
               const isCurrentMonth = day.getMonth() === currentDate.getMonth()
-              const isToday = isSameDay(day, new Date())
+              const todayInTimezone = toZonedTime(new Date(), timezone)
+              const isToday = isSameDay(day, todayInTimezone)
               
               return (
                 <div
