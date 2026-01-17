@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useKV } from "@github/spark/hooks"
 import { Appointment } from "@/lib/types"
-import { MagnifyingGlass, PawPrint, User } from "@phosphor-icons/react"
+import { MagnifyingGlass, PawPrint, User, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
-import { format } from "date-fns"
+import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+
+type ViewMode = 'day' | 'week' | 'month'
 
 interface ListViewProps {
   statusFilter?: string
@@ -20,8 +23,57 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
   const [localStatusFilter, setLocalStatusFilter] = useState("all")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [viewMode, setViewMode] = useState<ViewMode>('day')
   
   const statusFilter = externalStatusFilter || localStatusFilter
+
+  const getDateRange = () => {
+    switch (viewMode) {
+      case 'week':
+        return {
+          start: startOfWeek(currentDate, { weekStartsOn: 0 }),
+          end: endOfWeek(currentDate, { weekStartsOn: 0 })
+        }
+      case 'month':
+        return {
+          start: startOfMonth(currentDate),
+          end: endOfMonth(currentDate)
+        }
+      default:
+        return {
+          start: currentDate,
+          end: currentDate
+        }
+    }
+  }
+
+  const navigateDate = (direction: 'prev' | 'next') => {
+    switch (viewMode) {
+      case 'week':
+        setCurrentDate(direction === 'prev' ? subWeeks(currentDate, 1) : addWeeks(currentDate, 1))
+        break
+      case 'month':
+        setCurrentDate(direction === 'prev' ? subMonths(currentDate, 1) : addMonths(currentDate, 1))
+        break
+      default:
+        setCurrentDate(direction === 'prev' ? subDays(currentDate, 1) : addDays(currentDate, 1))
+    }
+  }
+
+  const getHeaderText = () => {
+    const { start, end } = getDateRange()
+    switch (viewMode) {
+      case 'week':
+        return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`
+      case 'month':
+        return format(currentDate, 'MMMM yyyy')
+      default:
+        return format(currentDate, 'MMMM d, yyyy')
+    }
+  }
+
+  const { start, end } = getDateRange()
 
   const filteredAppointments = (appointments || [])
     .filter(apt => {
@@ -32,7 +84,12 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
       
       const matchesStatus = statusFilter === "all" || apt.status === statusFilter
 
-      return matchesSearch && matchesStatus
+      const aptDate = new Date(apt.date + 'T00:00:00')
+      const matchesDate = viewMode === 'day' 
+        ? apt.date === currentDate.toISOString().split('T')[0]
+        : isWithinInterval(aptDate, { start, end })
+
+      return matchesSearch && matchesStatus && matchesDate
     })
     .sort((a, b) => {
       const dateA = new Date(`${a.date} ${a.startTime}`)
@@ -53,6 +110,32 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
 
   return (
     <div className="space-y-4">
+      <Card className="p-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+              <TabsList className="grid grid-cols-3">
+                <TabsTrigger value="day">Day</TabsTrigger>
+                <TabsTrigger value="week">Week</TabsTrigger>
+                <TabsTrigger value="month">Month</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
+                <CaretLeft />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                Today
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
+                <CaretRight />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
+
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           <div className="relative flex-1">
