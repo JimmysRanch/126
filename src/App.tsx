@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { TopNav } from '@/components/TopNav'
 import { Dashboard } from '@/pages/Dashboard'
@@ -30,8 +31,13 @@ import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreak
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
 import { InviteStaff } from '@/pages/InviteStaff'
+import { initializeStaffData } from '@/lib/init-data'
 
 function App() {
+  useEffect(() => {
+    initializeStaffData()
+  }, [])
+
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground flex flex-col">

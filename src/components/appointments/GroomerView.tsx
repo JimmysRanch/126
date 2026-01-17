@@ -19,21 +19,19 @@ interface GroomerViewProps {
 
 export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [staff] = useKV<Staff[]>("staff", [])
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const timezone = getBusinessTimezone()
   const [currentDate, setCurrentDate] = useState(() => toZonedTime(new Date(), timezone))
   const [viewMode, setViewMode] = useState<ViewMode>('day')
 
-  const groomers = Array.from(
-    new Set((appointments || []).map(apt => apt.groomerId))
-  ).map(id => {
-    const apt = (appointments || []).find(a => a.groomerId === id)
-    return {
-      id,
-      name: apt?.groomerName || 'Unknown'
-    }
-  })
+  const groomers = (staff || [])
+    .filter(s => s.isGroomer && s.status === 'Active')
+    .map(s => ({
+      id: s.id,
+      name: s.name
+    }))
 
   const getDateRange = () => {
     switch (viewMode) {
