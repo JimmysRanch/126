@@ -19,8 +19,7 @@ const mockClients = [
       { name: "Max", breed: "Poodle Mix" }
     ],
     lastVisit: "Jan 15, 2025",
-    nextVisit: "Feb 12, 2025",
-    lifetimeSpend: "$8,520"
+    nextVisit: "Feb 12, 2025"
   },
   {
     id: "2",
@@ -31,8 +30,7 @@ const mockClients = [
       { name: "Bella", breed: "French Bulldog" }
     ],
     lastVisit: "Jan 20, 2025",
-    nextVisit: "Feb 17, 2025",
-    lifetimeSpend: "$3,240"
+    nextVisit: "Feb 17, 2025"
   },
   {
     id: "3",
@@ -44,8 +42,7 @@ const mockClients = [
       { name: "Daisy", breed: "Cavalier King Charles" }
     ],
     lastVisit: "Jan 18, 2025",
-    nextVisit: "Feb 15, 2025",
-    lifetimeSpend: "$5,890"
+    nextVisit: "Feb 15, 2025"
   },
   {
     id: "4",
@@ -56,8 +53,7 @@ const mockClients = [
       { name: "Rocky", breed: "German Shepherd" }
     ],
     lastVisit: "Jan 22, 2025",
-    nextVisit: "Feb 19, 2025",
-    lifetimeSpend: "$2,150"
+    nextVisit: "Feb 19, 2025"
   },
   {
     id: "5",
@@ -69,8 +65,7 @@ const mockClients = [
       { name: "Milo", breed: "Shih Tzu" }
     ],
     lastVisit: "Jan 12, 2025",
-    nextVisit: "Feb 9, 2025",
-    lifetimeSpend: "$4,620"
+    nextVisit: "Feb 9, 2025"
   },
   {
     id: "6",
@@ -81,8 +76,7 @@ const mockClients = [
       { name: "Buddy", breed: "Labrador Mix" }
     ],
     lastVisit: "Jan 25, 2025",
-    nextVisit: "Feb 22, 2025",
-    lifetimeSpend: "$1,840"
+    nextVisit: "Feb 22, 2025"
   },
   {
     id: "7",
@@ -94,8 +88,7 @@ const mockClients = [
       { name: "Apollo", breed: "Doberman" }
     ],
     lastVisit: "Jan 8, 2025",
-    nextVisit: "Feb 5, 2025",
-    lifetimeSpend: "$6,310"
+    nextVisit: "Feb 5, 2025"
   },
   {
     id: "8",
@@ -106,8 +99,7 @@ const mockClients = [
       { name: "Princess", breed: "Maltese" }
     ],
     lastVisit: "Jan 19, 2025",
-    nextVisit: "Feb 16, 2025",
-    lifetimeSpend: "$3,890"
+    nextVisit: "Feb 16, 2025"
   }
 ]
 
@@ -165,12 +157,6 @@ export function ClientsList() {
                           </Badge>
                         ))}
                       </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">
-                        Lifetime
-                      </div>
-                      <div className="text-base font-bold text-primary">{client.lifetimeSpend}</div>
                     </div>
                   </div>
 
@@ -233,13 +219,6 @@ export function ClientsList() {
                         Next Visit
                       </div>
                       <div className="font-semibold">{client.nextVisit}</div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        Lifetime Spend
-                      </div>
-                      <div className="font-semibold text-primary">{client.lifetimeSpend}</div>
                     </div>
                   </div>
                 </div>

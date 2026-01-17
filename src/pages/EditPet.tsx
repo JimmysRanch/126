@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 
@@ -26,6 +29,11 @@ export function EditPet() {
   const [specialInstructions, setSpecialInstructions] = useState("Prefers gentle handling around ears. Give treats frequently during grooming.")
   const [temperamentStr, setTemperamentStr] = useState("Friendly, Energetic, Loves treats")
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false)
+  const [overallLength, setOverallLength] = useState("Short & neat")
+  const [faceStyle, setFaceStyle] = useState("Short & neat")
+  const [skipEarTrim, setSkipEarTrim] = useState(false)
+  const [skipTailTrim, setSkipTailTrim] = useState(false)
+  const [groomingNotes, setGroomingNotes] = useState("")
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -53,7 +61,12 @@ export function EditPet() {
       shampoo,
       favoriteGroomer,
       specialInstructions,
-      temperament: temperamentStr.split(',').map(t => t.trim()).filter(Boolean)
+      temperament: temperamentStr.split(',').map(t => t.trim()).filter(Boolean),
+      overallLength,
+      faceStyle,
+      skipEarTrim,
+      skipTailTrim,
+      groomingNotes
     })
 
     toast.success('Pet information updated!')
@@ -166,6 +179,88 @@ export function EditPet() {
                 onChange={(e) => setTemperamentStr(e.target.value)}
                 placeholder="Friendly, Energetic, Loves treats"
               />
+            </div>
+
+            <Separator />
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-sm">Grooming Preferences</h3>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+                <RadioGroup value={overallLength} onValueChange={setOverallLength}>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
+                      <div key={option} className="flex items-center space-x-1.5">
+                        <RadioGroupItem value={option} id={`length-${option}`} />
+                        <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Face style</Label>
+                <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
+                      <div key={option} className="flex items-center space-x-1.5">
+                        <RadioGroupItem value={option} id={`face-${option}`} />
+                        <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="flex items-center space-x-1.5">
+                    <Checkbox
+                      id="skip-ear-trim"
+                      checked={skipEarTrim}
+                      onCheckedChange={(checked) => setSkipEarTrim(checked as boolean)}
+                    />
+                    <Label htmlFor="skip-ear-trim" className="text-sm font-normal cursor-pointer">
+                      Skip Ear Trim
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-1.5">
+                    <Checkbox
+                      id="skip-tail-trim"
+                      checked={skipTailTrim}
+                      onCheckedChange={(checked) => setSkipTailTrim(checked as boolean)}
+                    />
+                    <Label htmlFor="skip-tail-trim" className="text-sm font-normal cursor-pointer">
+                      Skip Tail Trim
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Additional notes</Label>
+                <Textarea
+                  id="grooming-notes"
+                  value={groomingNotes}
+                  onChange={(e) => setGroomingNotes(e.target.value)}
+                  placeholder="Any special grooming instructions..."
+                  rows={2}
+                  className="text-sm"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

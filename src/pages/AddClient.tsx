@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
@@ -41,6 +44,11 @@ interface PetInfo {
   notes: string
   breedError?: boolean
   mixedBreedError?: boolean
+  overallLength: string
+  faceStyle: string
+  skipEarTrim: boolean
+  skipTailTrim: boolean
+  groomingNotes: string
 }
 
 export function AddClient() {
@@ -67,7 +75,12 @@ export function AddClient() {
       mixedBreed: '',
       notes: '',
       breedError: false,
-      mixedBreedError: false
+      mixedBreedError: false,
+      overallLength: '',
+      faceStyle: '',
+      skipEarTrim: false,
+      skipTailTrim: false,
+      groomingNotes: ''
     }
   ])
 
@@ -82,7 +95,12 @@ export function AddClient() {
       mixedBreed: '',
       notes: '',
       breedError: false,
-      mixedBreedError: false
+      mixedBreedError: false,
+      overallLength: '',
+      faceStyle: '',
+      skipEarTrim: false,
+      skipTailTrim: false,
+      groomingNotes: ''
     }
     setPets([...pets, newPet])
   }
@@ -91,7 +109,7 @@ export function AddClient() {
     setPets(pets.filter(pet => pet.id !== id))
   }
 
-  const updatePet = (id: string, field: keyof PetInfo, value: string) => {
+  const updatePet = (id: string, field: keyof PetInfo, value: string | boolean) => {
     setPets(pets.map(pet => 
       pet.id === id ? { ...pet, [field]: value } : pet
     ))
@@ -448,6 +466,94 @@ export function AddClient() {
                   placeholder="Special instructions, medical information, allergies, and behavior information"
                   rows={4}
                 />
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-sm">Grooming Preferences</h3>
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+                  <RadioGroup 
+                    value={pet.overallLength} 
+                    onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
+                  >
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
+                        <div key={option} className="flex items-center space-x-1.5">
+                          <RadioGroupItem value={option} id={`${pet.id}-length-${option}`} />
+                          <Label htmlFor={`${pet.id}-length-${option}`} className="text-sm font-normal cursor-pointer">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Face style</Label>
+                  <RadioGroup 
+                    value={pet.faceStyle} 
+                    onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
+                  >
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
+                        <div key={option} className="flex items-center space-x-1.5">
+                          <RadioGroupItem value={option} id={`${pet.id}-face-${option}`} />
+                          <Label htmlFor={`${pet.id}-face-${option}`} className="text-sm font-normal cursor-pointer">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id={`${pet.id}-skip-ear-trim`}
+                        checked={pet.skipEarTrim}
+                        onCheckedChange={(checked) => updatePet(pet.id, 'skipEarTrim', checked as boolean)}
+                      />
+                      <Label htmlFor={`${pet.id}-skip-ear-trim`} className="text-sm font-normal cursor-pointer">
+                        Skip Ear Trim
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id={`${pet.id}-skip-tail-trim`}
+                        checked={pet.skipTailTrim}
+                        onCheckedChange={(checked) => updatePet(pet.id, 'skipTailTrim', checked as boolean)}
+                      />
+                      <Label htmlFor={`${pet.id}-skip-tail-trim`} className="text-sm font-normal cursor-pointer">
+                        Skip Tail Trim
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label htmlFor={`${pet.id}-grooming-notes`} className="text-sm font-medium mb-2 block">Additional notes</Label>
+                  <Textarea
+                    id={`${pet.id}-grooming-notes`}
+                    value={pet.groomingNotes}
+                    onChange={(e) => updatePet(pet.id, 'groomingNotes', e.target.value)}
+                    placeholder="Any special grooming instructions..."
+                    rows={2}
+                    className="text-sm"
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>

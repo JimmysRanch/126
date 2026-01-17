@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
@@ -30,6 +33,11 @@ export function AddPet() {
   const [temperament, setTemperament] = useState('')
   const [breedError, setBreedError] = useState(false)
   const [mixedBreedError, setMixedBreedError] = useState(false)
+  const [overallLength, setOverallLength] = useState('')
+  const [faceStyle, setFaceStyle] = useState('')
+  const [skipEarTrim, setSkipEarTrim] = useState(false)
+  const [skipTailTrim, setSkipTailTrim] = useState(false)
+  const [groomingNotes, setGroomingNotes] = useState('')
 
   const validateForm = () => {
     if (!name.trim()) {
@@ -74,7 +82,12 @@ export function AddPet() {
       favoriteGroomer,
       specialInstructions,
       notes,
-      temperament
+      temperament,
+      overallLength,
+      faceStyle,
+      skipEarTrim,
+      skipTailTrim,
+      groomingNotes
     })
     
     toast.success('Pet added successfully!')
@@ -225,55 +238,79 @@ export function AddPet() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="haircut">Preferred Haircut</Label>
-                <Input
-                  id="haircut"
-                  value={haircut}
-                  onChange={(e) => setHaircut(e.target.value)}
-                  placeholder="Short summer cut"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="shampoo">Shampoo Preference</Label>
-                <Input
-                  id="shampoo"
-                  value={shampoo}
-                  onChange={(e) => setShampoo(e.target.value)}
-                  placeholder="Hypoallergenic"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="favorite-groomer">Favorite Groomer</Label>
-                <Input
-                  id="favorite-groomer"
-                  value={favoriteGroomer}
-                  onChange={(e) => setFavoriteGroomer(e.target.value)}
-                  placeholder="Sarah J."
-                />
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+              <RadioGroup value={overallLength} onValueChange={setOverallLength}>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
+                    <div key={option} className="flex items-center space-x-1.5">
+                      <RadioGroupItem value={option} id={`length-${option}`} />
+                      <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
+                        {option}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Face style</Label>
+              <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
+                    <div key={option} className="flex items-center space-x-1.5">
+                      <RadioGroupItem value={option} id={`face-${option}`} />
+                      <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
+                        {option}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="flex items-center space-x-1.5">
+                  <Checkbox
+                    id="skip-ear-trim"
+                    checked={skipEarTrim}
+                    onCheckedChange={(checked) => setSkipEarTrim(checked as boolean)}
+                  />
+                  <Label htmlFor="skip-ear-trim" className="text-sm font-normal cursor-pointer">
+                    Skip Ear Trim
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  <Checkbox
+                    id="skip-tail-trim"
+                    checked={skipTailTrim}
+                    onCheckedChange={(checked) => setSkipTailTrim(checked as boolean)}
+                  />
+                  <Label htmlFor="skip-tail-trim" className="text-sm font-normal cursor-pointer">
+                    Skip Tail Trim
+                  </Label>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="special-instructions">Special Instructions</Label>
-              <Textarea
-                id="special-instructions"
-                value={specialInstructions}
-                onChange={(e) => setSpecialInstructions(e.target.value)}
-                placeholder="Any special handling instructions..."
-                rows={3}
-              />
-            </div>
+            <Separator />
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Additional Notes</Label>
+            <div>
+              <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Additional notes</Label>
               <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Any additional information..."
-                rows={3}
+                id="grooming-notes"
+                value={groomingNotes}
+                onChange={(e) => setGroomingNotes(e.target.value)}
+                placeholder="Any special grooming instructions..."
+                rows={2}
+                className="text-sm"
               />
             </div>
           </CardContent>
