@@ -94,7 +94,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
 
         <div className="overflow-x-auto">
           <div className={viewMode === 'week' ? 'min-w-[800px]' : ''}>
-            <div className={`grid gap-2 mb-2 ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'}`}>
+            <div className={`grid gap-2 mb-2 ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
               <div className="text-xs font-medium text-muted-foreground p-2">Time</div>
               {weekDays.map((day, i) => (
                 <div key={i} className="text-center p-2">
@@ -110,8 +110,8 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
 
             <div className="border border-border rounded-lg overflow-hidden">
               {timeSlots.map((slot, slotIdx) => (
-                <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-8' : 'grid-cols-2'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
-                  <div className="text-xs text-muted-foreground p-2 border-r border-border">
+                <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
+                  <div className="text-xs text-muted-foreground p-2 border-r border-border w-[70px]">
                     {slot}
                   </div>
                   {weekDays.map((day, dayIdx) => {

@@ -114,8 +114,8 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="p-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
           <div className="flex items-center gap-3 flex-wrap">
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
