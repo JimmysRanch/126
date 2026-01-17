@@ -114,14 +114,14 @@ export function AddPet() {
         </div>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="pt-6">
             <CardTitle className="flex items-center gap-2">
               <PawPrint size={20} weight="fill" className="text-primary" />
               Pet Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardContent className="space-y-4 pb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
               <div className="space-y-2">
                 <Label htmlFor="name">Pet Name *</Label>
                 <Input
@@ -231,13 +231,13 @@ export function AddPet() {
         </Card>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="pt-6">
             <CardTitle className="flex items-center gap-2">
               <PawPrint size={20} weight="fill" className="text-primary" />
               Grooming Preferences
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pb-6">
             <div>
               <Label className="text-sm font-medium mb-2 block">Overall length</Label>
               <RadioGroup value={overallLength} onValueChange={setOverallLength}>

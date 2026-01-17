@@ -106,6 +106,13 @@ const TIMEZONES = [
   { value: "America/Puerto_Rico", label: "Atlantic Time (AST)" }
 ]
 
+interface HolidayClosure {
+  id: string
+  date: string
+  name: string
+  description?: string
+}
+
 interface HoursOfOperation {
   day: string
   isOpen: boolean
@@ -258,6 +265,15 @@ export function Settings() {
     taxId: "",
     website: "",
     hoursOfOperation: defaultHoursOfOperation
+  })
+  
+  const [holidayClosures, setHolidayClosures] = useKV<HolidayClosure[]>("holiday-closures", [])
+  const [holidayDialogOpen, setHolidayDialogOpen] = useState(false)
+  const [editingHoliday, setEditingHoliday] = useState<HolidayClosure | null>(null)
+  const [holidayForm, setHolidayForm] = useState({
+    date: '',
+    name: '',
+    description: ''
   })
   
   const [businessFormData, setBusinessFormData] = useState<BusinessInfo>({
@@ -826,6 +842,63 @@ export function Settings() {
     setPayrollSettings({ payPeriod: payrollFormData })
     toast.success("Payroll settings saved successfully")
   }
+  
+  const handleOpenHolidayDialog = (holiday?: HolidayClosure) => {
+    if (holiday) {
+      setEditingHoliday(holiday)
+      setHolidayForm({
+        date: holiday.date,
+        name: holiday.name,
+        description: holiday.description || ''
+      })
+    } else {
+      setEditingHoliday(null)
+      setHolidayForm({
+        date: '',
+        name: '',
+        description: ''
+      })
+    }
+    setHolidayDialogOpen(true)
+  }
+  
+  const handleSaveHoliday = () => {
+    if (!holidayForm.date) {
+      toast.error("Date is required")
+      return
+    }
+    if (!holidayForm.name.trim()) {
+      toast.error("Holiday name is required")
+      return
+    }
+    
+    if (editingHoliday) {
+      setHolidayClosures((current) =>
+        (current || []).map(h =>
+          h.id === editingHoliday.id
+            ? { ...h, date: holidayForm.date, name: holidayForm.name.trim(), description: holidayForm.description.trim() }
+            : h
+        )
+      )
+      toast.success("Holiday updated successfully")
+    } else {
+      const newHoliday: HolidayClosure = {
+        id: `holiday-${Date.now()}`,
+        date: holidayForm.date,
+        name: holidayForm.name.trim(),
+        description: holidayForm.description.trim()
+      }
+      setHolidayClosures((current) => [...(current || []), newHoliday])
+      toast.success("Holiday added successfully")
+    }
+    
+    setHolidayDialogOpen(false)
+  }
+  
+  const handleDeleteHoliday = (id: string) => {
+    setHolidayClosures((current) => (current || []).filter(h => h.id !== id))
+    toast.success("Holiday removed successfully")
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-6">
@@ -1141,6 +1214,69 @@ export function Settings() {
                     <p className="text-xs text-muted-foreground">
                       ⚠️ Critical: This timezone will be used for all appointments, staff schedules, drop-off/pick-up times, and system metrics
                     </p>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-6 space-y-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-semibold mb-1">Holiday Closures</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Manage dates when your business is closed for holidays. These dates will block appointments and affect staff schedules and payroll.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => handleOpenHolidayDialog()}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto shrink-0"
+                    >
+                      <Plus size={18} className="mr-2" />
+                      Add Holiday
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {(holidayClosures || []).length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground rounded-lg bg-secondary/20 border border-border">
+                        No holiday closures configured. Add your first holiday above.
+                      </div>
+                    ) : (
+                      (holidayClosures || [])
+                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                        .map((holiday) => (
+                          <div
+                            key={holiday.id}
+                            className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
+                          >
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="font-semibold text-base">{holiday.name}</span>
+                                <span className="text-sm text-muted-foreground">{format(new Date(holiday.date), 'MMMM d, yyyy')}</span>
+                              </div>
+                              {holiday.description && (
+                                <p className="text-sm text-muted-foreground">{holiday.description}</p>
+                              )}
+                            </div>
+                            <div className="flex gap-2 self-end md:self-auto shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-foreground hover:bg-primary/10"
+                                onClick={() => handleOpenHolidayDialog(holiday)}
+                              >
+                                <PencilSimple size={18} />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => handleDeleteHoliday(holiday.id)}
+                              >
+                                <Trash size={18} />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                    )}
                   </div>
                 </div>
 
@@ -2090,6 +2226,70 @@ export function Settings() {
               </Button>
               <Button onClick={handleSaveAddOn} className="bg-primary text-primary-foreground">
                 {editingAddOn ? "Update Add-On" : "Add Add-On"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        
+        <Dialog open={holidayDialogOpen} onOpenChange={setHolidayDialogOpen}>
+          <DialogContent className="max-w-md w-[95vw] md:w-full">
+            <DialogHeader>
+              <DialogTitle>{editingHoliday ? "Edit Holiday Closure" : "Add Holiday Closure"}</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="holiday-date" className="text-sm font-medium flex items-center gap-1">
+                  Date
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="holiday-date"
+                  type="date"
+                  value={holidayForm.date}
+                  onChange={(e) => setHolidayForm({ ...holidayForm, date: e.target.value })}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="holiday-name" className="text-sm font-medium flex items-center gap-1">
+                  Holiday Name
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="holiday-name"
+                  placeholder="e.g., Christmas Day, New Year's Day"
+                  value={holidayForm.name}
+                  onChange={(e) => setHolidayForm({ ...holidayForm, name: e.target.value })}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="holiday-description" className="text-sm font-medium">
+                  Description (Optional)
+                </Label>
+                <Textarea
+                  id="holiday-description"
+                  placeholder="Any additional notes about this closure..."
+                  rows={3}
+                  value={holidayForm.description}
+                  onChange={(e) => setHolidayForm({ ...holidayForm, description: e.target.value })}
+                />
+              </div>
+              
+              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <p className="text-sm text-blue-400">
+                  ⚠️ This date will block appointment bookings and will not count as a working day for staff schedules and payroll calculations.
+                </p>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setHolidayDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveHoliday} className="bg-primary text-primary-foreground">
+                {editingHoliday ? "Update Holiday" : "Add Holiday"}
               </Button>
             </DialogFooter>
           </DialogContent>

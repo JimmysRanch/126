@@ -61,7 +61,6 @@ export function NewAppointment() {
   const [groomingNotes, setGroomingNotes] = useState("")
   const [photoWant, setPhotoWant] = useState<File | null>(null)
   const [photoDontWant, setPhotoDontWant] = useState<File | null>(null)
-  const [styleConfirmed, setStyleConfirmed] = useState(false)
   
   const [openClientCombobox, setOpenClientCombobox] = useState(false)
   const [clientSearch, setClientSearch] = useState("")
@@ -188,11 +187,6 @@ export function NewAppointment() {
       return
     }
 
-    if (!styleConfirmed) {
-      toast.error("Please confirm the style summary")
-      return
-    }
-
     const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
@@ -209,54 +203,108 @@ export function NewAppointment() {
       photoDontWant: photoDontWant?.name || null
     }
 
-    const newAppointments: Appointment[] = selectedPetsData.map(pet => {
-      const weightCategory = getWeightCategory(pet.weight)
-      
-      return {
-        id: Date.now().toString() + "-" + pet.id,
-        clientId: selectedClient,
-        clientName: client?.name || "",
-        petId: pet.id,
-        petName: pet.name,
-        petWeight: pet.weight,
-        petWeightCategory: weightCategory,
-        groomerId: groomer.id,
-        groomerName: groomer.name,
-        groomerRequested: selectedGroomer !== "auto",
-        date: appointmentDate,
-        startTime: appointmentTime,
-        endTime: "",
-        services: getServicesList(pet),
-        totalPrice: (() => {
-          let total = 0
-          if (selectedMainService) {
-            const mainService = (mainServices || []).find(s => s.id === selectedMainService)
-            if (mainService) {
-              total += getPriceForWeight(mainService.pricing, weightCategory)
-            }
-          }
-          selectedAddOns.forEach(addonId => {
-            const addon = (addOns || []).find(a => a.id === addonId)
-            if (addon) {
-              if (addon.hasSizePricing && addon.pricing) {
-                total += getPriceForWeight(addon.pricing, weightCategory)
-              } else if (addon.price) {
-                total += addon.price
-              }
-            }
-          })
-          return total
-        })(),
-        status: 'scheduled',
-        notes,
-        groomingPreferences,
-        createdAt: getNowInBusinessTimezone()
-      }
-    })
+    const confirmationDetails = `
+      Client: ${client?.name}
+      Pet(s): ${selectedPetsData.map(p => p.name).join(', ')}
+      Date: ${appointmentDate}
+      Time: ${appointmentTime}
+      Groomer: ${groomer.name}
+      Service: ${(mainServices || []).find(s => s.id === selectedMainService)?.name}
+      ${selectedAddOns.length > 0 ? `Add-ons: ${selectedAddOns.map(id => (addOns || []).find(a => a.id === id)?.name).join(', ')}` : ''}
+      Overall Length: ${overallLength || 'Not specified'}
+      Face Style: ${faceStyle || 'Not specified'}
+      ${skipEarTrim ? 'Skip Ear Trim' : ''}
+      ${skipTailTrim ? 'Skip Tail Trim' : ''}
+      ${groomingNotes ? `Notes: ${groomingNotes}` : ''}
+      Total: $${total.toFixed(2)}
+    `
 
-    setAppointments((current) => [...(current || []), ...newAppointments])
-    toast.success(`${newAppointments.length} appointment${newAppointments.length > 1 ? 's' : ''} created successfully!`)
-    navigate('/appointments')
+    toast.custom((t) => (
+      <div className="bg-card border border-border rounded-lg shadow-lg p-4 max-w-md">
+        <h3 className="font-semibold text-lg mb-3">Confirm Appointment Details</h3>
+        <div className="space-y-2 text-sm mb-4">
+          <div><span className="font-medium">Client:</span> {client?.name}</div>
+          <div><span className="font-medium">Pet(s):</span> {selectedPetsData.map(p => p.name).join(', ')}</div>
+          <div><span className="font-medium">Date:</span> {appointmentDate}</div>
+          <div><span className="font-medium">Time:</span> {appointmentTime}</div>
+          <div><span className="font-medium">Groomer:</span> {groomer.name}</div>
+          <div><span className="font-medium">Service:</span> {(mainServices || []).find(s => s.id === selectedMainService)?.name}</div>
+          {selectedAddOns.length > 0 && (
+            <div><span className="font-medium">Add-ons:</span> {selectedAddOns.map(id => (addOns || []).find(a => a.id === id)?.name).join(', ')}</div>
+          )}
+          {overallLength && <div><span className="font-medium">Overall Length:</span> {overallLength}</div>}
+          {faceStyle && <div><span className="font-medium">Face Style:</span> {faceStyle}</div>}
+          {skipEarTrim && <div className="text-muted-foreground">• Skip Ear Trim</div>}
+          {skipTailTrim && <div className="text-muted-foreground">• Skip Tail Trim</div>}
+          {groomingNotes && <div><span className="font-medium">Notes:</span> {groomingNotes}</div>}
+          <div className="text-lg pt-2 border-t border-border mt-2"><span className="font-bold">Total:</span> <span className="text-primary font-bold">${total.toFixed(2)}</span></div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => toast.dismiss(t)} className="flex-1">Cancel</Button>
+          <Button onClick={() => {
+            toast.dismiss(t)
+            
+            const newAppointments: Appointment[] = selectedPetsData.map(pet => {
+              const weightCategory = getWeightCategory(pet.weight)
+              
+              return {
+                id: Date.now().toString() + "-" + pet.id,
+                clientId: selectedClient,
+                clientName: client?.name || "",
+                petId: pet.id,
+                petName: pet.name,
+                petWeight: pet.weight,
+                petWeightCategory: weightCategory,
+                groomerId: groomer.id,
+                groomerName: groomer.name,
+                groomerRequested: selectedGroomer !== "auto",
+                date: appointmentDate,
+                startTime: appointmentTime,
+                endTime: "",
+                services: getServicesList(pet),
+                totalPrice: (() => {
+                  let total = 0
+                  if (selectedMainService) {
+                    const mainService = (mainServices || []).find(s => s.id === selectedMainService)
+                    if (mainService) {
+                      total += getPriceForWeight(mainService.pricing, weightCategory)
+                    }
+                  }
+                  selectedAddOns.forEach(addonId => {
+                    const addon = (addOns || []).find(a => a.id === addonId)
+                    if (addon) {
+                      if (addon.hasSizePricing && addon.pricing) {
+                        total += getPriceForWeight(addon.pricing, weightCategory)
+                      } else if (addon.price) {
+                        total += addon.price
+                      }
+                    }
+                  })
+                  return total
+                })(),
+                status: 'scheduled',
+                notes: '',
+                groomingPreferences,
+                createdAt: getNowInBusinessTimezone()
+              }
+            })
+
+            setAppointments((current) => [...(current || []), ...newAppointments])
+            
+            toast.custom((t2) => (
+              <div className="bg-card border border-border rounded-lg shadow-lg p-4">
+                <h3 className="font-semibold text-lg mb-2">✓ Appointment Confirmed!</h3>
+                <p className="text-sm">{newAppointments.length} appointment{newAppointments.length > 1 ? 's' : ''} created for {client?.name}</p>
+                <p className="text-sm text-muted-foreground mt-1">{appointmentDate} at {appointmentTime}</p>
+                <Button onClick={() => { toast.dismiss(t2); navigate('/appointments') }} className="w-full mt-3" size="sm">
+                  View Appointments
+                </Button>
+              </div>
+            ), { duration: 5000 })
+          }} className="flex-1 bg-primary text-primary-foreground">Confirm</Button>
+        </div>
+      </div>
+    ), { duration: Infinity })
   }
 
   const total = calculateTotal()
@@ -406,14 +454,14 @@ export function NewAppointment() {
               </div>
             </div>
 
-            <div className="space-y-1.5 mb-3">
+            <div className="space-y-1.5">
               <Label htmlFor="groomer" className="text-sm">Groomer</Label>
               <Select value={selectedGroomer} onValueChange={setSelectedGroomer}>
                 <SelectTrigger id="groomer" className="h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
+                  <SelectItem value="auto">Best Match Groomer</SelectItem>
                   {mockGroomers.map(groomer => (
                     <SelectItem key={groomer.id} value={groomer.id}>
                       {groomer.name}
@@ -424,18 +472,6 @@ export function NewAppointment() {
               {selectedGroomer !== "auto" && (
                 <p className="text-xs text-muted-foreground">Client requested this specific groomer</p>
               )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="notes" className="text-sm">Notes (Optional)</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any special instructions or notes..."
-                rows={2}
-                className="text-sm"
-              />
             </div>
           </Card>
 
@@ -676,25 +712,6 @@ export function NewAppointment() {
                 </div>
               </div>
 
-              <Separator />
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">Confirmation</Label>
-                <Card className="p-3 bg-muted/30 mb-3">
-                  <p className="text-xs text-muted-foreground mb-1">Style summary:</p>
-                  <p className="text-sm font-medium">{getStyleSummary()}</p>
-                </Card>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="style-confirmation"
-                    checked={styleConfirmed}
-                    onCheckedChange={(checked) => setStyleConfirmed(checked as boolean)}
-                  />
-                  <Label htmlFor="style-confirmation" className="text-sm font-normal cursor-pointer">
-                    This matches what I want
-                  </Label>
-                </div>
-              </div>
             </div>
           </Card>
         </div>
@@ -798,7 +815,7 @@ export function NewAppointment() {
             <Button 
               onClick={handleSubmit} 
               className="w-full mt-4 h-9"
-              disabled={!selectedClient || selectedPets.length === 0 || !selectedMainService || !appointmentDate || !appointmentTime || !styleConfirmed}
+              disabled={!selectedClient || selectedPets.length === 0 || !selectedMainService || !appointmentDate || !appointmentTime}
             >
               Create Appointment{selectedPets.length > 1 ? 's' : ''}
             </Button>

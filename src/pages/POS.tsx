@@ -40,8 +40,14 @@ export function POS() {
 
   const todayAppointments = (appointments || []).filter(apt => {
     const today = getTodayInBusinessTimezone()
-    return apt.date === today && apt.status === 'completed'
+    return apt.date === today && apt.status !== 'cancelled'
   })
+
+  const paidAppointmentIds = (transactions || [])
+    .filter(t => t.appointmentId)
+    .map(t => t.appointmentId)
+
+  const openAppointments = todayAppointments.filter(apt => !paidAppointmentIds.includes(apt.id))
 
   const retailProducts = (inventory || []).filter(item => item.category === 'retail')
 
@@ -165,12 +171,12 @@ export function POS() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
           <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-3">Today's Completed Appointments</h2>
+            <h2 className="text-lg font-semibold mb-3">Today's Open Appointments</h2>
             <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
-              {todayAppointments.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No completed appointments today</p>
+              {openAppointments.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">No open appointments today</p>
               ) : (
-                todayAppointments.map(apt => (
+                openAppointments.map(apt => (
                   <button
                     key={apt.id}
                     onClick={() => handleSelectAppointment(apt)}
@@ -181,9 +187,19 @@ export function POS() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex-1">
                         <div className="font-medium">{apt.petName} - {apt.clientName}</div>
-                        <div className="text-sm text-muted-foreground">{apt.startTime}</div>
+                        <div className="text-sm text-muted-foreground flex items-center gap-2">
+                          <span>{apt.startTime}</span>
+                          <span>•</span>
+                          <span className={`capitalize ${
+                            apt.status === 'completed' ? 'text-green-500' :
+                            apt.status === 'in-progress' ? 'text-blue-500' :
+                            apt.status === 'checked-in' ? 'text-yellow-500' :
+                            apt.status === 'cancelled' ? 'text-red-500' :
+                            'text-muted-foreground'
+                          }`}>{apt.status.replace('-', ' ')}</span>
+                        </div>
                       </div>
                       <div className="text-lg font-bold text-primary">${apt.totalPrice.toFixed(2)}</div>
                     </div>
@@ -293,9 +309,9 @@ export function POS() {
                   type="number"
                   min="0"
                   step="0.01"
-                  value={discount}
+                  value={discount === 0 ? '' : discount}
                   onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
+                  placeholder="0"
                 />
               </div>
               
@@ -318,9 +334,9 @@ export function POS() {
                   type="number"
                   min="0"
                   step="0.01"
-                  value={additionalFees}
+                  value={additionalFees === 0 ? '' : additionalFees}
                   onChange={(e) => setAdditionalFees(parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
+                  placeholder="0"
                 />
               </div>
               
