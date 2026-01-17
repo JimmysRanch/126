@@ -62,7 +62,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
   const getAppointmentsForSlot = (day: Date, timeSlot: string) => {
     return (appointments || []).filter(apt => {
       const [year, month, dayNum] = apt.date.split('-').map(Number)
-      const aptDate = new Date(year, month - 1, dayNum)
+      const aptDate = toZonedTime(new Date(year, month - 1, dayNum, 12, 0, 0), timezone)
       const matchesDate = isSameDay(aptDate, day) && apt.startTime === timeSlot
       const matchesStatus = !statusFilter || statusFilter === "all" || apt.status === statusFilter
       return matchesDate && matchesStatus
@@ -72,7 +72,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
   const getAppointmentsForDay = (day: Date) => {
     return (appointments || []).filter(apt => {
       const [year, month, dayNum] = apt.date.split('-').map(Number)
-      const aptDate = new Date(year, month - 1, dayNum)
+      const aptDate = toZonedTime(new Date(year, month - 1, dayNum, 12, 0, 0), timezone)
       const matchesDate = isSameDay(aptDate, day)
       const matchesStatus = !statusFilter || statusFilter === "all" || apt.status === statusFilter
       return matchesDate && matchesStatus

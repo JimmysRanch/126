@@ -72,7 +72,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
         }
         
         const [year, month, day] = apt.date.split('-').map(Number)
-        const aptDate = new Date(year, month - 1, day)
+        const aptDate = toZonedTime(new Date(year, month - 1, day, 12, 0, 0), timezone)
         return isWithinInterval(aptDate, { start, end })
       })
       .sort((a, b) => {

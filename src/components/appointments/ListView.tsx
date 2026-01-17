@@ -92,15 +92,15 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
         ? apt.date === currentDateStr
         : (() => {
             const [year, month, day] = apt.date.split('-').map(Number)
-            const aptDate = new Date(year, month - 1, day)
+            const aptDate = toZonedTime(new Date(year, month - 1, day, 12, 0, 0), timezone)
             return isWithinInterval(aptDate, { start, end })
           })()
 
       return matchesSearch && matchesStatus && matchesDate
     })
     .sort((a, b) => {
-      const dateA = new Date(`${a.date} ${a.startTime}`)
-      const dateB = new Date(`${b.date} ${b.startTime}`)
+      const dateA = new Date(`${a.date}T${a.startTime}`)
+      const dateB = new Date(`${b.date}T${b.startTime}`)
       return dateB.getTime() - dateA.getTime()
     })
 
