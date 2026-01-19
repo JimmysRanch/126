@@ -14,6 +14,7 @@ const navItems = [
   { id: 'inventory', label: 'Inventory', path: '/inventory' },
   { id: 'finances', label: 'Finances', path: '/finances' },
   { id: 'reports', label: 'Reports', path: '/reports' },
+  { id: 'mcp-servers', label: 'MCP Servers', path: '/mcp-servers' },
   { id: 'settings', label: 'Settings', path: '/settings' },
 ]
 
