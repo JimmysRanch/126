@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Code, Terminal, Globe, FolderOpen, GitBranch, ShieldCheck, Gear } from "@phosphor-icons/react"
+import { Code, Terminal, Globe, FolderOpen, GitBranch, ShieldCheck, Gear, Browser } from "@phosphor-icons/react"
 
 interface Tool {
   name: string
@@ -56,7 +56,7 @@ const mcpServers: MCPServer[] = [
     id: "playwright",
     name: "Playwright Browser Automation",
     description: "Browser automation tools for web testing and interaction",
-    icon: <Globe size={24} className="text-primary" />,
+    icon: <Browser size={24} className="text-primary" />,
     tools: [
       { name: "playwright-browser_close", description: "Close the browser page" },
       { name: "playwright-browser_resize", description: "Resize the browser window" },
@@ -176,15 +176,15 @@ export function MCPServers() {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-2 pt-2">
-                      {server.tools.map((tool, index) => (
+                      {server.tools.map((tool) => (
                         <div 
-                          key={index} 
+                          key={tool.name} 
                           className="p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                         >
                           <div className="flex items-start gap-2">
                             <Code size={16} className="text-primary flex-shrink-0 mt-0.5" />
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-xs font-mono font-semibold text-primary break-all">
+                              <h3 className="text-xs font-mono font-semibold text-primary break-words">
                                 {tool.name}
                               </h3>
                               <p className="text-xs text-muted-foreground mt-1">
