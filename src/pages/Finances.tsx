@@ -542,9 +542,3 @@ export function Finances() {
 
           <TabsContent value="payroll" className="space-y-3">
             <PayrollOverview />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  )
-}
