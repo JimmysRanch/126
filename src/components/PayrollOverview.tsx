@@ -141,41 +141,42 @@ export function PayrollOverview() {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3 flex-1`}>
-          <Card className="p-2 md:p-2.5 border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">Jan 16 - 31</p>
-              </div>
+      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3`}>
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">Jan 16 - 31</p>
             </div>
-          </Card>
-          <Card className="p-2 md:p-2.5 border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">GROSS PAY</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodGross.toLocaleString()}</p>
-              </div>
+          </div>
+        </Card>
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">GROSS PAY</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodGross.toLocaleString()}</p>
             </div>
-          </Card>
-          <Card className="p-2 md:p-2.5 border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">DEDUCTIONS</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodDeductions.toLocaleString()}</p>
-              </div>
+          </div>
+        </Card>
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">DEDUCTIONS</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodDeductions.toLocaleString()}</p>
             </div>
-          </Card>
-          <Card className="p-2 md:p-2.5 border-border">
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NET PAY</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodTotal.toLocaleString()}</p>
-              </div>
+          </div>
+        </Card>
+        <Card className="p-2 md:p-2.5 border-border">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NET PAY</p>
+              <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodTotal.toLocaleString()}</p>
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="flex justify-end">
         <Button 
           className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'w-full' : ''}`}
         >
@@ -186,7 +187,7 @@ export function PayrollOverview() {
 
       <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
         <div className="flex justify-center mb-3">
-          <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-3 w-full' : ''}`}>
+          <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-2 w-full' : ''}`}>
             <TabsTrigger 
               value="current" 
               className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
@@ -198,12 +199,6 @@ export function PayrollOverview() {
               className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
             >
               History
-            </TabsTrigger>
-            <TabsTrigger 
-              value="settings" 
-              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-            >
-              Settings
             </TabsTrigger>
           </TabsList>
         </div>
@@ -356,35 +351,6 @@ export function PayrollOverview() {
             <p className="text-sm sm:text-base text-muted-foreground">
               Historical payroll records will appear here.
             </p>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="settings" className="mt-0">
-          <Card className="p-6 bg-card border-border">
-            <h3 className="text-lg font-semibold mb-4">Payroll Settings</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
-                <div>
-                  <div className="font-semibold mb-1">Pay Period</div>
-                  <div className="text-sm text-muted-foreground">Bi-weekly (every 2 weeks)</div>
-                </div>
-                <Button variant="outline" size="sm">Change</Button>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
-                <div>
-                  <div className="font-semibold mb-1">Overtime Multiplier</div>
-                  <div className="text-sm text-muted-foreground">1.5x after 40 hours</div>
-                </div>
-                <Button variant="outline" size="sm">Change</Button>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-secondary/30 rounded-lg">
-                <div>
-                  <div className="font-semibold mb-1">Tax Withholding</div>
-                  <div className="text-sm text-muted-foreground">20% standard deduction</div>
-                </div>
-                <Button variant="outline" size="sm">Change</Button>
-              </div>
-            </div>
           </Card>
         </TabsContent>
       </Tabs>
