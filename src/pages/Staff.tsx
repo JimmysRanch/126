@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
+import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -390,11 +391,7 @@ export function Staff() {
           </TabsContent>
 
           <TabsContent value="performance" className="mt-0">
-            <Card className="p-12 bg-card border-border text-center">
-              <p className="text-muted-foreground">
-                Staff performance metrics and analytics will appear here.
-              </p>
-            </Card>
+            <StaffPerformanceView />
           </TabsContent>
         </Tabs>
       </div>
