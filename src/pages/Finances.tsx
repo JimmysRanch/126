@@ -542,3 +542,22 @@ export function Finances() {
 
           <TabsContent value="payroll" className="space-y-3">
             <PayrollOverview />
+          </TabsContent>
+
+          <TabsContent value="taxes" className="space-y-3">
+            <Card className="p-6 border-border">
+              <div className="text-center">
+                <h3 className="text-lg font-bold mb-2">Tax Management</h3>
+                <p className="text-muted-foreground mb-4">Tax filing features coming soon</p>
+                <Button onClick={() => navigate('/finances/file-taxes')}>
+                  <Receipt size={18} className="mr-2" />
+                  File Taxes
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
