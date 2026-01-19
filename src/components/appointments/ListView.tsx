@@ -9,7 +9,7 @@ import { useKV } from "@github/spark/hooks"
 import { Appointment } from "@/lib/types"
 import { MagnifyingGlass, PawPrint, User, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
-import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths, isSameDay } from "date-fns"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -86,7 +86,7 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
 
       const aptDate = new Date(apt.date + 'T00:00:00')
       const matchesDate = viewMode === 'day' 
-        ? apt.date === currentDate.toISOString().split('T')[0]
+        ? isSameDay(aptDate, currentDate)
         : isWithinInterval(aptDate, { start, end })
 
       return matchesSearch && matchesStatus && matchesDate

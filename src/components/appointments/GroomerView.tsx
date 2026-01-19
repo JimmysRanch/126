@@ -7,7 +7,7 @@ import { useKV } from "@github/spark/hooks"
 import { Appointment, Staff } from "@/lib/types"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
-import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths, isSameDay } from "date-fns"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -65,8 +65,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
         
         const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
-          const dateStr = currentDate.toISOString().split('T')[0]
-          return apt.date === dateStr
+          return isSameDay(aptDate, currentDate)
         }
         return isWithinInterval(aptDate, { start, end })
       })

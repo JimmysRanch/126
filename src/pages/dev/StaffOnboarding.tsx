@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, Sparkle } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import { PuppyMascot } from "@/components/PuppyMascot"
 import accountImage from '@/assets/images/13360FA3-D47D-48D3-A65A-6BB641E09F62.png'
 
 export function StaffOnboarding() {
