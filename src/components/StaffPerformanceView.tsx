@@ -79,72 +79,72 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export function StaffPerformanceView() {
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="p-6 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/20 relative overflow-hidden">
+    <div className="space-y-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-primary/15 rounded-lg">
-                <Clock className="text-primary" size={24} weight="duotone" />
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="p-1.5 bg-primary/15 rounded-lg">
+                <Clock className="text-primary" size={18} weight="duotone" />
               </div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
                 Avg Minutes / Appointment
               </div>
             </div>
-            <div className="text-4xl font-bold text-foreground mb-1">64 <span className="text-2xl text-muted-foreground">mins</span></div>
+            <div className="text-2xl font-bold text-foreground">64 <span className="text-base text-muted-foreground">mins</span></div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-card via-card to-amber-500/5 border-2 border-amber-500/20 relative overflow-hidden">
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-amber-500/5 border-2 border-amber-500/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent" />
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-amber-500/15 rounded-lg">
-                <CurrencyDollar className="text-amber-500" size={24} weight="duotone" />
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="p-1.5 bg-amber-500/15 rounded-lg">
+                <CurrencyDollar className="text-amber-500" size={18} weight="duotone" />
               </div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
                 Revenue Per Min | RPM
               </div>
             </div>
-            <div className="text-4xl font-bold text-foreground mb-1">$3.75</div>
+            <div className="text-2xl font-bold text-foreground">$3.75</div>
           </div>
         </Card>
 
-        <Card className="p-6 bg-gradient-to-br from-card via-card to-emerald-500/5 border-2 border-emerald-500/20 relative overflow-hidden">
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-emerald-500/5 border-2 border-emerald-500/20 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent" />
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 bg-emerald-500/15 rounded-lg">
-                <PawPrint className="text-emerald-500" size={24} weight="duotone" />
+            <div className="flex items-center gap-2 mb-1.5">
+              <div className="p-1.5 bg-emerald-500/15 rounded-lg">
+                <PawPrint className="text-emerald-500" size={18} weight="duotone" />
               </div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
                 Completed Appointments
               </div>
             </div>
-            <div className="text-4xl font-bold text-foreground mb-1">75</div>
+            <div className="text-2xl font-bold text-foreground">75</div>
           </div>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-5 bg-card border-2 border-primary/30 relative overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5">
+        <Card className="p-3 bg-card border-2 border-primary/30 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-primary/50 rounded-sm" />
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">RPM (Monthly)</h3>
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className="w-2 h-2 bg-primary/50 rounded-sm" />
+              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">RPM (Monthly)</h3>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={rpmMonthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height={140}>
+              <BarChart data={rpmMonthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
                 <XAxis 
                   dataKey="month" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                 />
                 <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                   domain={[1.90, 2.02]}
                   ticks={[1.90, 1.93, 1.96, 1.99, 2.02]}
@@ -163,7 +163,7 @@ export function StaffPerformanceView() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <div className="flex justify-center mt-3 gap-2 text-xs">
+            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
               {rpmMonthlyData.map((item, idx) => (
                 <div key={idx} className="text-center">
                   <div className="font-bold text-foreground">${item.rpm.toFixed(2)}</div>
@@ -173,23 +173,23 @@ export function StaffPerformanceView() {
           </div>
         </Card>
 
-        <Card className="p-5 bg-card border-2 border-amber-500/30 relative overflow-hidden">
+        <Card className="p-3 bg-card border-2 border-amber-500/30 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent pointer-events-none" />
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-amber-500/50 rounded-full" />
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">Average Minutes per Appointment (Monthly)</h3>
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className="w-2 h-2 bg-amber-500/50 rounded-full" />
+              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">Avg Minutes / Appt (Monthly)</h3>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={avgMinutesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height={140}>
+              <BarChart data={avgMinutesData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
                 <XAxis 
                   dataKey="month" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                 />
                 <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                   domain={[30, 50]}
                   ticks={[30, 35, 40, 45, 50]}
@@ -207,33 +207,33 @@ export function StaffPerformanceView() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <div className="flex justify-center mt-3 gap-2 text-xs">
+            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
               {avgMinutesData.map((item, idx) => (
                 <div key={idx} className="text-center">
-                  <div className="font-bold text-foreground">{item.minutes} <span className="text-[10px] text-muted-foreground">ms</span></div>
+                  <div className="font-bold text-foreground">{item.minutes} <span className="text-[9px] text-muted-foreground">ms</span></div>
                 </div>
               ))}
             </div>
           </div>
         </Card>
 
-        <Card className="p-5 bg-card border-2 border-emerald-500/30 relative overflow-hidden">
+        <Card className="p-3 bg-card border-2 border-emerald-500/30 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 bg-emerald-500/50 rounded-sm" />
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide">RPM by Dog Size</h3>
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className="w-2 h-2 bg-emerald-500/50 rounded-sm" />
+              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">RPM by Dog Size</h3>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={rpmBySizeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ResponsiveContainer width="100%" height={140}>
+              <BarChart data={rpmBySizeData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
                 <XAxis 
                   dataKey="size" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                 />
                 <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 11 }}
+                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
                   axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
                   domain={[1.90, 2.30]}
                   ticks={[1.90, 1.90, 1.90, 1.90, 2.30]}
@@ -252,7 +252,7 @@ export function StaffPerformanceView() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-            <div className="flex justify-center mt-3 gap-2 text-xs">
+            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
               {rpmBySizeData.map((item, idx) => (
                 <div key={idx} className="text-center">
                   <div className="font-bold text-foreground">${item.rpm.toFixed(2)}</div>
@@ -263,51 +263,51 @@ export function StaffPerformanceView() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-5 bg-gradient-to-br from-card via-card to-primary/5 border border-primary/20">
-          <h3 className="text-lg font-bold text-foreground mb-4 tracking-wide">Earnings by Breed</h3>
-          <div className="space-y-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5">
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-primary/5 border border-primary/20">
+          <h3 className="text-sm font-bold text-foreground mb-2 tracking-wide">Earnings by Breed</h3>
+          <div className="space-y-1.5">
             {earningsByBreedData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
-                <span className="text-sm text-foreground font-medium">{item.breed}</span>
-                <span className="text-base font-bold text-foreground">${item.rpm.toFixed(2)}</span>
+              <div key={idx} className="flex items-center justify-between py-1 border-b border-border/50 last:border-0">
+                <span className="text-xs text-foreground font-medium">{item.breed}</span>
+                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <Card className="p-5 bg-gradient-to-br from-card via-card to-amber-500/5 border border-amber-500/20">
-          <h3 className="text-base font-bold text-amber-400 mb-2 tracking-wide">Top Performing Breed & Size Combinations</h3>
-          <div className="space-y-2.5 mb-4">
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-amber-500/5 border border-amber-500/20">
+          <h3 className="text-sm font-bold text-amber-400 mb-1.5 tracking-wide">Top Performing Breed & Size</h3>
+          <div className="space-y-1 mb-3">
             {topPerformingData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1.5">
-                <span className="text-sm text-foreground">{item.breed}</span>
-                <span className="text-base font-bold text-foreground">${item.rpm.toFixed(2)}</span>
+              <div key={idx} className="flex items-center justify-between py-1">
+                <span className="text-xs text-foreground">{item.breed}</span>
+                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
               </div>
             ))}
           </div>
-          <h3 className="text-base font-bold text-amber-400 mb-2 mt-6 tracking-wide">Lowest Performing Breed & Size Combinations</h3>
-          <div className="space-y-2.5">
+          <h3 className="text-sm font-bold text-amber-400 mb-1.5 mt-3 tracking-wide">Lowest Performing Breed & Size</h3>
+          <div className="space-y-1">
             {lowestPerformingData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1.5">
-                <span className="text-sm text-foreground">{item.breed}</span>
-                <span className="text-base font-bold text-foreground">${item.rpm.toFixed(2)}</span>
+              <div key={idx} className="flex items-center justify-between py-1">
+                <span className="text-xs text-foreground">{item.breed}</span>
+                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
               </div>
             ))}
           </div>
         </Card>
 
-        <Card className="p-5 bg-gradient-to-br from-card via-card to-card border border-border">
-          <h3 className="text-lg font-bold text-foreground mb-4 tracking-wide">RPM by Breed & Size</h3>
+        <Card className="p-3 bg-gradient-to-br from-card via-card to-card border border-border">
+          <h3 className="text-sm font-bold text-foreground mb-2 tracking-wide">RPM by Breed & Size</h3>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-[10px]">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-2 px-1 font-semibold text-muted-foreground">Breed</th>
-                  <th className="text-center py-2 px-1 font-semibold text-muted-foreground">Small</th>
-                  <th className="text-center py-2 px-1 font-semibold text-muted-foreground">Medium</th>
-                  <th className="text-center py-2 px-1 font-semibold text-muted-foreground">Large</th>
-                  <th className="text-center py-2 px-1 font-semibold text-muted-foreground">XL</th>
+                  <th className="text-left py-1 px-0.5 font-semibold text-muted-foreground">Breed</th>
+                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">S</th>
+                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">M</th>
+                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">L</th>
+                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">XL</th>
                 </tr>
               </thead>
               <tbody>
@@ -320,17 +320,17 @@ export function StaffPerformanceView() {
                       row.breed.includes('Labrador') && !row.breed.includes('Labradoo') ? 'bg-amber-500/10' : ''
                     }`}
                   >
-                    <td className="py-2 px-1 font-medium text-foreground">{row.breed}</td>
-                    <td className="text-center py-2 px-1 text-foreground font-semibold">
+                    <td className="py-1 px-0.5 font-medium text-foreground text-[10px]">{row.breed}</td>
+                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
                       {row.small ? `$${row.small.toFixed(2)}` : '--'}
                     </td>
-                    <td className="text-center py-2 px-1 text-foreground font-semibold">
+                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
                       {row.medium ? `$${row.medium.toFixed(2)}` : '--'}
                     </td>
-                    <td className="text-center py-2 px-1 text-foreground font-semibold">
+                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
                       {row.large ? `$${row.large.toFixed(2)}` : '--'}
                     </td>
-                    <td className="text-center py-2 px-1 text-foreground font-semibold">
+                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
                       {row.xl ? `$${row.xl.toFixed(2)}` : '--'}
                     </td>
                   </tr>

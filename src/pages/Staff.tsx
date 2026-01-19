@@ -148,10 +148,10 @@ export function Staff() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+    <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
       <div className="max-w-[1600px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             {!isMobile && <div className="flex-1"></div>}
             
             <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} gap-2 sm:gap-3 ${isMobile ? 'order-2' : ''}`}>
