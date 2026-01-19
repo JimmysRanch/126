@@ -171,6 +171,9 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
                     <p className="text-lg md:text-xl font-bold mt-0.5">$1,380</p>
@@ -189,7 +192,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">LAST 6 MONTHS</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,910</p>
                   </div>
                 </div>
               </Card>
@@ -214,20 +217,20 @@ export function Finances() {
                 <div className="p-2.5 border-b border-border flex-shrink-0">
                   <h3 className="text-sm font-bold">Expense Trend</h3>
                   <p className="text-xs text-muted-foreground">Last 6 Months</p>
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <SquaresFour size={16} />
-                Last 6 Months
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Circle size={16} />
-                All Categories
-              </Button>
-              <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
-                Add Expense
-              </Button>
-            </div>
-
+                </div>
+                <div className="p-3 flex-1 min-h-0 flex flex-col">
+                  <div className="relative flex-1 min-h-0">
+                    <div className="absolute inset-0 flex items-end gap-2 pb-12">
+                      {(() => {
+                        const monthlyExpenses = [
+                          { month: 'Jul', amount: 420 },
+                          { month: 'Aug', amount: 380 },
+                          { month: 'Sep', amount: 550 },
+                          { month: 'Oct', amount: 490 },
+                          { month: 'Nov', amount: 585 },
+                          { month: 'Dec', amount: 485 },
+                        ]
+                        const maxExpense = Math.max(...monthlyExpenses.map(d => d.amount))
                         
                         return monthlyExpenses.map((data, i) => {
                           const height = (data.amount / maxExpense) * 100
