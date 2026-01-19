@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Toaster } from '@/components/ui/sonner'
 import { TopNav } from '@/components/TopNav'
 import { Dashboard } from '@/pages/Dashboard'
 import { ClientsList } from '@/pages/ClientsList'
@@ -72,6 +73,7 @@ function App() {
           </Routes>
         </div>
       </div>
+      <Toaster />
     </Router>
   )
 }
