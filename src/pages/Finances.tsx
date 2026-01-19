@@ -171,25 +171,6 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold">Expense Overview</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <SquaresFour size={16} />
-                  Last 6 Months
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Circle size={16} />
-                  All Categories
-                </Button>
-                <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
-                  Add Expense
-                </Button>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
               <Card className="p-2 md:p-2.5 border-border">
                 <div className="flex items-center justify-between">
@@ -231,6 +212,20 @@ export function Finances() {
                   </div>
                 </div>
               </Card>
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <Button variant="outline" size="sm" className="gap-2">
+                <SquaresFour size={16} />
+                Last 6 Months
+              </Button>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Circle size={16} />
+                All Categories
+              </Button>
+              <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
+                Add Expense
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 max-h-[calc(100vh-280px)]">
@@ -547,34 +542,6 @@ export function Finances() {
 
           <TabsContent value="payroll" className="space-y-3">
             <PayrollOverview />
-            <Card>
-              <div className="p-3 md:p-4">
-                <h3 className="text-sm md:text-base font-bold mb-2">Tax Settings</h3>
-                <div className="space-y-3">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm md:text-base">Sales Tax Rate</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">Texas state and local tax rate</p>
-                    </div>
-                    <p className="text-base md:text-lg font-bold">8.25%</p>
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 pt-3 border-t border-border">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm md:text-base">Tax ID</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">Federal Employer Identification Number</p>
-                    </div>
-                    <p className="text-xs md:text-sm text-muted-foreground">Not configured</p>
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 pt-3 border-t border-border">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm md:text-base">Auto-calculate on invoices</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">Automatically add tax to client invoices</p>
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full md:w-auto">Configure</Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
