@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import GroomerPerformanceP2 from "@/components/GroomerPerformanceP2"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -107,7 +108,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'performance'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'performance', 'p2'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -187,6 +188,17 @@ export function Staff() {
                 }`}
               >
                 Performance
+              </Button>
+              <Button
+                onClick={() => setActiveTab("p2")}
+                variant={activeTab === "p2" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "p2" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                P2
               </Button>
             </div>
 
@@ -392,6 +404,10 @@ export function Staff() {
 
           <TabsContent value="performance" className="mt-0">
             <StaffPerformanceView />
+          </TabsContent>
+
+          <TabsContent value="p2" className="mt-0">
+            <GroomerPerformanceP2 />
           </TabsContent>
         </Tabs>
       </div>
