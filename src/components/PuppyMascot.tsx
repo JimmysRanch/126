@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
+import puppyImage from '@/assets/images/13360FA3-D47D-48D3-A65A-6BB641E09F62.png'
 
 export function PuppyMascot() {
   return (
     <div className="flex items-center justify-center">
       <motion.img
-        src="/mascot/puppy.png"
+        src={puppyImage}
         alt="Scruffy Butts Puppy Mascot"
         className="w-[960px] select-none pointer-events-none drop-shadow-2xl"
         style={{ pointerEvents: 'none' }}
