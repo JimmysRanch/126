@@ -77,14 +77,17 @@ export default function GroomerPerformanceP3() {
             linear-gradient(180deg, var(--bg0), var(--bg1));
         }
 
-        /* ===== 3D STAGE ===== */
+        /* ===== 3D STAGE - Enhanced IMAX curve ===== */
         .stage{ width:min(1320px,100%); display:grid; gap:18px; }
-        .curveWrap{ perspective: 1200px; perspective-origin: 50% 40%; }
+        .curveWrap{ 
+          perspective: 900px; 
+          perspective-origin: 50% 45%; 
+        }
         .curve{
           position:relative;
-          height: 860px; /* enough for 3 rows */
+          height: 860px;
           transform-style: preserve-3d;
-          transform: rotateX(10deg);
+          transform: rotateX(12deg);
         }
 
         /* ===== GLASS CARD ===== */
@@ -307,10 +310,10 @@ export default function GroomerPerformanceP3() {
 
         /* responsive */
         @media (max-width: 1100px){
-          .curve{ height: 1120px; transform: rotateX(8deg); }
+          .curve{ height: 1120px; transform: rotateX(10deg); }
         }
         @media (max-width: 950px){
-          .curve{ height: 1640px; transform: rotateX(6deg); }
+          .curve{ height: 1640px; transform: rotateX(8deg); }
         }
       `}</style>
 
@@ -318,13 +321,13 @@ export default function GroomerPerformanceP3() {
         <div className="stage">
           <div className="curveWrap">
             <div className="curve">
-              {placeRow(cards.slice(0, 3), 36, 260, 34, 110, activeId).map((p) => (
+              {placeRow(cards.slice(0, 3), 36, 260, 48, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(3, 6), 220, 260, 30, 110, activeId).map((p) => (
+              {placeRow(cards.slice(3, 6), 220, 260, 42, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(6, 9), 430, 300, 28, 120, activeId).map((p) => (
+              {placeRow(cards.slice(6, 9), 430, 300, 38, 120, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
             </div>
@@ -391,7 +394,11 @@ function placeRow(
   return rowCards.map((card, i) => {
     const t = idxs[i];
     const angle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
-    const lift = Math.abs(t) * 6;
+    const lift = Math.abs(t) * 8;
+    const radius = 420;
+    const arcAngle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
+    const xOffset = Math.sin(arcAngle * Math.PI / 180) * radius;
+    const zOffset = (1 - Math.cos(arcAngle * Math.PI / 180)) * radius;
 
     const style: React.CSSProperties = {
       left: "50%",
@@ -401,8 +408,8 @@ function placeRow(
       transform:
         `translateX(-50%) ` +
         `rotateY(${angle}deg) ` +
-        `translateZ(${zForward}px) ` +
-        `translateX(${t * xStep}px)`,
+        `translateZ(${zForward + zOffset}px) ` +
+        `translateX(${xOffset}px)`,
     };
 
     const hidden = activeId === card.id;
