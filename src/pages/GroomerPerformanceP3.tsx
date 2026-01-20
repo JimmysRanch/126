@@ -393,12 +393,12 @@ function placeRow(
 
   return rowCards.map((card, i) => {
     const t = idxs[i];
-    const angle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
+    const angle = -(t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
     const lift = Math.abs(t) * 8;
     const radius = 420;
     const arcAngle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
     const xOffset = Math.sin(arcAngle * Math.PI / 180) * radius;
-    const zOffset = (1 - Math.cos(arcAngle * Math.PI / 180)) * radius;
+    const zOffset = -(1 - Math.cos(arcAngle * Math.PI / 180)) * radius;
 
     const style: React.CSSProperties = {
       left: "50%",
