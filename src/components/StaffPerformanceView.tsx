@@ -88,9 +88,9 @@ export function StaffPerformanceView() {
     <>
       <style>{`
         .perf-wrap {
-          padding: 1.5rem 0;
-          height: calc(100vh - 10.5rem);
-          max-height: calc(100vh - 10.5rem);
+          padding: 0.75rem 0 0.5rem;
+          height: calc(100vh - 9.25rem);
+          max-height: calc(100vh - 9.25rem);
         }
 
         .perf-layout {
