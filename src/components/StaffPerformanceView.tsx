@@ -106,7 +106,7 @@ export function StaffPerformanceView() {
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
           border-radius: 0.75rem;
-          box-shadow: none;
+          box-shadow: 0 0 0 1px hsl(var(--border)) inset;
         }
 
         .perf-slot-1 {
@@ -168,10 +168,10 @@ export function StaffPerformanceView() {
         .perf-kpi-inner {
           position: relative;
           border-radius: 0.75rem;
-          background: transparent;
-          border: none;
+          background: hsl(var(--card));
+          border: 1px solid hsl(var(--border));
           box-shadow: none;
-          padding: 0.25rem 0.25rem 0;
+          padding: 0.5rem 0.75rem;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -203,7 +203,7 @@ export function StaffPerformanceView() {
           gap: 0.5rem;
           font-weight: 800;
           letter-spacing: 0.019rem;
-          font-size: 2.75rem;
+          font-size: 2.25rem;
           line-height: 1;
         }
 
@@ -215,8 +215,8 @@ export function StaffPerformanceView() {
         }
 
         .perf-label {
-          font-size: 0.75rem;
-          letter-spacing: 0.1125rem;
+          font-size: 0.6875rem;
+          letter-spacing: 0.08rem;
           text-transform: uppercase;
           color: hsl(var(--muted-foreground));
         }
@@ -230,13 +230,13 @@ export function StaffPerformanceView() {
         .perf-chart-inner {
           position: relative;
           border-radius: 0.75rem;
-          background: transparent;
-          border: none;
+          background: hsl(var(--card));
+          border: 1px solid hsl(var(--border));
           box-shadow: none;
-          padding: 0;
+          padding: 0.5rem 0.75rem;
           display: flex;
           flex-direction: column;
-          gap: 0.625rem;
+          gap: 0.5rem;
           height: 100%;
         }
 
@@ -244,10 +244,11 @@ export function StaffPerformanceView() {
           display: flex;
           align-items: center;
           gap: 0.625rem;
-          font-size: 0.8125rem;
-          letter-spacing: 0.025rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          letter-spacing: 0.01rem;
           color: hsl(var(--foreground));
-          padding: 0.25rem 0.25rem 0;
+          padding: 0;
         }
 
         .perf-dot {
@@ -266,11 +267,11 @@ export function StaffPerformanceView() {
         .perf-chart-slot {
           flex: 1;
           border-radius: 0.75rem;
-          background: hsl(var(--secondary));
+          background: hsl(var(--background));
           border: 1px solid hsl(var(--border));
           box-shadow: none;
-          margin: 0.25rem 0 0;
-          padding: 0.5rem 0.75rem;
+          margin: 0;
+          padding: 0.5rem;
           display: flex;
           align-items: flex-end;
           gap: 0.625rem;
@@ -286,7 +287,7 @@ export function StaffPerformanceView() {
           height: 4.375rem;
           border-radius: 0.625rem;
           border: 1px solid hsl(var(--border));
-          background: hsl(var(--background));
+          background: hsl(var(--secondary));
           overflow: hidden;
           display: flex;
           align-items: flex-end;
@@ -296,7 +297,7 @@ export function StaffPerformanceView() {
           width: 100%;
           border-radius: 0.625rem 0.625rem 0 0;
           background: hsl(var(--primary));
-          opacity: 0.35;
+          opacity: 0.6;
         }
 
         .perf-chart-label {
@@ -315,24 +316,24 @@ export function StaffPerformanceView() {
         .perf-list-inner {
           position: relative;
           border-radius: 0.75rem;
-          background: transparent;
-          border: none;
+          background: hsl(var(--card));
+          border: 1px solid hsl(var(--border));
           box-shadow: none;
-          padding: 0;
+          padding: 0.5rem 0.75rem;
           display: flex;
           flex-direction: column;
-          gap: 0.625rem;
+          gap: 0.5rem;
           height: 100%;
         }
 
         .perf-list-slot {
           flex: 1;
           border-radius: 0.75rem;
-          background: hsl(var(--secondary));
+          background: hsl(var(--background));
           border: 1px solid hsl(var(--border));
           box-shadow: none;
-          margin: 0.25rem 0 0;
-          padding: 0.5rem 0.75rem;
+          margin: 0;
+          padding: 0.5rem;
           overflow-y: auto;
         }
 
@@ -346,7 +347,7 @@ export function StaffPerformanceView() {
           grid-template-columns: 1fr auto;
           gap: 0.75rem;
           align-items: center;
-          padding: 0.5rem 0.75rem;
+          padding: 0.5rem 0.625rem;
           border-radius: 0.75rem;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
@@ -363,8 +364,8 @@ export function StaffPerformanceView() {
         }
 
         .perf-section-title {
-          margin: 0.75rem 0.125rem 0.625rem;
-          font-size: 0.75rem;
+          margin: 0.5rem 0 0.5rem;
+          font-size: 0.6875rem;
           letter-spacing: 0.0625rem;
           text-transform: uppercase;
           color: hsl(var(--muted-foreground));
@@ -392,7 +393,7 @@ export function StaffPerformanceView() {
 
         .perf-matrix-breed,
         .perf-matrix-cell {
-          padding: 0.5rem 0.75rem;
+          padding: 0.5rem 0.625rem;
           border-radius: 0.75rem;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
