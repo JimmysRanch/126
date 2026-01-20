@@ -10,6 +10,7 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import GroomerPerformanceP2 from "@/components/GroomerPerformanceP2"
 import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
 import GroomerPerformanceP4 from "@/pages/GroomerPerformanceP4"
+import GroomerPerformanceP6 from "@/pages/GroomerPerformanceP6"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -110,7 +111,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'performance', 'p2', 'p3', 'p4'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'performance', 'p2', 'p3', 'p4', 'p6'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -223,6 +224,17 @@ export function Staff() {
                 }`}
               >
                 P4
+              </Button>
+              <Button
+                onClick={() => setActiveTab("p6")}
+                variant={activeTab === "p6" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "p6" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                P6
               </Button>
             </div>
 
@@ -440,6 +452,10 @@ export function Staff() {
 
           <TabsContent value="p4" className="mt-0">
             <GroomerPerformanceP4 />
+          </TabsContent>
+
+          <TabsContent value="p6" className="mt-0">
+            <GroomerPerformanceP6 />
           </TabsContent>
         </Tabs>
       </div>
