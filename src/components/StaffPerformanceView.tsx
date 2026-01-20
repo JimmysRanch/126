@@ -89,7 +89,8 @@ export function StaffPerformanceView() {
       <style>{`
         .perf-wrap {
           padding: 1.5rem 0;
-          height: calc(100vh - 14rem);
+          height: calc(100vh - 10.5rem);
+          max-height: calc(100vh - 10.5rem);
         }
 
         .perf-layout {
@@ -102,6 +103,10 @@ export function StaffPerformanceView() {
 
         .perf-card {
           height: 100%;
+          background: hsl(var(--card));
+          border: 1px solid hsl(var(--border));
+          border-radius: 0.75rem;
+          box-shadow: none;
         }
 
         .perf-slot-1 {
@@ -156,57 +161,17 @@ export function StaffPerformanceView() {
 
         .perf-kpi-card {
           position: relative;
-          border-radius: 1.125rem;
           padding: 0.75rem;
           overflow: hidden;
-          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
-          backdrop-filter: blur(0.875rem);
-          -webkit-backdrop-filter: blur(0.875rem);
-        }
-
-        .perf-kpi-card::before {
-          content: "";
-          position: absolute;
-          inset: -0.125rem;
-          border-radius: 1.25rem;
-          opacity: 0.9;
-          pointer-events: none;
-        }
-
-        .perf-kpi-card.blue::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-kpi-card.amber::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-kpi-card.green::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(116, 255, 158, .18), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-kpi-card::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
-                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
-          opacity: 0.25;
         }
 
         .perf-kpi-inner {
           position: relative;
-          border-radius: 0.875rem;
-          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
-                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
-          border: 1px solid rgba(255,255,255,.09);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
-          padding: 1rem 1.125rem;
+          border-radius: 0.5rem;
+          background: transparent;
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          padding: 0.75rem 0.875rem;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -223,13 +188,13 @@ export function StaffPerformanceView() {
         .perf-icon {
           width: 2rem;
           height: 2rem;
-          border-radius: 0.625rem;
+          border-radius: 0.5rem;
           display: grid;
           place-items: center;
-          background: rgba(255,255,255,.05);
-          border: 1px solid rgba(255,255,255,.10);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
-          opacity: 0.95;
+          background: hsl(var(--muted));
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          color: hsl(var(--foreground));
         }
 
         .perf-value {
@@ -238,7 +203,6 @@ export function StaffPerformanceView() {
           gap: 0.5rem;
           font-weight: 800;
           letter-spacing: 0.019rem;
-          text-shadow: 0 1rem 2.5rem rgba(0,0,0,.70);
           font-size: 2.75rem;
           line-height: 1;
         }
@@ -254,57 +218,22 @@ export function StaffPerformanceView() {
           font-size: 0.75rem;
           letter-spacing: 0.1125rem;
           text-transform: uppercase;
-          color: rgba(255,255,255,.70);
+          color: hsl(var(--muted-foreground));
         }
 
         .perf-chart-card {
           position: relative;
-          border-radius: 1.125rem;
           padding: 0.75rem;
           overflow: hidden;
-          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
-          backdrop-filter: blur(0.875rem);
-          -webkit-backdrop-filter: blur(0.875rem);
-        }
-
-        .perf-chart-card::before {
-          content: "";
-          position: absolute;
-          inset: -0.125rem;
-          border-radius: 1.25rem;
-          opacity: 0.85;
-          pointer-events: none;
-        }
-
-        .perf-chart-card.blue::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-chart-card.amber::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-chart-card::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
-                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
-          opacity: 0.25;
         }
 
         .perf-chart-inner {
           position: relative;
-          border-radius: 0.875rem;
-          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
-                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
-          border: 1px solid rgba(255,255,255,.09);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
-          padding: 0;
+          border-radius: 0.5rem;
+          background: transparent;
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          padding: 0.25rem 0;
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
@@ -317,31 +246,31 @@ export function StaffPerformanceView() {
           gap: 0.625rem;
           font-size: 0.8125rem;
           letter-spacing: 0.025rem;
-          color: rgba(255,255,255,.86);
-          padding: 0.875rem 0.875rem 0;
+          color: hsl(var(--foreground));
+          padding: 0.5rem 0.75rem 0;
         }
 
         .perf-dot {
           width: 0.5rem;
           height: 0.5rem;
           border-radius: 0.1875rem;
-          background: rgba(84, 210, 255, .95);
-          box-shadow: 0 0 0.875rem rgba(84, 210, 255, .25);
+          background: hsl(var(--primary));
+          box-shadow: none;
         }
 
         .amber .perf-dot {
-          background: rgba(255, 180, 77, .95);
-          box-shadow: 0 0 0.875rem rgba(255, 180, 77, .25);
+          background: hsl(var(--secondary));
+          box-shadow: none;
         }
 
         .perf-chart-slot {
           flex: 1;
-          border-radius: 0.75rem;
-          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-          border: 1px solid rgba(255,255,255,.07);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
-          margin: 0 0.875rem 0.875rem;
-          padding: 0.625rem 0.75rem;
+          border-radius: 0.5rem;
+          background: hsl(var(--muted));
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          margin: 0 0.75rem 0.75rem;
+          padding: 0.5rem 0.625rem;
           display: flex;
           align-items: flex-end;
           gap: 0.625rem;
@@ -349,52 +278,17 @@ export function StaffPerformanceView() {
 
         .perf-list-card {
           position: relative;
-          border-radius: 1.125rem;
           padding: 0.75rem;
           overflow: hidden;
-          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
-          backdrop-filter: blur(0.875rem);
-          -webkit-backdrop-filter: blur(0.875rem);
-        }
-
-        .perf-list-card::before {
-          content: "";
-          position: absolute;
-          inset: -0.125rem;
-          border-radius: 1.25rem;
-          opacity: 0.85;
-          pointer-events: none;
-        }
-
-        .perf-list-card.blue::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-list-card.amber::before {
-          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
-                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-
-        .perf-list-card::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          pointer-events: none;
-          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
-                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
-          opacity: 0.25;
         }
 
         .perf-list-inner {
           position: relative;
-          border-radius: 0.875rem;
-          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
-                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
-          border: 1px solid rgba(255,255,255,.09);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
-          padding: 0;
+          border-radius: 0.5rem;
+          background: transparent;
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          padding: 0.25rem 0;
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
@@ -403,12 +297,12 @@ export function StaffPerformanceView() {
 
         .perf-list-slot {
           flex: 1;
-          border-radius: 0.75rem;
-          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-          border: 1px solid rgba(255,255,255,.07);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
-          margin: 0 0.875rem 0.875rem;
-          padding: 0.625rem 0.75rem;
+          border-radius: 0.5rem;
+          background: hsl(var(--muted));
+          border: 1px solid hsl(var(--border));
+          box-shadow: none;
+          margin: 0 0.75rem 0.75rem;
+          padding: 0.5rem 0.625rem;
           overflow-y: auto;
         }
 
@@ -422,18 +316,18 @@ export function StaffPerformanceView() {
           grid-template-columns: 1fr auto;
           gap: 0.75rem;
           align-items: center;
-          padding: 0.625rem 0.625rem;
-          border-radius: 0.75rem;
-          background: rgba(255,255,255,.03);
-          border: 1px solid rgba(255,255,255,.06);
+          padding: 0.5rem 0.625rem;
+          border-radius: 0.5rem;
+          background: hsl(var(--background));
+          border: 1px solid hsl(var(--border));
         }
 
         .perf-list-left {
-          color: rgba(255,255,255,.84);
+          color: hsl(var(--foreground));
         }
 
         .perf-list-right {
-          color: rgba(255,255,255,.92);
+          color: hsl(var(--foreground));
           font-weight: 900;
           letter-spacing: 0.0125rem;
         }
@@ -443,7 +337,7 @@ export function StaffPerformanceView() {
           font-size: 0.75rem;
           letter-spacing: 0.0625rem;
           text-transform: uppercase;
-          color: rgba(255, 180, 77, .92);
+          color: hsl(var(--muted-foreground));
         }
 
         .perf-matrix {
@@ -460,7 +354,7 @@ export function StaffPerformanceView() {
         }
 
         .perf-matrix-head {
-          color: rgba(255,255,255,.62);
+          color: hsl(var(--muted-foreground));
           font-size: 0.6875rem;
           letter-spacing: 0.0625rem;
           text-transform: uppercase;
@@ -468,24 +362,24 @@ export function StaffPerformanceView() {
 
         .perf-matrix-breed,
         .perf-matrix-cell {
-          padding: 0.625rem 0.625rem;
-          border-radius: 0.75rem;
-          background: rgba(255,255,255,.03);
-          border: 1px solid rgba(255,255,255,.06);
+          padding: 0.5rem 0.625rem;
+          border-radius: 0.5rem;
+          background: hsl(var(--background));
+          border: 1px solid hsl(var(--border));
         }
 
         .perf-matrix-breed {
-          color: rgba(255,255,255,.86);
+          color: hsl(var(--foreground));
         }
 
         .perf-matrix-cell {
           text-align: center;
           font-weight: 900;
-          color: rgba(255,255,255,.92);
+          color: hsl(var(--foreground));
         }
 
         .perf-matrix-cell.muted {
-          color: rgba(255,255,255,.35);
+          color: hsl(var(--muted-foreground));
           font-weight: 700;
         }
 
