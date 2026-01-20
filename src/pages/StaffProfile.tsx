@@ -237,31 +237,33 @@ export function StaffProfile() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center mb-4 sm:mb-6">
+            <TabsList>
               <TabsTrigger 
-              <TabsTrigger 
+                value="overview"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
-                value="performance" 
+                value="performance"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Performance
               </TabsTrigger>
               <TabsTrigger 
-                value="payroll" 
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                value="payroll" 
-                Payroll
-              </TabsTrigger>
-                Payroll
-              </TabsTrigger>
-              <TabsTrigger 
-                value="schedule" 
+                value="payroll"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
+                Payroll
+              </TabsTrigger>
               <TabsTrigger 
-                value="history" 
+                value="schedule"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+              >
+                Schedule
+              </TabsTrigger>
+              <TabsTrigger 
+                value="history"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 History
