@@ -237,31 +237,29 @@ export function StaffProfile() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center mb-4 sm:mb-6">
-            <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-3 w-full gap-1' : ''}`}>
               <TabsTrigger 
-                value="overview" 
+              <TabsTrigger 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="performance" 
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Performance
               </TabsTrigger>
               <TabsTrigger 
                 value="payroll" 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
+                value="payroll" 
+                Payroll
+              </TabsTrigger>
                 Payroll
               </TabsTrigger>
               <TabsTrigger 
                 value="schedule" 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
-                Schedule
-              </TabsTrigger>
               <TabsTrigger 
                 value="history" 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
