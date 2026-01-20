@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { Toaster } from '@/components/ui/sonner'
 import { TopNav } from '@/components/TopNav'
 import { Dashboard } from '@/pages/Dashboard'
 import { ClientsList } from '@/pages/ClientsList'
@@ -71,6 +72,7 @@ function App() {
             <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
           </Routes>
         </div>
+        <Toaster />
       </div>
     </Router>
   )
