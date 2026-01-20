@@ -1,6 +1,6 @@
 import React from "react";
 
-type KPI = { value: string; unit?: string; label: string; accent: "blue" | "amber" | "green"; icon?: React.ReactNode; subtitle?: string };
+type KPI = { value: string; unit?: string; label: string; accent: "blue" | "amber" | "green"; icon?: React.ReactNode };
 type BarSeries = { title: string; accent: "blue" | "amber"; labels: string[]; values: number[]; valueFmt?: (v: number) => string };
 type ListRow = { left: string; right: string };
 type SectionedList = { topTitle: string; topRows: ListRow[]; bottomTitle: string; bottomRows: ListRow[] };
@@ -60,9 +60,9 @@ export default function GroomerPerformanceP4() {
       ],
       bottomTitle: "Lowest Performing Breed & Size Combinations",
       bottomRows: [
-        { left: "Golden Retrievers Large", right: "$1.77" },
-        { left: "Cavaliers Small", right: "$1.72" },
-        { left: "Dachshunds Small", right: "$1.65" },
+        { left: "Goldendoodles Large", right: "$1.22" },
+        { left: "Labradors Large", right: "$1.18" },
+        { left: "Mixed Breed XL", right: "$1.05" },
       ],
     },
     rpmMatrix: {
@@ -85,37 +85,26 @@ export default function GroomerPerformanceP4() {
         :root{
           --bg0:#050915;
           --bg1:#071326;
-
           --card0: rgba(10,14,22,.74);
           --card1: rgba(12,16,26,.62);
-
-          --stroke: rgba(255,255,255,.12);
-          --stroke2: rgba(255,255,255,.07);
           --text: rgba(255,255,255,.92);
           --muted: rgba(255,255,255,.72);
-          --muted2: rgba(255,255,255,.50);
-
           --blue: 84, 210, 255;
           --amber: 255, 180, 77;
           --green: 116, 255, 158;
-
           --radius: 18px;
           --innerRadius: 14px;
-
-          --gap: 18px;
-
-          --kpiH: 124px;
-          --midH: 262px;
-          --botH: 268px;
         }
 
         *{ box-sizing:border-box; }
-        .gpWrap{
+        
+        .p4Wrap{
           min-height: calc(100vh - 56px);
-          padding: 26px 26px 40px;
+          padding: 32px 28px 48px;
           display:grid;
           place-items:center;
           color: var(--text);
+          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
           background:
             radial-gradient(1200px 760px at 50% 4%, rgba(120,140,255,.18), transparent 55%),
             radial-gradient(1000px 760px at 18% 74%, rgba(var(--blue), .12), transparent 58%),
@@ -124,390 +113,464 @@ export default function GroomerPerformanceP4() {
             linear-gradient(180deg, var(--bg0), var(--bg1));
         }
 
-        .gpStage{
-          width: min(1320px, 100%);
+        .p4Stage{
+          width: min(1340px, 100%);
           position: relative;
+          perspective: 2400px;
+          perspective-origin: 50% 38%;
         }
 
-        .grid{
+        .p4Scene{
           position: relative;
-          display:grid;
+          transform-style: preserve-3d;
+          transform: rotateX(6deg);
+        }
+
+        .p4Row{
+          display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: var(--gap);
-          z-index: 2;
+          gap: 18px;
+          margin-bottom: 18px;
+          transform-style: preserve-3d;
         }
 
-        .row1{ height: var(--kpiH); }
-        .row2{ height: var(--midH); }
-        .row3{ height: var(--botH); }
-
-        .pedestal{
-          position:absolute;
-          left: 0;
-          right: 0;
-          bottom: -6px;
-          height: calc(var(--botH) + 62px);
-          z-index: 1;
-          pointer-events:none;
-          filter: drop-shadow(0 22px 40px rgba(0,0,0,.60));
+        .p4Row1{
+          transform: translateZ(20px) rotateX(-2deg);
         }
-        .pedestal::before{
+
+        .p4Row2{
+          transform: translateZ(10px) rotateX(-4deg);
+        }
+
+        .p4Row3{
+          transform: translateZ(0px) rotateX(-6deg);
+          position: relative;
+        }
+
+        .p4Pedestal{
+          position: absolute;
+          left: 2%;
+          right: 2%;
+          bottom: -48px;
+          height: 92px;
+          pointer-events: none;
+          z-index: -1;
+          transform: translateZ(-40px);
+        }
+
+        .p4Pedestal::before{
           content:"";
           position:absolute;
-          left: 3%;
-          right: 3%;
-          top: 32px;
-          bottom: 0;
+          inset: 0;
           border-radius: 24px;
           background:
-            linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02) 24%, rgba(0,0,0,.40) 100%);
+            linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03) 20%, rgba(0,0,0,.45) 100%);
           box-shadow:
-            0 0 0 1px rgba(255,255,255,.07) inset,
-            0 40px 90px rgba(0,0,0,.70);
-        }
-        .pedestal::after{
-          content:"";
-          position:absolute;
-          left: 8%;
-          right: 8%;
-          top: 46px;
-          height: 10px;
-          border-radius: 999px;
-          background: radial-gradient(closest-side, rgba(255,255,255,.14), transparent 70%);
-          opacity:.35;
+            0 0 0 1px rgba(255,255,255,.08) inset,
+            0 45px 100px rgba(0,0,0,.75),
+            0 20px 60px rgba(0,0,0,.60);
+          filter: blur(1px);
         }
 
-        .card{
+        .p4Pedestal::after{
+          content:"";
+          position:absolute;
+          left: 10%;
+          right: 10%;
+          top: 12px;
+          height: 8px;
+          border-radius: 999px;
+          background: radial-gradient(closest-side, rgba(255,255,255,.16), transparent 65%);
+          opacity:.40;
+        }
+
+        .p4Card{
           position:relative;
           border-radius: var(--radius);
           padding: 12px;
           overflow:hidden;
-
           background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
           box-shadow:
-            0 26px 70px rgba(0,0,0,.62),
-            0 0 0 1px rgba(255,255,255,.07) inset;
-
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
+            0 32px 80px rgba(0,0,0,.65),
+            0 0 0 1px rgba(255,255,255,.08) inset;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
         }
 
-        .card::before{
+        .p4Card::before{
           content:"";
           position:absolute;
           inset: -2px;
           border-radius: calc(var(--radius) + 2px);
           pointer-events:none;
           background:
-            radial-gradient(620px 260px at 18% 24%, rgba(var(--glow), .34), transparent 62%),
-            radial-gradient(620px 260px at 84% 36%, rgba(255,255,255,.10), transparent 62%),
-            linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.00) 40%);
-          opacity: .95;
+            radial-gradient(620px 260px at 18% 22%, rgba(var(--glow), .36), transparent 62%),
+            radial-gradient(620px 260px at 84% 36%, rgba(255,255,255,.11), transparent 62%),
+            linear-gradient(180deg, rgba(255,255,255,.12), transparent 42%);
+          opacity: .92;
         }
 
-        .card::after{
+        .p4Card::after{
           content:"";
           position:absolute;
           inset: 0;
           border-radius: var(--radius);
           pointer-events:none;
           box-shadow:
-            0 0 0 1px rgba(255,255,255,.10) inset,
-            0 0 0 1px rgba(0,0,0,.35);
-          opacity:.70;
+            0 0 0 1px rgba(255,255,255,.12) inset,
+            0 0 0 1px rgba(0,0,0,.40);
+          opacity:.75;
         }
 
-        .inner{
+        .p4Inner{
           position:relative;
           height:100%;
           border-radius: var(--innerRadius);
-          border: 1px solid rgba(255,255,255,.10);
+          border: 1px solid rgba(255,255,255,.11);
           background:
-            radial-gradient(900px 320px at 20% 18%, rgba(255,255,255,.06), transparent 60%),
-            radial-gradient(900px 420px at 80% 100%, rgba(0,0,0,.60), transparent 58%),
+            radial-gradient(900px 320px at 20% 16%, rgba(255,255,255,.07), transparent 62%),
+            radial-gradient(900px 420px at 82% 100%, rgba(0,0,0,.65), transparent 60%),
             linear-gradient(180deg, var(--card0), var(--card1));
           box-shadow:
-            0 0 0 1px rgba(0,0,0,.40) inset,
-            0 14px 34px rgba(0,0,0,.35);
+            0 0 0 1px rgba(0,0,0,.42) inset,
+            0 16px 38px rgba(0,0,0,.38);
           overflow:hidden;
         }
 
-        .inner::before{
+        .p4Inner::before{
           content:"";
           position:absolute;
           inset: 0;
           border-radius: var(--innerRadius);
           pointer-events:none;
           background:
-            linear-gradient(180deg, rgba(255,255,255,.14), transparent 30%),
-            linear-gradient(0deg, rgba(0,0,0,.42), transparent 38%);
-          opacity:.22;
+            linear-gradient(180deg, rgba(255,255,255,.16), transparent 32%),
+            linear-gradient(0deg, rgba(0,0,0,.48), transparent 40%);
+          opacity:.24;
         }
 
         .blue{ --glow: var(--blue); }
         .amber{ --glow: var(--amber); }
         .green{ --glow: var(--green); }
 
-        .kpi{
-          padding: 16px 18px;
+        .p4Kpi{
+          height: 130px;
+          padding: 18px 20px;
           display:flex;
           flex-direction:column;
           justify-content:center;
           gap: 8px;
         }
-        .kTop{ display:flex; align-items:center; gap: 12px; }
-        .kIcon{
-          width: 36px;
-          height: 36px;
+        
+        .p4KTop{ display:flex; align-items:center; gap: 14px; }
+        
+        .p4KIcon{
+          width: 38px;
+          height: 38px;
           border-radius: 12px;
           display:grid;
           place-items:center;
-          border: 1px solid rgba(255,255,255,.12);
-          background: rgba(255,255,255,.05);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.30) inset;
-          opacity:.95;
+          border: 1px solid rgba(255,255,255,.13);
+          background: rgba(255,255,255,.06);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.32) inset;
+          opacity:.96;
+          flex-shrink: 0;
         }
-        .kValue{
+        
+        .p4KValue{
           display:flex;
           align-items:baseline;
           gap: 10px;
           font-weight: 900;
-          font-size: 48px;
+          font-size: 50px;
           line-height: 1;
-          letter-spacing: .4px;
-          text-shadow: 0 18px 40px rgba(0,0,0,.75);
+          letter-spacing: .5px;
+          text-shadow: 0 20px 45px rgba(0,0,0,.78);
           white-space:nowrap;
         }
-        .kUnit{ font-size: 16px; font-weight: 800; opacity:.72; }
-        .kLabel{
+        
+        .p4KUnit{ font-size: 17px; font-weight: 800; opacity:.74; }
+        
+        .p4KLabel{
           font-size: 12px;
-          letter-spacing: 2px;
+          letter-spacing: 2.2px;
           text-transform: uppercase;
-          color: rgba(255,255,255,.76);
+          color: rgba(255,255,255,.78);
         }
-        .kSub{ font-size: 12px; color: rgba(255,255,255,.52); }
 
-        .hdr{
-          height: 44px;
-          padding: 12px 14px 0;
+        .p4Chart{
+          height: 270px;
+        }
+
+        .p4List{
+          height: 280px;
+        }
+
+        .p4Hdr{
+          height: 46px;
+          padding: 13px 16px 0;
           display:flex;
           align-items:center;
-          gap: 10px;
-          color: rgba(255,255,255,.88);
+          gap: 11px;
+          color: rgba(255,255,255,.90);
           font-size: 13px;
-          letter-spacing: .3px;
-          white-space:nowrap;
-          overflow:hidden;
-          text-overflow:ellipsis;
+          letter-spacing: .4px;
+          font-weight: 500;
         }
-        .dot{
-          width: 8px; height: 8px;
+        
+        .p4Dot{
+          width: 9px; 
+          height: 9px;
           border-radius: 3px;
-          background: rgba(var(--glow), .95);
-          box-shadow: 0 0 14px rgba(var(--glow), .30);
-          flex:0 0 auto;
+          background: rgba(var(--glow), .96);
+          box-shadow: 0 0 16px rgba(var(--glow), .32);
+          flex-shrink: 0;
         }
-        .body{
-          padding: 8px 14px 14px;
-          height: calc(100% - 44px);
+        
+        .p4Body{
+          padding: 9px 16px 16px;
+          height: calc(100% - 46px);
         }
-        .slot{
+        
+        .p4Slot{
           height:100%;
-          border-radius: 12px;
-          border: 1px solid rgba(255,255,255,.10);
+          border-radius: 13px;
+          border: 1px solid rgba(255,255,255,.11);
           background:
-            linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-          box-shadow: 0 0 0 1px rgba(0,0,0,.40) inset;
-          padding: 10px 12px;
-          overflow:hidden;
+            linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+          box-shadow: 0 0 0 1px rgba(0,0,0,.42) inset;
+          padding: 11px 13px;
+          overflow:auto;
         }
 
-        .bars{
+        .p4Bars{
           height:100%;
           display:grid;
           grid-template-columns: repeat(var(--n), 1fr);
-          gap: 14px;
+          gap: 15px;
           align-items:end;
         }
-        .barWrap{
+        
+        .p4BarWrap{
           height: 100%;
           display:grid;
           grid-template-rows: auto 1fr auto;
-          gap: 10px;
+          gap: 11px;
         }
-        .barVal{
+        
+        .p4BarVal{
           font-size: 12px;
-          color: rgba(255,255,255,.74);
+          color: rgba(255,255,255,.76);
           text-align:center;
-          white-space:nowrap;
+          font-weight: 600;
         }
-        .barTrack{
+        
+        .p4BarTrack{
           height: 100%;
-          border-radius: 12px;
-          background: rgba(0,0,0,.20);
-          border: 1px solid rgba(255,255,255,.08);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
+          border-radius: 13px;
+          background: rgba(0,0,0,.22);
+          border: 1px solid rgba(255,255,255,.09);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.38) inset;
           display:flex;
           align-items:flex-end;
           overflow:hidden;
         }
-        .bar{
+        
+        .p4Bar{
           width: 100%;
-          border-radius: 12px 12px 0 0;
+          border-radius: 13px 13px 0 0;
           background:
             linear-gradient(180deg,
-              rgba(var(--glow), .55),
-              rgba(var(--glow), .14));
+              rgba(var(--glow), .58),
+              rgba(var(--glow), .16));
           box-shadow:
-            0 10px 24px rgba(0,0,0,.35) inset,
-            0 0 0 1px rgba(255,255,255,.10) inset;
+            0 12px 26px rgba(0,0,0,.38) inset,
+            0 0 0 1px rgba(255,255,255,.12) inset;
         }
-        .barLbl{
+        
+        .p4BarLbl{
           font-size: 12px;
-          color: rgba(255,255,255,.70);
+          color: rgba(255,255,255,.72);
           text-align:center;
-          letter-spacing: .8px;
+          letter-spacing: .9px;
+          font-weight: 500;
         }
 
-        .list{
+        .p4List{
           display:grid;
           gap: 10px;
         }
-        .li{
+        
+        .p4Li{
           display:grid;
           grid-template-columns: 1fr auto;
-          gap: 12px;
+          gap: 13px;
           align-items:center;
-          padding: 10px 10px;
-          border-radius: 12px;
-          background: rgba(255,255,255,.03);
-          border: 1px solid rgba(255,255,255,.06);
+          padding: 11px 11px;
+          border-radius: 13px;
+          background: rgba(255,255,255,.04);
+          border: 1px solid rgba(255,255,255,.07);
         }
-        .liL{ color: rgba(255,255,255,.86); }
-        .liR{ color: rgba(255,255,255,.92); font-weight: 900; letter-spacing:.2px; }
+        
+        .p4LiL{ 
+          color: rgba(255,255,255,.88); 
+          font-size: 13px;
+        }
+        
+        .p4LiR{ 
+          color: rgba(255,255,255,.94); 
+          font-weight: 900; 
+          letter-spacing:.3px; 
+          font-size: 13px;
+        }
 
-        .sectionTitle{
-          margin: 12px 2px 10px;
+        .p4SecTitle{
+          margin: 13px 3px 11px;
           font-size: 12px;
-          letter-spacing: 1px;
+          letter-spacing: 1.2px;
           text-transform: uppercase;
-          color: rgba(var(--glow), .95);
+          color: rgba(var(--glow), .96);
+          font-weight: 600;
         }
 
-        .matrix{
+        .p4Matrix{
           display:grid;
           gap: 10px;
         }
-        .mHead, .mRow{
+        
+        .p4MHead, .p4MRow{
           display:grid;
           grid-template-columns: 1.45fr repeat(4, .75fr);
           gap:10px;
           align-items:center;
         }
-        .mHead{
-          font-size: 12px;
-          color: rgba(255,255,255,.62);
-          letter-spacing: 1px;
+        
+        .p4MHead{
+          font-size: 11px;
+          color: rgba(255,255,255,.64);
+          letter-spacing: 1.1px;
           text-transform: uppercase;
+          font-weight: 600;
         }
-        .mBreed, .mCell{
+        
+        .p4MBreed, .p4MCell{
           padding: 10px 10px;
-          border-radius: 12px;
-          background: rgba(255,255,255,.03);
-          border: 1px solid rgba(255,255,255,.06);
+          border-radius: 13px;
+          background: rgba(255,255,255,.04);
+          border: 1px solid rgba(255,255,255,.07);
         }
-        .mBreed{ color: rgba(255,255,255,.86); }
-        .mCell{ text-align:center; font-weight: 900; color: rgba(255,255,255,.92); }
-        .mCell.muted{ color: rgba(255,255,255,.36); font-weight: 700; }
+        
+        .p4MBreed{ 
+          color: rgba(255,255,255,.88); 
+          font-size: 13px;
+        }
+        
+        .p4MCell{ 
+          text-align:center; 
+          font-weight: 900; 
+          color: rgba(255,255,255,.94);
+          font-size: 13px;
+        }
+        
+        .p4MCell.muted{ 
+          color: rgba(255,255,255,.38); 
+          font-weight: 700; 
+        }
 
         @media (max-width: 1100px){
-          .grid{ grid-template-columns: 1fr; }
-          .pedestal{ display:none; }
-          .row1,.row2,.row3{ height:auto; }
+          .p4Scene{ transform: rotateX(4deg); }
+          .p4Row{ grid-template-columns: 1fr; }
+          .p4Pedestal{ display:none; }
         }
       `}</style>
 
-      <div className="gpWrap">
-        <div className="gpStage">
-          <div className="pedestal" />
-          <div className="grid">
-            {data.kpis.map((k, i) => (
-              <GlassCard key={i} accent={k.accent} heightVar="--kpiH">
-                <div className="inner kpi">
-                  <div className="kTop">
-                    <div className="kIcon">{k.icon ?? "•"}</div>
-                    <div className="kValue">
-                      {k.value}
-                      {k.unit ? <span className="kUnit">{k.unit}</span> : null}
+      <div className="p4Wrap">
+        <div className="p4Stage">
+          <div className="p4Scene">
+            <div className="p4Row p4Row1">
+              {data.kpis.map((k, i) => (
+                <div key={i} className={`p4Card ${k.accent}`}>
+                  <div className="p4Inner p4Kpi">
+                    <div className="p4KTop">
+                      <div className="p4KIcon">{k.icon ?? "•"}</div>
+                      <div className="p4KValue">
+                        {k.value}
+                        {k.unit ? <span className="p4KUnit">{k.unit}</span> : null}
+                      </div>
+                    </div>
+                    <div className="p4KLabel">{k.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="p4Row p4Row2">
+              {data.charts.map((c, i) => (
+                <div key={i} className={`p4Card p4Chart ${c.accent}`}>
+                  <div className="p4Inner">
+                    <div className="p4Hdr">
+                      <div className="p4Dot" />
+                      <div>{c.title}</div>
+                    </div>
+                    <div className="p4Body">
+                      <div className="p4Slot">
+                        <P4Bars labels={c.labels} values={c.values} valueFmt={c.valueFmt} />
+                      </div>
                     </div>
                   </div>
-                  <div className="kLabel">{k.label}</div>
-                  {k.subtitle ? <div className="kSub">{k.subtitle}</div> : null}
                 </div>
-              </GlassCard>
-            ))}
+              ))}
+            </div>
 
-            {data.charts.map((c, i) => (
-              <GlassCard key={i} accent={c.accent} heightVar="--midH">
-                <div className="inner">
-                  <div className="hdr">
-                    <div className="dot" />
-                    <div>{c.title}</div>
+            <div className="p4Row p4Row3">
+              <div className="p4Pedestal" />
+              
+              <div className="p4Card p4List blue">
+                <div className="p4Inner">
+                  <div className="p4Hdr">
+                    <div className="p4Dot" />
+                    <div>Earnings by Breed</div>
                   </div>
-                  <div className="body">
-                    <div className="slot">
-                      <Bars labels={c.labels} values={c.values} valueFmt={c.valueFmt} />
-                    </div>
-                  </div>
-                </div>
-              </GlassCard>
-            ))}
-
-            <GlassCard accent="blue" heightVar="--botH">
-              <div className="inner">
-                <div className="hdr">
-                  <div className="dot" />
-                  <div>Earnings by Breed</div>
-                </div>
-                <div className="body">
-                  <div className="slot">
-                    <List rows={data.earningsByBreed} />
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
-
-            <GlassCard accent="amber" heightVar="--botH">
-              <div className="inner">
-                <div className="hdr">
-                  <div className="dot" />
-                  <div>Top Performing Breed &amp; Size Combinations</div>
-                </div>
-                <div className="body">
-                  <div className="slot">
-                    <div className="list">
-                      <List rows={data.combos.topRows} />
-                      <div className="sectionTitle">{data.combos.bottomTitle}</div>
-                      <List rows={data.combos.bottomRows} />
+                  <div className="p4Body">
+                    <div className="p4Slot">
+                      <P4List rows={data.earningsByBreed} />
                     </div>
                   </div>
                 </div>
               </div>
-            </GlassCard>
 
-            <GlassCard accent="amber" heightVar="--botH">
-              <div className="inner">
-                <div className="hdr">
-                  <div className="dot" />
-                  <div>RPM by Breed &amp; Size</div>
-                </div>
-                <div className="body">
-                  <div className="slot">
-                    <MatrixTable matrix={data.rpmMatrix} />
+              <div className="p4Card p4List amber">
+                <div className="p4Inner">
+                  <div className="p4Hdr">
+                    <div className="p4Dot" />
+                    <div>Top Performing Breed &amp; Size Combinations</div>
+                  </div>
+                  <div className="p4Body">
+                    <div className="p4Slot">
+                      <div>
+                        <P4List rows={data.combos.topRows} />
+                        <div className="p4SecTitle">{data.combos.bottomTitle}</div>
+                        <P4List rows={data.combos.bottomRows} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </GlassCard>
+
+              <div className="p4Card p4List amber">
+                <div className="p4Inner">
+                  <div className="p4Hdr">
+                    <div className="p4Dot" />
+                    <div>RPM by Breed &amp; Size</div>
+                  </div>
+                  <div className="p4Body">
+                    <div className="p4Slot">
+                      <P4MatrixTable matrix={data.rpmMatrix} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -515,30 +578,21 @@ export default function GroomerPerformanceP4() {
   );
 }
 
-function GlassCard(props: { accent: "blue" | "amber" | "green"; heightVar: "--kpiH" | "--midH" | "--botH"; children: React.ReactNode }) {
-  const cls = `card ${props.accent}`;
-  return (
-    <div className={cls} style={{ height: `var(${props.heightVar})` }}>
-      {props.children}
-    </div>
-  );
-}
-
-function Bars(props: { labels: string[]; values: number[]; valueFmt?: (v: number) => string }) {
+function P4Bars(props: { labels: string[]; values: number[]; valueFmt?: (v: number) => string }) {
   const { labels, values, valueFmt } = props;
   const max = Math.max(...values);
   return (
-    <div className="bars" style={{ ["--n" as any]: labels.length }}>
+    <div className="p4Bars" style={{ ["--n" as any]: labels.length }}>
       {labels.map((lbl, i) => {
         const v = values[i] ?? 0;
         const pct = max > 0 ? Math.max(0.12, v / max) : 0.12;
         return (
-          <div className="barWrap" key={lbl}>
-            <div className="barVal">{valueFmt ? valueFmt(v) : String(v)}</div>
-            <div className="barTrack">
-              <div className="bar" style={{ height: `${pct * 100}%` }} />
+          <div className="p4BarWrap" key={lbl}>
+            <div className="p4BarVal">{valueFmt ? valueFmt(v) : String(v)}</div>
+            <div className="p4BarTrack">
+              <div className="p4Bar" style={{ height: `${pct * 100}%` }} />
             </div>
-            <div className="barLbl">{lbl}</div>
+            <div className="p4BarLbl">{lbl}</div>
           </div>
         );
       })}
@@ -546,34 +600,34 @@ function Bars(props: { labels: string[]; values: number[]; valueFmt?: (v: number
   );
 }
 
-function List(props: { rows: { left: string; right: string }[] }) {
+function P4List(props: { rows: { left: string; right: string }[] }) {
   return (
-    <div className="list">
+    <div className="p4List">
       {props.rows.map((r) => (
-        <div className="li" key={r.left}>
-          <div className="liL">{r.left}</div>
-          <div className="liR">{r.right}</div>
+        <div className="p4Li" key={r.left}>
+          <div className="p4LiL">{r.left}</div>
+          <div className="p4LiR">{r.right}</div>
         </div>
       ))}
     </div>
   );
 }
 
-function MatrixTable(props: { matrix: Matrix }) {
+function P4MatrixTable(props: { matrix: Matrix }) {
   const { cols, rows } = props.matrix;
   return (
-    <div className="matrix">
-      <div className="mHead">
+    <div className="p4Matrix">
+      <div className="p4MHead">
         <div>Breed</div>
         {cols.map((c) => (
           <div key={c}>{c}</div>
         ))}
       </div>
       {rows.map((r) => (
-        <div className="mRow" key={r.name}>
-          <div className="mBreed">{r.name}</div>
+        <div className="p4MRow" key={r.name}>
+          <div className="p4MBreed">{r.name}</div>
           {r.cells.map((cell, i) => (
-            <div key={`${r.name}-${i}`} className={`mCell ${cell ? "" : "muted"}`}>
+            <div key={`${r.name}-${i}`} className={`p4MCell ${cell ? "" : "muted"}`}>
               {cell ?? "—"}
             </div>
           ))}
