@@ -167,11 +167,11 @@ export function StaffPerformanceView() {
 
         .perf-kpi-inner {
           position: relative;
-          border-radius: 0.5rem;
+          border-radius: 0.75rem;
           background: transparent;
-          border: 1px solid hsl(var(--border));
+          border: none;
           box-shadow: none;
-          padding: 0.75rem 0.875rem;
+          padding: 0.25rem 0.25rem 0;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -191,7 +191,7 @@ export function StaffPerformanceView() {
           border-radius: 0.5rem;
           display: grid;
           place-items: center;
-          background: hsl(var(--muted));
+          background: hsl(var(--secondary));
           border: 1px solid hsl(var(--border));
           box-shadow: none;
           color: hsl(var(--foreground));
@@ -229,11 +229,11 @@ export function StaffPerformanceView() {
 
         .perf-chart-inner {
           position: relative;
-          border-radius: 0.5rem;
+          border-radius: 0.75rem;
           background: transparent;
-          border: 1px solid hsl(var(--border));
+          border: none;
           box-shadow: none;
-          padding: 0.25rem 0;
+          padding: 0;
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
@@ -247,7 +247,7 @@ export function StaffPerformanceView() {
           font-size: 0.8125rem;
           letter-spacing: 0.025rem;
           color: hsl(var(--foreground));
-          padding: 0.5rem 0.75rem 0;
+          padding: 0.25rem 0.25rem 0;
         }
 
         .perf-dot {
@@ -265,15 +265,45 @@ export function StaffPerformanceView() {
 
         .perf-chart-slot {
           flex: 1;
-          border-radius: 0.5rem;
-          background: hsl(var(--muted));
+          border-radius: 0.75rem;
+          background: hsl(var(--secondary));
           border: 1px solid hsl(var(--border));
           box-shadow: none;
-          margin: 0 0.75rem 0.75rem;
-          padding: 0.5rem 0.625rem;
+          margin: 0.25rem 0 0;
+          padding: 0.5rem 0.75rem;
           display: flex;
           align-items: flex-end;
           gap: 0.625rem;
+        }
+
+        .perf-chart-value {
+          font-size: 0.6875rem;
+          text-align: center;
+          color: hsl(var(--muted-foreground));
+        }
+
+        .perf-chart-bar {
+          height: 4.375rem;
+          border-radius: 0.625rem;
+          border: 1px solid hsl(var(--border));
+          background: hsl(var(--background));
+          overflow: hidden;
+          display: flex;
+          align-items: flex-end;
+        }
+
+        .perf-chart-bar-fill {
+          width: 100%;
+          border-radius: 0.625rem 0.625rem 0 0;
+          background: hsl(var(--primary));
+          opacity: 0.35;
+        }
+
+        .perf-chart-label {
+          font-size: 0.625rem;
+          text-align: center;
+          letter-spacing: 0.0625rem;
+          color: hsl(var(--muted-foreground));
         }
 
         .perf-list-card {
@@ -284,11 +314,11 @@ export function StaffPerformanceView() {
 
         .perf-list-inner {
           position: relative;
-          border-radius: 0.5rem;
+          border-radius: 0.75rem;
           background: transparent;
-          border: 1px solid hsl(var(--border));
+          border: none;
           box-shadow: none;
-          padding: 0.25rem 0;
+          padding: 0;
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
@@ -297,12 +327,12 @@ export function StaffPerformanceView() {
 
         .perf-list-slot {
           flex: 1;
-          border-radius: 0.5rem;
-          background: hsl(var(--muted));
+          border-radius: 0.75rem;
+          background: hsl(var(--secondary));
           border: 1px solid hsl(var(--border));
           box-shadow: none;
-          margin: 0 0.75rem 0.75rem;
-          padding: 0.5rem 0.625rem;
+          margin: 0.25rem 0 0;
+          padding: 0.5rem 0.75rem;
           overflow-y: auto;
         }
 
@@ -316,9 +346,9 @@ export function StaffPerformanceView() {
           grid-template-columns: 1fr auto;
           gap: 0.75rem;
           align-items: center;
-          padding: 0.5rem 0.625rem;
-          border-radius: 0.5rem;
-          background: hsl(var(--background));
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.75rem;
+          background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
         }
 
@@ -362,9 +392,9 @@ export function StaffPerformanceView() {
 
         .perf-matrix-breed,
         .perf-matrix-cell {
-          padding: 0.5rem 0.625rem;
-          border-radius: 0.5rem;
-          background: hsl(var(--background));
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.75rem;
+          background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
         }
 
@@ -438,13 +468,13 @@ export function StaffPerformanceView() {
                     const height = Math.max(0.18, value / max)
                     return (
                       <div key={j} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.375rem" }}>
-                        <div style={{ fontSize: "0.6875rem", textAlign: "center", color: "rgba(255,255,255,.72)" }}>
+                        <div className="perf-chart-value">
                           {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
                         </div>
-                        <div style={{ height: "4.375rem", borderRadius: "0.625rem", border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", overflow: "hidden", display: "flex", alignItems: "flex-end" }}>
-                          <div style={{ width: "100%", height: `${height * 100}%`, borderRadius: "0.625rem 0.625rem 0 0", background: "linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.20))" }} />
+                        <div className="perf-chart-bar">
+                          <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
                         </div>
-                        <div style={{ fontSize: "0.625rem", textAlign: "center", letterSpacing: "0.0625rem", color: "rgba(255,255,255,.55)" }}>{label}</div>
+                        <div className="perf-chart-label">{label}</div>
                       </div>
                     )
                   })}
