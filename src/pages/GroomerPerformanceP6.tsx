@@ -76,295 +76,310 @@ export default function GroomerPerformanceP6() {
   return (
     <>
       <style>{`
-        :root{
+        :root {
           --p6-bg-top: #1e2a3a;
           --p6-bg-bottom: #243142;
           --p6-card-bg: rgba(40, 55, 75, 0.6);
           --p6-card-border: rgba(70, 95, 130, 0.4);
           --p6-text: #f5e6d3;
-          --p6-text: #f5e6d3;
           --p6-text-muted: rgba(245, 230, 211, 0.75);
           --p6-text-dim: rgba(245, 230, 211, 0.55);
           --p6-amber: #ffb44d;
-          --p6-amber: #ffb44d;
           --p6-blue: #5eb3d1;
           --p6-green: #74d99e;
-          padding: 14px 18px;
-          overflow: hidden;
-          color: var(--p6-text);
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-        .p6-page{ent(180deg, var(--p6-bg-top), var(--p6-bg-bottom));
         }
+
+        .p6-page {
           max-height: calc(100vh - 56px);
           padding: 14px 18px;
           overflow: hidden;
           color: var(--p6-text);
-          height: 100%;
           background: linear-gradient(180deg, var(--p6-bg-top), var(--p6-bg-bottom));
-          grid-template-rows: auto auto 1fr;
-          gap: 14px;
-        .p6-grid{
-          max-width: 1540px;
-        .p6-kpi-row{
-          height: 100%;
-          grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: auto auto 1fr;
-          gap: 14px;
+          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        }
 
-        .p6-kpi{
-        .p6-kpi-row{
-          border: 1px solid var(--p6-card-border);
-          background: var(--p6-card-bg);
+        .p6-grid {
+          height: 100%;
+          max-width: 1540px;
+          display: grid;
+          grid-template-rows: auto auto 1fr;
           gap: 14px;
-          padding: 16px 20px;
-          display: flex;
-        .p6-kpi{
-          gap: 16px;
+        }
+
+        .p6-kpi-row {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 14px;
+        }
+
+        .p6-kpi {
+          border-radius: 12px;
           border: 1px solid var(--p6-card-border);
           background: var(--p6-card-bg);
           backdrop-filter: blur(10px);
           padding: 16px 20px;
+          display: flex;
+          gap: 16px;
+        }
+
+        .p6-kpi-icon {
           font-size: 26px;
           flex-shrink: 0;
-          gap: 16px;
-        .p6-kpi-icon.dollar{ background: rgba(255, 180, 77, 0.12); color: var(--p6-amber); }
-        .p6-kpi-icon.paw{ background: rgba(116, 217, 158, 0.12); color: var(--p6-green); }
-        .p6-kpi-icon{
-        .p6-kpi-content{
+          width: 56px;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+        }
+
+        .p6-kpi-icon.clock {
+          background: rgba(245, 230, 211, 0.12);
+          color: var(--p6-text);
+        }
+
+        .p6-kpi-icon.dollar {
+          background: rgba(255, 180, 77, 0.12);
+          color: var(--p6-amber);
+        }
+
+        .p6-kpi-icon.paw {
+          background: rgba(116, 217, 158, 0.12);
+          color: var(--p6-green);
+        }
+
+        .p6-kpi-content {
           flex: 1;
           min-width: 0;
         }
 
-        .p6-kpi-value{
+        .p6-kpi-value {
           font-size: 38px;
           font-weight: 700;
-        .p6-kpi-icon.clock{ background: rgba(245, 230, 211, 0.12); color: var(--p6-text); }
-        .p6-kpi-icon.dollar{ background: rgba(255, 180, 77, 0.12); color: var(--p6-amber); }
-        .p6-kpi-icon.paw{ background: rgba(116, 217, 158, 0.12); color: var(--p6-green); }
           color: var(--p6-text);
-        .p6-kpi-content{
-        .p6-kpi-value .unit{
+        }
+
+        .p6-kpi-value .unit {
           font-size: 18px;
           font-weight: 600;
           margin-left: 4px;
-        .p6-kpi-value{
         }
-          font-weight: 700;
-        .p6-kpi-label{
-          font-size: 11px;
-          margin-bottom: 6px;
-          color: var(--p6-text);
-          text-transform: uppercase;
-        .p6-kpi-value .unit{
-        }
-          font-weight: 600;
-        .p6-chart-row{
-          opacity: 0.85;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 14px;
-        .p6-kpi-label{
 
-        .p6-chart{
+        .p6-kpi-label {
+          font-size: 11px;
+          font-weight: 600;
           letter-spacing: 1.1px;
-          border: 1px solid var(--p6-card-border);
+          text-transform: uppercase;
           color: var(--p6-text-muted);
-          backdrop-filter: blur(10px);
-          display: flex;
-        .p6-chart-row{
+          opacity: 0.85;
+        }
+
+        .p6-chart-row {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 14px;
         }
 
-        .p6-chart{
+        .p6-chart {
           border-radius: 12px;
           border: 1px solid var(--p6-card-border);
           background: var(--p6-card-bg);
           backdrop-filter: blur(10px);
-
-        .p6-chart-dot{
-          overflow: hidden;
-          height: 8px;
-          border-radius: 2px;
-        .p6-chart-header{
-          padding: 12px 16px;
-          border-bottom: 1px solid rgba(70, 95, 130, 0.25);
-        .p6-chart-dot.amber{ background: var(--p6-amber); }
-
-        .p6-chart-title{
-          font-size: 12px;
-          font-weight: 600;
-        .p6-chart-dot{
-        }
-
-        .p6-chart-body{
-          flex: 1;
-          padding: 14px 12px 12px;
-        .p6-chart-dot.blue{ background: var(--p6-blue); }
-        .p6-chart-dot.amber{ background: var(--p6-amber); }
-          gap: 10px;
-        .p6-chart-title{
-          font-size: 12px;
-        .p6-bar-group{
-          color: var(--p6-text);
           display: flex;
           flex-direction: column;
-        .p6-chart-body{
-          align-items: center;
-          padding: 14px 12px 12px;
+          overflow: hidden;
+        }
 
-        .p6-bar-value{
+        .p6-chart-header {
+          padding: 12px 16px;
+          border-bottom: 1px solid rgba(70, 95, 130, 0.25);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .p6-chart-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 2px;
+        }
+
+        .p6-chart-dot.blue {
+          background: var(--p6-blue);
+        }
+
+        .p6-chart-dot.amber {
+          background: var(--p6-amber);
+        }
+
+        .p6-chart-title {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--p6-text);
+        }
+
+        .p6-chart-body {
+          flex: 1;
+          padding: 14px 12px 12px;
+          display: flex;
+          align-items: flex-end;
           gap: 10px;
+        }
+
+        .p6-bar-group {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .p6-bar-value {
+          font-size: 10px;
           font-weight: 700;
           color: var(--p6-text-muted);
-        .p6-bar-group{
-
-        .p6-bar-track{
-          width: 100%;
-          gap: 6px;
-          background: rgba(0,0,0,.25);
-          border: 1px solid rgba(70, 95, 130, 0.25);
-          border-radius: 6px;
-        .p6-bar-value{
-          font-size: 10px;
-          justify-content: flex-end;
-          color: var(--p6-text-muted);
+          min-height: 16px;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
         }
 
-        .p6-bar-track{
+        .p6-bar-track {
           width: 100%;
           height: 140px;
-        }
+          background: rgba(0, 0, 0, 0.25);
           border: 1px solid rgba(70, 95, 130, 0.25);
-          border-radius: 6px;e), rgba(94, 179, 209, 0.3));
+          border-radius: 6px;
+          display: flex;
+          align-items: flex-end;
+          overflow: hidden;
         }
-        .p6-bar-fill.amber{
+
+        .p6-bar-fill {
+          width: 100%;
+          border-radius: 6px 6px 0 0;
+        }
+
+        .p6-bar-fill.blue {
+          background: linear-gradient(180deg, var(--p6-blue), rgba(94, 179, 209, 0.3));
+        }
+
+        .p6-bar-fill.amber {
           background: linear-gradient(180deg, var(--p6-amber), rgba(255, 180, 77, 0.3));
         }
 
-        .p6-bar-label{
-        .p6-bar-fill{
-          font-weight: 600;
-          border-radius: 6px 6px 0 0;
-          text-align: center;
-        .p6-bar-fill.blue{
-          background: linear-gradient(180deg, var(--p6-blue), rgba(94, 179, 209, 0.3));
-        .p6-bottom-row{
-        .p6-bar-fill.amber{
-          background: linear-gradient(180deg, var(--p6-amber), rgba(255, 180, 77, 0.3));
-          gap: 14px;
-          overflow: hidden;
-        .p6-bar-label{
+        .p6-bar-label {
           font-size: 10px;
-        .p6-bottom-card{
+          font-weight: 600;
+          text-align: center;
           color: var(--p6-text-dim);
-          border: 1px solid var(--p6-card-border);
-          background: var(--p6-card-bg);
-          backdrop-filter: blur(10px);
-        .p6-bottom-row{
+        }
+
+        .p6-bottom-row {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 14px;
           overflow: hidden;
         }
 
-        .p6-bottom-card{
+        .p6-bottom-card {
           border-radius: 12px;
           border: 1px solid var(--p6-card-border);
           background: var(--p6-card-bg);
           backdrop-filter: blur(10px);
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
           overflow: hidden;
-          padding: 10px 12px;
-          margin-bottom: 6px;
-        .p6-bottom-body{;
-          border: 1px solid rgba(70, 95, 130, 0.2);
+        }
+
+        .p6-bottom-body {
+          flex: 1;
           padding: 12px;
+          overflow-y: auto;
         }
 
-        .p6-list-left{
-        .p6-list-row{
-          color: var(--p6-text-muted);
-        }
-
+        .p6-list-row {
+          display: flex;
+          justify-content: space-between;
           padding: 10px 12px;
           margin-bottom: 6px;
           background: rgba(70, 95, 130, 0.12);
           border: 1px solid rgba(70, 95, 130, 0.2);
           border-radius: 6px;
+        }
 
-        .p6-section-title{
-        .p6-list-left{
+        .p6-list-left {
           font-size: 12px;
           color: var(--p6-text-muted);
-          text-transform: uppercase;
-          color: var(--p6-amber);
-        .p6-list-right{
+        }
+
+        .p6-list-right {
           font-size: 13px;
           font-weight: 700;
           color: var(--p6-text);
-          display: grid;
-          gap: 6px;
-        .p6-section-title{
+        }
+
+        .p6-section-title {
           font-size: 10px;
-        .p6-matrix-header, .p6-matrix-row{
-          display: grid;
-          grid-template-columns: 1.2fr repeat(4, 0.8fr);
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
           color: var(--p6-amber);
           margin: 12px 0 8px;
         }
 
-        .p6-matrix{
-          font-size: 9px;
+        .p6-matrix {
+          display: grid;
           gap: 6px;
-          letter-spacing: 0.8px;
-          text-transform: uppercase;
-        .p6-matrix-header, .p6-matrix-row{
-          padding: 0 4px;
+        }
+
+        .p6-matrix-header,
+        .p6-matrix-row {
+          display: grid;
           grid-template-columns: 1.2fr repeat(4, 0.8fr);
           gap: 6px;
-        .p6-matrix-cell{
-          padding: 8px;
-          background: rgba(70, 95, 130, 0.12);
-        .p6-matrix-header{);
+          padding: 0 4px;
+        }
+
+        .p6-matrix-header {
           font-size: 9px;
-          text-align: center;
-          letter-spacing: 0.8px;
           font-weight: 700;
+          text-align: center;
+          text-transform: uppercase;
+          letter-spacing: 0.8px;
           color: var(--p6-text-dim);
         }
 
-        .p6-matrix-cell.breed{
-        .p6-matrix-cell{
+        .p6-matrix-cell {
           padding: 8px;
           background: rgba(70, 95, 130, 0.12);
           border: 1px solid rgba(70, 95, 130, 0.2);
           border-radius: 5px;
-        .p6-matrix-cell.empty{
+          text-align: center;
           font-size: 11px;
           font-weight: 700;
           color: var(--p6-text);
-
-        .p6-bottom-body::-webkit-scrollbar {
-        .p6-matrix-cell.breed{
         }
 
+        .p6-matrix-cell.breed {
+          text-align: left;
           color: var(--p6-text-muted);
-          background: transparent;
         }
-        .p6-matrix-cell.empty{
+
+        .p6-matrix-cell.empty {
           color: var(--p6-text-dim);
           font-weight: 500;
+          background: transparent;
           border-radius: 3px;
         }
+
         .p6-bottom-body::-webkit-scrollbar {
           width: 5px;
         }
 
         .p6-bottom-body::-webkit-scrollbar-track {
           background: transparent;
-          .p6-kpi-row, .p6-chart-row, .p6-bottom-row { grid-template-columns: 1fr; }
+        }
 
         .p6-bottom-body::-webkit-scrollbar-thumb {
           background: rgba(70, 95, 130, 0.4);
@@ -375,53 +390,74 @@ export default function GroomerPerformanceP6() {
           background: rgba(70, 95, 130, 0.6);
         }
 
-        @media (max-width: 1400px){
-          .p6-kpi-row, .p6-chart-row, .p6-bottom-row { grid-template-columns: 1fr; }
-          .p6-page { overflow-y: auto; }
-          .p6-grid { height: auto; grid-template-rows: auto auto auto; }
+        @media (max-width: 1400px) {
+          .p6-kpi-row,
+          .p6-chart-row,
+          .p6-bottom-row {
+            grid-template-columns: 1fr;
+          }
+          .p6-page {
+            overflow-y: auto;
+          }
+          .p6-grid {
+            height: auto;
+            grid-template-rows: auto auto auto;
+          }
         }
-                    {kpi.value}
-                    {kpi.unit && <span className="unit">{kpi.unit}</span>}
+      `}</style>
+
       <div className="p6-page">
         <div className="p6-grid">
           <div className="p6-kpi-row">
-              </div>
+            {data.kpis.map((kpi, i) => (
               <div key={i} className="p6-kpi">
                 <div className={`p6-kpi-icon ${kpi.accent}`}>
-
-          <div className="p6-chart-row">
+                  {kpi.icon}
+                </div>
                 <div className="p6-kpi-content">
                   <div className="p6-kpi-value">
+                    {kpi.value}
+                    {kpi.unit && <span className="unit">{kpi.unit}</span>}
+                  </div>
+                  <div className="p6-kpi-label">{kpi.label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="p6-chart-row">
+            {data.charts.map((chart, i) => (
+              <div key={i} className="p6-chart">
                 <div className="p6-chart-header">
                   <div className={`p6-chart-dot ${chart.accent}`} />
                   <div className="p6-chart-title">{chart.title}</div>
-                  <div className="p6-kpi-label">{kpi.label}</div>
+                </div>
                 <div className="p6-chart-body">
                   {chart.labels.map((label, j) => {
                     const max = Math.max(...chart.values);
                     const height = (chart.values[j] / max) * 100;
                     return (
-          <div className="p6-chart-row">
+                      <div key={j} className="p6-bar-group">
                         <div className="p6-bar-value">{chart.displayValues[j]}</div>
-              <div key={i} className="p6-chart">
-                <div className="p6-chart-header">
-                  <div className={`p6-chart-dot ${chart.accent}`} />
-                  <div className="p6-chart-title">{chart.title}</div>
+                        <div className="p6-bar-track">
+                          <div
+                            className={`p6-bar-fill ${chart.accent}`}
+                            style={{ height: `${height}%` }}
                           />
-                <div className="p6-chart-body">
+                        </div>
                         <div className="p6-bar-label">{label}</div>
                       </div>
                     );
                   })}
-                      <div key={j} className="p6-bar-group">
-                        <div className="p6-bar-value">{chart.displayValues[j]}</div>
-                        <div className="p6-bar-track">
+                </div>
+              </div>
+            ))}
           </div>
-                            className={`p6-bar-fill ${chart.accent}`}
+
           <div className="p6-bottom-row">
             <div className="p6-bottom-card">
               <div className="p6-chart-header">
-                        <div className="p6-bar-label">{label}</div>
+                <div className="p6-chart-dot blue" />
                 <div className="p6-chart-title">Earnings by Breed</div>
               </div>
               <div className="p6-bottom-body">
@@ -430,64 +466,64 @@ export default function GroomerPerformanceP6() {
                     <div className="p6-list-left">{row.left}</div>
                     <div className="p6-list-right">{row.right}</div>
                   </div>
-          <div className="p6-bottom-row">
+                ))}
+              </div>
+            </div>
+
             <div className="p6-bottom-card">
               <div className="p6-chart-header">
-                <div className="p6-chart-dot blue" />
-                <div className="p6-chart-title">Earnings by Breed</div>
-              <div className="p6-chart-header">
-              <div className="p6-bottom-body">
+                <div className="p6-chart-dot amber" />
                 <div className="p6-chart-title">{data.combos.topTitle}</div>
-                  <div key={i} className="p6-list-row">
-                    <div className="p6-list-left">{row.left}</div>
-                    <div className="p6-list-right">{row.right}</div>
+              </div>
+              <div className="p6-bottom-body">
+                {data.combos.topRows.map((row, i) => (
                   <div key={i} className="p6-list-row">
                     <div className="p6-list-left">{row.left}</div>
                     <div className="p6-list-right">{row.right}</div>
                   </div>
                 ))}
+                <div className="p6-section-title">{data.combos.bottomTitle}</div>
+                {data.combos.bottomRows.map((row, i) => (
+                  <div key={i} className="p6-list-row">
+                    <div className="p6-list-left">{row.left}</div>
+                    <div className="p6-list-right">{row.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="p6-bottom-card">
               <div className="p6-chart-header">
                 <div className="p6-chart-dot amber" />
-                <div className="p6-chart-title">{data.combos.topTitle}</div>
-                    <div className="p6-list-right">{row.right}</div>
-              <div className="p6-bottom-body">
-                ))}
-                  <div key={i} className="p6-list-row">
-                    <div className="p6-list-left">{row.left}</div>
-                    <div className="p6-list-right">{row.right}</div>
-            <div className="p6-bottom-card">
-              <div className="p6-chart-header">
-                <div className="p6-section-title">{data.combos.bottomTitle}</div>
                 <div className="p6-chart-title">RPM by Breed & Size</div>
-                  <div key={i} className="p6-list-row">
-                    <div className="p6-list-left">{row.left}</div>
-                    <div className="p6-list-right">{row.right}</div>
+              </div>
+              <div className="p6-bottom-body">
+                <div className="p6-matrix">
                   <div className="p6-matrix-header">
                     <div>Breed</div>
                     {data.rpmMatrix.cols.map((col, i) => (
                       <div key={i}>{col}</div>
                     ))}
-            <div className="p6-bottom-card">
-              <div className="p6-chart-header">
-                <div className="p6-chart-dot amber" />
-                <div className="p6-chart-title">RPM by Breed & Size</div>
+                  </div>
+                  {data.rpmMatrix.rows.map((row, i) => (
+                    <div key={i} className="p6-matrix-row">
+                      <div className="p6-matrix-cell breed">{row.name}</div>
                       {row.cells.map((cell, j) => (
-              <div className="p6-bottom-body">
-                <div className="p6-matrix">
-                  <div className="p6-matrix-header">
+                        <div
+                          key={j}
+                          className={`p6-matrix-cell ${cell === "--" ? "empty" : ""}`}
                         >
                           {cell}
                         </div>
                       ))}
                     </div>
                   ))}
-                    <div key={i} className="p6-matrix-row">
-                      <div className="p6-matrix-cell breed">{row.name}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-                          className={`p6-matrix-cell ${cell === "--" ? "empty" : ""}`}
+      </div>
     </>
   );
 }
