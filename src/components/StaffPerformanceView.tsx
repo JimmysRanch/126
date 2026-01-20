@@ -1,345 +1,586 @@
-import { Card } from "@/components/ui/card"
-import { Clock, CurrencyDollar, PawPrint } from "@phosphor-icons/react"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { motion } from "framer-motion"
 
-const avgMinutesData = [
-  { month: 'JAN', minutes: 42, rpm: 1.92 },
-  { month: 'FEB', minutes: 45, rpm: 1.92 },
-  { month: 'MAR', minutes: 46, rpm: 1.34 },
-  { month: 'MAR', minutes: 46, rpm: 1.99 },
-  { month: 'MAR', minutes: 46, rpm: 1.96 },
-  { month: 'MAY', minutes: 47, rpm: 1.97 },
-]
+type KPI = {
+  icon: string
+  value: string
+  unit?: string
+  label: string
+  accent: "blue" | "amber" | "green"
+}
 
-const rpmMonthlyData = [
-  { month: 'JAN', rpm: 1.92 },
-  { month: 'FEB', rpm: 1.92 },
-  { month: 'MAR', rpm: 1.34 },
-  { month: 'MAR', rpm: 1.99 },
-  { month: 'MAR', rpm: 1.96 },
-  { month: 'MAY', rpm: 1.97 },
-]
+type BarData = {
+  title: string
+  accent: "blue" | "amber"
+  labels: string[]
+  values: number[]
+  prefix?: string
+  suffix?: string
+}
 
-const rpmBySizeData = [
-  { size: 'Small Dogs', rpm: 1.56 },
-  { size: 'Medium Dogs', rpm: 1.95 },
-  { size: 'Large Dogs', rpm: 2.24 },
-]
-
-const earningsByBreedData = [
-  { breed: 'Golden Retrievers', rpm: 1.77 },
-  { breed: 'Cavaliers', rpm: 1.72 },
-  { breed: 'Dachshunds', rpm: 1.65 },
-  { breed: 'Poodles', rpm: 1.58 },
-  { breed: 'Maltese', rpm: 1.58 },
-  { breed: 'Goldendoodles', rpm: 1.52 },
-  { breed: 'Labradors', rpm: 1.35 },
-]
-
-const topPerformingData = [
-  { breed: 'Golden Retrievers Large', rpm: 1.77 },
-  { breed: 'Cavaliers Small', rpm: 1.72 },
-  { breed: 'Dachshunds Small', rpm: 1.65 },
-]
-
-const lowestPerformingData = [
-  { breed: 'Golden Retrievers Large', rpm: 1.77 },
-  { breed: 'Cavaliers Small', rpm: 1.72 },
-  { breed: 'Dachshunds Small', rpm: 1.65 },
-]
-
-const rpmByBreedSizeData = [
-  { breed: 'Poodle', small: null, medium: 1.72, large: null, xl: null },
-  { breed: 'Cavalier', small: 1.72, medium: null, large: null, xl: null },
-  { breed: 'Dachshund', small: 1.65, medium: null, large: null, xl: null },
-  { breed: 'Bichon Frise', small: 1.58, medium: 1.41, large: 1.41, xl: 1.48 },
-  { breed: 'Golden Retriever', small: 1.58, medium: 1.52, large: 1.60, xl: 1.61 },
-  { breed: 'Goldendoodle', small: null, medium: 1.55, large: 1.60, xl: null },
-  { breed: 'Labradoodle', small: 1.35, medium: 1.35, large: 1.60, xl: null },
-  { breed: 'Labrador', small: 1.35, medium: 1.65, large: 1.60, xl: null },
-]
-
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-card/95 border border-border rounded-lg p-2 shadow-lg backdrop-blur-sm">
-        <p className="text-xs font-semibold text-foreground">
-          {payload[0].payload.month || payload[0].payload.size || payload[0].payload.breed}
-        </p>
-        <p className="text-xs text-primary font-bold">
-          {payload[0].dataKey === 'minutes' 
-            ? `${payload[0].value} mins` 
-            : `$${payload[0].value.toFixed(2)}`}
-        </p>
-      </div>
-    )
-  }
-  return null
+type ListItem = {
+  left: string
+  right: string
 }
 
 export function StaffPerformanceView() {
+  const kpis: KPI[] = [
+    { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
+    { icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
+    { icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
+  ]
+
+  const charts: BarData[] = [
+    {
+      title: "RPM (Monthly)",
+      accent: "blue",
+      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
+      values: [2.02, 1.92, 1.94, 1.96, 1.97],
+      prefix: "$",
+    },
+    {
+      title: "Average Minutes per Appointment",
+      accent: "blue",
+      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
+      values: [42, 45, 46, 46, 47],
+      suffix: "m",
+    },
+    {
+      title: "RPM by Dog Size",
+      accent: "amber",
+      labels: ["Small", "Medium", "Large"],
+      values: [1.56, 1.95, 2.24],
+      prefix: "$",
+    },
+  ]
+
+  const earningsByBreed: ListItem[] = [
+    { left: "Golden Retrievers", right: "$1.77" },
+    { left: "Cavaliers", right: "$1.72" },
+    { left: "Dachshunds", right: "$1.65" },
+    { left: "Poodles", right: "$1.58" },
+    { left: "Maltese", right: "$1.52" },
+  ]
+
+  const topCombos: ListItem[] = [
+    { left: "Golden Retrievers Large", right: "$1.77" },
+    { left: "Cavaliers Small", right: "$1.72" },
+    { left: "Dachshunds Small", right: "$1.65" },
+  ]
+
+  const bottomCombos: ListItem[] = [
+    { left: "Goldendoodles Large", right: "$1.22" },
+    { left: "Labradors Large", right: "$1.18" },
+    { left: "Mixed Breed XL", right: "$1.05" },
+  ]
+
+  const matrixData = {
+    cols: ["Small", "Medium", "Large", "XL"],
+    rows: [
+      { name: "Cavalier", cells: ["$1.72", null, null, null] },
+      { name: "Dachshund", cells: ["$1.65", null, null, null] },
+      { name: "Bichon Frise", cells: ["$1.58", "$1.41", "$1.41", "$1.48"] },
+      { name: "Golden Retriever", cells: ["$1.58", "$1.52", "$1.60", "$1.61"] },
+      { name: "Goldendoodle", cells: [null, "$1.55", "$1.60", null] },
+    ],
+  }
+
   return (
-    <div className="space-y-2.5">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="p-1.5 bg-primary/15 rounded-lg">
-                <Clock className="text-primary" size={18} weight="duotone" />
-              </div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                Avg Minutes / Appointment
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-foreground">64 <span className="text-base text-muted-foreground">mins</span></div>
-          </div>
-        </Card>
+    <>
+      <style>{`
+        .perf-wrap {
+          padding: 1.5rem 0;
+        }
 
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-amber-500/5 border-2 border-amber-500/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="p-1.5 bg-amber-500/15 rounded-lg">
-                <CurrencyDollar className="text-amber-500" size={18} weight="duotone" />
-              </div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                Revenue Per Min | RPM
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-foreground">$3.75</div>
-          </div>
-        </Card>
+        .perf-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1.125rem;
+        }
 
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-emerald-500/5 border-2 border-emerald-500/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-1.5">
-              <div className="p-1.5 bg-emerald-500/15 rounded-lg">
-                <PawPrint className="text-emerald-500" size={18} weight="duotone" />
-              </div>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
-                Completed Appointments
-              </div>
-            </div>
-            <div className="text-2xl font-bold text-foreground">75</div>
-          </div>
-        </Card>
-      </div>
+        .perf-kpi-card {
+          position: relative;
+          border-radius: 1.125rem;
+          padding: 0.75rem;
+          overflow: hidden;
+          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
+          backdrop-filter: blur(0.875rem);
+          -webkit-backdrop-filter: blur(0.875rem);
+        }
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5">
-        <Card className="p-3 bg-card border-2 border-primary/30 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="w-2 h-2 bg-primary/50 rounded-sm" />
-              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">RPM (Monthly)</h3>
-            </div>
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={rpmMonthlyData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
-                <XAxis 
-                  dataKey="month" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                />
-                <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                  domain={[1.90, 2.02]}
-                  ticks={[1.90, 1.93, 1.96, 1.99, 2.02]}
-                  tickFormatter={(value) => `$${value.toFixed(2)}`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="rpm" radius={[4, 4, 0, 0]}>
-                  {rpmMonthlyData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={index === rpmMonthlyData.length - 1 
-                        ? 'oklch(0.75 0.15 195)' 
-                        : 'oklch(0.50 0.12 240)'}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
-              {rpmMonthlyData.map((item, idx) => (
-                <div key={idx} className="text-center">
-                  <div className="font-bold text-foreground">${item.rpm.toFixed(2)}</div>
+        .perf-kpi-card::before {
+          content: "";
+          position: absolute;
+          inset: -0.125rem;
+          border-radius: 1.25rem;
+          opacity: 0.9;
+          pointer-events: none;
+        }
+
+        .perf-kpi-card.blue::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-kpi-card.amber::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-kpi-card.green::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(116, 255, 158, .18), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-kpi-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
+                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
+          opacity: 0.25;
+        }
+
+        .perf-kpi-inner {
+          position: relative;
+          border-radius: 0.875rem;
+          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
+                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
+          border: 1px solid rgba(255,255,255,.09);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
+          padding: 1rem 1.125rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 0.375rem;
+          height: 7.375rem;
+        }
+
+        .perf-kpi-top {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .perf-icon {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 0.625rem;
+          display: grid;
+          place-items: center;
+          background: rgba(255,255,255,.05);
+          border: 1px solid rgba(255,255,255,.10);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
+          opacity: 0.95;
+        }
+
+        .perf-value {
+          display: flex;
+          align-items: baseline;
+          gap: 0.5rem;
+          font-weight: 800;
+          letter-spacing: 0.019rem;
+          text-shadow: 0 1rem 2.5rem rgba(0,0,0,.70);
+          font-size: 2.75rem;
+          line-height: 1;
+        }
+
+        .perf-unit {
+          font-size: 1rem;
+          font-weight: 700;
+          letter-spacing: 0.019rem;
+          opacity: 0.75;
+        }
+
+        .perf-label {
+          font-size: 0.75rem;
+          letter-spacing: 0.1125rem;
+          text-transform: uppercase;
+          color: rgba(255,255,255,.70);
+        }
+
+        .perf-chart-card {
+          position: relative;
+          border-radius: 1.125rem;
+          padding: 0.75rem;
+          overflow: hidden;
+          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
+          backdrop-filter: blur(0.875rem);
+          -webkit-backdrop-filter: blur(0.875rem);
+        }
+
+        .perf-chart-card::before {
+          content: "";
+          position: absolute;
+          inset: -0.125rem;
+          border-radius: 1.25rem;
+          opacity: 0.85;
+          pointer-events: none;
+        }
+
+        .perf-chart-card.blue::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-chart-card.amber::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-chart-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
+                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
+          opacity: 0.25;
+        }
+
+        .perf-chart-inner {
+          position: relative;
+          border-radius: 0.875rem;
+          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
+                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
+          border: 1px solid rgba(255,255,255,.09);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.625rem;
+          height: 8rem;
+        }
+
+        .perf-header {
+          display: flex;
+          align-items: center;
+          gap: 0.625rem;
+          font-size: 0.8125rem;
+          letter-spacing: 0.025rem;
+          color: rgba(255,255,255,.86);
+          padding: 0.875rem 0.875rem 0;
+        }
+
+        .perf-dot {
+          width: 0.5rem;
+          height: 0.5rem;
+          border-radius: 0.1875rem;
+          background: rgba(84, 210, 255, .95);
+          box-shadow: 0 0 0.875rem rgba(84, 210, 255, .25);
+        }
+
+        .amber .perf-dot {
+          background: rgba(255, 180, 77, .95);
+          box-shadow: 0 0 0.875rem rgba(255, 180, 77, .25);
+        }
+
+        .perf-chart-slot {
+          flex: 1;
+          border-radius: 0.75rem;
+          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+          border: 1px solid rgba(255,255,255,.07);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
+          margin: 0 0.875rem 0.875rem;
+          padding: 0.625rem 0.75rem;
+          display: flex;
+          align-items: flex-end;
+          gap: 0.625rem;
+        }
+
+        .perf-list-card {
+          position: relative;
+          border-radius: 1.125rem;
+          padding: 0.75rem;
+          overflow: hidden;
+          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+          box-shadow: 0 1.625rem 4.375rem rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
+          backdrop-filter: blur(0.875rem);
+          -webkit-backdrop-filter: blur(0.875rem);
+        }
+
+        .perf-list-card::before {
+          content: "";
+          position: absolute;
+          inset: -0.125rem;
+          border-radius: 1.25rem;
+          opacity: 0.85;
+          pointer-events: none;
+        }
+
+        .perf-list-card.blue::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(84, 210, 255, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-list-card.amber::before {
+          background: radial-gradient(32.5rem 13.75rem at 18% 25%, rgba(255, 180, 77, .22), transparent 62%),
+                      radial-gradient(32.5rem 13.75rem at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+        }
+
+        .perf-list-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
+                      radial-gradient(56.25rem 17.5rem at 50% 120%, rgba(0,0,0,.55), transparent 55%);
+          opacity: 0.25;
+        }
+
+        .perf-list-inner {
+          position: relative;
+          border-radius: 0.875rem;
+          background: radial-gradient(50rem 16.25rem at 20% 20%, rgba(255,255,255,.05), transparent 60%),
+                      linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
+          border: 1px solid rgba(255,255,255,.09);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 0.75rem 1.875rem rgba(0,0,0,.35);
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.625rem;
+          height: 16.75rem;
+        }
+
+        .perf-list-slot {
+          flex: 1;
+          border-radius: 0.75rem;
+          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+          border: 1px solid rgba(255,255,255,.07);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
+          margin: 0 0.875rem 0.875rem;
+          padding: 0.625rem 0.75rem;
+          overflow-y: auto;
+        }
+
+        .perf-list {
+          display: grid;
+          gap: 0.625rem;
+        }
+
+        .perf-list-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 0.75rem;
+          align-items: center;
+          padding: 0.625rem 0.625rem;
+          border-radius: 0.75rem;
+          background: rgba(255,255,255,.03);
+          border: 1px solid rgba(255,255,255,.06);
+        }
+
+        .perf-list-left {
+          color: rgba(255,255,255,.84);
+        }
+
+        .perf-list-right {
+          color: rgba(255,255,255,.92);
+          font-weight: 900;
+          letter-spacing: 0.0125rem;
+        }
+
+        .perf-section-title {
+          margin: 0.75rem 0.125rem 0.625rem;
+          font-size: 0.75rem;
+          letter-spacing: 0.0625rem;
+          text-transform: uppercase;
+          color: rgba(255, 180, 77, .92);
+        }
+
+        .perf-matrix {
+          display: grid;
+          gap: 0.625rem;
+        }
+
+        .perf-matrix-head,
+        .perf-matrix-row {
+          display: grid;
+          grid-template-columns: 1.45fr repeat(4, 0.75fr);
+          gap: 0.625rem;
+          align-items: center;
+        }
+
+        .perf-matrix-head {
+          color: rgba(255,255,255,.62);
+          font-size: 0.6875rem;
+          letter-spacing: 0.0625rem;
+          text-transform: uppercase;
+        }
+
+        .perf-matrix-breed,
+        .perf-matrix-cell {
+          padding: 0.625rem 0.625rem;
+          border-radius: 0.75rem;
+          background: rgba(255,255,255,.03);
+          border: 1px solid rgba(255,255,255,.06);
+        }
+
+        .perf-matrix-breed {
+          color: rgba(255,255,255,.86);
+        }
+
+        .perf-matrix-cell {
+          text-align: center;
+          font-weight: 900;
+          color: rgba(255,255,255,.92);
+        }
+
+        .perf-matrix-cell.muted {
+          color: rgba(255,255,255,.35);
+          font-weight: 700;
+        }
+
+        @media (max-width: 1100px) {
+          .perf-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+
+      <div className="perf-wrap">
+        <div className="space-y-[1.125rem]">
+          <motion.div
+            className="perf-grid"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {kpis.map((kpi, i) => (
+              <div key={i} className={`perf-kpi-card ${kpi.accent}`}>
+                <div className="perf-kpi-inner">
+                  <div className="perf-kpi-top">
+                    <div className="perf-icon">{kpi.icon}</div>
+                    <div className="perf-value">
+                      {kpi.value}
+                      {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
+                    </div>
+                  </div>
+                  <div className="perf-label">{kpi.label}</div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-3 bg-card border-2 border-amber-500/30 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="w-2 h-2 bg-amber-500/50 rounded-full" />
-              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">Avg Minutes / Appt (Monthly)</h3>
-            </div>
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={avgMinutesData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
-                <XAxis 
-                  dataKey="month" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                />
-                <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                  domain={[30, 50]}
-                  ticks={[30, 35, 40, 45, 50]}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
-                  {avgMinutesData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={index === avgMinutesData.length - 1 
-                        ? 'oklch(0.75 0.15 195)' 
-                        : 'oklch(0.50 0.12 240)'}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
-              {avgMinutesData.map((item, idx) => (
-                <div key={idx} className="text-center">
-                  <div className="font-bold text-foreground">{item.minutes} <span className="text-[9px] text-muted-foreground">ms</span></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-3 bg-card border-2 border-emerald-500/30 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-1.5 mb-2">
-              <div className="w-2 h-2 bg-emerald-500/50 rounded-sm" />
-              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide">RPM by Dog Size</h3>
-            </div>
-            <ResponsiveContainer width="100%" height={140}>
-              <BarChart data={rpmBySizeData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.35 0.05 250)" opacity={0.3} />
-                <XAxis 
-                  dataKey="size" 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                />
-                <YAxis 
-                  tick={{ fill: 'oklch(0.65 0.02 250)', fontSize: 9 }}
-                  axisLine={{ stroke: 'oklch(0.35 0.05 250)' }}
-                  domain={[1.90, 2.30]}
-                  ticks={[1.90, 1.90, 1.90, 1.90, 2.30]}
-                  tickFormatter={(value) => `$${value.toFixed(2)}`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="rpm" radius={[4, 4, 0, 0]}>
-                  {rpmBySizeData.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={index === rpmBySizeData.length - 1 
-                        ? 'oklch(0.75 0.15 195)' 
-                        : 'oklch(0.50 0.12 240)'}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex justify-center mt-1.5 gap-1.5 text-[10px]">
-              {rpmBySizeData.map((item, idx) => (
-                <div key={idx} className="text-center">
-                  <div className="font-bold text-foreground">${item.rpm.toFixed(2)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-2.5">
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-primary/5 border border-primary/20">
-          <h3 className="text-sm font-bold text-foreground mb-2 tracking-wide">Earnings by Breed</h3>
-          <div className="space-y-1.5">
-            {earningsByBreedData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1 border-b border-border/50 last:border-0">
-                <span className="text-xs text-foreground font-medium">{item.breed}</span>
-                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
               </div>
             ))}
-          </div>
-        </Card>
+          </motion.div>
 
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-amber-500/5 border border-amber-500/20">
-          <h3 className="text-sm font-bold text-amber-400 mb-1.5 tracking-wide">Top Performing Breed & Size</h3>
-          <div className="space-y-1 mb-3">
-            {topPerformingData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1">
-                <span className="text-xs text-foreground">{item.breed}</span>
-                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
+          <motion.div
+            className="perf-grid"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            {charts.map((chart, i) => (
+              <div key={i} className={`perf-chart-card ${chart.accent}`}>
+                <div className="perf-chart-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>{chart.title}</div>
+                  </div>
+                  <div className="perf-chart-slot">
+                    {chart.labels.map((label, j) => {
+                      const value = chart.values[j]
+                      const max = Math.max(...chart.values)
+                      const height = Math.max(0.18, value / max)
+                      return (
+                        <div key={j} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+                          <div style={{ fontSize: "0.6875rem", textAlign: "center", color: "rgba(255,255,255,.72)" }}>
+                            {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
+                          </div>
+                          <div style={{ height: "4.375rem", borderRadius: "0.625rem", border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", overflow: "hidden", display: "flex", alignItems: "flex-end" }}>
+                            <div style={{ width: "100%", height: `${height * 100}%`, borderRadius: "0.625rem 0.625rem 0 0", background: "linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.20))" }} />
+                          </div>
+                          <div style={{ fontSize: "0.625rem", textAlign: "center", letterSpacing: "0.0625rem", color: "rgba(255,255,255,.55)" }}>{label}</div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               </div>
             ))}
-          </div>
-          <h3 className="text-sm font-bold text-amber-400 mb-1.5 mt-3 tracking-wide">Lowest Performing Breed & Size</h3>
-          <div className="space-y-1">
-            {lowestPerformingData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between py-1">
-                <span className="text-xs text-foreground">{item.breed}</span>
-                <span className="text-sm font-bold text-foreground">${item.rpm.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+          </motion.div>
 
-        <Card className="p-3 bg-gradient-to-br from-card via-card to-card border border-border">
-          <h3 className="text-sm font-bold text-foreground mb-2 tracking-wide">RPM by Breed & Size</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-[10px]">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-1 px-0.5 font-semibold text-muted-foreground">Breed</th>
-                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">S</th>
-                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">M</th>
-                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">L</th>
-                  <th className="text-center py-1 px-0.5 font-semibold text-muted-foreground">XL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rpmByBreedSizeData.map((row, idx) => (
-                  <tr 
-                    key={idx} 
-                    className={`border-b border-border/30 ${
-                      row.breed.includes('Golden') ? 'bg-amber-500/10' : 
-                      row.breed.includes('Labradoo') ? 'bg-amber-500/10' : 
-                      row.breed.includes('Labrador') && !row.breed.includes('Labradoo') ? 'bg-amber-500/10' : ''
-                    }`}
-                  >
-                    <td className="py-1 px-0.5 font-medium text-foreground text-[10px]">{row.breed}</td>
-                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
-                      {row.small ? `$${row.small.toFixed(2)}` : '--'}
-                    </td>
-                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
-                      {row.medium ? `$${row.medium.toFixed(2)}` : '--'}
-                    </td>
-                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
-                      {row.large ? `$${row.large.toFixed(2)}` : '--'}
-                    </td>
-                    <td className="text-center py-1 px-0.5 text-foreground font-semibold">
-                      {row.xl ? `$${row.xl.toFixed(2)}` : '--'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+          <motion.div
+            className="perf-grid"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
+            <div className="perf-list-card blue">
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>Earnings by Breed</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-list">
+                    {earningsByBreed.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="perf-list-card amber">
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>Top Performing Breed & Size</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-list">
+                    {topCombos.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
+                      </div>
+                    ))}
+                    <div className="perf-section-title">Lowest Performing Breed & Size</div>
+                    {bottomCombos.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="perf-list-card amber">
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>RPM by Breed & Size</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-matrix">
+                    <div className="perf-matrix-head">
+                      <div>Breed</div>
+                      {matrixData.cols.map((col) => (
+                        <div key={col}>{col}</div>
+                      ))}
+                    </div>
+                    {matrixData.rows.map((row) => (
+                      <div key={row.name} className="perf-matrix-row">
+                        <div className="perf-matrix-breed">{row.name}</div>
+                        {row.cells.map((cell, i) => (
+                          <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
+                            {cell ?? "—"}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

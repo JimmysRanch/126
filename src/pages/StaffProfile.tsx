@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
+import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function StaffProfile() {
@@ -236,12 +237,18 @@ export function StaffProfile() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center mb-4 sm:mb-6">
-            <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-2 w-full gap-1' : ''}`}>
+            <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-3 w-full gap-1' : ''}`}>
               <TabsTrigger 
                 value="overview" 
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
                 Overview
+              </TabsTrigger>
+              <TabsTrigger 
+                value="performance" 
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+              >
+                Performance
               </TabsTrigger>
               <TabsTrigger 
                 value="payroll" 
@@ -449,6 +456,10 @@ export function StaffProfile() {
                 </div>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="performance" className="mt-0">
+            <StaffPerformanceView />
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
