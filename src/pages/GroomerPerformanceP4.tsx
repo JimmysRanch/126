@@ -116,14 +116,13 @@ export default function GroomerPerformanceP4() {
         .p4Stage{
           width: min(1340px, 100%);
           position: relative;
-          perspective: 2400px;
-          perspective-origin: 50% 38%;
+          perspective: 1600px;
+          perspective-origin: 50% 30%;
         }
 
         .p4Scene{
           position: relative;
           transform-style: preserve-3d;
-          transform: rotateX(6deg);
         }
 
         .p4Row{
@@ -135,15 +134,15 @@ export default function GroomerPerformanceP4() {
         }
 
         .p4Row1{
-          transform: translateZ(20px) rotateX(-2deg);
+          transform: translateZ(80px) rotateX(0deg);
         }
 
         .p4Row2{
-          transform: translateZ(10px) rotateX(-4deg);
+          transform: translateZ(0px) rotateX(-7deg);
         }
 
         .p4Row3{
-          transform: translateZ(0px) rotateX(-6deg);
+          transform: translateZ(-90px) rotateX(-12deg);
           position: relative;
         }
 
@@ -155,7 +154,7 @@ export default function GroomerPerformanceP4() {
           height: 92px;
           pointer-events: none;
           z-index: -1;
-          transform: translateZ(-40px);
+          transform: translateZ(-30px) rotateX(-12deg);
         }
 
         .p4Pedestal::before{
