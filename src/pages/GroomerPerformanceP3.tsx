@@ -27,14 +27,17 @@ type CardDef = {
 export default function GroomerPerformanceP3() {
   const cards = useMemo<CardDef[]>(
     () => [
+      // Row 1 (KPIs)
       { id: "avgMins", accent: "blue", icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", subtitle: "Today", kind: "kpi" },
       { id: "rpm", accent: "amber", icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", subtitle: "Today", kind: "kpi" },
       { id: "appts", accent: "green", icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", subtitle: "Today", kind: "kpi" },
 
+      // Row 2 (Charts)
       { id: "rpmMonthly", accent: "blue", icon: "📈", value: "$1.97", label: "RPM (Monthly)", subtitle: "Last 5 months", kind: "chart" },
       { id: "avgMinsMonthly", accent: "blue", icon: "🕒", value: "47", unit: "mins", label: "Average Minutes per Appointment (Monthly)", subtitle: "Last 5 months", kind: "chart" },
       { id: "rpmBySize", accent: "amber", icon: "🐶", value: "$2.24", label: "RPM by Dog Size", subtitle: "Small/Med/Large", kind: "chart" },
 
+      // Row 3 (leave as-is)
       { id: "earningsByBreed", accent: "blue", icon: "🏷️", value: "$1.77", label: "Earnings by Breed", subtitle: "Top breeds", kind: "list" },
       { id: "topCombos", accent: "amber", icon: "⭐", value: "$1.77", label: "Top Performing Breed & Size Combinations", subtitle: "Top + Lowest", kind: "sectioned" },
       { id: "rpmMatrix", accent: "amber", icon: "🧩", value: "$1.72", label: "RPM by Breed & Size", subtitle: "Matrix view", kind: "matrix" },
@@ -56,19 +59,28 @@ export default function GroomerPerformanceP3() {
           --bg0:#050915; --bg1:#071326;
           --text: rgba(255,255,255,.92);
           --muted: rgba(255,255,255,.70);
-          --muted2: rgba(255,255,255,.50);
           --stroke: rgba(255,255,255,.10);
           --stroke2: rgba(255,255,255,.06);
+
           --blue: 84, 210, 255;
           --amber: 255, 180, 77;
           --green: 116, 255, 158;
+
+          /* Reference-card chrome */
+          --frameOuter: rgba(255,255,255,.18);
+          --frameInner: rgba(255,255,255,.10);
+          --frameDark: rgba(0,0,0,.55);
+          --glassTop: rgba(255,255,255,.08);
+          --glassMid: rgba(255,255,255,.03);
+          --glassBot: rgba(0,0,0,.18);
         }
+
         *{ box-sizing:border-box; }
         body{ margin:0; }
 
         .page{
           min-height: calc(100vh - 56px);
-          padding: clamp(14px, 2.2vw, 26px);
+          padding: clamp(14px, 2.1vw, 26px);
           display:grid;
           place-items:center;
           color: var(--text);
@@ -82,36 +94,36 @@ export default function GroomerPerformanceP3() {
         }
 
         .stage{
-          width: min(1720px, 100%);
-          display:grid;
-          gap: 14px;
+          width: min(1760px, 100%);
         }
 
         .curveWrap{
           perspective: 1200px;
-          perspective-origin: 50% 40%;
+          perspective-origin: 50% 42%;
         }
 
         .rowGrid{
           display:grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: clamp(12px, 1.25vw, 18px);
+          gap: clamp(12px, 1.2vw, 18px);
           align-items: stretch;
         }
+
+        .rowGrid + .rowGrid{ margin-top: clamp(12px, 1.2vw, 18px); }
 
         .cell{
           transform-style: preserve-3d;
           will-change: transform;
         }
 
-        /* Curved TV spacing (subtle) */
-        .cell[data-col="-1"]{ --ry: -10deg; --tz: 26px; --tx: -8px; }
-        .cell[data-col="0"] { --ry:   0deg; --tz: 56px; --tx:  0px; }
-        .cell[data-col="1"] { --ry:  10deg; --tz: 26px; --tx:  8px; }
+        /* subtle curved TV placement like your reference */
+        .cell[data-col="-1"]{ --ry: -10deg; --tz: 22px; --tx: -8px; }
+        .cell[data-col="0"] { --ry:   0deg; --tz: 50px; --tx:  0px; }
+        .cell[data-col="1"] { --ry:  10deg; --tz: 22px; --tx:  8px; }
 
-        .rowKpi  .cell{ --rx: 0deg; }
-        .rowMid  .cell{ --rx: 5deg; }
-        .rowBot  .cell{ --rx: 8deg; }
+        .row1 .cell{ --rx: 0deg; }
+        .row2 .cell{ --rx: 4deg; }
+        .row3 .cell{ --rx: 7deg; }
 
         .cellInner{
           height: 100%;
@@ -123,129 +135,159 @@ export default function GroomerPerformanceP3() {
           transform-style: preserve-3d;
         }
 
-        /* ============================================================
-           NEW: "REFERENCE" CARD CHROME (matches your first image)
-           - Thin neon outer frame
-           - Inner “double border” / inset frame
-           - Strong top sheen + bottom vignette
-           - Accent glow on edges only
-        ============================================================ */
+        /* ============================
+           REFERENCE "PHYSICAL CARD"
+           (matches the screenshot chrome)
+        ============================ */
 
         .card{
           width: 100%;
           height: 100%;
           border-radius: 18px;
-          padding: 10px;
           position: relative;
-          overflow: hidden;
-          cursor: pointer;
-          user-select: none;
+          padding: 10px;
+          overflow:hidden;
+          cursor:pointer;
+          user-select:none;
           -webkit-tap-highlight-color: transparent;
 
-          /* base glass */
-          background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.015));
           box-shadow:
             0 26px 80px rgba(0,0,0,.62),
-            0 0 0 1px rgba(255,255,255,.08) inset;
+            0 0 0 1px rgba(255,255,255,.10) inset;
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           transform-style: preserve-3d;
         }
 
-        /* outer neon stroke */
+        /* outer bezel / thin neon perimeter */
         .card::before{
           content:"";
           position:absolute; inset:0;
           border-radius: 18px;
           pointer-events:none;
           background:
-            /* subtle bright perimeter */
-            linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
-          opacity: .85;
+            linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.04)),
+            radial-gradient(1200px 480px at 50% -30%, rgba(255,255,255,.10), transparent 60%);
+          opacity: .95;
         }
 
-        /* cinematic sheen + bottom vignette */
+        /* sheen + bottom vignette */
         .card::after{
           content:"";
           position:absolute; inset:0;
           border-radius: 18px;
           pointer-events:none;
           background:
-            radial-gradient(1200px 520px at 50% -45%, rgba(255,255,255,.14), transparent 55%),
-            radial-gradient(900px 340px at 50% 125%, rgba(0,0,0,.72), transparent 62%);
-          opacity: .45;
+            radial-gradient(1200px 520px at 50% -45%, rgba(255,255,255,.16), transparent 58%),
+            radial-gradient(900px 340px at 50% 125%, rgba(0,0,0,.78), transparent 62%);
+          opacity: .55;
         }
 
-        /* accent edge glow + colored border line */
+        /* colored edge glow (subtle like screenshot) */
         .card.blue{
           box-shadow:
             0 26px 80px rgba(0,0,0,.62),
-            0 0 0 1px rgba(255,255,255,.08) inset,
-            0 0 0 1px rgba(var(--blue), .28),
-            0 0 28px rgba(var(--blue), .14);
+            0 0 0 1px rgba(255,255,255,.10) inset,
+            0 0 0 1px rgba(var(--blue), .26),
+            0 0 26px rgba(var(--blue), .12);
         }
         .card.amber{
           box-shadow:
             0 26px 80px rgba(0,0,0,.62),
-            0 0 0 1px rgba(255,255,255,.08) inset,
-            0 0 0 1px rgba(var(--amber), .25),
-            0 0 28px rgba(var(--amber), .12);
+            0 0 0 1px rgba(255,255,255,.10) inset,
+            0 0 0 1px rgba(var(--amber), .24),
+            0 0 26px rgba(var(--amber), .10);
         }
         .card.green{
           box-shadow:
             0 26px 80px rgba(0,0,0,.62),
-            0 0 0 1px rgba(255,255,255,.08) inset,
-            0 0 0 1px rgba(var(--green), .22),
-            0 0 28px rgba(var(--green), .10);
+            0 0 0 1px rgba(255,255,255,.10) inset,
+            0 0 0 1px rgba(var(--green), .20),
+            0 0 26px rgba(var(--green), .09);
         }
 
-        /* inner “double frame” like the reference */
-        .chrome{
+        /* inner plate (double-frame look) */
+        .plate{
           position: relative;
-          height: 100%;
+          height:100%;
           border-radius: 14px;
+          overflow:hidden;
 
           background:
-            radial-gradient(900px 260px at 22% 12%, rgba(255,255,255,.07), transparent 60%),
-            linear-gradient(180deg, rgba(12,16,26,.62), rgba(6,10,18,.90));
+            linear-gradient(180deg, var(--glassTop), var(--glassMid) 40%, var(--glassBot)),
+            radial-gradient(1000px 320px at 50% -30%, rgba(255,255,255,.10), transparent 60%),
+            linear-gradient(180deg, rgba(12,16,26,.60), rgba(6,10,18,.92));
 
-          border: 1px solid rgba(255,255,255,.10);
+          border: 1px solid rgba(255,255,255,.12);
           box-shadow:
-            0 0 0 1px rgba(0,0,0,.50) inset,              /* dark inner edge */
-            0 0 0 1px rgba(255,255,255,.06),              /* faint outer inner line */
-            0 14px 36px rgba(0,0,0,.42);
-          overflow: hidden;
+            0 0 0 1px rgba(0,0,0,.55) inset,
+            0 16px 42px rgba(0,0,0,.40);
         }
 
-        /* a second inset stroke (gives the “two line” look) */
-        .chrome::before{
+        /* second inset border (the “double line” inside) */
+        .plate::before{
           content:"";
           position:absolute; inset: 8px;
           border-radius: 12px;
           pointer-events:none;
-          border: 1px solid rgba(255,255,255,.07);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.45) inset;
-          opacity: .95;
+          border: 1px solid rgba(255,255,255,.08);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.48) inset;
+          opacity: .98;
         }
 
-        /* KPI content typography (not the focus, but keep nice) */
+        /* top edge highlight strip */
+        .plate::after{
+          content:"";
+          position:absolute; left: 10px; right: 10px; top: 10px; height: 22px;
+          border-radius: 999px;
+          pointer-events:none;
+          background: linear-gradient(180deg, rgba(255,255,255,.16), transparent);
+          opacity: .55;
+        }
+
+        /* accent “corner rails” like screenshot */
+        .rail{
+          position:absolute; inset: 0;
+          pointer-events:none;
+          border-radius: 14px;
+          opacity: .95;
+        }
+        .rail.blue{
+          box-shadow:
+            0 0 0 1px rgba(var(--blue), .14) inset,
+            0 0 18px rgba(var(--blue), .10) inset;
+        }
+        .rail.amber{
+          box-shadow:
+            0 0 0 1px rgba(var(--amber), .14) inset,
+            0 0 18px rgba(var(--amber), .10) inset;
+        }
+        .rail.green{
+          box-shadow:
+            0 0 0 1px rgba(var(--green), .14) inset,
+            0 0 18px rgba(var(--green), .10) inset;
+        }
+
+        /* content */
         .kpiWrap{
-          height:100%;
+          position:relative;
+          z-index:2;
+          height: 100%;
           padding: 18px 18px 16px;
           display:flex;
           flex-direction:column;
           justify-content:center;
           gap: 10px;
-          position: relative;
-          z-index: 2;
         }
         .kpiTop{
           display:flex;
           align-items:center;
           justify-content:center;
-          gap: 12px;
+          gap: 14px;
         }
-        .kpiIcon{
+        .ico{
           width: 44px; height: 44px;
           border-radius: 14px;
           display:grid; place-items:center;
@@ -255,7 +297,7 @@ export default function GroomerPerformanceP3() {
           font-size: 20px;
           opacity: .95;
         }
-        .kpiValue{
+        .val{
           display:flex;
           align-items:baseline;
           justify-content:center;
@@ -267,8 +309,8 @@ export default function GroomerPerformanceP3() {
           line-height: 1;
           white-space:nowrap;
         }
-        .kpiUnit{ font-size: 18px; font-weight: 900; opacity:.70; }
-        .kpiLabel{
+        .unit{ font-size: 18px; font-weight: 900; opacity:.70; }
+        .label{
           text-align:center;
           font-size: 12px;
           letter-spacing: 2px;
@@ -276,27 +318,29 @@ export default function GroomerPerformanceP3() {
           color: rgba(255,255,255,.72);
         }
 
-        /* Non-KPI header */
         .cardHeader{
-          display:flex; align-items:center; gap:10px;
-          font-size: 13px; color: rgba(255,255,255,.86);
-          padding: 14px 14px 0;
-          position: relative;
-          z-index: 2;
+          position:relative;
+          z-index:2;
+          display:flex;
+          align-items:center;
+          gap:10px;
+          padding: 14px 16px 0;
+          color: rgba(255,255,255,.86);
+          font-size: 13px;
         }
         .dot{
           width: 8px; height: 8px; border-radius: 3px;
           background: rgba(var(--blue), .95);
           box-shadow: 0 0 14px rgba(var(--blue), .25);
         }
-        .amberDot{ background: rgba(var(--amber), .95); box-shadow: 0 0 14px rgba(var(--amber), .22); }
-        .greenDot{ background: rgba(var(--green), .95); box-shadow: 0 0 14px rgba(var(--green), .18); }
+        .dot.amber{ background: rgba(var(--amber), .95); box-shadow: 0 0 14px rgba(var(--amber), .22); }
+        .dot.green{ background: rgba(var(--green), .95); box-shadow: 0 0 14px rgba(var(--green), .18); }
 
         .content{
-          padding: 10px 14px 14px;
+          position:relative;
+          z-index:2;
+          padding: 10px 16px 16px;
           height: calc(100% - 44px);
-          position: relative;
-          z-index: 2;
         }
         .slot{
           height:100%;
@@ -323,7 +367,12 @@ export default function GroomerPerformanceP3() {
         .rowL{ color: rgba(255,255,255,.84); }
         .rowR{ color: rgba(255,255,255,.92); font-weight: 900; letter-spacing:.2px; }
 
-        /* overlay (stable) */
+        /* sizing: top two rows match the screenshot proportions */
+        .hKpi{ height: clamp(110px, 11.2vw, 160px); }
+        .hChart{ height: clamp(210px, 18.6vw, 270px); }
+        .hRow3{ height: 260px; }
+
+        /* ===== Overlay (no layoutId morph = no stacking bug) ===== */
         .overlay{
           position: fixed; inset: 0; z-index: 90;
           background: rgba(0,0,0,.62);
@@ -336,9 +385,10 @@ export default function GroomerPerformanceP3() {
         .modal{
           width: min(1280px, 100%);
           height: min(86vh, 980px);
-          position: relative;
+          padding: 12px;
+          cursor: default;
         }
-        .modalInner{
+        .modalPlate{
           height:100%;
           border-radius: 16px;
           border: 1px solid rgba(255,255,255,.10);
@@ -379,47 +429,42 @@ export default function GroomerPerformanceP3() {
           margin-bottom: 12px;
         }
 
-        /* heights */
-        .kpiH{ height: clamp(110px, 11.5vw, 160px); }
-        .chartH{ height: clamp(200px, 18vw, 260px); }
-        .row3H{ height: 260px; }
-
         @media (max-width: 980px){
           .rowGrid{ grid-template-columns: 1fr; }
-          .cell{ --ry: 0deg !important; --tz: 24px !important; --tx: 0px !important; }
+          .cell{ --ry: 0deg !important; --tz: 22px !important; --tx: 0px !important; }
         }
       `}</style>
 
       <div className="page">
         <div className="stage">
           <div className="curveWrap">
-            {/* TOP ROW (KPIs) */}
-            <div className="rowGrid rowKpi">
+            {/* TOP ROW — physical cards like screenshot */}
+            <div className="rowGrid row1">
               {row1.map((c, i) => (
                 <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
-                  <ReferenceCard accent={c.accent} heightClass="kpiH">
+                  <PhysicalCard accent={c.accent} heightClass="hKpi">
                     <div className="kpiWrap">
                       <div className="kpiTop">
-                        <div className="kpiIcon">{c.icon}</div>
-                        <div className="kpiValue">
+                        <div className="ico">{c.icon}</div>
+                        <div className="val">
                           {c.value}
-                          {c.unit ? <span className="kpiUnit">{c.unit}</span> : null}
+                          {c.unit ? <span className="unit">{c.unit}</span> : null}
                         </div>
                       </div>
-                      <div className="kpiLabel">{c.label}</div>
+                      <div className="label">{c.label}</div>
                     </div>
-                  </ReferenceCard>
+                  </PhysicalCard>
                 </GridCell>
               ))}
             </div>
 
-            {/* SECOND ROW (same exact card chrome as row 1) */}
-            <div className="rowGrid rowMid">
+            {/* SECOND ROW — same physical cards, bigger height */}
+            <div className="rowGrid row2">
               {row2.map((c, i) => (
                 <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
-                  <ReferenceCard accent={c.accent} heightClass="chartH">
+                  <PhysicalCard accent={c.accent} heightClass="hChart">
                     <div className="cardHeader">
-                      <div className={`dot ${c.accent === "amber" ? "amberDot" : c.accent === "green" ? "greenDot" : ""}`} />
+                      <div className={`dot ${c.accent === "amber" ? "amber" : c.accent === "green" ? "green" : ""}`} />
                       <div>{c.label}</div>
                     </div>
                     <div className="content">
@@ -427,18 +472,18 @@ export default function GroomerPerformanceP3() {
                         <MiniContent def={c} />
                       </div>
                     </div>
-                  </ReferenceCard>
+                  </PhysicalCard>
                 </GridCell>
               ))}
             </div>
 
-            {/* leave row 3 alone (still uses same chrome so it matches) */}
-            <div className="rowGrid rowBot" style={{ marginTop: 10 }}>
+            {/* Row 3 left as-is (still uses same card shell so it matches enough) */}
+            <div className="rowGrid row3">
               {row3.map((c, i) => (
                 <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
-                  <ReferenceCard accent={c.accent} heightClass="row3H">
+                  <PhysicalCard accent={c.accent} heightClass="hRow3">
                     <div className="cardHeader">
-                      <div className={`dot ${c.accent === "amber" ? "amberDot" : c.accent === "green" ? "greenDot" : ""}`} />
+                      <div className={`dot ${c.accent === "amber" ? "amber" : c.accent === "green" ? "green" : ""}`} />
                       <div>{c.label}</div>
                     </div>
                     <div className="content">
@@ -446,7 +491,7 @@ export default function GroomerPerformanceP3() {
                         <MiniContent def={c} />
                       </div>
                     </div>
-                  </ReferenceCard>
+                  </PhysicalCard>
                 </GridCell>
               ))}
             </div>
@@ -464,17 +509,17 @@ export default function GroomerPerformanceP3() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="card modal"
+              className={`card modal ${accentClass(active.accent)}`}
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.96, opacity: 0 }}
               transition={{ type: "spring", stiffness: 420, damping: 38 }}
             >
-              <div className="modalInner">
+              <div className="modalPlate">
                 <div className="modalHead">
                   <div className="modalHeadL">
-                    <div className="kpiIcon">{active.icon}</div>
+                    <div className="ico">{active.icon}</div>
                     <div>
                       <div className="modalTitle">{active.label}</div>
                       <div style={{ color: "rgba(255,255,255,.60)", fontSize: 13 }}>Fullscreen details (wire to live data)</div>
@@ -488,7 +533,6 @@ export default function GroomerPerformanceP3() {
                     {active.value}
                     {active.unit ? <span style={{ fontSize: 18, opacity: .75, fontWeight: 900 }}>{active.unit}</span> : null}
                   </div>
-
                   <ExpandedContent def={active} />
                 </div>
               </div>
@@ -498,6 +542,12 @@ export default function GroomerPerformanceP3() {
       </AnimatePresence>
     </>
   );
+}
+
+function accentClass(accent: Accent) {
+  if (accent === "amber") return "amber";
+  if (accent === "green") return "green";
+  return "blue";
 }
 
 function GridCell(props: { col: -1 | 0 | 1; onOpen: () => void; children: React.ReactNode }) {
@@ -511,22 +561,25 @@ function GridCell(props: { col: -1 | 0 | 1; onOpen: () => void; children: React.
   );
 }
 
-/** Wrapper that applies the reference “chrome” to ANY content */
-function ReferenceCard(props: { accent: Accent; heightClass: string; children: React.ReactNode }) {
+/** The “physical card” shell that matches the screenshot (use for row 1 + row 2) */
+function PhysicalCard(props: { accent: Accent; heightClass: string; children: React.ReactNode }) {
   const { accent, heightClass, children } = props;
-  const accentClass = accent === "amber" ? "amber" : accent === "green" ? "green" : "blue";
+  const a = accentClass(accent);
   return (
     <motion.div
-      className={`card ${accentClass} ${heightClass}`}
+      className={`card ${a} ${heightClass}`}
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 420, damping: 34 }}
     >
-      <div className="chrome">{children}</div>
+      <div className="plate">
+        <div className={`rail ${a}`} />
+        {children}
+      </div>
     </motion.div>
   );
 }
 
-/* ===== your existing content components (unchanged) ===== */
+/* ===== Your existing content components (kept) ===== */
 function MiniContent({ def }: { def: CardDef }) {
   if (def.id === "rpmMonthly") return <MiniBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[2.02, 1.92, 1.94, 1.96, 1.97]} prefix="$" />;
   if (def.id === "avgMinsMonthly") return <MiniBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[42, 45, 46, 46, 47]} suffix="m" />;
@@ -566,15 +619,17 @@ function ExpandedContent({ def }: { def: CardDef }) {
     return (
       <>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Earnings by Breed</h3>
-        <List rows={[
-          ["Golden Retrievers", "$1.77"],
-          ["Cavaliers", "$1.72"],
-          ["Dachshunds", "$1.65"],
-          ["Poodles", "$1.58"],
-          ["Maltese", "$1.52"],
-          ["Goldendoodles", "$1.35"],
-          ["Labradors", "$1.35"],
-        ]}/>
+        <List
+          rows={[
+            ["Golden Retrievers", "$1.77"],
+            ["Cavaliers", "$1.72"],
+            ["Dachshunds", "$1.65"],
+            ["Poodles", "$1.58"],
+            ["Maltese", "$1.52"],
+            ["Goldendoodles", "$1.35"],
+            ["Labradors", "$1.35"],
+          ]}
+        />
       </>
     );
   }
@@ -582,19 +637,11 @@ function ExpandedContent({ def }: { def: CardDef }) {
     return (
       <>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Top Performing Breed & Size Combinations</h3>
-        <List rows={[
-          ["Golden Retrievers Large", "$1.77"],
-          ["Cavaliers Small", "$1.72"],
-          ["Dachshunds Small", "$1.65"],
-        ]}/>
-        <div style={{ margin: "12px 2px 10px", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", color: "rgba(var(--amber), .92)" }}>
+        <List rows={[["Golden Retrievers Large", "$1.77"], ["Cavaliers Small", "$1.72"], ["Dachshunds Small", "$1.65"]]} />
+        <div style={{ margin: "12px 2px 10px", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", color: "rgba(255, 180, 77, .92)" }}>
           Lowest Performing Breed & Size Combinations
         </div>
-        <List rows={[
-          ["Goldendoodles Large", "$1.22"],
-          ["Labradors Large", "$1.18"],
-          ["Mixed Breed XL", "$1.05"],
-        ]}/>
+        <List rows={[["Goldendoodles Large", "$1.22"], ["Labradors Large", "$1.18"], ["Mixed Breed XL", "$1.05"]]} />
       </>
     );
   }
@@ -607,11 +654,7 @@ function ExpandedContent({ def }: { def: CardDef }) {
     );
   }
 
-  return (
-    <div style={{ color: "rgba(255,255,255,.75)", lineHeight: 1.6 }}>
-      Replace this content with the live details for <b>{def.label}</b>.
-    </div>
-  );
+  return <div style={{ color: "rgba(255,255,255,.75)", lineHeight: 1.6 }}>Replace this content with the live details for <b>{def.label}</b>.</div>;
 }
 
 function MiniBars(props: { labels: string[]; values: number[]; prefix?: string; suffix?: string }) {
