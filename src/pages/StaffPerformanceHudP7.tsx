@@ -1,4 +1,4 @@
-import "./hud.css";
+import "@/styles/hud.css";
 
 const rpmMonthly = [
   { label: "JAN", value: 1.92 },
