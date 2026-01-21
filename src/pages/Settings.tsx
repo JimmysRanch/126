@@ -10,6 +10,16 @@ import { Plus, Trash, PencilSimple, CaretUp, CaretDown } from "@phosphor-icons/r
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from "@/lib/payroll-utils"
@@ -200,6 +210,8 @@ export function Settings() {
   const [newPaymentMethod, setNewPaymentMethod] = useState("")
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<{ id: string; name: string } | null>(null)
   const [editPaymentMethodValue, setEditPaymentMethodValue] = useState("")
+  const [deletePaymentMethodId, setDeletePaymentMethodId] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   
   const paymentMethods = Array.isArray(paymentMethodsRaw) ? paymentMethodsRaw : DEFAULT_PAYMENT_METHODS
   const setPaymentMethods = (updater: Array<{ id: string; name: string; enabled: boolean }> | ((current: Array<{ id: string; name: string; enabled: boolean }>) => Array<{ id: string; name: string; enabled: boolean }>)) => {
@@ -698,8 +710,19 @@ export function Settings() {
   }
 
   const handleDeletePaymentMethod = (id: string) => {
-    toast.success("Payment method removed successfully")
-    toast.success("Payment method removed successfully")
+    setDeletePaymentMethodId(id)
+    setDeleteDialogOpen(true)
+  }
+  
+  const confirmDeletePaymentMethod = () => {
+    if (deletePaymentMethodId) {
+      setPaymentMethods((current) =>
+        current.filter(pm => pm.id !== deletePaymentMethodId)
+      )
+      toast.success("Payment method removed successfully")
+    }
+    setDeleteDialogOpen(false)
+    setDeletePaymentMethodId(null)
   }
 
   const handleTogglePaymentMethod = (id: string) => {
@@ -831,8 +854,8 @@ export function Settings() {
     <div className="min-h-screen bg-background text-foreground p-4 md:p-6">
       <div className="max-w-[1400px] mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="overflow-x-auto -mx-6 px-6 mb-6">
-            <TabsList className="bg-secondary/50 w-full md:w-auto inline-flex">
+          <div className="overflow-x-auto -mx-6 px-6 mb-6 flex justify-center">
+            <TabsList className="bg-secondary/50 inline-flex">
               <TabsTrigger 
                 value="staff" 
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
@@ -1714,6 +1737,18 @@ export function Settings() {
                                 >
                                   Save
                                 </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => {
+                                    handleCancelEditPaymentMethod()
+                                    handleDeletePaymentMethod(method.id)
+                                  }}
+                                >
+                                  <Trash size={16} className="mr-1" />
+                                  Delete
+                                </Button>
                               </>
                             ) : (
                               <>
@@ -1732,14 +1767,6 @@ export function Settings() {
                                   onClick={() => handleEditPaymentMethod(method)}
                                 >
                                   <PencilSimple size={18} />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  onClick={() => handleDeletePaymentMethod(method.id)}
-                                >
-                                  <Trash size={18} />
                                 </Button>
                               </>
                             )}
@@ -2094,6 +2121,31 @@ export function Settings() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Payment Method</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this payment method? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => {
+                setDeleteDialogOpen(false)
+                setDeletePaymentMethodId(null)
+              }}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDeletePaymentMethod}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )

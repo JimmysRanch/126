@@ -406,31 +406,37 @@ export function Staff() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between gap-6">
-                      <div className="flex-1 min-w-0 flex items-center">
+                    <div className="flex items-center gap-6">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-4">
                           <h3 className="text-lg font-semibold">{staff.name}</h3>
                           <Badge variant="secondary" className="text-xs">
                             {staff.role}
                           </Badge>
-                          <Badge 
-                            variant={staff.status === "Active" ? "default" : "secondary"}
-                            className={staff.status === "Active" ? "bg-primary text-primary-foreground" : ""}
-                          >
-                            {staff.status}
-                          </Badge>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-8 text-sm">
-                        <div className="text-center">
+                        <div className="text-center w-24">
+                          <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
+                            Status
+                          </div>
+                          <Badge 
+                            variant={staff.status === "Active" ? "default" : "secondary"}
+                            className={staff.status === "Active" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                          >
+                            {staff.status}
+                          </Badge>
+                        </div>
+
+                        <div className="text-center w-24">
                           <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                             Appointments
                           </div>
                           <div className="font-semibold">{staff.totalAppointments}</div>
                         </div>
 
-                        <div className="text-center">
+                        <div className="text-center w-28">
                           <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                             Hired
                           </div>

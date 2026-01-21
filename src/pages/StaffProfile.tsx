@@ -162,12 +162,14 @@ export function StaffProfile() {
                 <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
                   {staff.role} • SINCE {staff.hireDate.toUpperCase()}
                 </p>
-                <Badge 
-                  variant={staff.status === "Active" ? "default" : "secondary"}
-                  className={staff.status === "Active" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
-                >
-                  {staff.status}
-                </Badge>
+                {staff.status !== "Active" && (
+                  <Badge 
+                    variant="secondary"
+                    className="text-xs"
+                  >
+                    {staff.status}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>

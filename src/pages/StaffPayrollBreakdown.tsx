@@ -529,46 +529,6 @@ export function StaffPayrollBreakdown() {
               </tbody>
             </table>
           </div>
-
-          <div className="mt-6 p-4 sm:p-6 bg-primary/10 border-2 border-primary rounded-lg">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
-              <div className="text-sm font-medium text-foreground">
-                Total Payroll Amount (Commission + Tips in Payroll)
-              </div>
-              <div className="text-2xl sm:text-4xl font-bold text-primary">
-                ${(totalEarnings + totalTipsInPayroll).toFixed(2)}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                ${totalTipsCash.toFixed(2)} in cash tips already paid to groomer
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Commission
-                </div>
-                <div className="text-lg sm:text-xl font-bold">
-                  ${totalEarnings.toFixed(2)}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Tips (Payroll)
-                </div>
-                <div className="text-lg sm:text-xl font-bold text-primary">
-                  ${totalTipsInPayroll.toFixed(2)}
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-                  Tips (Cash Paid)
-                </div>
-                <div className="text-lg sm:text-xl font-bold">
-                  ${totalTipsCash.toFixed(2)}
-                </div>
-              </div>
-            </div>
-          </div>
         </Card>
       </div>
     </div>
