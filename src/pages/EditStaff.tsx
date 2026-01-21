@@ -77,6 +77,14 @@ export function EditStaff() {
                 <Input id="lastName" defaultValue={staff.name.split(' ')[1]} />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" defaultValue={staff.email} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" defaultValue={staff.phone} />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="position">Position</Label>
                 <Select defaultValue={staff.role}>
                   <SelectTrigger>
@@ -105,12 +113,8 @@ export function EditStaff() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue={staff.email} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" defaultValue={staff.phone} />
+                <Label htmlFor="hiredDate">Hired Date</Label>
+                <Input id="hiredDate" type="date" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="streetAddress">Street Address</Label>
@@ -183,10 +187,6 @@ export function EditStaff() {
               <div className="space-y-2">
                 <Label htmlFor="zipCode">ZIP Code</Label>
                 <Input id="zipCode" placeholder="12345" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hiredDate">Hired Date</Label>
-                <Input id="hiredDate" type="date" />
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
                 <Label htmlFor="notes">Notes</Label>
