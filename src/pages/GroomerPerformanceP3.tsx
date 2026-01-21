@@ -27,14 +27,17 @@ type CardDef = {
 export default function GroomerPerformanceP3() {
   const cards = useMemo<CardDef[]>(
     () => [
+      // ROW 1 (KPIs)
       { id: "avgMins", accent: "blue", icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", subtitle: "Today", kind: "kpi" },
       { id: "rpm", accent: "amber", icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", subtitle: "Today", kind: "kpi" },
       { id: "appts", accent: "green", icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", subtitle: "Today", kind: "kpi" },
 
-      { id: "rpmMonthly", accent: "blue", icon: "📈", value: "$1.97", label: "RPM (Monthly)", subtitle: "Last 5 months", kind: "chart" },
-      { id: "avgMinsMonthly", accent: "blue", icon: "🕒", value: "47", unit: "mins", label: "Average Minutes per Appointment (Monthly)", subtitle: "Last 5 months", kind: "chart" },
-      { id: "rpmBySize", accent: "amber", icon: "🐶", value: "$2.24", label: "RPM by Dog Size", subtitle: "Small/Med/Large", kind: "chart" },
+      // ROW 2 (PANELS) — we keep your existing ids but render them like the reference
+      { id: "rpmMonthly", accent: "blue", icon: "📋", value: "18", label: "Appointments Today", subtitle: "Live", kind: "chart" },
+      { id: "avgMinsMonthly", accent: "blue", icon: "🕒", value: "82%", label: "Average Minutes per Appointment (Monthly)", subtitle: "Last 5 months", kind: "chart" },
+      { id: "rpmBySize", accent: "amber", icon: "💰", value: "$1450", label: "Expected revenue", subtitle: "Today", kind: "chart" },
 
+      // ROW 3 (leave as-is for now)
       { id: "earningsByBreed", accent: "blue", icon: "🏷️", value: "$1.77", label: "Earnings by Breed", subtitle: "Top breeds", kind: "list" },
       { id: "topCombos", accent: "amber", icon: "⭐", value: "$1.77", label: "Top Performing Breed & Size Combinations", subtitle: "Top + Lowest", kind: "sectioned" },
       { id: "rpmMatrix", accent: "amber", icon: "🧩", value: "$1.72", label: "RPM by Breed & Size", subtitle: "Matrix view", kind: "matrix" },
@@ -66,10 +69,9 @@ export default function GroomerPerformanceP3() {
         *{ box-sizing:border-box; }
         body{ margin:0; }
 
-        /* Full-width, no overlap layout */
         .page{
           min-height: calc(100vh - 56px);
-          padding: clamp(14px, 2.2vw, 28px);
+          padding: clamp(14px, 2.2vw, 26px);
           display:grid;
           place-items:center;
           color: var(--text);
@@ -82,43 +84,37 @@ export default function GroomerPerformanceP3() {
             linear-gradient(180deg, var(--bg0), var(--bg1));
         }
 
-        /* Use full available width; no absolute positioning so nothing can overlap */
         .stage{
-          width: min(1680px, 100%);
+          width: min(1720px, 100%);
           display:grid;
-          gap: 18px;
+          gap: 14px;
         }
 
-        /* 3D “curved TV” effect without overlap:
-           - Each card stays inside its grid cell (so never overlaps)
-           - We apply 3D transforms to the card itself for depth/curve */
         .curveWrap{
-          perspective: 1100px;
+          perspective: 1150px;
           perspective-origin: 50% 40%;
         }
 
         .rowGrid{
           display:grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: clamp(12px, 1.2vw, 18px);
+          gap: clamp(12px, 1.25vw, 18px);
           align-items: stretch;
         }
 
-        /* Keep the curved look but guarantee safe spacing by cell */
         .cell{
           transform-style: preserve-3d;
           will-change: transform;
         }
 
-        /* Column-based curvature */
-        .cell[data-col="-1"]{ --ry: -18deg; --tz: 34px; --tx: -10px; }
-        .cell[data-col="0"] { --ry:   0deg; --tz: 78px; --tx:   0px; }
-        .cell[data-col="1"] { --ry:  18deg; --tz: 34px; --tx:  10px; }
+        /* Curved TV spacing (subtle, like reference) */
+        .cell[data-col="-1"]{ --ry: -10deg; --tz: 28px; --tx: -8px; }
+        .cell[data-col="0"] { --ry:   0deg; --tz: 58px; --tx:  0px; }
+        .cell[data-col="1"] { --ry:  10deg; --tz: 28px; --tx:  8px; }
 
-        /* Row-based tilt */
-        .rowKpi  .cell{ --rx: 0deg;  }
-        .rowMid  .cell{ --rx: 5deg;  }
-        .rowBot  .cell{ --rx: 8deg;  }
+        .rowKpi  .cell{ --rx: 0deg; }
+        .rowPanels .cell{ --rx: 5deg; }
+        .rowBot .cell{ --rx: 8deg; }
 
         .cellInner{
           height: 100%;
@@ -130,13 +126,14 @@ export default function GroomerPerformanceP3() {
           transform-style: preserve-3d;
         }
 
-        /* ===== GLASS CARD ===== */
+        /* ===== FRAME / GLASS ===== */
         .shell{
           width: 100%;
           height: 100%;
           border-radius: 18px;
           padding: 12px;
           overflow:hidden;
+          position: relative;
           background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
           box-shadow: 0 30px 90px rgba(0,0,0,.62), 0 0 0 1px rgba(255,255,255,.07) inset;
           backdrop-filter: blur(14px);
@@ -146,34 +143,50 @@ export default function GroomerPerformanceP3() {
           user-select:none;
           -webkit-tap-highlight-color: transparent;
         }
+
+        /* outer “neon frame” like your reference */
         .shell::before{
           content:"";
-          position:absolute; inset:-2px;
-          border-radius: 20px;
-          opacity:.90;
+          position:absolute; inset:0;
+          border-radius: 18px;
           pointer-events:none;
+          opacity: .95;
           background:
-            radial-gradient(520px 220px at 18% 25%, rgba(var(--blue), .22), transparent 62%),
-            radial-gradient(520px 220px at 82% 35%, rgba(255,255,255,.07), transparent 62%);
+            linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02));
         }
-        .shell.amber::before{
-          background:
-            radial-gradient(520px 220px at 18% 25%, rgba(var(--amber), .22), transparent 62%),
-            radial-gradient(520px 220px at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
-        .shell.green::before{
-          background:
-            radial-gradient(520px 220px at 18% 25%, rgba(var(--green), .18), transparent 62%),
-            radial-gradient(520px 220px at 82% 35%, rgba(255,255,255,.07), transparent 62%);
-        }
+
         .shell::after{
           content:"";
           position:absolute; inset:0;
+          border-radius: 18px;
           pointer-events:none;
           background:
-            linear-gradient(180deg, rgba(255,255,255,.10), transparent 35%),
-            radial-gradient(900px 280px at 50% 120%, rgba(0,0,0,.55), transparent 55%);
-          opacity:.25;
+            radial-gradient(1200px 520px at 50% -40%, rgba(255,255,255,.10), transparent 55%),
+            radial-gradient(900px 300px at 50% 120%, rgba(0,0,0,.60), transparent 60%);
+          opacity:.35;
+        }
+
+        /* accent glow on the frame edges */
+        .shell.blueGlow{
+          box-shadow:
+            0 30px 90px rgba(0,0,0,.62),
+            0 0 0 1px rgba(255,255,255,.08) inset,
+            0 0 0 1px rgba(var(--blue), .28),
+            0 0 32px rgba(var(--blue), .14);
+        }
+        .shell.amberGlow{
+          box-shadow:
+            0 30px 90px rgba(0,0,0,.62),
+            0 0 0 1px rgba(255,255,255,.08) inset,
+            0 0 0 1px rgba(var(--amber), .26),
+            0 0 32px rgba(var(--amber), .12);
+        }
+        .shell.greenGlow{
+          box-shadow:
+            0 30px 90px rgba(0,0,0,.62),
+            0 0 0 1px rgba(255,255,255,.08) inset,
+            0 0 0 1px rgba(var(--green), .22),
+            0 0 32px rgba(var(--green), .10);
         }
 
         .inner{
@@ -181,10 +194,10 @@ export default function GroomerPerformanceP3() {
           height:100%;
           border-radius: 14px;
           background:
-            radial-gradient(800px 260px at 20% 20%, rgba(255,255,255,.05), transparent 60%),
-            linear-gradient(180deg, rgba(8,12,22,.72), rgba(6,10,18,.82));
-          border: 1px solid rgba(255,255,255,.09);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset, 0 12px 30px rgba(0,0,0,.35);
+            radial-gradient(900px 300px at 18% 10%, rgba(255,255,255,.06), transparent 60%),
+            linear-gradient(180deg, rgba(8,12,22,.70), rgba(6,10,18,.86));
+          border: 1px solid rgba(255,255,255,.10);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.40) inset, 0 16px 40px rgba(0,0,0,.42);
           padding: 16px 18px;
           display:flex;
           flex-direction:column;
@@ -192,112 +205,245 @@ export default function GroomerPerformanceP3() {
           gap: 6px;
         }
 
-        .top{ display:flex; align-items:center; gap:12px; }
-        .ico{
-          width: 32px; height: 32px; border-radius: 10px; display:grid; place-items:center;
-          background: rgba(255,255,255,.05);
+        /* ===== KPI (row 1) — match reference layout ===== */
+        .kpiInner{
+          height:100%;
+          border-radius: 14px;
+          background:
+            radial-gradient(1200px 360px at 50% -60%, rgba(255,255,255,.10), transparent 60%),
+            linear-gradient(180deg, rgba(12,16,26,.66), rgba(6,10,18,.90));
           border: 1px solid rgba(255,255,255,.10);
-          box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
-          opacity:.95;
-          flex:0 0 auto;
+          box-shadow: 0 0 0 1px rgba(0,0,0,.50) inset, 0 18px 44px rgba(0,0,0,.42);
+          padding: 18px 18px 16px;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          gap: 10px;
         }
-        .val{
-          display:flex; align-items:baseline; gap:8px;
+        .kpiTop{
+          display:flex; align-items:center; justify-content:center;
+          gap: 12px;
+        }
+        .kpiIcon{
+          width: 44px; height: 44px; border-radius: 14px;
+          display:grid; place-items:center;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.12);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
+          font-size: 20px;
+          opacity: .95;
+        }
+        .kpiValue{
+          display:flex; align-items:baseline; justify-content:center;
+          gap: 10px;
           font-weight: 900;
-          letter-spacing: .3px;
-          text-shadow: 0 16px 40px rgba(0,0,0,.70);
-          font-size: 44px;
+          letter-spacing: .4px;
+          text-shadow: 0 18px 44px rgba(0,0,0,.70);
+          font-size: clamp(34px, 3.4vw, 52px);
           line-height: 1;
           white-space:nowrap;
         }
-        .unit{ font-size: 16px; font-weight: 800; opacity:.75; }
-        .label{
+        .kpiUnit{ font-size: 18px; font-weight: 900; opacity:.70; }
+        .kpiLabel{
+          text-align:center;
           font-size: 12px;
-          letter-spacing: 1.8px;
+          letter-spacing: 2px;
           text-transform: uppercase;
-          color: rgba(255,255,255,.70);
-        }
-        .sub{
-          font-size: 13px;
-          color: rgba(255,255,255,.58);
-          margin-top: 2px;
+          color: rgba(255,255,255,.72);
         }
 
-        /* content blocks inside cards */
-        .cardHeader{
-          display:flex; align-items:center; gap:10px;
-          font-size: 13px; color: rgba(255,255,255,.86);
-          padding: 14px 14px 0;
-        }
-        .dot{
-          width: 8px; height: 8px; border-radius: 3px;
-          background: rgba(var(--blue), .95);
-          box-shadow: 0 0 14px rgba(var(--blue), .25);
-        }
-        .amber .dot{
-          background: rgba(var(--amber), .95);
-          box-shadow: 0 0 14px rgba(var(--amber), .25);
-        }
-        .content{
-          padding: 10px 14px 14px;
-          height: calc(100% - 44px);
-        }
-        .slot{
+        /* ===== Panels (row 2) — reference style ===== */
+        .panelInner{
           height:100%;
-          border-radius: 12px;
-          border: 1px solid rgba(255,255,255,.08);
-          background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-          box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
-          padding: 10px 12px;
+          border-radius: 14px;
+          background:
+            radial-gradient(1200px 360px at 50% -60%, rgba(255,255,255,.08), transparent 60%),
+            linear-gradient(180deg, rgba(10,14,24,.70), rgba(6,10,18,.88));
+          border: 1px solid rgba(255,255,255,.10);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.45) inset, 0 18px 44px rgba(0,0,0,.40);
+          display:flex;
+          flex-direction:column;
           overflow:hidden;
         }
+        .panelHead{
+          display:flex; align-items:center; gap:10px;
+          padding: 14px 14px 10px;
+          border-bottom: 1px solid rgba(255,255,255,.07);
+          background: rgba(255,255,255,.02);
+          color: rgba(255,255,255,.86);
+          font-size: 14px;
+          letter-spacing: .2px;
+        }
+        .panelHead .miniIco{
+          width: 28px; height: 28px; border-radius: 10px;
+          display:grid; place-items:center;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.12);
+        }
+        .panelBody{
+          padding: 14px;
+          flex:1;
+          display:flex;
+          gap: 14px;
+        }
 
-        /* simple list styling */
-        .rows{ display:grid; gap:10px; }
-        .row{
-          display:grid;
-          grid-template-columns: 1fr auto;
-          gap: 10px;
-          align-items:center;
-          padding: 10px 10px;
+        /* Appts Today panel */
+        .apList{ flex:1; display:grid; gap: 10px; }
+        .apRow{
+          display:flex; align-items:center; justify-content:space-between;
+          padding: 10px 12px;
           border-radius: 12px;
           background: rgba(255,255,255,.03);
           border: 1px solid rgba(255,255,255,.06);
         }
-        .rowL{ color: rgba(255,255,255,.84); }
-        .rowR{ color: rgba(255,255,255,.92); font-weight: 900; letter-spacing:.2px; }
-
-        .sectionTitle{
-          margin: 12px 2px 10px;
+        .apLeft{ display:flex; align-items:center; gap:10px; color: rgba(255,255,255,.84); }
+        .apDot{
+          width: 10px; height: 10px; border-radius: 999px;
+          background: rgba(255,255,255,.28);
+          border: 1px solid rgba(255,255,255,.18);
+        }
+        .apDot.ok{ background: rgba(var(--green), .65); }
+        .apDot.info{ background: rgba(var(--blue), .65); }
+        .apDot.warn{ background: rgba(var(--amber), .70); }
+        .apDot.bad{ background: rgba(255, 110, 110, .70); }
+        .apVal{ font-weight: 900; color: rgba(255,255,255,.92); }
+        .progress{
+          margin-top: 2px;
+          height: 10px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.08);
+          overflow:hidden;
+        }
+        .progress > div{
+          height:100%;
+          width: 67%;
+          background: linear-gradient(90deg, rgba(var(--blue), .55), rgba(var(--green), .55));
+          border-radius: 999px;
+        }
+        .progressMeta{
+          display:flex; align-items:center; justify-content:space-between;
+          margin-top: 8px;
+          color: rgba(255,255,255,.62);
           font-size: 12px;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          color: rgba(var(--amber), .92);
         }
 
-        /* matrix */
-        .matrix{ display:grid; gap:10px; }
-        .mHead, .mRow{
+        /* Donut + bars panel */
+        .donutWrap{
+          flex: 0 0 170px;
           display:grid;
-          grid-template-columns: 1.45fr repeat(4, .75fr);
-          gap:10px;
-          align-items:center;
+          place-items:center;
         }
-        .mHead{ color: rgba(255,255,255,.62); font-size: 11px; letter-spacing:1px; text-transform:uppercase; }
-        .mBreed, .mCell{
-          padding: 10px 10px;
+        .donut{
+          width: 150px;
+          height: 150px;
+          border-radius: 999px;
+          background:
+            conic-gradient(rgba(var(--green), .70) 0 295deg, rgba(255,255,255,.12) 295deg 360deg);
+          box-shadow: 0 16px 40px rgba(0,0,0,.55);
+          position: relative;
+          border: 1px solid rgba(255,255,255,.12);
+        }
+        .donut::after{
+          content:"";
+          position:absolute; inset: 18px;
+          border-radius: 999px;
+          background: linear-gradient(180deg, rgba(10,14,24,.72), rgba(6,10,18,.90));
+          border: 1px solid rgba(255,255,255,.10);
+          box-shadow: 0 0 0 1px rgba(0,0,0,.45) inset;
+        }
+        .donutCenter{
+          position:absolute; inset:0;
+          display:grid; place-items:center;
+          text-align:center;
+          z-index: 2;
+        }
+        .donutPct{ font-size: 34px; font-weight: 900; letter-spacing: .2px; }
+        .donutLab{ font-size: 12px; color: rgba(255,255,255,.70); margin-top: 2px; }
+        .donutSub{ font-size: 11px; color: rgba(255,255,255,.55); margin-top: 4px; }
+
+        .barsWrap{ flex:1; display:flex; flex-direction:column; gap:10px; }
+        .tinyBars{
+          flex:1;
+          display:grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 12px;
+          align-items:end;
+          padding-top: 6px;
+        }
+        .barCol{
+          display:grid;
+          grid-template-rows: auto 1fr auto;
+          gap: 8px;
+          align-items:end;
+        }
+        .barTop{
+          font-size: 11px;
+          text-align:center;
+          color: rgba(255,255,255,.70);
+          white-space:nowrap;
+        }
+        .barWell{
+          height: 110px;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,.10);
+          background: rgba(255,255,255,.04);
+          overflow:hidden;
+          display:flex;
+          align-items:flex-end;
+        }
+        .barFill{
+          width:100%;
+          border-radius: 12px 12px 0 0;
+          background: linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.18));
+        }
+        .barLab{
+          font-size: 11px;
+          text-align:center;
+          color: rgba(255,255,255,.55);
+          letter-spacing: 1px;
+        }
+
+        /* Expected revenue panel */
+        .revLeft{
+          flex: 1.1;
+          display:flex;
+          flex-direction:column;
+          gap: 10px;
+        }
+        .revTitle{ color: rgba(255,255,255,.72); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+        .revBig{ font-size: 40px; font-weight: 900; letter-spacing:.3px; }
+        .revMeta{
+          display:grid;
+          gap: 10px;
+          margin-top: 2px;
+        }
+        .revLine{
+          display:flex; align-items:center; justify-content:space-between;
+          padding: 10px 12px;
+          border-radius: 12px;
+          background: rgba(255,255,255,.03);
+          border: 1px solid rgba(255,255,255,.06);
+          color: rgba(255,255,255,.80);
+        }
+        .revLine b{ color: rgba(255,255,255,.92); }
+        .revRight{
+          flex: 0.9;
+          display:grid;
+          gap: 10px;
+        }
+        .revCard{
+          padding: 10px 12px;
           border-radius: 12px;
           background: rgba(255,255,255,.03);
           border: 1px solid rgba(255,255,255,.06);
         }
-        .mBreed{ color: rgba(255,255,255,.84); }
-        .mCell{ text-align:center; font-weight: 900; color: rgba(255,255,255,.92); }
-        .mCell.muted{ color: rgba(255,255,255,.35); font-weight: 700; }
+        .revCardTop{ display:flex; justify-content:space-between; color: rgba(255,255,255,.70); font-size: 12px; }
+        .revCardVal{ display:flex; justify-content:space-between; margin-top: 6px; font-weight: 900; }
+        .revCardVal span{ color: rgba(255,255,255,.92); }
+        .revCardVal em{ font-style: normal; color: rgba(var(--blue), .85); }
 
-        /* ===== OVERLAY =====
-           NOTE: no layoutId morphing (that’s what was causing your “stacking in back-right” bug).
-           This modal uses scale/opacity only, and your grid stays stable, so cards always return to their original positions.
-        */
+        /* ===== OVERLAY (stable, no stacking) ===== */
         .overlay{
           position: fixed; inset: 0; z-index: 90;
           background: rgba(0,0,0,.62);
@@ -353,51 +499,44 @@ export default function GroomerPerformanceP3() {
           margin-bottom: 12px;
         }
 
-        /* Responsive: still no overlap; stack into 1 column on small screens */
+        /* Row sizing (match reference proportions) */
+        .kpiH{ height: clamp(110px, 11.5vw, 160px); }
+        .panelH{ height: clamp(200px, 18vw, 260px); }
+
         @media (max-width: 980px){
           .rowGrid{ grid-template-columns: 1fr; }
-          .cell{ --ry: 0deg !important; --tz: 30px !important; --tx: 0px !important; }
+          .cell{ --ry: 0deg !important; --tz: 26px !important; --tx: 0px !important; }
+          .panelBody{ flex-direction:column; }
+          .donutWrap{ justify-self:start; }
         }
       `}</style>
 
       <div className="page">
         <div className="stage">
           <div className="curveWrap">
-            {/* ROW 1 (KPIs) */}
+            {/* TOP ROW (KPIs) */}
             <div className="rowGrid rowKpi">
               {row1.map((c, i) => (
-                <GridCell
-                  key={c.id}
-                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
-                  onOpen={() => setActiveId(c.id)}
-                >
-                  <Card3D def={c} height={160} />
+                <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
+                  <CardRow1Kpi def={c} />
                 </GridCell>
               ))}
             </div>
 
-            {/* ROW 2 (Charts) */}
-            <div className="rowGrid rowMid">
+            {/* SECOND ROW (PANELS like reference image) */}
+            <div className="rowGrid rowPanels">
               {row2.map((c, i) => (
-                <GridCell
-                  key={c.id}
-                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
-                  onOpen={() => setActiveId(c.id)}
-                >
-                  <Card3D def={c} height={260} />
+                <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
+                  <CardRow2Panel def={c} />
                 </GridCell>
               ))}
             </div>
 
-            {/* ROW 3 (Lists/Matrix) */}
-            <div className="rowGrid rowBot">
+            {/* Leave row 3 as you already had (still works) */}
+            <div className="rowGrid rowBot" style={{ marginTop: 10 }}>
               {row3.map((c, i) => (
-                <GridCell
-                  key={c.id}
-                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
-                  onOpen={() => setActiveId(c.id)}
-                >
-                  <Card3D def={c} height={260} />
+                <GridCell key={c.id} col={i === 0 ? -1 : i === 1 ? 0 : 1} onOpen={() => setActiveId(c.id)}>
+                  <CardRow3 def={c} />
                 </GridCell>
               ))}
             </div>
@@ -415,7 +554,7 @@ export default function GroomerPerformanceP3() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className={`shell modal ${active.accent === "amber" ? "amber" : active.accent === "green" ? "green" : ""}`}
+              className={`shell modal ${accentGlowClass(active.accent)}`}
               onClick={(e) => e.stopPropagation()}
               initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -425,10 +564,10 @@ export default function GroomerPerformanceP3() {
               <div className="modalInner">
                 <div className="modalHead">
                   <div className="modalHeadL">
-                    <div className="ico">{active.icon}</div>
+                    <div className="kpiIcon">{active.icon}</div>
                     <div>
                       <div className="modalTitle">{active.label}</div>
-                      <div className="sub">Fullscreen details (wire to live data)</div>
+                      <div style={{ color: "rgba(255,255,255,.60)", fontSize: 13 }}>Fullscreen details (wire to live data)</div>
                     </div>
                   </div>
                   <button className="btn" onClick={() => setActiveId(null)}>Close</button>
@@ -437,7 +576,7 @@ export default function GroomerPerformanceP3() {
                 <div className="modalBody">
                   <div className="modalKpi">
                     {active.value}
-                    {active.unit ? <span className="unit">{active.unit}</span> : null}
+                    {active.unit ? <span style={{ fontSize: 18, opacity: .75, fontWeight: 900 }}>{active.unit}</span> : null}
                   </div>
 
                   <ExpandedContent def={active} />
@@ -451,6 +590,12 @@ export default function GroomerPerformanceP3() {
   );
 }
 
+function accentGlowClass(accent: Accent) {
+  if (accent === "amber") return "amberGlow";
+  if (accent === "green") return "greenGlow";
+  return "blueGlow";
+}
+
 function GridCell(props: { col: -1 | 0 | 1; onOpen: () => void; children: React.ReactNode }) {
   const { col, onOpen, children } = props;
   return (
@@ -462,48 +607,226 @@ function GridCell(props: { col: -1 | 0 | 1; onOpen: () => void; children: React.
   );
 }
 
-function Card3D({ def, height }: { def: CardDef; height: number }) {
-  const accentClass = def.accent === "amber" ? "amber" : def.accent === "green" ? "green" : "";
+/* ===================== ROW 1 (KPIs) ===================== */
+function CardRow1Kpi({ def }: { def: CardDef }) {
   return (
     <motion.div
-      className={`shell ${accentClass}`}
-      style={{ height }}
+      className={`shell ${accentGlowClass(def.accent)} kpiH`}
       whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 420, damping: 34 }}
     >
-      {def.kind === "kpi" ? (
-        <div className="inner">
-          <div className="top">
-            <div className="ico">{def.icon}</div>
-            <div className="val">
-              {def.value}
-              {def.unit ? <span className="unit">{def.unit}</span> : null}
-            </div>
-          </div>
-          <div className="label">{def.label}</div>
-          {def.subtitle ? <div className="sub">{def.subtitle}</div> : null}
-        </div>
-      ) : (
-        <div className="inner" style={{ padding: 0 }}>
-          <div className="cardHeader">
-            <div className="dot" />
-            <div>{def.label}</div>
-          </div>
-          <div className="content">
-            <div className="slot">
-              <MiniContent def={def} />
-            </div>
+      <div className="kpiInner">
+        <div className="kpiTop">
+          <div className="kpiIcon">{def.icon}</div>
+          <div className="kpiValue">
+            {def.value}
+            {def.unit ? <span className="kpiUnit">{def.unit}</span> : null}
           </div>
         </div>
-      )}
+        <div className="kpiLabel">{def.label}</div>
+      </div>
     </motion.div>
   );
 }
 
+/* ===================== ROW 2 (PANELS like reference) ===================== */
+function CardRow2Panel({ def }: { def: CardDef }) {
+  return (
+    <motion.div
+      className={`shell ${accentGlowClass(def.accent)} panelH`}
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+    >
+      <div className="panelInner">
+        <div className="panelHead">
+          <div className="miniIco">{def.icon}</div>
+          <div>{def.label}</div>
+        </div>
+        <div className="panelBody">
+          {def.id === "rpmMonthly" ? <PanelAppointmentsToday /> : null}
+          {def.id === "avgMinsMonthly" ? <PanelDonutAndBars /> : null}
+          {def.id === "rpmBySize" ? <PanelExpectedRevenue /> : null}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function PanelAppointmentsToday() {
+  // demo values (wire to live data later)
+  const scheduled = 18;
+  const completed = 5;
+  const noShows = 1;
+  const late = 3;
+  const total = scheduled;
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return (
+    <div style={{ width: "100%" }}>
+      <div className="apList">
+        <div className="apRow">
+          <div className="apLeft"><span className="apDot info" /> Scheduled</div>
+          <div className="apVal">{scheduled}</div>
+        </div>
+        <div className="apRow">
+          <div className="apLeft"><span className="apDot ok" /> Completed</div>
+          <div className="apVal">{completed}</div>
+        </div>
+        <div className="apRow">
+          <div className="apLeft"><span className="apDot bad" /> No-Shows</div>
+          <div className="apVal">{noShows}</div>
+        </div>
+        <div className="apRow">
+          <div className="apLeft"><span className="apDot warn" /> Late</div>
+          <div className="apVal">{late}</div>
+        </div>
+
+        <div className="progressMeta">
+          <div>Day Progress</div>
+          <div>{completed} / {total}</div>
+        </div>
+        <div className="progress" aria-label="Day progress">
+          <div style={{ width: `${progress}%` }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PanelDonutAndBars() {
+  const mins = [42, 45, 46, 46, 47];
+  const labels = ["JAN", "FEB", "MAR", "APR", "MAY"];
+  const max = Math.max(...mins);
+
+  return (
+    <>
+      <div className="donutWrap">
+        <div className="donut">
+          <div className="donutCenter">
+            <div>
+              <div className="donutPct">82%</div>
+              <div className="donutLab">Target</div>
+              <div className="donutSub">Target 90%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="barsWrap">
+        <div className="tinyBars">
+          {labels.map((l, i) => {
+            const v = mins[i];
+            const h = Math.max(0.12, v / max);
+            return (
+              <div key={l} className="barCol">
+                <div className="barTop">{v} mins</div>
+                <div className="barWell">
+                  <div className="barFill" style={{ height: `${h * 100}%` }} />
+                </div>
+                <div className="barLab">{l}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
+function PanelExpectedRevenue() {
+  // demo values (wire to live data later)
+  const expected = 1450;
+  const profitAfterCommissions = 763;
+  const tipsIncluded = 150;
+  const commissionEstimate = 290;
+
+  return (
+    <>
+      <div className="revLeft">
+        <div className="revTitle">Expected revenue</div>
+        <div className="revBig">${expected}</div>
+
+        <div className="revMeta">
+          <div className="revLine">
+            <span>Profit After Commissions</span>
+            <b>${profitAfterCommissions}</b>
+          </div>
+          <div className="revLine">
+            <span>Tips Included</span>
+            <b>${tipsIncluded}</b>
+          </div>
+          <div className="revLine">
+            <span>Commission estimate</span>
+            <b>${commissionEstimate}</b>
+          </div>
+        </div>
+      </div>
+
+      <div className="revRight">
+        <div className="revCard">
+          <div className="revCardTop">
+            <span>Leperlhart</span>
+            <span>Total</span>
+          </div>
+          <div className="revCardVal">
+            <span>763 Total</span>
+            <em>$648</em>
+          </div>
+        </div>
+
+        <div className="revCard">
+          <div className="revCardTop">
+            <span>5 appts</span>
+            <span>Canceled</span>
+          </div>
+          <div className="revCardVal">
+            <span>Spommedgy</span>
+            <em>$580</em>
+          </div>
+        </div>
+
+        <div className="revCard">
+          <div className="revCardTop">
+            <span>6 month</span>
+            <span>Minutes</span>
+          </div>
+          <div className="revCardVal">
+            <span>feedhourt a9y</span>
+            <em>$759</em>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ===================== ROW 3 (leave as-is for now) ===================== */
+function CardRow3({ def }: { def: CardDef }) {
+  const accentClass = accentGlowClass(def.accent);
+  return (
+    <motion.div
+      className={`shell ${accentClass}`}
+      style={{ height: 260 }}
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+    >
+      <div className="inner" style={{ padding: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 14px 10px", borderBottom: "1px solid rgba(255,255,255,.07)", background: "rgba(255,255,255,.02)", color: "rgba(255,255,255,.86)", fontSize: 13 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 3, background: def.accent === "amber" ? "rgba(var(--amber), .95)" : def.accent === "green" ? "rgba(var(--green), .95)" : "rgba(var(--blue), .95)" }} />
+          <div>{def.label}</div>
+        </div>
+        <div style={{ padding: 14, height: "calc(100% - 44px)" }}>
+          <div style={{ height: "100%", borderRadius: 12, border: "1px solid rgba(255,255,255,.08)", background: "linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02))", boxShadow: "0 0 0 1px rgba(0,0,0,.35) inset", padding: "10px 12px", overflow: "hidden" }}>
+            <MiniContent def={def} />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ===================== CONTENT ===================== */
 function MiniContent({ def }: { def: CardDef }) {
-  if (def.id === "rpmMonthly") return <MiniBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[2.02, 1.92, 1.94, 1.96, 1.97]} prefix="$" />;
-  if (def.id === "avgMinsMonthly") return <MiniBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[42, 45, 46, 46, 47]} suffix="m" />;
-  if (def.id === "rpmBySize") return <MiniBars labels={["Small", "Medium", "Large"]} values={[1.56, 1.95, 2.24]} prefix="$" />;
   if (def.id === "earningsByBreed") return <MiniList rows={[["Golden Retrievers", "$1.77"], ["Cavaliers", "$1.72"], ["Dachshunds", "$1.65"]]} />;
   if (def.id === "topCombos") return <MiniList rows={[["Golden Retrievers Large", "$1.77"], ["Cavaliers Small", "$1.72"], ["Dachshunds Small", "$1.65"]]} />;
   if (def.id === "rpmMatrix") return <MiniMatrix />;
@@ -511,28 +834,31 @@ function MiniContent({ def }: { def: CardDef }) {
 }
 
 function ExpandedContent({ def }: { def: CardDef }) {
+  // keep your existing expanded content behaviors
   if (def.id === "rpmMonthly") {
     return (
-      <>
-        <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>RPM (Monthly)</h3>
-        <BigBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[2.02, 1.92, 1.94, 1.96, 1.97]} prefix="$" />
-      </>
+      <div style={{ color: "rgba(255,255,255,.78)", lineHeight: 1.6 }}>
+        <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Appointments Today</h3>
+        <PanelAppointmentsToday />
+      </div>
     );
   }
   if (def.id === "avgMinsMonthly") {
     return (
-      <>
+      <div style={{ color: "rgba(255,255,255,.78)", lineHeight: 1.6 }}>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Average Minutes per Appointment (Monthly)</h3>
-        <BigBars labels={["JAN", "FEB", "MAR", "APR", "MAY"]} values={[42, 45, 46, 46, 47]} suffix=" mins" />
-      </>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ flex: "0 0 220px" }}><PanelDonutAndBars /></div>
+        </div>
+      </div>
     );
   }
   if (def.id === "rpmBySize") {
     return (
-      <>
-        <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>RPM by Dog Size</h3>
-        <BigBars labels={["Small", "Medium", "Large"]} values={[1.56, 1.95, 2.24]} prefix="$" />
-      </>
+      <div style={{ color: "rgba(255,255,255,.78)", lineHeight: 1.6 }}>
+        <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Expected revenue</h3>
+        <PanelExpectedRevenue />
+      </div>
     );
   }
   if (def.id === "earningsByBreed") {
@@ -558,7 +884,9 @@ function ExpandedContent({ def }: { def: CardDef }) {
       <>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Top Performing Breed & Size Combinations</h3>
         <List rows={[["Golden Retrievers Large", "$1.77"], ["Cavaliers Small", "$1.72"], ["Dachshunds Small", "$1.65"]]} />
-        <div className="sectionTitle">Lowest Performing Breed & Size Combinations</div>
+        <div style={{ margin: "12px 2px 10px", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", color: "rgba(var(--amber), .92)" }}>
+          Lowest Performing Breed & Size Combinations
+        </div>
         <List rows={[["Goldendoodles Large", "$1.22"], ["Labradors Large", "$1.18"], ["Mixed Breed XL", "$1.05"]]} />
       </>
     );
@@ -579,115 +907,33 @@ function ExpandedContent({ def }: { def: CardDef }) {
   );
 }
 
-function MiniBars(props: { labels: string[]; values: number[]; prefix?: string; suffix?: string }) {
-  const { labels, values, prefix, suffix } = props;
-  const max = Math.max(...values);
-  return (
-    <div style={{ height: "100%", display: "grid", gridTemplateColumns: `repeat(${labels.length}, 1fr)`, gap: 10, alignItems: "end" }}>
-      {labels.map((l, i) => {
-        const v = values[i];
-        const h = Math.max(0.18, v / max);
-        return (
-          <div key={l} style={{ display: "grid", gridTemplateRows: "auto 1fr auto", gap: 6 }}>
-            <div style={{ fontSize: 11, textAlign: "center", color: "rgba(255,255,255,.72)" }}>
-              {(prefix ?? "")}
-              {prefix ? v.toFixed(2) : v.toFixed(0)}
-              {suffix ?? ""}
-            </div>
-            <div
-              style={{
-                height: 110,
-                borderRadius: 10,
-                border: "1px solid rgba(255,255,255,.08)",
-                background: "rgba(255,255,255,.05)",
-                overflow: "hidden",
-                display: "flex",
-                alignItems: "flex-end",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: `${h * 100}%`,
-                  borderRadius: "10px 10px 0 0",
-                  background: "linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.20))",
-                }}
-              />
-            </div>
-            <div style={{ fontSize: 10, textAlign: "center", letterSpacing: 1, color: "rgba(255,255,255,.55)" }}>{l}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function BigBars(props: { labels: string[]; values: number[]; prefix?: string; suffix?: string }) {
-  const { labels, values, prefix, suffix } = props;
-  const max = Math.max(...values);
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: `repeat(${labels.length}, 1fr)`, gap: 14, alignItems: "end" }}>
-      {labels.map((l, i) => {
-        const v = values[i];
-        const h = Math.max(0.08, v / max);
-        return (
-          <div key={l} style={{ display: "grid", gridTemplateRows: "auto 1fr auto", gap: 10 }}>
-            <div style={{ fontSize: 13, textAlign: "center", color: "rgba(255,255,255,.78)" }}>
-              {(prefix ?? "")}
-              {prefix ? v.toFixed(2) : v.toFixed(0)}
-              {suffix ?? ""}
-            </div>
-            <div
-              style={{
-                height: 320,
-                borderRadius: 14,
-                border: "1px solid rgba(255,255,255,.10)",
-                background: "rgba(255,255,255,.04)",
-                overflow: "hidden",
-                display: "flex",
-                alignItems: "flex-end",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: `${h * 100}%`,
-                  borderRadius: "14px 14px 0 0",
-                  background: "linear-gradient(180deg, rgba(120,180,255,.62), rgba(79,209,255,.18))",
-                }}
-              />
-            </div>
-            <div style={{ fontSize: 12, textAlign: "center", letterSpacing: 1, color: "rgba(255,255,255,.60)" }}>{l}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 function MiniList({ rows }: { rows: [string, string][] }) {
   return (
-    <div className="rows">
+    <div style={{ display: "grid", gap: 10 }}>
       {rows.map(([a, b]) => (
-        <div key={a} className="row">
-          <div className="rowL">{a}</div>
-          <div className="rowR">{b}</div>
+        <div
+          key={a}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto",
+            gap: 10,
+            alignItems: "center",
+            padding: "10px 10px",
+            borderRadius: 12,
+            background: "rgba(255,255,255,.03)",
+            border: "1px solid rgba(255,255,255,.06)",
+          }}
+        >
+          <div style={{ color: "rgba(255,255,255,.84)" }}>{a}</div>
+          <div style={{ color: "rgba(255,255,255,.92)", fontWeight: 900, letterSpacing: ".2px" }}>{b}</div>
         </div>
       ))}
     </div>
   );
 }
+
 function List({ rows }: { rows: [string, string][] }) {
-  return (
-    <div className="rows">
-      {rows.map(([a, b]) => (
-        <div key={a} className="row">
-          <div className="rowL">{a}</div>
-          <div className="rowR">{b}</div>
-        </div>
-      ))}
-    </div>
-  );
+  return <MiniList rows={rows} />;
 }
 
 function MiniMatrix() {
@@ -707,18 +953,27 @@ function Matrix() {
   ];
 
   return (
-    <div className="matrix">
-      <div className="mHead">
+    <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1.45fr repeat(4, .75fr)", gap: 10, alignItems: "center", color: "rgba(255,255,255,.62)", fontSize: 11, letterSpacing: 1, textTransform: "uppercase" }}>
         <div>Breed</div>
-        {cols.map((c) => (
-          <div key={c}>{c}</div>
-        ))}
+        {cols.map((c) => <div key={c}>{c}</div>)}
       </div>
       {rows.map(([r, vals]) => (
-        <div className="mRow" key={r}>
-          <div className="mBreed">{r}</div>
+        <div key={r} style={{ display: "grid", gridTemplateColumns: "1.45fr repeat(4, .75fr)", gap: 10, alignItems: "center" }}>
+          <div style={{ padding: "10px 10px", borderRadius: 12, background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.06)", color: "rgba(255,255,255,.84)" }}>{r}</div>
           {vals.map((v, i) => (
-            <div key={`${r}-${i}`} className={`mCell ${v === "—" ? "muted" : ""}`}>
+            <div
+              key={`${r}-${i}`}
+              style={{
+                padding: "10px 10px",
+                borderRadius: 12,
+                background: "rgba(255,255,255,.03)",
+                border: "1px solid rgba(255,255,255,.06)",
+                textAlign: "center",
+                fontWeight: v === "—" ? 700 : 900,
+                color: v === "—" ? "rgba(255,255,255,.35)" : "rgba(255,255,255,.92)",
+              }}
+            >
               {v}
             </div>
           ))}
