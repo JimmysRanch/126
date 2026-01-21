@@ -470,7 +470,7 @@ export function Staff() {
             <GroomerPerformanceP6 />
           </TabsContent>
 
-          <TabsContent value="p7" className="mt-0">
+            <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
             <StaffPerformanceHudP7 />
           </TabsContent>
         </Tabs>
