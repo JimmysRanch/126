@@ -45,6 +45,10 @@ export default function GroomerPerformanceP3() {
   const [activeId, setActiveId] = useState<CardId | null>(null);
   const active = activeId ? cards.find((c) => c.id === activeId) ?? null : null;
 
+  const row1 = cards.slice(0, 3);
+  const row2 = cards.slice(3, 6);
+  const row3 = cards.slice(6, 9);
+
   return (
     <>
       <style>{`
@@ -62,9 +66,10 @@ export default function GroomerPerformanceP3() {
         *{ box-sizing:border-box; }
         body{ margin:0; }
 
+        /* Full-width, no overlap layout */
         .page{
           min-height: calc(100vh - 56px);
-          padding: 28px 28px 42px;
+          padding: clamp(14px, 2.2vw, 28px);
           display:grid;
           place-items:center;
           color: var(--text);
@@ -77,22 +82,58 @@ export default function GroomerPerformanceP3() {
             linear-gradient(180deg, var(--bg0), var(--bg1));
         }
 
-        /* ===== 3D STAGE - Enhanced IMAX curve ===== */
-        .stage{ width:min(1320px,100%); display:grid; gap:18px; }
-        .curveWrap{ 
-          perspective: 900px; 
-          perspective-origin: 50% 45%; 
+        /* Use full available width; no absolute positioning so nothing can overlap */
+        .stage{
+          width: min(1680px, 100%);
+          display:grid;
+          gap: 18px;
         }
-        .curve{
-          position:relative;
-          height: 860px;
+
+        /* 3D “curved TV” effect without overlap:
+           - Each card stays inside its grid cell (so never overlaps)
+           - We apply 3D transforms to the card itself for depth/curve */
+        .curveWrap{
+          perspective: 1100px;
+          perspective-origin: 50% 40%;
+        }
+
+        .rowGrid{
+          display:grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: clamp(12px, 1.2vw, 18px);
+          align-items: stretch;
+        }
+
+        /* Keep the curved look but guarantee safe spacing by cell */
+        .cell{
           transform-style: preserve-3d;
-          transform: rotateX(12deg);
+          will-change: transform;
+        }
+
+        /* Column-based curvature */
+        .cell[data-col="-1"]{ --ry: -18deg; --tz: 34px; --tx: -10px; }
+        .cell[data-col="0"] { --ry:   0deg; --tz: 78px; --tx:   0px; }
+        .cell[data-col="1"] { --ry:  18deg; --tz: 34px; --tx:  10px; }
+
+        /* Row-based tilt */
+        .rowKpi  .cell{ --rx: 0deg;  }
+        .rowMid  .cell{ --rx: 5deg;  }
+        .rowBot  .cell{ --rx: 8deg;  }
+
+        .cellInner{
+          height: 100%;
+          transform:
+            rotateX(var(--rx))
+            rotateY(var(--ry))
+            translateZ(var(--tz))
+            translateX(var(--tx));
+          transform-style: preserve-3d;
         }
 
         /* ===== GLASS CARD ===== */
         .shell{
-          position:absolute;
+          width: 100%;
+          height: 100%;
           border-radius: 18px;
           padding: 12px;
           overflow:hidden;
@@ -253,7 +294,10 @@ export default function GroomerPerformanceP3() {
         .mCell{ text-align:center; font-weight: 900; color: rgba(255,255,255,.92); }
         .mCell.muted{ color: rgba(255,255,255,.35); font-weight: 700; }
 
-        /* ===== OVERLAY + MORPH ===== */
+        /* ===== OVERLAY =====
+           NOTE: no layoutId morphing (that’s what was causing your “stacking in back-right” bug).
+           This modal uses scale/opacity only, and your grid stays stable, so cards always return to their original positions.
+        */
         .overlay{
           position: fixed; inset: 0; z-index: 90;
           background: rgba(0,0,0,.62);
@@ -264,8 +308,9 @@ export default function GroomerPerformanceP3() {
           padding: 18px;
         }
         .modal{
-          width: min(1220px, 100%);
-          height: min(84vh, 920px);
+          width: min(1280px, 100%);
+          height: min(86vh, 980px);
+          position: relative;
         }
         .modalInner{
           height:100%;
@@ -308,27 +353,52 @@ export default function GroomerPerformanceP3() {
           margin-bottom: 12px;
         }
 
-        /* responsive */
-        @media (max-width: 1100px){
-          .curve{ height: 1120px; transform: rotateX(10deg); }
-        }
-        @media (max-width: 950px){
-          .curve{ height: 1640px; transform: rotateX(8deg); }
+        /* Responsive: still no overlap; stack into 1 column on small screens */
+        @media (max-width: 980px){
+          .rowGrid{ grid-template-columns: 1fr; }
+          .cell{ --ry: 0deg !important; --tz: 30px !important; --tx: 0px !important; }
         }
       `}</style>
 
       <div className="page">
         <div className="stage">
           <div className="curveWrap">
-            <div className="curve">
-              {placeRow(cards.slice(0, 3), 36, 480, 48, 110, activeId).map((p) => (
-                <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
+            {/* ROW 1 (KPIs) */}
+            <div className="rowGrid rowKpi">
+              {row1.map((c, i) => (
+                <GridCell
+                  key={c.id}
+                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
+                  onOpen={() => setActiveId(c.id)}
+                >
+                  <Card3D def={c} height={160} />
+                </GridCell>
               ))}
-              {placeRow(cards.slice(3, 6), 220, 520, 42, 110, activeId).map((p) => (
-                <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
+            </div>
+
+            {/* ROW 2 (Charts) */}
+            <div className="rowGrid rowMid">
+              {row2.map((c, i) => (
+                <GridCell
+                  key={c.id}
+                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
+                  onOpen={() => setActiveId(c.id)}
+                >
+                  <Card3D def={c} height={260} />
+                </GridCell>
               ))}
-              {placeRow(cards.slice(6, 9), 430, 540, 38, 120, activeId).map((p) => (
-                <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
+            </div>
+
+            {/* ROW 3 (Lists/Matrix) */}
+            <div className="rowGrid rowBot">
+              {row3.map((c, i) => (
+                <GridCell
+                  key={c.id}
+                  col={i === 0 ? -1 : i === 1 ? 0 : 1}
+                  onOpen={() => setActiveId(c.id)}
+                >
+                  <Card3D def={c} height={260} />
+                </GridCell>
               ))}
             </div>
           </div>
@@ -345,10 +415,11 @@ export default function GroomerPerformanceP3() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              layoutId={`card-${active.id}`}
               className={`shell modal ${active.accent === "amber" ? "amber" : active.accent === "green" ? "green" : ""}`}
-              style={{ position: "relative" }}
               onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.96, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.96, opacity: 0 }}
               transition={{ type: "spring", stiffness: 420, damping: 38 }}
             >
               <div className="modalInner">
@@ -380,53 +451,24 @@ export default function GroomerPerformanceP3() {
   );
 }
 
-function placeRow(
-  rowCards: CardDef[],
-  y: number,
-  xStep: number,
-  angleSpreadDeg: number,
-  zForward: number,
-  activeId: CardId | null
-) {
-  const n = rowCards.length;
-  const idxs = rowCards.map((_, i) => i - (n - 1) / 2);
-
-  return rowCards.map((card, i) => {
-    const t = idxs[i];
-    const angle = -(t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
-    const lift = Math.abs(t) * 8;
-    const radius = 650;
-    const arcAngle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
-    const xOffset = Math.sin(arcAngle * Math.PI / 180) * radius;
-    const zOffset = -(1 - Math.cos(arcAngle * Math.PI / 180)) * radius;
-
-    const style: React.CSSProperties = {
-      left: "50%",
-      top: y + lift,
-      width: card.kind === "kpi" ? 360 : 410,
-      height: card.kind === "kpi" ? 150 : 220,
-      transform:
-        `translateX(-50%) ` +
-        `rotateY(${angle}deg) ` +
-        `translateZ(${zForward + zOffset}px) ` +
-        `translateX(${xOffset}px)`,
-    };
-
-    const hidden = activeId === card.id;
-    return { card, style, hidden };
-  });
+function GridCell(props: { col: -1 | 0 | 1; onOpen: () => void; children: React.ReactNode }) {
+  const { col, onOpen, children } = props;
+  return (
+    <div className="cell" data-col={col}>
+      <div className="cellInner" onClick={onOpen}>
+        {children}
+      </div>
+    </div>
+  );
 }
 
-function Card3D(props: { def: CardDef; style: React.CSSProperties; hidden: boolean; onOpen: () => void }) {
-  const { def, style, hidden, onOpen } = props;
+function Card3D({ def, height }: { def: CardDef; height: number }) {
   const accentClass = def.accent === "amber" ? "amber" : def.accent === "green" ? "green" : "";
-
   return (
     <motion.div
-      layoutId={`card-${def.id}`}
       className={`shell ${accentClass}`}
-      style={{ ...style, opacity: hidden ? 0 : 1, pointerEvents: hidden ? "none" : "auto" }}
-      onClick={onOpen}
+      style={{ height }}
+      whileHover={{ y: -2 }}
       transition={{ type: "spring", stiffness: 420, damping: 34 }}
     >
       {def.kind === "kpi" ? (
@@ -497,15 +539,17 @@ function ExpandedContent({ def }: { def: CardDef }) {
     return (
       <>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Earnings by Breed</h3>
-        <List rows={[
-          ["Golden Retrievers", "$1.77"],
-          ["Cavaliers", "$1.72"],
-          ["Dachshunds", "$1.65"],
-          ["Poodles", "$1.58"],
-          ["Maltese", "$1.52"],
-          ["Goldendoodles", "$1.35"],
-          ["Labradors", "$1.35"],
-        ]}/>
+        <List
+          rows={[
+            ["Golden Retrievers", "$1.77"],
+            ["Cavaliers", "$1.72"],
+            ["Dachshunds", "$1.65"],
+            ["Poodles", "$1.58"],
+            ["Maltese", "$1.52"],
+            ["Goldendoodles", "$1.35"],
+            ["Labradors", "$1.35"],
+          ]}
+        />
       </>
     );
   }
@@ -513,17 +557,9 @@ function ExpandedContent({ def }: { def: CardDef }) {
     return (
       <>
         <h3 style={{ margin: "0 0 10px", fontWeight: 900 }}>Top Performing Breed & Size Combinations</h3>
-        <List rows={[
-          ["Golden Retrievers Large", "$1.77"],
-          ["Cavaliers Small", "$1.72"],
-          ["Dachshunds Small", "$1.65"],
-        ]}/>
+        <List rows={[["Golden Retrievers Large", "$1.77"], ["Cavaliers Small", "$1.72"], ["Dachshunds Small", "$1.65"]]} />
         <div className="sectionTitle">Lowest Performing Breed & Size Combinations</div>
-        <List rows={[
-          ["Goldendoodles Large", "$1.22"],
-          ["Labradors Large", "$1.18"],
-          ["Mixed Breed XL", "$1.05"],
-        ]}/>
+        <List rows={[["Goldendoodles Large", "$1.22"], ["Labradors Large", "$1.18"], ["Mixed Breed XL", "$1.05"]]} />
       </>
     );
   }
@@ -554,10 +590,29 @@ function MiniBars(props: { labels: string[]; values: number[]; prefix?: string; 
         return (
           <div key={l} style={{ display: "grid", gridTemplateRows: "auto 1fr auto", gap: 6 }}>
             <div style={{ fontSize: 11, textAlign: "center", color: "rgba(255,255,255,.72)" }}>
-              {(prefix ?? "")}{prefix ? v.toFixed(2) : v.toFixed(0)}{suffix ?? ""}
+              {(prefix ?? "")}
+              {prefix ? v.toFixed(2) : v.toFixed(0)}
+              {suffix ?? ""}
             </div>
-            <div style={{ height: 110, borderRadius: 10, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.05)", overflow: "hidden", display: "flex", alignItems: "flex-end" }}>
-              <div style={{ width: "100%", height: `${h * 100}%`, borderRadius: "10px 10px 0 0", background: "linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.20))" }} />
+            <div
+              style={{
+                height: 110,
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,.08)",
+                background: "rgba(255,255,255,.05)",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: `${h * 100}%`,
+                  borderRadius: "10px 10px 0 0",
+                  background: "linear-gradient(180deg, rgba(120,180,255,.55), rgba(79,209,255,.20))",
+                }}
+              />
             </div>
             <div style={{ fontSize: 10, textAlign: "center", letterSpacing: 1, color: "rgba(255,255,255,.55)" }}>{l}</div>
           </div>
@@ -578,10 +633,29 @@ function BigBars(props: { labels: string[]; values: number[]; prefix?: string; s
         return (
           <div key={l} style={{ display: "grid", gridTemplateRows: "auto 1fr auto", gap: 10 }}>
             <div style={{ fontSize: 13, textAlign: "center", color: "rgba(255,255,255,.78)" }}>
-              {(prefix ?? "")}{prefix ? v.toFixed(2) : v.toFixed(0)}{suffix ?? ""}
+              {(prefix ?? "")}
+              {prefix ? v.toFixed(2) : v.toFixed(0)}
+              {suffix ?? ""}
             </div>
-            <div style={{ height: 320, borderRadius: 14, border: "1px solid rgba(255,255,255,.10)", background: "rgba(255,255,255,.04)", overflow: "hidden", display: "flex", alignItems: "flex-end" }}>
-              <div style={{ width: "100%", height: `${h * 100}%`, borderRadius: "14px 14px 0 0", background: "linear-gradient(180deg, rgba(120,180,255,.62), rgba(79,209,255,.18))" }} />
+            <div
+              style={{
+                height: 320,
+                borderRadius: 14,
+                border: "1px solid rgba(255,255,255,.10)",
+                background: "rgba(255,255,255,.04)",
+                overflow: "hidden",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: `${h * 100}%`,
+                  borderRadius: "14px 14px 0 0",
+                  background: "linear-gradient(180deg, rgba(120,180,255,.62), rgba(79,209,255,.18))",
+                }}
+              />
             </div>
             <div style={{ fontSize: 12, textAlign: "center", letterSpacing: 1, color: "rgba(255,255,255,.60)" }}>{l}</div>
           </div>
@@ -617,12 +691,9 @@ function List({ rows }: { rows: [string, string][] }) {
 }
 
 function MiniMatrix() {
-  return (
-    <div style={{ color: "rgba(255,255,255,.72)", lineHeight: 1.6 }}>
-      Tap to open matrix
-    </div>
-  );
+  return <div style={{ color: "rgba(255,255,255,.72)", lineHeight: 1.6 }}>Tap to open matrix</div>;
 }
+
 function Matrix() {
   const cols = ["Small", "Medium", "Large", "XL"];
   const rows: [string, string[]][] = [
@@ -639,13 +710,17 @@ function Matrix() {
     <div className="matrix">
       <div className="mHead">
         <div>Breed</div>
-        {cols.map((c) => <div key={c}>{c}</div>)}
+        {cols.map((c) => (
+          <div key={c}>{c}</div>
+        ))}
       </div>
       {rows.map(([r, vals]) => (
         <div className="mRow" key={r}>
           <div className="mBreed">{r}</div>
           {vals.map((v, i) => (
-            <div key={`${r}-${i}`} className={`mCell ${v === "—" ? "muted" : ""}`}>{v}</div>
+            <div key={`${r}-${i}`} className={`mCell ${v === "—" ? "muted" : ""}`}>
+              {v}
+            </div>
           ))}
         </div>
       ))}
