@@ -17,70 +17,94 @@ export function Appointments() {
   return (
     <div className="min-h-screen bg-background px-3 sm:px-6 pt-2 sm:pt-3 pb-3 sm:pb-6">
       <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4 sm:mb-6">
           <Card 
-            className={`p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+            className={`p-2 md:p-2.5 border-border cursor-pointer transition-all duration-200 ${
               statusFilter === "scheduled" 
                 ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
                 : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             }`}
             onClick={() => setStatusFilter(statusFilter === "scheduled" ? "all" : "scheduled")}
           >
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Scheduled</p>
-            <p className="text-lg md:text-xl font-bold">24</p>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Scheduled</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">24</p>
+              </div>
+            </div>
           </Card>
           
           <Card 
-            className={`p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+            className={`p-2 md:p-2.5 border-border cursor-pointer transition-all duration-200 ${
               statusFilter === "checked-in" 
                 ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
                 : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             }`}
             onClick={() => setStatusFilter(statusFilter === "checked-in" ? "all" : "checked-in")}
           >
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Checked In</p>
-            <p className="text-lg md:text-xl font-bold">8</p>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Checked In</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">8</p>
+              </div>
+            </div>
           </Card>
           
           <Card 
-            className={`p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+            className={`p-2 md:p-2.5 border-border cursor-pointer transition-all duration-200 ${
               statusFilter === "completed" 
                 ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
                 : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             }`}
             onClick={() => setStatusFilter(statusFilter === "completed" ? "all" : "completed")}
           >
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Completed</p>
-            <p className="text-lg md:text-xl font-bold">15</p>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Completed</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">15</p>
+              </div>
+            </div>
           </Card>
           
           <Card 
-            className={`p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+            className={`p-2 md:p-2.5 border-border cursor-pointer transition-all duration-200 ${
               statusFilter === "no-show" 
                 ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
                 : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             }`}
             onClick={() => setStatusFilter(statusFilter === "no-show" ? "all" : "no-show")}
           >
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">No Show</p>
-            <p className="text-lg md:text-xl font-bold">2</p>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">No Show</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">2</p>
+              </div>
+            </div>
           </Card>
           
           <Card 
-            className={`p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
+            className={`p-2 md:p-2.5 border-border cursor-pointer transition-all duration-200 ${
               statusFilter === "cancelled" 
                 ? "border-primary shadow-lg shadow-primary/20 bg-primary/5" 
                 : "hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
             }`}
             onClick={() => setStatusFilter(statusFilter === "cancelled" ? "all" : "cancelled")}
           >
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Canceled</p>
-            <p className="text-lg md:text-xl font-bold">3</p>
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Canceled</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">3</p>
+              </div>
+            </div>
           </Card>
           
-          <Card className="p-2 md:p-2.5 border-border flex flex-col items-center justify-center text-center">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">Projected Revenue</p>
-            <p className="text-lg md:text-xl font-bold text-primary">$2,450</p>
+          <Card className="p-2 md:p-2.5 border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Projected Revenue</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">$2,450</p>
+              </div>
+            </div>
           </Card>
         </div>
 

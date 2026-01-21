@@ -325,12 +325,7 @@ export function Inventory() {
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "inventory" | "reports")} className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          <TabsTrigger value="reports">Value Reports</TabsTrigger>
-        </TabsList>
-
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "inventory")} className="w-full">
         <TabsContent value="inventory" className="space-y-4">
           {lowStockItems.length > 0 && (
             <Card className="p-4 border-destructive/50 bg-destructive/5">
@@ -351,46 +346,40 @@ export function Inventory() {
             </Card>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-muted-foreground">Total Inventory Value</div>
-                <CurrencyDollar size={20} className="text-primary" />
-              </div>
-              <div className="text-2xl font-bold">${currentValue.total.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground mt-1">Cost basis of all items</div>
-            </Card>
-
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-muted-foreground">Retail Value</div>
-                <Package size={20} className="text-primary" />
-              </div>
-              <div className="text-2xl font-bold">${currentValue.retail.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {inventory?.filter(i => i.category === 'retail').length || 0} items
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Card className="p-2 md:p-2.5 border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">TOTAL VALUE</p>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">${currentValue.total.toFixed(2)}</p>
+                </div>
               </div>
             </Card>
 
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-muted-foreground">Supply Value</div>
-                <Package size={20} className="text-secondary" />
-              </div>
-              <div className="text-2xl font-bold">${currentValue.supply.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {inventory?.filter(i => i.category === 'supply').length || 0} items
+            <Card className="p-2 md:p-2.5 border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">RETAIL VALUE</p>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">${currentValue.retail.toFixed(2)}</p>
+                </div>
               </div>
             </Card>
 
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-muted-foreground">Potential Profit</div>
-                <TrendUp size={20} className="text-green-500" />
+            <Card className="p-2 md:p-2.5 border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">SUPPLY VALUE</p>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">${currentValue.supply.toFixed(2)}</p>
+                </div>
               </div>
-              <div className="text-2xl font-bold text-green-500">${currentValue.potentialProfit.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground mt-1">
-                If all retail items sold
+            </Card>
+
+            <Card className="p-2 md:p-2.5 border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">POTENTIAL PROFIT</p>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">${currentValue.potentialProfit.toFixed(2)}</p>
+                </div>
               </div>
             </Card>
           </div>
@@ -405,7 +394,7 @@ export function Inventory() {
                 className="pl-10"
               />
             </div>
-            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto bg-primary text-primary-foreground">
               <Plus className="mr-2" />
               Add Item
             </Button>
@@ -434,188 +423,6 @@ export function Inventory() {
               {renderInventoryTable(supplyItems, 'Supply')}
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card className="p-4">
-              <h3 className="text-lg font-bold mb-4">Inventory Value Trend</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={valueHistory?.slice(-30) || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => `$${value.toFixed(0)}`}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <Tooltip 
-                      formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
-                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="totalValue" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={2}
-                      name="Total Value"
-                      dot={false}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="retailValue" 
-                      stroke="hsl(var(--chart-1))" 
-                      strokeWidth={2}
-                      name="Retail Value"
-                      dot={false}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="supplyValue" 
-                      stroke="hsl(var(--chart-2))" 
-                      strokeWidth={2}
-                      name="Supply Value"
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <h3 className="text-lg font-bold mb-4">Potential Profit Trend</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={valueHistory?.slice(-30) || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      tickFormatter={(value) => `$${value.toFixed(0)}`}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <Tooltip 
-                      formatter={(value: number) => [`$${value.toFixed(2)}`, 'Potential Profit']}
-                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="retailPotentialProfit" 
-                      stroke="#22c55e" 
-                      strokeWidth={2}
-                      name="Potential Profit"
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <h3 className="text-lg font-bold mb-4">Item Count Trend</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={valueHistory?.slice(-30) || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                    />
-                    <Tooltip 
-                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="retailCount" fill="hsl(var(--chart-1))" name="Retail Items" />
-                    <Bar dataKey="supplyCount" fill="hsl(var(--chart-2))" name="Supply Items" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <h3 className="text-lg font-bold mb-4">Value Breakdown by Item</h3>
-              <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin">
-                {inventory && [...inventory]
-                  .sort((a, b) => (b.cost * b.quantity) - (a.cost * a.quantity))
-                  .slice(0, 15)
-                  .map(item => {
-                    const itemValue = item.cost * item.quantity
-                    const percentage = (itemValue / currentValue.total) * 100
-                    return (
-                      <div key={item.id} className="flex items-center justify-between border-b border-border pb-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium truncate">{item.name}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {item.quantity} × ${item.cost.toFixed(2)}
-                          </div>
-                        </div>
-                        <div className="text-right ml-3">
-                          <div className="font-bold">${itemValue.toFixed(2)}</div>
-                          <div className="text-xs text-muted-foreground">{percentage.toFixed(1)}%</div>
-                        </div>
-                      </div>
-                    )
-                  })}
-              </div>
-            </Card>
-          </div>
-
-          <Card className="p-4">
-            <h3 className="text-lg font-bold mb-4">Value Summary Statistics</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 bg-muted rounded-lg">
-                <div className="text-sm text-muted-foreground mb-1">Average Item Value</div>
-                <div className="text-xl font-bold">
-                  ${inventory && inventory.length > 0 ? (currentValue.total / inventory.length).toFixed(2) : '0.00'}
-                </div>
-              </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <div className="text-sm text-muted-foreground mb-1">Retail Profit Margin</div>
-                <div className="text-xl font-bold">
-                  {currentValue.potentialRevenue > 0 
-                    ? ((currentValue.potentialProfit / currentValue.potentialRevenue) * 100).toFixed(1)
-                    : '0.0'}%
-                </div>
-              </div>
-              <div className="p-4 bg-muted rounded-lg">
-                <div className="text-sm text-muted-foreground mb-1">Total Retail Revenue Potential</div>
-                <div className="text-xl font-bold">${currentValue.potentialRevenue.toFixed(2)}</div>
-              </div>
-            </div>
-          </Card>
         </TabsContent>
       </Tabs>
 
