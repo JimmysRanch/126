@@ -447,7 +447,7 @@ export function Staff() {
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
-            <StaffScheduleView />
+            <StaffScheduleView allowEditing={false} />
           </TabsContent>
 
           <TabsContent value="performance" className="mt-0">

@@ -101,7 +101,7 @@ function getEmptyWeeklyTemplate(): WeeklyTemplate {
   }
 }
 
-export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: string; isOwner?: boolean }) {
+export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true }: { staffId?: string; isOwner?: boolean; allowEditing?: boolean }) {
   const [timeOffRequests, setTimeOffRequests] = useKV<TimeOffRequest[]>("time-off-requests", [])
   const [staffSchedules, setStaffSchedules] = useKV<StaffSchedule[]>("staff-schedules", [])
   const [roleFilter, setRoleFilter] = useState<string>("All")
@@ -113,6 +113,9 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
   const [editingDay, setEditingDay] = useState<keyof WeeklyTemplate | null>(null)
   const [revokeDialogOpen, setRevokeDialogOpen] = useState(false)
   const [revokeRequestId, setRevokeRequestId] = useState<string | null>(null)
+  
+  const isTeamView = !staffId
+  const canEdit = allowEditing && isOwner && !isTeamView
   
   const [newRequest, setNewRequest] = useState({
     startDate: '',
@@ -342,7 +345,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
             Previous Week
           </Button>
           <h3 className="text-lg font-semibold">
-            {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} - {weekDates[6].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            Week of {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
           </h3>
           <Button
             variant="outline"
@@ -358,7 +361,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
         </div>
 
         <div className="flex items-center gap-3">
-          {!staffId && (
+          {isTeamView && (
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-[160px]">
                 <SelectValue />
@@ -372,7 +375,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
             </Select>
           )}
 
-          {isOwner && (
+          {canEdit && (
             <Button
               variant="outline"
               size="sm"
@@ -383,13 +386,14 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
             </Button>
           )}
 
-          <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
-                <Plus size={18} className="mr-2" />
-                Request Time Off
-              </Button>
-            </DialogTrigger>
+          {!isTeamView && (
+            <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
+                  <Plus size={18} className="mr-2" />
+                  Request Time Off
+                </Button>
+              </DialogTrigger>
             <DialogContent className="bg-card border-border max-w-lg">
               <DialogHeader>
                 <DialogTitle>Request Time Off</DialogTitle>
@@ -470,10 +474,23 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          )}
         </div>
       </div>
 
       <Card className="p-4 bg-card border-border">
+        {isTeamView && (
+          <div className="grid grid-cols-7 gap-2 mb-4 pb-3 border-b border-border">
+            {DAY_LABELS.map((label) => (
+              <div key={label} className="text-center">
+                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
         <div className="space-y-4">
           {displayStaff.map((staff) => {
             const schedule = getStaffSchedule(staff.id)
@@ -492,7 +509,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
                       </Badge>
                     )}
                   </div>
-                  {isOwner && (
+                  {canEdit && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -522,14 +539,16 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
                     
                     return (
                       <div key={index} className="space-y-2">
-                        <div className={`text-center p-2 rounded-lg ${isToday ? 'bg-primary/20 border border-primary' : 'bg-secondary/30'}`}>
-                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            {DAY_LABELS[index].substring(0, 3)}
+                        {!isTeamView && (
+                          <div className={`text-center p-2 rounded-lg ${isToday ? 'bg-primary/20 border border-primary' : 'bg-secondary/30'}`}>
+                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                              {DAY_LABELS[index].substring(0, 3)}
+                            </div>
+                            <div className={`text-sm font-bold ${isToday ? 'text-primary' : ''}`}>
+                              {date.getDate()}
+                            </div>
                           </div>
-                          <div className={`text-sm font-bold ${isToday ? 'text-primary' : ''}`}>
-                            {date.getDate()}
-                          </div>
-                        </div>
+                        )}
                         
                         <div className="space-y-1">
                           {hasApprovedTimeOff ? (
