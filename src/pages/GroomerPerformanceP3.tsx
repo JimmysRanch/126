@@ -321,13 +321,13 @@ export default function GroomerPerformanceP3() {
         <div className="stage">
           <div className="curveWrap">
             <div className="curve">
-              {placeRow(cards.slice(0, 3), 36, 260, 48, 110, activeId).map((p) => (
+              {placeRow(cards.slice(0, 3), 36, 280, 48, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(3, 6), 220, 260, 42, 110, activeId).map((p) => (
+              {placeRow(cards.slice(3, 6), 220, 280, 42, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(6, 9), 430, 300, 38, 120, activeId).map((p) => (
+              {placeRow(cards.slice(6, 9), 430, 320, 38, 120, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
             </div>
