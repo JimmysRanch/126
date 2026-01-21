@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import { PayrollOverview } from "@/components/PayrollOverview"
 import GroomerPerformanceP2 from "@/components/GroomerPerformanceP2"
 import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
 import GroomerPerformanceP4 from "@/pages/GroomerPerformanceP4"
@@ -112,7 +113,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -181,6 +182,17 @@ export function Staff() {
                 }`}
               >
                 Schedule
+              </Button>
+              <Button
+                onClick={() => setActiveTab("payroll")}
+                variant={activeTab === "payroll" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "payroll" 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                Payroll
               </Button>
               <Button
                 onClick={() => setActiveTab("performance")}
@@ -454,6 +466,10 @@ export function Staff() {
 
           <TabsContent value="schedule" className="mt-0">
             <StaffScheduleView allowEditing={false} />
+          </TabsContent>
+
+          <TabsContent value="payroll" className="mt-0">
+            <PayrollOverview />
           </TabsContent>
 
           <TabsContent value="performance" className="mt-0">

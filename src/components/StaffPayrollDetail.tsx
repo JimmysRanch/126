@@ -131,11 +131,7 @@ export function StaffPayrollDetail({ staffId, staffName, hourlyRate }: StaffPayr
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-1">Payroll Summary</h2>
-          <p className="text-sm text-muted-foreground">Earnings, deductions, and payment history</p>
-        </div>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
         <Button 
           className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'w-full' : ''}`}
         >
