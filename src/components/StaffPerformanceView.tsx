@@ -97,7 +97,7 @@ export function StaffPerformanceView() {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           grid-template-rows: 1fr 2fr 2fr 2fr;
-          gap: 1.125rem;
+          gap: 0.75rem;
           height: 100%;
         }
 
@@ -279,6 +279,13 @@ export function StaffPerformanceView() {
           gap: 0.625rem;
         }
 
+        .perf-chart-column {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 0.375rem;
+        }
+
         .perf-chart-value {
           font-size: 0.6875rem;
           text-align: center;
@@ -286,7 +293,7 @@ export function StaffPerformanceView() {
         }
 
         .perf-chart-bar {
-          height: 4.375rem;
+          height: 5rem;
           border-radius: 0.625rem;
           border: none;
           background: hsl(var(--card));
@@ -469,7 +476,7 @@ export function StaffPerformanceView() {
                     const max = Math.max(...chart.values)
                     const height = Math.max(0.18, value / max)
                     return (
-                      <div key={j} style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+                      <div key={j} className="perf-chart-column">
                         <div className="perf-chart-value">
                           {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
                         </div>
