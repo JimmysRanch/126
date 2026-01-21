@@ -321,13 +321,13 @@ export default function GroomerPerformanceP3() {
         <div className="stage">
           <div className="curveWrap">
             <div className="curve">
-              {placeRow(cards.slice(0, 3), 36, 280, 48, 110, activeId).map((p) => (
+              {placeRow(cards.slice(0, 3), 36, 390, 48, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(3, 6), 220, 280, 42, 110, activeId).map((p) => (
+              {placeRow(cards.slice(3, 6), 220, 420, 42, 110, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
-              {placeRow(cards.slice(6, 9), 430, 320, 38, 120, activeId).map((p) => (
+              {placeRow(cards.slice(6, 9), 430, 440, 38, 120, activeId).map((p) => (
                 <Card3D key={p.card.id} def={p.card} style={p.style} hidden={p.hidden} onOpen={() => setActiveId(p.card.id)} />
               ))}
             </div>
@@ -395,7 +395,7 @@ function placeRow(
     const t = idxs[i];
     const angle = -(t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
     const lift = Math.abs(t) * 8;
-    const radius = 420;
+    const radius = 650;
     const arcAngle = (t / Math.max(1, (n - 1) / 2)) * (angleSpreadDeg / 2);
     const xOffset = Math.sin(arcAngle * Math.PI / 180) * radius;
     const zOffset = -(1 - Math.cos(arcAngle * Math.PI / 180)) * radius;
