@@ -479,7 +479,7 @@ export function StaffProfile() {
           </TabsContent>
 
           <TabsContent value="schedule" className="mt-0">
-            <StaffScheduleView staffId={staffId} />
+            <StaffScheduleView staffId={staffId} isOwner={true} />
           </TabsContent>
         </Tabs>
       </div>
