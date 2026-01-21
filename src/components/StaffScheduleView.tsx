@@ -319,6 +319,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
     ? MOCK_STAFF.filter(s => s.id === staffId)
     : filteredStaff
 
+  const filteredRequests = staffId
     ? (timeOffRequests || []).filter(req => req.staffId === staffId)
     : (timeOffRequests || [])
 
@@ -328,7 +329,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
@@ -357,8 +358,7 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
         </div>
 
         <div className="flex items-center gap-3">
-        <div className="flex items-center gap-3">
-          {!staffId && (RoleFilter}>
+          {!staffId && (
             <Select value={roleFilter} onValueChange={setRoleFilter}>
               <SelectTrigger className="w-[160px]">
                 <SelectValue />
@@ -380,11 +380,11 @@ export function StaffScheduleView({ staffId, isOwner = true }: { staffId?: strin
             >
               <Copy size={16} className="mr-2" />
               Copy Last Week
+            </Button>
           )}
-          )}
-estDialogOpen}>
+
           <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
-            <DialogTrigger asChild>-semibold">
+            <DialogTrigger asChild>
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
                 <Plus size={18} className="mr-2" />
                 Request Time Off
@@ -416,8 +416,8 @@ estDialogOpen}>
                   </div>
                 </div>
 
+                <div className="space-y-2">
                   <Label htmlFor="type">Type *</Label>
-                  <Label htmlFor="type">Type *</Label>as TimeOffRequest['type'] })}>
                   <Select value={newRequest.type} onValueChange={(value) => setNewRequest({ ...newRequest, type: value as TimeOffRequest['type'] })}>
                     <SelectTrigger>
                       <SelectValue />
@@ -432,30 +432,30 @@ estDialogOpen}>
 
                 <div className="space-y-2">
                   <Label htmlFor="reason">Reason *</Label>
-                    id="reason"
+                  <Input
                     id="reason"
                     placeholder="Brief description"
-                    value={newRequest.reason}}
+                    value={newRequest.reason}
                     onChange={(e) => setNewRequest({ ...newRequest, reason: e.target.value })}
+                  />
                 </div>
 
-
-                  <Label htmlFor="notes">Additional Notes</Label>
+                <div className="space-y-2">
                   <Label htmlFor="notes">Additional Notes</Label>
                   <Textarea
-                    id="notes"ails"
+                    id="notes"
                     placeholder="Any additional context or details"
                     rows={3}
                     value={newRequest.notes}
                     onChange={(e) => setNewRequest({ ...newRequest, notes: e.target.value })}
+                  />
                 </div>
               </div>
-              <DialogFooter>
               <DialogFooter>
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setIsRequestDialogOpen(false)'Vacation', notes: '' })
+                    setIsRequestDialogOpen(false)
                     setNewRequest({ startDate: '', endDate: '', reason: '', type: 'Vacation', notes: '' })
                   }}
                 >
@@ -466,27 +466,27 @@ estDialogOpen}>
                   onClick={handleSubmitRequest}
                 >
                   Submit Request
-                </Button>ter>
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </div>
-order">
+
       <Card className="p-4 bg-card border-border">
         <div className="space-y-4">
           {displayStaff.map((staff) => {
             const schedule = getStaffSchedule(staff.id)
             
-            return (b-4 last:pb-0">
+            return (
               <div key={staff.id} className="border-b border-border last:border-0 pb-4 last:pb-0">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <h4 className="font-semibold">{staff.name}</h4>
                     <Badge variant="secondary" className="text-xs">
                       {staff.role}
-                    </Badge>& (
-                    {!schedule.setupComplete && (t-yellow-600 border-yellow-500/30">
+                    </Badge>
+                    {!schedule.setupComplete && (
                       <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-500/30">
                         Needs Schedule
                       </Badge>
@@ -501,13 +501,13 @@ order">
                         setEditingDay('monday')
                         setIsEditDialogOpen(true)
                       }}
-                    >size={16} className="mr-2" />
+                    >
                       <PencilSimple size={16} className="mr-2" />
                       Edit Schedule
                     </Button>
                   )}
                 </div>
-    <div className="grid grid-cols-7 gap-2">
+
                 <div className="grid grid-cols-7 gap-2">
                   {weekDates.map((date, index) => {
                     const blocks = getAvailabilityForDate(staff.id, date)
@@ -520,35 +520,35 @@ order">
                         dateStr <= req.endDate
                     })
                     
-                    return (ace-y-2">
+                    return (
                       <div key={index} className="space-y-2">
                         <div className={`text-center p-2 rounded-lg ${isToday ? 'bg-primary/20 border border-primary' : 'bg-secondary/30'}`}>
                           <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
                             {DAY_LABELS[index].substring(0, 3)}
-                          </div>sm font-bold ${isToday ? 'text-primary' : ''}`}>
+                          </div>
                           <div className={`text-sm font-bold ${isToday ? 'text-primary' : ''}`}>
                             {date.getDate()}
                           </div>
                         </div>
                         
                         <div className="space-y-1">
-                          {hasApprovedTimeOff ? ( border border-red-500/30 text-center">
+                          {hasApprovedTimeOff ? (
                             <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-center">
                               <div className="text-xs font-semibold text-red-600">Time Off</div>
                             </div>
                           ) : blocks.length > 0 ? (
                             blocks.filter(b => !b.isBreak).map((block) => (
                               <div
-                                key={block.id}ry/30 hover:bg-primary/20 transition-colors"
+                                key={block.id}
                                 className="p-2 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
-                              >nter gap-1 text-xs text-muted-foreground">
+                              >
                                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Clock size={12} />span>
+                                  <Clock size={12} />
                                   <span>{block.startTime}-{block.endTime}</span>
                                 </div>
                               </div>
                             ))
-                          ) : (nded-lg bg-muted/20 text-center">
+                          ) : (
                             <div className="p-2 rounded-lg bg-muted/20 text-center">
                               <div className="text-xs text-muted-foreground">Off</div>
                             </div>
@@ -557,13 +557,13 @@ order">
                       </div>
                     )
                   })}
+                </div>
               </div>
             )
           })}
         </div>
       </Card>
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-card border-border max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -688,6 +688,7 @@ order">
         </DialogContent>
       </Dialog>
 
+      {pendingRequests.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
             Pending Time-Off Requests
@@ -724,7 +725,7 @@ order">
                     </div>
                   </div>
                   {isOwner && (
-                  {isOwner && (
+                    <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="outline"
@@ -781,7 +782,6 @@ order">
                     </div>
                   </div>
                   {isOwner && (
-                  {isOwner && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -795,6 +795,7 @@ order">
                       Revoke
                     </Button>
                   )}
+                </div>
               </Card>
             ))}
           </div>
@@ -808,7 +809,6 @@ order">
           </p>
         </Card>
       )}
-
 
       <AlertDialog open={revokeDialogOpen} onOpenChange={setRevokeDialogOpen}>
         <AlertDialogContent>
@@ -829,5 +829,6 @@ order">
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
   )
 }
