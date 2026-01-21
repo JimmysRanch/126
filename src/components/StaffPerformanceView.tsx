@@ -106,7 +106,7 @@ export function StaffPerformanceView() {
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
           border-radius: 0.75rem;
-          box-shadow: none;
+          box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 0 18px rgba(56, 189, 248, 0.18);
           padding: 0.75rem;
           display: flex;
           flex-direction: column;
