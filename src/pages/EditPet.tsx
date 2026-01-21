@@ -9,13 +9,59 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { useKV } from "@github/spark/hooks"
+
+const DOG_COLORS = [
+  'Black',
+  'White',
+  'Brown',
+  'Golden',
+  'Cream',
+  'Red',
+  'Blue',
+  'Gray',
+  'Silver',
+  'Tan',
+  'Yellow',
+  'Apricot',
+  'Chocolate',
+  'Brindle',
+  'Sable',
+  'Merle',
+  'Parti-color',
+  'Tricolor',
+  'Other'
+]
 
 export function EditPet() {
   const navigate = useNavigate()
   const { clientId, petId } = useParams()
+
+  const [temperamentOptionsRaw] = useKV<string[]>("temperament-options", [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ])
+  
+  const temperamentOptions = Array.isArray(temperamentOptionsRaw) ? temperamentOptionsRaw : [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ]
 
   const [name, setName] = useState("Trying")
   const [breed, setBreed] = useState("Labrador Retriever")
@@ -27,7 +73,7 @@ export function EditPet() {
   const [shampoo, setShampoo] = useState("Hypoallergenic")
   const [favoriteGroomer, setFavoriteGroomer] = useState("Sarah J.")
   const [specialInstructions, setSpecialInstructions] = useState("Prefers gentle handling around ears. Give treats frequently during grooming.")
-  const [temperamentStr, setTemperamentStr] = useState("Friendly, Energetic, Loves treats")
+  const [temperament, setTemperament] = useState<string[]>(["Friendly", "Energetic", "Loves treats"])
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false)
   const [overallLength, setOverallLength] = useState("Short & neat")
   const [faceStyle, setFaceStyle] = useState("Short & neat")
@@ -61,7 +107,7 @@ export function EditPet() {
       shampoo,
       favoriteGroomer,
       specialInstructions,
-      temperament: temperamentStr.split(',').map(t => t.trim()).filter(Boolean),
+      temperament,
       overallLength,
       faceStyle,
       skipEarTrim,
@@ -140,12 +186,18 @@ export function EditPet() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-color">Color</Label>
-                <Input
-                  id="edit-color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  placeholder="Yellow"
-                />
+                <Select value={color} onValueChange={setColor}>
+                  <SelectTrigger id="edit-color">
+                    <SelectValue placeholder="Select color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DOG_COLORS.map((dogColor) => (
+                      <SelectItem key={dogColor} value={dogColor}>
+                        {dogColor}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit-sex">Gender</Label>
@@ -171,16 +223,6 @@ export function EditPet() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="edit-temperament">Temperament (comma-separated)</Label>
-              <Input
-                id="edit-temperament"
-                value={temperamentStr}
-                onChange={(e) => setTemperamentStr(e.target.value)}
-                placeholder="Friendly, Energetic, Loves treats"
-              />
-            </div>
-
             <Separator />
 
             <div className="space-y-4">
@@ -189,15 +231,31 @@ export function EditPet() {
               <div>
                 <Label className="text-sm font-medium mb-2 block">Overall length</Label>
                 <RadioGroup value={overallLength} onValueChange={setOverallLength}>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
-                      <div key={option} className="flex items-center space-x-1.5">
-                        <RadioGroupItem value={option} id={`length-${option}`} />
-                        <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
-                          {option}
-                        </Label>
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Short & neat" id="length-short" />
+                      <Label htmlFor="length-short" className="text-sm font-normal cursor-pointer">
+                        Short & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Medium & neat" id="length-medium" />
+                      <Label htmlFor="length-medium" className="text-sm font-normal cursor-pointer">
+                        Medium & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Long & fluffy" id="length-long" />
+                      <Label htmlFor="length-long" className="text-sm font-normal cursor-pointer">
+                        Long & fluffy
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Breed standard" id="length-breed" />
+                      <Label htmlFor="length-breed" className="text-sm font-normal cursor-pointer">
+                        Breed standard
+                      </Label>
+                    </div>
                   </div>
                 </RadioGroup>
               </div>
@@ -207,17 +265,63 @@ export function EditPet() {
               <div>
                 <Label className="text-sm font-medium mb-2 block">Face style</Label>
                 <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
-                      <div key={option} className="flex items-center space-x-1.5">
-                        <RadioGroupItem value={option} id={`face-${option}`} />
-                        <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
-                          {option}
-                        </Label>
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Short & neat" id="face-short" />
+                      <Label htmlFor="face-short" className="text-sm font-normal cursor-pointer">
+                        Short & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Round / Teddy" id="face-round" />
+                      <Label htmlFor="face-round" className="text-sm font-normal cursor-pointer">
+                        Round / Teddy
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Beard / Mustache" id="face-beard" />
+                      <Label htmlFor="face-beard" className="text-sm font-normal cursor-pointer">
+                        Beard / Mustache
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <RadioGroupItem value="Breed Standard" id="face-breed" />
+                      <Label htmlFor="face-breed" className="text-sm font-normal cursor-pointer">
+                        Breed Standard
+                      </Label>
+                    </div>
                   </div>
                 </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Temperament</Label>
+                <div className="flex flex-wrap gap-2">
+                  {temperamentOptions.map((option) => {
+                    const isSelected = temperament.includes(option)
+                    return (
+                      <Badge
+                        key={option}
+                        variant={isSelected ? "default" : "outline"}
+                        className={`cursor-pointer transition-colors ${
+                          isSelected 
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                            : "hover:bg-secondary"
+                        }`}
+                        onClick={() => {
+                          const newTemperament = isSelected
+                            ? temperament.filter(t => t !== option)
+                            : [...temperament, option]
+                          setTemperament(newTemperament)
+                        }}
+                      >
+                        {option}
+                      </Badge>
+                    )
+                  })}
+                </div>
               </div>
 
               <Separator />

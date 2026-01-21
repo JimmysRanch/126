@@ -145,6 +145,20 @@ export function Settings() {
   const [editingPosition, setEditingPosition] = useState<string | null>(null)
   const [editPositionValue, setEditPositionValue] = useState("")
   
+  const [temperamentOptionsRaw, setTemperamentOptionsRaw] = useKV<string[]>("temperament-options", [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ])
+  const [newTemperament, setNewTemperament] = useState("")
+  const [editingTemperament, setEditingTemperament] = useState<string | null>(null)
+  const [editTemperamentValue, setEditTemperamentValue] = useState("")
+  
   const [mainServicesRaw, setMainServicesRaw] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
   const [addOnsRaw, setAddOnsRaw] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
   const [weightRangesRaw, setWeightRangesRaw] = useKV<WeightRange[]>("weight-ranges", DEFAULT_WEIGHT_RANGES)
@@ -158,6 +172,36 @@ export function Settings() {
       })
     } else {
       setStaffPositionsRaw(updater)
+    }
+  }
+  
+  const temperamentOptions = Array.isArray(temperamentOptionsRaw) ? temperamentOptionsRaw : [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ]
+  const setTemperamentOptions = (updater: string[] | ((current: string[]) => string[])) => {
+    if (typeof updater === 'function') {
+      setTemperamentOptionsRaw((current) => {
+        const currentArray = Array.isArray(current) ? current : [
+          "Friendly",
+          "Energetic",
+          "Calm",
+          "Nervous",
+          "Aggressive",
+          "Playful",
+          "Shy",
+          "Loves treats"
+        ]
+        return updater(currentArray)
+      })
+    } else {
+      setTemperamentOptionsRaw(updater)
     }
   }
   
@@ -416,6 +460,58 @@ export function Settings() {
   const handleCancelEditPosition = () => {
     setEditingPosition(null)
     setEditPositionValue("")
+  }
+  
+  const handleAddTemperament = () => {
+    if (!newTemperament.trim()) {
+      toast.error("Temperament option cannot be empty")
+      return
+    }
+
+    if (temperamentOptions.includes(newTemperament.trim())) {
+      toast.error("This temperament option already exists")
+      return
+    }
+
+    setTemperamentOptions((current) => [...current, newTemperament.trim()])
+    setNewTemperament("")
+    toast.success("Temperament option added successfully")
+  }
+
+  const handleDeleteTemperament = (temperament: string) => {
+    setTemperamentOptions((current) => current.filter(t => t !== temperament))
+    toast.success("Temperament option removed successfully")
+  }
+
+  const handleEditTemperament = (temperament: string) => {
+    setEditingTemperament(temperament)
+    setEditTemperamentValue(temperament)
+  }
+
+  const handleSaveEditTemperament = () => {
+    if (!editTemperamentValue.trim()) {
+      toast.error("Temperament option cannot be empty")
+      return
+    }
+
+    if (editingTemperament && editTemperamentValue.trim() !== editingTemperament) {
+      if (temperamentOptions.includes(editTemperamentValue.trim())) {
+        toast.error("This temperament option already exists")
+        return
+      }
+    }
+
+    setTemperamentOptions((current) => 
+      current.map(t => t === editingTemperament ? editTemperamentValue.trim() : t)
+    )
+    setEditingTemperament(null)
+    setEditTemperamentValue("")
+    toast.success("Temperament option updated successfully")
+  }
+
+  const handleCancelEditTemperament = () => {
+    setEditingTemperament(null)
+    setEditTemperamentValue("")
   }
   
   const openMainServiceDialog = (service?: MainService) => {
@@ -879,6 +975,12 @@ export function Settings() {
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
               >
                 Services
+              </TabsTrigger>
+              <TabsTrigger 
+                value="pets" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Pets
               </TabsTrigger>
               <TabsTrigger 
                 value="notifications" 
@@ -1561,6 +1663,116 @@ export function Settings() {
                 </div>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="pets" className="mt-0">
+            <Card className="p-4 md:p-6 bg-card border-border">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Temperament Options</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Manage the available temperament options that appear when adding or editing pets.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex flex-col md:flex-row gap-3">
+                    <div className="flex-1">
+                      <Label htmlFor="new-temperament" className="sr-only">New Temperament Option</Label>
+                      <Input
+                        id="new-temperament"
+                        placeholder="Enter new temperament option (e.g., Anxious)"
+                        value={newTemperament}
+                        onChange={(e) => setNewTemperament(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddTemperament()
+                          }
+                        }}
+                      />
+                    </div>
+                    <Button
+                      onClick={handleAddTemperament}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold w-full md:w-auto"
+                    >
+                      <Plus size={18} className="mr-2" />
+                      Add Option
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {temperamentOptions.length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        No temperament options configured. Add your first option above.
+                      </div>
+                    ) : (
+                      temperamentOptions.map((temperament) => (
+                        <div
+                          key={temperament}
+                          className="flex items-center justify-between p-4 rounded-lg bg-secondary/20 border border-border hover:border-primary/50 transition-colors"
+                        >
+                          {editingTemperament === temperament ? (
+                            <>
+                              <Input
+                                value={editTemperamentValue}
+                                onChange={(e) => setEditTemperamentValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleSaveEditTemperament()
+                                  } else if (e.key === 'Escape') {
+                                    handleCancelEditTemperament()
+                                  }
+                                }}
+                                className="flex-1 mr-3"
+                                autoFocus
+                              />
+                              <div className="flex gap-2 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleCancelEditTemperament}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="bg-primary text-primary-foreground"
+                                  onClick={handleSaveEditTemperament}
+                                >
+                                  Save
+                                </Button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-medium break-all">{temperament}</span>
+                              <div className="flex gap-2 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-foreground hover:bg-primary/10"
+                                  onClick={() => handleEditTemperament(temperament)}
+                                >
+                                  <PencilSimple size={18} />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleDeleteTemperament(temperament)}
+                                >
+                                  <Trash size={18} />
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
           </TabsContent>
 
           <TabsContent value="notifications" className="mt-0">

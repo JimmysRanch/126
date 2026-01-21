@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
+import { useKV } from "@github/spark/hooks"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -33,6 +35,28 @@ const REFERRAL_SOURCES = [
   'Other'
 ]
 
+const DOG_COLORS = [
+  'Black',
+  'White',
+  'Brown',
+  'Golden',
+  'Cream',
+  'Red',
+  'Blue',
+  'Gray',
+  'Silver',
+  'Tan',
+  'Yellow',
+  'Apricot',
+  'Chocolate',
+  'Brindle',
+  'Sable',
+  'Merle',
+  'Parti-color',
+  'Tricolor',
+  'Other'
+]
+
 interface PetInfo {
   id: string
   name: string
@@ -41,6 +65,7 @@ interface PetInfo {
   gender: string
   breed: string
   mixedBreed: string
+  color: string
   notes: string
   breedError?: boolean
   mixedBreedError?: boolean
@@ -49,10 +74,32 @@ interface PetInfo {
   skipEarTrim: boolean
   skipTailTrim: boolean
   groomingNotes: string
+  temperament: string[]
 }
 
 export function AddClient() {
   const navigate = useNavigate()
+  const [temperamentOptionsRaw] = useKV<string[]>("temperament-options", [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ])
+  
+  const temperamentOptions = Array.isArray(temperamentOptionsRaw) ? temperamentOptionsRaw : [
+    "Friendly",
+    "Energetic",
+    "Calm",
+    "Nervous",
+    "Aggressive",
+    "Playful",
+    "Shy",
+    "Loves treats"
+  ]
   
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -73,6 +120,7 @@ export function AddClient() {
       gender: '',
       breed: '',
       mixedBreed: '',
+      color: '',
       notes: '',
       breedError: false,
       mixedBreedError: false,
@@ -80,7 +128,8 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
-      groomingNotes: ''
+      groomingNotes: '',
+      temperament: []
     }
   ])
 
@@ -93,6 +142,7 @@ export function AddClient() {
       gender: '',
       breed: '',
       mixedBreed: '',
+      color: '',
       notes: '',
       breedError: false,
       mixedBreedError: false,
@@ -100,7 +150,8 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
-      groomingNotes: ''
+      groomingNotes: '',
+      temperament: []
     }
     setPets([...pets, newPet])
   }
@@ -109,7 +160,7 @@ export function AddClient() {
     setPets(pets.filter(pet => pet.id !== id))
   }
 
-  const updatePet = (id: string, field: keyof PetInfo, value: string | boolean) => {
+  const updatePet = (id: string, field: keyof PetInfo, value: string | boolean | string[]) => {
     setPets(pets.map(pet => 
       pet.id === id ? { ...pet, [field]: value } : pet
     ))
@@ -403,7 +454,7 @@ export function AddClient() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
                   <BreedCombobox
@@ -447,6 +498,24 @@ export function AddClient() {
                   )}
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor={`pet-color-${pet.id}`}>Color</Label>
+                  <Select 
+                    value={pet.color} 
+                    onValueChange={(value) => updatePet(pet.id, 'color', value)}
+                  >
+                    <SelectTrigger id={`pet-color-${pet.id}`}>
+                      <SelectValue placeholder="Select color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DOG_COLORS.map((color) => (
+                        <SelectItem key={color} value={color}>
+                          {color}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday *</Label>
                   <Input
                     id={`pet-birthday-${pet.id}`}
@@ -479,15 +548,31 @@ export function AddClient() {
                     value={pet.overallLength} 
                     onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
                   >
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
-                        <div key={option} className="flex items-center space-x-1.5">
-                          <RadioGroupItem value={option} id={`${pet.id}-length-${option}`} />
-                          <Label htmlFor={`${pet.id}-length-${option}`} className="text-sm font-normal cursor-pointer">
-                            {option}
-                          </Label>
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
+                        <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
+                          Short & neat
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Medium & neat" id={`${pet.id}-length-medium`} />
+                        <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer">
+                          Medium & neat
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Long & fluffy" id={`${pet.id}-length-long`} />
+                        <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer">
+                          Long & fluffy
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Breed standard" id={`${pet.id}-length-breed`} />
+                        <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer">
+                          Breed standard
+                        </Label>
+                      </div>
                     </div>
                   </RadioGroup>
                 </div>
@@ -500,17 +585,63 @@ export function AddClient() {
                     value={pet.faceStyle} 
                     onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
                   >
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
-                        <div key={option} className="flex items-center space-x-1.5">
-                          <RadioGroupItem value={option} id={`${pet.id}-face-${option}`} />
-                          <Label htmlFor={`${pet.id}-face-${option}`} className="text-sm font-normal cursor-pointer">
-                            {option}
-                          </Label>
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
+                        <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
+                          Short & neat
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Round / Teddy" id={`${pet.id}-face-round`} />
+                        <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer">
+                          Round / Teddy
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Beard / Mustache" id={`${pet.id}-face-beard`} />
+                        <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer">
+                          Beard / Mustache
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <RadioGroupItem value="Breed Standard" id={`${pet.id}-face-breed`} />
+                        <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer">
+                          Breed Standard
+                        </Label>
+                      </div>
                     </div>
                   </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Temperament</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {temperamentOptions.map((option) => {
+                      const isSelected = pet.temperament.includes(option)
+                      return (
+                        <Badge
+                          key={option}
+                          variant={isSelected ? "default" : "outline"}
+                          className={`cursor-pointer transition-colors ${
+                            isSelected 
+                              ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                              : "hover:bg-secondary"
+                          }`}
+                          onClick={() => {
+                            const newTemperament = isSelected
+                              ? pet.temperament.filter(t => t !== option)
+                              : [...pet.temperament, option]
+                            updatePet(pet.id, 'temperament', newTemperament)
+                          }}
+                        >
+                          {option}
+                        </Badge>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 <Separator />
