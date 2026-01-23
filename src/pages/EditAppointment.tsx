@@ -144,13 +144,23 @@ export function EditAppointment() {
     navigate('/appointments')
   }
 
+  const [showNotifyDialog, setShowNotifyDialog] = useState(false)
+
   const handleCancelAppointment = () => {
     setAppointments((current) =>
       (current || []).map(apt => 
         apt.id === appointmentId ? { ...apt, status: 'cancelled' as const } : apt
       )
     )
-    toast.success("Appointment cancelled")
+    setShowNotifyDialog(true)
+  }
+
+  const handleNotifyClient = (notify: boolean) => {
+    if (notify) {
+      toast.success("Appointment cancelled and client will be notified")
+    } else {
+      toast.success("Appointment cancelled")
+    }
     navigate('/appointments')
   }
 
@@ -407,13 +417,32 @@ export function EditAppointment() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Cancel Appointment?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to cancel this appointment? This action will mark the appointment as cancelled and notify the client.
+                    Are you sure you want to cancel this appointment?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>No, Keep It</AlertDialogCancel>
                   <AlertDialogAction onClick={handleCancelAppointment} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                     Yes, Cancel Appointment
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showNotifyDialog} onOpenChange={setShowNotifyDialog}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Notify Client?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Would you like to notify the client about this cancellation?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => handleNotifyClient(false)}>
+                    No, Don't Notify
+                  </AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleNotifyClient(true)}>
+                    Yes, Notify Client
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
