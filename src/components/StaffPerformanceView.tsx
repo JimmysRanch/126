@@ -189,6 +189,16 @@ export function StaffPerformanceView() {
           gap: 0.75rem;
         }
 
+        .perf-title-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 999px;
+          background: hsl(var(--secondary));
+          border: 1px solid hsl(var(--border));
+        }
+
         .perf-icon {
           width: 2rem;
           height: 2rem;
@@ -223,6 +233,13 @@ export function StaffPerformanceView() {
           letter-spacing: 0.04rem;
           text-transform: none;
           color: hsl(var(--muted-foreground));
+          display: inline-flex;
+          align-items: center;
+          gap: 0.375rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 999px;
+          background: hsl(var(--secondary));
+          border: 1px solid hsl(var(--border));
         }
 
         .perf-chart-card {
@@ -252,6 +269,11 @@ export function StaffPerformanceView() {
           letter-spacing: 0.0125rem;
           color: hsl(var(--foreground));
           padding: 0;
+          padding: 0.25rem 0.5rem;
+          border-radius: 999px;
+          background: hsl(var(--secondary));
+          border: 1px solid hsl(var(--border));
+          width: fit-content;
         }
 
         .perf-dot {
@@ -302,6 +324,8 @@ export function StaffPerformanceView() {
           overflow: hidden;
           display: flex;
           align-items: flex-end;
+          width: 70%;
+          margin: 0 auto;
         }
 
         .perf-chart-bar-fill {
