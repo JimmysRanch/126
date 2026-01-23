@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Client, MainService, AddOn } from "@/lib/types"
 import { toast } from "sonner"
@@ -140,6 +141,16 @@ export function EditAppointment() {
     )
 
     toast.success("Appointment updated successfully!")
+    navigate('/appointments')
+  }
+
+  const handleCancelAppointment = () => {
+    setAppointments((current) =>
+      (current || []).map(apt => 
+        apt.id === appointmentId ? { ...apt, status: 'cancelled' as const } : apt
+      )
+    )
+    toast.success("Appointment cancelled")
     navigate('/appointments')
   }
 
@@ -370,20 +381,44 @@ export function EditAppointment() {
               </div>
             </Card>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-col sm:flex-row">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => navigate('/appointments')}
                 className="flex-1"
               >
-                Cancel
+                Back
               </Button>
               <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90">
                 Save Changes
               </Button>
             </div>
           </form>
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full">
+                  Cancel Appointment
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancel Appointment?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to cancel this appointment? This action will mark the appointment as cancelled and notify the client.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>No, Keep It</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCancelAppointment} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Yes, Cancel Appointment
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </Card>
       </div>
     </div>

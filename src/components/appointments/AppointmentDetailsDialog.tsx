@@ -141,44 +141,44 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
               <Button
                 variant={appointment.status === 'scheduled' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('scheduled')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'scheduled' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('scheduled')} variant="secondary">Scheduled</Badge>
+                Scheduled
               </Button>
               <Button
                 variant={appointment.status === 'checked-in' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('checked-in')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'checked-in' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('checked-in')} variant="secondary">Checked In</Badge>
+                Checked In
               </Button>
               <Button
                 variant={appointment.status === 'in-progress' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('in-progress')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'in-progress' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('in-progress')} variant="secondary">In Progress</Badge>
+                In Progress
               </Button>
               <Button
                 variant={appointment.status === 'completed' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('completed')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'completed' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('completed')} variant="secondary">Complete</Badge>
+                Complete
               </Button>
               <Button
                 variant={appointment.status === 'notified' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('notified')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'notified' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('notified')} variant="secondary">Notified</Badge>
+                Notified
               </Button>
               <Button
                 variant={appointment.status === 'paid' ? 'default' : 'outline'}
                 onClick={() => handleStatusChange('paid')}
-                className="justify-start"
+                className={`justify-center ${appointment.status === 'paid' ? 'bg-primary text-primary-foreground' : ''}`}
               >
-                <Badge className={getStatusColor('paid')} variant="secondary">Paid</Badge>
+                Paid
               </Button>
             </div>
           </div>

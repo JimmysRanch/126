@@ -114,6 +114,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const [roleFilter, setRoleFilter] = useState<string>("All")
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [selectedDates, setSelectedDates] = useState<string[]>([])
+  const [requestCalendarMonth, setRequestCalendarMonth] = useState(new Date())
   
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -121,6 +122,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const [editingDay, setEditingDay] = useState<keyof WeeklyTemplate | null>(null)
   const [revokeDialogOpen, setRevokeDialogOpen] = useState(false)
   const [revokeRequestId, setRevokeRequestId] = useState<string | null>(null)
+  const [showSubmissionMessage, setShowSubmissionMessage] = useState(false)
   
   const isTeamView = !staffId
   const canEdit = allowEditing && isOwner && !isTeamView
@@ -148,18 +150,20 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     const startDay = firstDay.getDay()
     const adjustedStart = startDay === 0 ? 6 : startDay - 1
     
-    const startDate = new Date(firstDay)
-    startDate.setDate(firstDay.getDate() - adjustedStart)
+    for (let i = 0; i < adjustedStart; i++) {
+      const prevDate = new Date(year, month, -adjustedStart + i + 1)
+      dates.push(prevDate)
+    }
     
-    for (let i = 0; i < 42; i++) {
-      dates.push(new Date(startDate))
-      startDate.setDate(startDate.getDate() + 1)
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      dates.push(new Date(year, month, day))
     }
     
     return dates
   }
 
   const monthDates = getMonthDates(selectedMonth)
+  const requestMonthDates = getMonthDates(requestCalendarMonth)
   const currentMonth = selectedMonth.getMonth()
 
   const getStaffSchedule = (sId: string): StaffSchedule => {
@@ -243,9 +247,10 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     }
 
     setTimeOffRequests((current) => [...(current || []), request])
-    toast.success("Time-off request submitted")
     setIsRequestDialogOpen(false)
+    setShowSubmissionMessage(true)
     setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
+    setRequestCalendarMonth(new Date())
   }
 
   const handleApproveRequest = (requestId: string) => {
@@ -407,14 +412,43 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label>Select Dates *</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newDate = new Date(requestCalendarMonth)
+                        newDate.setMonth(newDate.getMonth() - 1)
+                        setRequestCalendarMonth(newDate)
+                      }}
+                    >
+                      Previous
+                    </Button>
+                    <div className="font-semibold">
+                      {requestCalendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newDate = new Date(requestCalendarMonth)
+                        newDate.setMonth(newDate.getMonth() + 1)
+                        setRequestCalendarMonth(newDate)
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </div>
                   <div className="grid grid-cols-7 gap-2 p-4 border rounded-lg">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
                       <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
                     ))}
-                    {monthDates.map((date, i) => {
+                    {requestMonthDates.map((date, i) => {
                       const dateStr = date.toISOString().split('T')[0]
                       const isSelected = newRequest.dates.includes(dateStr)
-                      const isCurrentMonth = date.getMonth() === currentMonth
+                      const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
                       const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
                       
                       return (
@@ -487,6 +521,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   onClick={() => {
                     setIsRequestDialogOpen(false)
                     setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
+                    setRequestCalendarMonth(new Date())
                   }}
                 >
                   Cancel
@@ -864,6 +899,36 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Revoke Time Off
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showSubmissionMessage} onOpenChange={setShowSubmissionMessage}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-green-600">
+              <CheckCircle size={24} />
+              Request Submitted!
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-left pt-2">
+              <p>
+                Your time-off request has been submitted and is pending approval. You will be notified once a decision has been made.
+              </p>
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="font-semibold text-yellow-700 dark:text-yellow-500 mb-1 flex items-center gap-2">
+                  <Warning size={18} />
+                  Important Reminder
+                </p>
+                <p className="text-sm text-foreground">
+                  This is a time-off <strong>request only</strong>. For sick days, you must still call or text your manager as soon as possible. Failure to do so will result in a no-call/no-show.
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowSubmissionMessage(false)} className="bg-primary hover:bg-primary/90">
+              Got It
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
