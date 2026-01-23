@@ -60,7 +60,7 @@ export function ExpensesDetail() {
   return (
     <div className="h-full min-h-0 overflow-hidden bg-background flex flex-col">
       <div className="flex-1 min-h-0 flex flex-col gap-3 p-3">
-        <div className="grid grid-cols-4 gap-3 flex-shrink-0">
+        <div className="grid grid-cols-3 gap-3 flex-shrink-0">
           <Card className="p-3 border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/30 transition-all">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1.5 opacity-90">MTD Expenses</p>
             <p className="text-2xl font-bold tabular-nums">${expenseData.mtd}</p>
@@ -85,15 +85,6 @@ export function ExpensesDetail() {
             <div className="flex items-center gap-1 mt-1">
               <Warning size={12} className="text-yellow-500" weight="fill" />
               <span className="text-[10px] text-yellow-600 font-semibold">3 bills due soon</span>
-            </div>
-          </Card>
-
-          <Card className="p-3 border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/30 transition-all">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1.5 opacity-90">Avg Monthly</p>
-            <p className="text-2xl font-bold tabular-nums">${expenseData.avgMonthly}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] text-muted-foreground font-semibold">6-month average</span>
             </div>
           </Card>
         </div>

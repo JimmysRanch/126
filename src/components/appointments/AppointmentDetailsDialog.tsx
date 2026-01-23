@@ -136,21 +136,51 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
           <Separator />
 
           <div>
-            <h4 className="font-semibold mb-3">Appointment Status</h4>
-            <Select value={appointment.status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-                <SelectItem value="checked-in">Checked In</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="completed">Appointment Complete</SelectItem>
-                <SelectItem value="notified">Notified Parents</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
+            <h4 className="font-semibold mb-3">Update Appointment Status</h4>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={appointment.status === 'scheduled' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('scheduled')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('scheduled')} variant="secondary">Scheduled</Badge>
+              </Button>
+              <Button
+                variant={appointment.status === 'checked-in' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('checked-in')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('checked-in')} variant="secondary">Checked In</Badge>
+              </Button>
+              <Button
+                variant={appointment.status === 'in-progress' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('in-progress')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('in-progress')} variant="secondary">In Progress</Badge>
+              </Button>
+              <Button
+                variant={appointment.status === 'completed' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('completed')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('completed')} variant="secondary">Complete</Badge>
+              </Button>
+              <Button
+                variant={appointment.status === 'notified' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('notified')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('notified')} variant="secondary">Notified</Badge>
+              </Button>
+              <Button
+                variant={appointment.status === 'paid' ? 'default' : 'outline'}
+                onClick={() => handleStatusChange('paid')}
+                className="justify-start"
+              >
+                <Badge className={getStatusColor('paid')} variant="secondary">Paid</Badge>
+              </Button>
+            </div>
           </div>
 
           <Separator />

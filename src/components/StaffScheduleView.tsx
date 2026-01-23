@@ -112,7 +112,8 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const [timeOffRequests, setTimeOffRequests] = useKV<TimeOffRequest[]>("time-off-requests", [])
   const [staffSchedules, setStaffSchedules] = useKV<StaffSchedule[]>("staff-schedules", [])
   const [roleFilter, setRoleFilter] = useState<string>("All")
-  const [selectedWeek, setSelectedWeek] = useState(new Date())
+  const [selectedMonth, setSelectedMonth] = useState(new Date())
+  const [selectedDates, setSelectedDates] = useState<string[]>([])
   
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
@@ -125,7 +126,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const canEdit = allowEditing && isOwner && !isTeamView
   
   const [newRequest, setNewRequest] = useState({
-    date: '',
+    dates: [] as string[],
     reason: '',
     type: 'Sick' as TimeOffRequest['type'],
     notes: ''
@@ -137,21 +138,29 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     isBreak: false
   })
 
-  const getWeekDates = (date: Date): Date[] => {
-    const week: Date[] = []
-    const current = new Date(date)
-    const day = current.getDay()
-    const diff = current.getDate() - day + (day === 0 ? -6 : 1)
-    current.setDate(diff)
+  const getMonthDates = (date: Date): Date[] => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
     
-    for (let i = 0; i < 7; i++) {
-      week.push(new Date(current))
-      current.setDate(current.getDate() + 1)
+    const dates: Date[] = []
+    const startDay = firstDay.getDay()
+    const adjustedStart = startDay === 0 ? 6 : startDay - 1
+    
+    const startDate = new Date(firstDay)
+    startDate.setDate(firstDay.getDate() - adjustedStart)
+    
+    for (let i = 0; i < 42; i++) {
+      dates.push(new Date(startDate))
+      startDate.setDate(startDate.getDate() + 1)
     }
-    return week
+    
+    return dates
   }
 
-  const weekDates = getWeekDates(selectedWeek)
+  const monthDates = getMonthDates(selectedMonth)
+  const currentMonth = selectedMonth.getMonth()
 
   const getStaffSchedule = (sId: string): StaffSchedule => {
     const existing = (staffSchedules || []).find(s => s.staffId === sId)
@@ -211,20 +220,21 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   }
 
   const handleSubmitRequest = () => {
-    if (!newRequest.date || !newRequest.reason) {
-      toast.error("Please fill in all required fields")
+    if (newRequest.dates.length === 0 || !newRequest.reason) {
+      toast.error("Please select at least one date and provide a reason")
       return
     }
 
     const currentStaffId = staffId || "1"
     const staffName = MOCK_STAFF.find(s => s.id === currentStaffId)?.name || "Current User"
 
+    const sortedDates = [...newRequest.dates].sort()
     const request: TimeOffRequest = {
       id: Date.now().toString(),
       staffId: currentStaffId,
       staffName,
-      startDate: newRequest.date,
-      endDate: newRequest.date,
+      startDate: sortedDates[0],
+      endDate: sortedDates[sortedDates.length - 1],
       reason: newRequest.reason,
       type: newRequest.type,
       status: 'Pending',
@@ -235,7 +245,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     setTimeOffRequests((current) => [...(current || []), request])
     toast.success("Time-off request submitted")
     setIsRequestDialogOpen(false)
-    setNewRequest({ date: '', reason: '', type: 'Sick', notes: '' })
+    setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
   }
 
   const handleApproveRequest = (requestId: string) => {
@@ -343,26 +353,26 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
             variant="outline"
             size="sm"
             onClick={() => {
-              const newDate = new Date(selectedWeek)
-              newDate.setDate(newDate.getDate() - 7)
-              setSelectedWeek(newDate)
+              const newDate = new Date(selectedMonth)
+              newDate.setMonth(newDate.getMonth() - 1)
+              setSelectedMonth(newDate)
             }}
           >
-            Previous Week
+            Previous Month
           </Button>
           <h3 className="text-lg font-semibold">
-            Week of {weekDates[0].toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </h3>
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
-              const newDate = new Date(selectedWeek)
-              newDate.setDate(newDate.getDate() + 7)
-              setSelectedWeek(newDate)
+              const newDate = new Date(selectedMonth)
+              newDate.setMonth(newDate.getMonth() + 1)
+              setSelectedMonth(newDate)
             }}
           >
-            Next Week
+            Next Month
           </Button>
         </div>
 
@@ -392,16 +402,48 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
             <DialogContent className="bg-card border-border max-w-lg">
               <DialogHeader>
                 <DialogTitle>Request Time Off</DialogTitle>
+                <DialogDescription>Select one or more dates for your time-off request</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date">Date *</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={newRequest.date}
-                    onChange={(e) => setNewRequest({ ...newRequest, date: e.target.value })}
-                  />
+                  <Label>Select Dates *</Label>
+                  <div className="grid grid-cols-7 gap-2 p-4 border rounded-lg">
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                      <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
+                    ))}
+                    {monthDates.map((date, i) => {
+                      const dateStr = date.toISOString().split('T')[0]
+                      const isSelected = newRequest.dates.includes(dateStr)
+                      const isCurrentMonth = date.getMonth() === currentMonth
+                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
+                      
+                      return (
+                        <Button
+                          key={i}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          className={`h-8 p-0 ${!isCurrentMonth ? 'opacity-30' : ''} ${isPast ? 'opacity-50' : ''}`}
+                          disabled={isPast}
+                          onClick={() => {
+                            setNewRequest(prev => ({
+                              ...prev,
+                              dates: isSelected 
+                                ? prev.dates.filter(d => d !== dateStr)
+                                : [...prev.dates, dateStr]
+                            }))
+                          }}
+                        >
+                          {date.getDate()}
+                        </Button>
+                      )
+                    })}
+                  </div>
+                  {newRequest.dates.length > 0 && (
+                    <div className="text-sm text-muted-foreground">
+                      {newRequest.dates.length} day{newRequest.dates.length > 1 ? 's' : ''} selected
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -444,7 +486,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   variant="outline"
                   onClick={() => {
                     setIsRequestDialogOpen(false)
-                    setNewRequest({ date: '', reason: '', type: 'Sick', notes: '' })
+                    setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
                   }}
                 >
                   Cancel
@@ -463,17 +505,15 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
       </div>
 
       <Card className="p-4 bg-card border-border">
-        {isTeamView && (
-          <div className="grid grid-cols-7 gap-2 mb-4 pb-3 border-b border-border">
-            {DAY_LABELS.map((label) => (
-              <div key={label} className="text-center">
-                <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  {label}
-                </div>
+        <div className="grid grid-cols-7 gap-2 mb-4 pb-3 border-b border-border">
+          {DAY_LABELS.map((label) => (
+            <div key={label} className="text-center">
+              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                {label.substring(0, 3)}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
         
         <div className="space-y-4">
           {displayStaff.map((staff) => {
@@ -509,10 +549,11 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   )}
                 </div>
 
-                <div className="grid grid-cols-7 gap-2">
-                  {weekDates.map((date, index) => {
+                <div className="grid grid-cols-7 gap-1">
+                  {monthDates.map((date, index) => {
                     const blocks = getAvailabilityForDate(staff.id, date)
                     const isToday = date.toDateString() === new Date().toDateString()
+                    const isCurrentMonth = date.getMonth() === currentMonth
                     const hasApprovedTimeOff = (timeOffRequests || []).some(req => {
                       const dateStr = date.toISOString().split('T')[0]
                       return req.staffId === staff.id &&
@@ -522,40 +563,35 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                     })
                     
                     return (
-                      <div key={index} className="space-y-2">
-                        {!isTeamView && (
-                          <div className={`text-center p-2 rounded-lg ${isToday ? 'bg-primary/20 border border-primary' : 'bg-secondary/30'}`}>
-                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                              {DAY_LABELS[index].substring(0, 3)}
-                            </div>
-                            <div className={`text-sm font-bold ${isToday ? 'text-primary' : ''}`}>
-                              {date.getDate()}
-                            </div>
+                      <div key={index} className={`min-h-[60px] p-1 rounded ${!isCurrentMonth ? 'opacity-30' : ''}`}>
+                        <div className={`text-center mb-1 ${isToday ? 'bg-primary/20 rounded px-1' : ''}`}>
+                          <div className={`text-xs font-semibold ${isToday ? 'text-primary' : 'text-muted-foreground'}`}>
+                            {date.getDate()}
                           </div>
-                        )}
+                        </div>
                         
-                        <div className="space-y-1">
+                        <div className="space-y-0.5">
                           {hasApprovedTimeOff ? (
-                            <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-center">
-                              <div className="text-xs font-semibold text-red-600">Time Off</div>
+                            <div className="p-0.5 rounded bg-red-500/10 border border-red-500/30 text-center">
+                              <div className="text-[8px] font-semibold text-red-600">OFF</div>
                             </div>
                           ) : blocks.length > 0 ? (
                             blocks.filter(b => !b.isBreak).map((block) => (
                               <div
                                 key={block.id}
-                                className="p-2 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
+                                className="p-0.5 rounded bg-primary/10 border border-primary/30"
+                                title={`${formatTime12Hour(block.startTime)}-${formatTime12Hour(block.endTime)}`}
                               >
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Clock size={12} />
-                                  <span>{formatTime12Hour(block.startTime)}-{formatTime12Hour(block.endTime)}</span>
+                                <div className="text-[8px] text-center text-muted-foreground truncate">
+                                  {formatTime12Hour(block.startTime)}
                                 </div>
                               </div>
                             ))
-                          ) : (
-                            <div className="p-2 rounded-lg bg-muted/20 text-center">
-                              <div className="text-xs text-muted-foreground">Off</div>
+                          ) : isCurrentMonth ? (
+                            <div className="p-0.5 rounded bg-muted/20 text-center">
+                              <div className="text-[8px] text-muted-foreground">-</div>
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     )
