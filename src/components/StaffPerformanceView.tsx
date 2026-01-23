@@ -307,7 +307,8 @@ export function StaffPerformanceView() {
         .perf-chart-bar-fill {
           width: 100%;
           border-radius: 0.625rem 0.625rem 0 0;
-          background: hsl(var(--primary));
+          background: linear-gradient(180deg, rgba(56, 189, 248, 0.9), rgba(56, 189, 248, 0.35));
+          box-shadow: 0 0.5rem 1.25rem rgba(56, 189, 248, 0.35);
           opacity: 1;
         }
 
