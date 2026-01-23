@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Separator } from "@/components/ui/separator"
 import { Plus, Trash, PencilSimple, CaretUp, CaretDown } from "@phosphor-icons/react"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
@@ -1427,6 +1428,49 @@ export function Settings() {
                       </div>
                     </>
                   )}
+                </div>
+
+                <Separator className="my-6" />
+
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2">Refunds / Chargebacks Policy</h2>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Configure how commission is handled when refunds or chargebacks occur
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/20">
+                      <div className="flex-1">
+                        <Label className="font-medium text-base">Reverse commission on full refunds</Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Commission is reversed when a full refund is issued
+                        </p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/20">
+                      <div className="flex-1">
+                        <Label className="font-medium text-base">Prorate commission on partial refunds</Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Commission is reduced proportionally to the refund amount
+                        </p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 rounded-lg border border-border bg-secondary/20">
+                      <div className="flex-1">
+                        <Label className="font-medium text-base">Reverse commission on chargebacks</Label>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Commission is reversed on disputed payment amounts
+                        </p>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-border">
