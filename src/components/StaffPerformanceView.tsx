@@ -89,8 +89,8 @@ export function StaffPerformanceView() {
       <style>{`
         .perf-wrap {
           padding: 0.75rem 0 0.5rem;
-          height: calc(100vh - 9.25rem);
-          max-height: calc(100vh - 9.25rem);
+          height: calc(100vh - 8.5rem);
+          max-height: calc(100vh - 8.5rem);
         }
 
         .perf-layout {
@@ -226,7 +226,7 @@ export function StaffPerformanceView() {
 
         .perf-chart-card {
           position: relative;
-          overflow: hidden;
+          overflow: visible;
         }
 
         .perf-chart-inner {
@@ -277,6 +277,7 @@ export function StaffPerformanceView() {
           display: flex;
           align-items: flex-end;
           gap: 0.625rem;
+          min-height: 0;
         }
 
         .perf-chart-column {
@@ -296,7 +297,7 @@ export function StaffPerformanceView() {
           height: 5rem;
           border-radius: 0.625rem;
           border: none;
-          background: hsl(var(--card));
+          background: hsl(var(--background));
           overflow: hidden;
           display: flex;
           align-items: flex-end;
@@ -306,7 +307,7 @@ export function StaffPerformanceView() {
           width: 100%;
           border-radius: 0.625rem 0.625rem 0 0;
           background: hsl(var(--primary));
-          opacity: 0.6;
+          opacity: 1;
         }
 
         .perf-chart-label {
