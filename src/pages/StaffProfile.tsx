@@ -10,6 +10,7 @@ import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function StaffProfile() {
@@ -265,6 +266,12 @@ export function StaffProfile() {
                 Schedule
               </TabsTrigger>
               <TabsTrigger 
+                value="compensation"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+              >
+                Compensation
+              </TabsTrigger>
+              <TabsTrigger 
                 value="history"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
@@ -483,6 +490,13 @@ export function StaffProfile() {
 
           <TabsContent value="schedule" className="mt-0">
             <StaffScheduleView staffId={staffId} isOwner={true} />
+          </TabsContent>
+
+          <TabsContent value="compensation" className="mt-0">
+            <StaffCompensation 
+              staffId={staffId}
+              staffName={staff.name}
+            />
           </TabsContent>
         </Tabs>
       </div>
