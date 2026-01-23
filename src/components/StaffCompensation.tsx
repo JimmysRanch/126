@@ -100,44 +100,6 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
     toast.success("Compensation configuration saved successfully")
   }
 
-  const calculatePaySummary = () => {
-    const summary = {
-      base: 0,
-      commission: 0,
-      overrides: 0,
-      retail: 0,
-      tips: 0,
-      overtime: 0,
-      total: 0
-    }
-
-    if (config.hourly.enabled) {
-      summary.base = config.hourly.rate * 40
-    }
-    if (config.salary.enabled) {
-      summary.base = config.salary.annualAmount / 52
-    }
-    if (config.weeklyGuarantee.enabled) {
-      summary.base = config.weeklyGuarantee.amount
-    }
-    
-    summary.commission = 450
-    summary.overrides = config.teamOverrides.enabled ? 150 : 0
-    summary.retail = 50
-    summary.tips = 200
-    summary.overtime = config.hourly.enabled ? 120 : 0
-
-    if (config.weeklyGuarantee.enabled && config.weeklyGuarantee.payoutMode === "higher") {
-      summary.total = Math.max(summary.base, summary.commission) + summary.overrides + summary.retail + summary.tips + summary.overtime
-    } else {
-      summary.total = summary.base + summary.commission + summary.overrides + summary.retail + summary.tips + summary.overtime
-    }
-
-    return summary
-  }
-
-  const paySummary = calculatePaySummary()
-
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
@@ -424,7 +386,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
                   <div className="flex-1">
                     <Label className="font-medium">Reverse commission on full refunds</Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Commission is clawed back when a full refund is issued
+                      Commission is reversed when a full refund is issued
                     </p>
                   </div>
                   <Switch
@@ -479,55 +441,85 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
             </div>
             <div>
               <h3 className="text-lg font-bold">Pay Summary</h3>
-              <p className="text-xs text-muted-foreground">Example weekly breakdown based on configuration</p>
+              <p className="text-xs text-muted-foreground">Compensation structure for this staff member</p>
             </div>
           </div>
 
           <Separator className="my-4" />
 
           <div className="space-y-3">
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Base / Guarantee</span>
-              <span className="font-semibold">${paySummary.base.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Commission</span>
-              <span className="font-semibold">${paySummary.commission.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Team Overrides</span>
-              <span className="font-semibold">${paySummary.overrides.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Retail Commission</span>
-              <span className="font-semibold">${paySummary.retail.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Tips (100% to staff)</span>
-              <span className="font-semibold">${paySummary.tips.toFixed(2)}</span>
-            </div>
-            {config.hourly.enabled && (
-              <div className="flex justify-between items-center py-2">
-                <span className="text-sm text-muted-foreground">Overtime</span>
-                <span className="font-semibold">${paySummary.overtime.toFixed(2)}</span>
+            {!config.commission.enabled && !config.hourly.enabled && !config.salary.enabled && !config.weeklyGuarantee.enabled && !config.teamOverrides.enabled && (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                No compensation configured yet. Enable at least one compensation method above.
               </div>
             )}
-            
-            <Separator className="my-2" />
-            
-            <div className="flex justify-between items-center py-3 bg-primary/5 rounded-lg px-4">
-              <span className="font-bold">Total Weekly Pay</span>
-              <span className="text-2xl font-bold text-primary">${paySummary.total.toFixed(2)}</span>
-            </div>
+
+            {config.commission.enabled && (
+              <div className="flex justify-between items-center py-2.5 px-3 rounded-lg bg-muted/30">
+                <span className="text-sm font-medium">Commission</span>
+                <span className="font-bold">{config.commission.percentage}%</span>
+              </div>
+            )}
+
+            {config.hourly.enabled && (
+              <div className="flex justify-between items-center py-2.5 px-3 rounded-lg bg-muted/30">
+                <span className="text-sm font-medium">Hourly Rate</span>
+                <span className="font-bold">${config.hourly.rate.toFixed(2)}/hr</span>
+              </div>
+            )}
+
+            {config.salary.enabled && (
+              <div className="flex justify-between items-center py-2.5 px-3 rounded-lg bg-muted/30">
+                <span className="text-sm font-medium">Annual Salary</span>
+                <span className="font-bold">${config.salary.annualAmount.toLocaleString()}</span>
+              </div>
+            )}
+
+            {config.weeklyGuarantee.enabled && (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center py-2.5 px-3 rounded-lg bg-muted/30">
+                  <span className="text-sm font-medium">Weekly Guarantee</span>
+                  <span className="font-bold">${config.weeklyGuarantee.amount.toFixed(2)}</span>
+                </div>
+                <div className="pl-3 py-2 border-l-2 border-primary/30">
+                  <p className="text-xs text-muted-foreground">
+                    {config.weeklyGuarantee.payoutMode === "higher" 
+                      ? "Pay whichever is higher: guarantee or commission" 
+                      : "Pay both guarantee + full commission"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {config.teamOverrides.enabled && (
+              <div className="flex justify-between items-center py-2.5 px-3 rounded-lg bg-muted/30">
+                <span className="text-sm font-medium">Team Override</span>
+                <span className="font-bold">{config.teamOverrides.percentage}%</span>
+              </div>
+            )}
           </div>
 
-          {config.weeklyGuarantee.enabled && (
-            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+          {(config.commission.enabled || config.hourly.enabled || config.salary.enabled || config.weeklyGuarantee.enabled || config.teamOverrides.enabled) && (
+            <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
               <p className="text-xs text-muted-foreground flex items-start gap-2">
                 <Info size={14} className="mt-0.5 shrink-0" />
-                {config.weeklyGuarantee.payoutMode === "higher"
-                  ? "This staff member will receive the higher of the guarantee or their commission earnings, plus all other compensation."
-                  : "This staff member will receive the guarantee amount plus their full commission and all other compensation."}
+                <span>
+                  {config.weeklyGuarantee.enabled && config.weeklyGuarantee.payoutMode === "higher"
+                    ? `Receives ${config.weeklyGuarantee.amount > 0 ? `$${config.weeklyGuarantee.amount}` : 'guarantee'} OR ${config.commission.percentage}% commission (whichever is higher)${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.weeklyGuarantee.enabled && config.weeklyGuarantee.payoutMode === "both"
+                    ? `Receives $${config.weeklyGuarantee.amount} guarantee + ${config.commission.percentage}% commission${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.commission.enabled && config.hourly.enabled
+                    ? `Receives ${config.commission.percentage}% commission + $${config.hourly.rate}/hr${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.commission.enabled
+                    ? `Receives ${config.commission.percentage}% commission${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.hourly.enabled
+                    ? `Receives $${config.hourly.rate}/hr (overtime at 1.5× after 40 hours)${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.salary.enabled
+                    ? `Receives $${config.salary.annualAmount.toLocaleString()}/year${config.teamOverrides.enabled ? ` + ${config.teamOverrides.percentage}% team override` : ''}`
+                    : config.teamOverrides.enabled
+                    ? `Receives ${config.teamOverrides.percentage}% team override`
+                    : ''}
+                </span>
               </p>
             </div>
           )}
