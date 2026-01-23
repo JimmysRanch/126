@@ -171,7 +171,7 @@ export function Finances() {
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <Card className="p-2 md:p-2.5 border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
@@ -204,28 +204,6 @@ export function Finances() {
                   </div>
                 </div>
               </Card>
-              <Card className="p-2 md:p-2.5 border-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">LAST 6 MONTHS</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            <div className="flex items-center justify-end gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <SquaresFour size={16} />
-                Last 6 Months
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Circle size={16} />
-                All Categories
-              </Button>
-              <Button className="gap-2 bg-primary text-primary-foreground" onClick={() => navigate('/finances/add-expense')}>
-                Add Expense
-              </Button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-7 gap-2 max-h-[calc(100vh-280px)]">
@@ -332,7 +310,7 @@ export function Finances() {
                 <div className="p-2.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="text-sm font-bold">Expense Breakdown</h3>
-                    <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                    <p className="text-xs text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
                   </div>
                 </div>
                 <div className="p-3 flex flex-col lg:flex-row items-center gap-3 flex-1 min-h-0">
@@ -408,9 +386,23 @@ export function Finances() {
               <Card className="lg:col-span-4 border-border flex flex-col">
                 <div className="p-2.5 border-b border-border flex items-center justify-between flex-shrink-0">
                   <h3 className="text-sm font-bold">Recent Expenses</h3>
-                  <Button variant="ghost" size="sm" className="text-xs">
-                    View All
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="sm" 
+                      className="gap-1 text-xs h-7 px-2"
+                      onClick={() => navigate('/finances/add-expense')}
+                    >
+                      Add Expense
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => navigate('/finances/all-expenses')}
+                    >
+                      View All
+                    </Button>
+                  </div>
                 </div>
                 <div className="p-2.5 flex-1 min-h-0 overflow-auto">
                   <div className="space-y-1">
