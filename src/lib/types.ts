@@ -60,7 +60,7 @@ export interface Appointment {
   endTime: string
   services: AppointmentService[]
   totalPrice: number
-  status: 'scheduled' | 'checked-in' | 'in-progress' | 'completed' | 'cancelled'
+  status: 'scheduled' | 'checked-in' | 'in-progress' | 'completed' | 'notified' | 'paid' | 'cancelled'
   notes?: string
   groomingPreferences?: {
     overallLength?: string

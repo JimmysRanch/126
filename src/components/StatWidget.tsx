@@ -16,7 +16,7 @@ export function StatWidget({
 }: StatWidgetProps) {
   return (
     <Card 
-      className="p-2 sm:p-3 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer relative"
+      className="p-1.5 sm:p-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer relative"
       onClick={onClick}
     >
       <div className="space-y-0.5">

@@ -131,15 +131,6 @@ export function StaffPayrollDetail({ staffId, staffName, hourlyRate }: StaffPayr
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
-        <Button 
-          className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'w-full' : ''}`}
-        >
-          <Download size={18} className="mr-2" />
-          Export All Records
-        </Button>
-      </div>
-
       <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
         <Card className="p-2 md:p-2.5 border-border">
           <div className="flex items-center justify-between">

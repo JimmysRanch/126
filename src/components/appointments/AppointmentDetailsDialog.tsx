@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Appointment } from "@/lib/types"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
@@ -34,6 +35,8 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
       case 'checked-in': return 'bg-yellow-500/20 text-yellow-400'
       case 'in-progress': return 'bg-purple-500/20 text-purple-400'
       case 'completed': return 'bg-green-500/20 text-green-400'
+      case 'notified': return 'bg-cyan-500/20 text-cyan-400'
+      case 'paid': return 'bg-emerald-500/20 text-emerald-400'
       case 'cancelled': return 'bg-red-500/20 text-red-400'
       default: return 'bg-gray-500/20 text-gray-400'
     }
@@ -132,6 +135,26 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
 
           <Separator />
 
+          <div>
+            <h4 className="font-semibold mb-3">Appointment Status</h4>
+            <Select value={appointment.status} onValueChange={handleStatusChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="scheduled">Scheduled</SelectItem>
+                <SelectItem value="checked-in">Checked In</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="completed">Appointment Complete</SelectItem>
+                <SelectItem value="notified">Notified Parents</SelectItem>
+                <SelectItem value="paid">Paid</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator />
+
           <div className="flex gap-2 flex-wrap">
             <Button 
               variant="outline" 
@@ -144,22 +167,7 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
               <PencilSimple className="mr-2" />
               Edit
             </Button>
-            {appointment.status === 'scheduled' && (
-              <Button onClick={() => handleStatusChange('checked-in')} className="flex-1">
-                Check In
-              </Button>
-            )}
-            {appointment.status === 'checked-in' && (
-              <Button onClick={() => handleStatusChange('in-progress')} className="flex-1">
-                Start Grooming
-              </Button>
-            )}
-            {appointment.status === 'in-progress' && (
-              <Button onClick={() => handleStatusChange('completed')} className="flex-1">
-                Complete
-              </Button>
-            )}
-            {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
+            {appointment.status !== 'cancelled' && appointment.status !== 'paid' && (
               <Button 
                 variant="destructive" 
                 onClick={() => handleStatusChange('cancelled')}

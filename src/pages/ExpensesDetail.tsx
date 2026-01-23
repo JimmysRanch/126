@@ -60,46 +60,7 @@ export function ExpensesDetail() {
   return (
     <div className="h-full min-h-0 overflow-hidden bg-background flex flex-col">
       <div className="flex-1 min-h-0 flex flex-col gap-3 p-3">
-        <div className="flex items-center justify-between flex-shrink-0">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Expense Overview</h1>
-            <p className="text-sm text-muted-foreground">Track and manage business expenses</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-[140px] h-9 gap-2 text-sm">
-                <Faders size={16} />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="last-6-months">Last 6 Months</SelectItem>
-                <SelectItem value="last-12-months">Last 12 Months</SelectItem>
-                <SelectItem value="ytd">Year to Date</SelectItem>
-                <SelectItem value="all-time">All Time</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-[140px] h-9 gap-2 text-sm">
-                <FunnelSimple size={16} />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="supplies">Supplies</SelectItem>
-                <SelectItem value="rent">Rent</SelectItem>
-                <SelectItem value="utilities">Utilities</SelectItem>
-                <SelectItem value="software">Software</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button size="sm" className="gap-2 h-9 shadow-lg" onClick={() => navigate('/finances/add-expense')}>
-              <Plus size={16} weight="bold" />
-              Add Expense
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-5 gap-3 flex-shrink-0">
+        <div className="grid grid-cols-4 gap-3 flex-shrink-0">
           <Card className="p-3 border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/30 transition-all">
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1.5 opacity-90">MTD Expenses</p>
             <p className="text-2xl font-bold tabular-nums">${expenseData.mtd}</p>
@@ -133,15 +94,6 @@ export function ExpensesDetail() {
             <div className="flex items-center gap-1 mt-1">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="text-[10px] text-muted-foreground font-semibold">6-month average</span>
-            </div>
-          </Card>
-
-          <Card className="p-3 border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/30 transition-all">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1.5 opacity-90">Total (6mo)</p>
-            <p className="text-2xl font-bold tabular-nums">${(expenseData.last6Months * 6).toLocaleString()}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-              <span className="text-[10px] text-muted-foreground font-semibold">Aug - Jan 2024</span>
             </div>
           </Card>
         </div>
@@ -255,7 +207,7 @@ export function ExpensesDetail() {
             <div className="px-3 pb-2 pt-1.5 border-b border-border/50 flex items-center justify-between flex-shrink-0">
               <div>
                 <h3 className="text-base font-bold">Expense Breakdown</h3>
-                <p className="text-xs text-muted-foreground">Last 6 Months</p>
+                <p className="text-xs text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
               </div>
               <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2 hover:bg-primary/10 hover:text-primary transition-all">
                 View All
@@ -333,10 +285,25 @@ export function ExpensesDetail() {
                 <h3 className="text-base font-bold">Recent Expenses</h3>
                 <p className="text-xs text-muted-foreground">Last 30 days</p>
               </div>
-              <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2 hover:bg-primary/10 hover:text-primary transition-all">
-                View All
-                <CaretRight size={12} weight="bold" />
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  size="sm" 
+                  className="gap-1 text-xs h-7 px-2"
+                  onClick={() => navigate('/finances/add-expense')}
+                >
+                  <Plus size={14} weight="bold" />
+                  Add Expense
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="gap-1 text-xs h-7 px-2 hover:bg-primary/10 hover:text-primary transition-all"
+                  onClick={() => navigate('/finances/all-expenses')}
+                >
+                  View All
+                  <CaretRight size={12} weight="bold" />
+                </Button>
+              </div>
             </div>
             <div className="flex-1 min-h-0 flex flex-col">
               <div className="px-3 py-2 grid grid-cols-[auto,1fr,auto,auto,auto] gap-3 border-b border-border/30 text-[10px] uppercase tracking-wider font-bold text-muted-foreground/80 flex-shrink-0">

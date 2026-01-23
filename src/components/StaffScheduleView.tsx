@@ -75,6 +75,13 @@ const MOCK_STAFF = [
   { id: "4", name: "Carlos Martinez", role: "Front Desk" },
 ]
 
+function formatTime12Hour(time: string): string {
+  const [hours, minutes] = time.split(':').map(Number)
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const hour12 = hours % 12 || 12
+  return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`
+}
+
 function generateTimeSlots(): string[] {
   const slots: string[] = []
   for (let h = 0; h < 24; h++) {
@@ -118,10 +125,9 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const canEdit = allowEditing && isOwner && !isTeamView
   
   const [newRequest, setNewRequest] = useState({
-    startDate: '',
-    endDate: '',
+    date: '',
     reason: '',
-    type: 'Vacation' as TimeOffRequest['type'],
+    type: 'Sick' as TimeOffRequest['type'],
     notes: ''
   })
 
@@ -205,7 +211,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   }
 
   const handleSubmitRequest = () => {
-    if (!newRequest.startDate || !newRequest.endDate || !newRequest.reason) {
+    if (!newRequest.date || !newRequest.reason) {
       toast.error("Please fill in all required fields")
       return
     }
@@ -217,8 +223,8 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
       id: Date.now().toString(),
       staffId: currentStaffId,
       staffName,
-      startDate: newRequest.startDate,
-      endDate: newRequest.endDate,
+      startDate: newRequest.date,
+      endDate: newRequest.date,
       reason: newRequest.reason,
       type: newRequest.type,
       status: 'Pending',
@@ -229,7 +235,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     setTimeOffRequests((current) => [...(current || []), request])
     toast.success("Time-off request submitted")
     setIsRequestDialogOpen(false)
-    setNewRequest({ startDate: '', endDate: '', reason: '', type: 'Vacation', notes: '' })
+    setNewRequest({ date: '', reason: '', type: 'Sick', notes: '' })
   }
 
   const handleApproveRequest = (requestId: string) => {
@@ -375,17 +381,6 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
             </Select>
           )}
 
-          {canEdit && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleCopyLastWeek}
-            >
-              <Copy size={16} className="mr-2" />
-              Copy Last Week
-            </Button>
-          )}
-
           {!isTeamView && (
             <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
               <DialogTrigger asChild>
@@ -399,25 +394,14 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                 <DialogTitle>Request Time Off</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startDate">Start Date *</Label>
-                    <Input
-                      id="startDate"
-                      type="date"
-                      value={newRequest.startDate}
-                      onChange={(e) => setNewRequest({ ...newRequest, startDate: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="endDate">End Date *</Label>
-                    <Input
-                      id="endDate"
-                      type="date"
-                      value={newRequest.endDate}
-                      onChange={(e) => setNewRequest({ ...newRequest, endDate: e.target.value })}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date">Date *</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={newRequest.date}
+                    onChange={(e) => setNewRequest({ ...newRequest, date: e.target.value })}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -427,9 +411,9 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Vacation">Vacation (unpaid)</SelectItem>
-                      <SelectItem value="Sick">Sick Leave</SelectItem>
+                      <SelectItem value="Sick">Sick</SelectItem>
                       <SelectItem value="Personal">Personal</SelectItem>
+                      <SelectItem value="Vacation">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -460,7 +444,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   variant="outline"
                   onClick={() => {
                     setIsRequestDialogOpen(false)
-                    setNewRequest({ startDate: '', endDate: '', reason: '', type: 'Vacation', notes: '' })
+                    setNewRequest({ date: '', reason: '', type: 'Sick', notes: '' })
                   }}
                 >
                   Cancel
@@ -563,7 +547,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                               >
                                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <Clock size={12} />
-                                  <span>{block.startTime}-{block.endTime}</span>
+                                  <span>{formatTime12Hour(block.startTime)}-{formatTime12Hour(block.endTime)}</span>
                                 </div>
                               </div>
                             ))

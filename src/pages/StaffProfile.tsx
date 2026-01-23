@@ -277,7 +277,8 @@ export function StaffProfile() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
               <StatWidget
                 stats={[
-                  { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() }
+                  { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() },
+                  { label: "REQUESTED APPTS", value: "28" }
                 ]}
                 onClick={() => console.log('Total Appointments clicked')}
               />
