@@ -186,7 +186,6 @@ interface BusinessInfo {
   state: string
   zipCode: string
   timezone: string
-  taxId: string
   website: string
   hoursOfOperation: HoursOfOperation[]
 }
@@ -365,7 +364,6 @@ export function Settings() {
     state: "TX",
     zipCode: "",
     timezone: "America/New_York",
-    taxId: "",
     website: "",
     hoursOfOperation: defaultHoursOfOperation
   })
@@ -379,7 +377,6 @@ export function Settings() {
     state: "TX",
     zipCode: "",
     timezone: "America/New_York",
-    taxId: "",
     website: "",
     hoursOfOperation: defaultHoursOfOperation
   })
@@ -1248,7 +1245,7 @@ export function Settings() {
                     />
                   </div>
 
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2">
                     <Label htmlFor="address" className="text-sm font-medium">
                       Street Address
                     </Label>
@@ -1305,18 +1302,6 @@ export function Settings() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="tax-id" className="text-sm font-medium">
-                      Tax ID / EIN
-                    </Label>
-                    <Input
-                      id="tax-id"
-                      placeholder="12-3456789"
-                      value={businessFormData.taxId}
-                      onChange={(e) => handleBusinessInfoChange('taxId', e.target.value)}
-                    />
-                  </div>
-
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="timezone" className="text-sm font-medium flex items-center gap-1">
                       Business Timezone
@@ -1338,7 +1323,7 @@ export function Settings() {
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
-                      ⚠️ Critical: This timezone will be used for all appointments, staff schedules, drop-off/pick-up times, and system metrics
+                      Critical: This timezone will be used for all appointments, staff schedules, drop-off/pick-up times, and system metrics
                     </p>
                   </div>
                 </div>
