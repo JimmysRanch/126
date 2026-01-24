@@ -95,9 +95,17 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="p-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
+      <Card className="p-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Calendar size={20} className="text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold">{getHeaderText()}</h2>
+              <p className="text-xs text-muted-foreground">Standardized calendar layout</p>
+            </div>
+          </div>
           <div className="flex items-center gap-3 flex-wrap">
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
               <TabsList className="grid grid-cols-3">
@@ -140,7 +148,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
         {viewMode === 'month' ? (
           <div className="grid grid-cols-7 gap-2">
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center text-xs font-medium text-muted-foreground p-2">
+              <div key={day} className="text-center text-xs font-semibold text-muted-foreground uppercase tracking-wide p-2 bg-muted/40 rounded-md">
                 {day}
               </div>
             ))}
@@ -152,7 +160,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
               return (
                 <div
                   key={idx}
-                  className={`min-h-[100px] p-2 border border-border rounded-lg ${
+                  className={`min-h-[110px] p-2 border border-border rounded-lg ${
                     isToday ? 'bg-primary/5 border-primary' : ''
                   } ${!isCurrentMonth ? 'opacity-40' : ''}`}
                 >
@@ -188,12 +196,14 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <div className={viewMode === 'week' ? 'min-w-[800px]' : ''}>
+            <div className={viewMode === 'week' ? 'min-w-[860px]' : ''}>
               <div className={`grid gap-2 mb-2 ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
-                <div className="text-xs font-medium text-muted-foreground p-2">Time</div>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide p-2 bg-muted/40 rounded-md">
+                  Time
+                </div>
                 {weekDays.map((day, i) => (
-                  <div key={i} className="text-center p-2">
-                    <div className="text-xs font-medium text-muted-foreground">
+                  <div key={i} className={`text-center p-2 rounded-md ${isSameDay(day, new Date()) ? 'bg-primary/10' : 'bg-muted/30'}`}>
+                    <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                       {format(day, 'EEE')}
                     </div>
                     <div className={`text-lg font-bold ${isSameDay(day, new Date()) ? 'text-primary' : ''}`}>
@@ -206,7 +216,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
               <div className="border border-border rounded-lg overflow-hidden">
                 {timeSlots.map((slot, slotIdx) => (
                   <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
-                    <div className="text-xs text-muted-foreground p-2 border-r border-border w-[70px]">
+                    <div className="text-xs text-muted-foreground p-2 border-r border-border w-[80px] bg-muted/30">
                       {slot}
                     </div>
                     {weekDays.map((day, dayIdx) => {

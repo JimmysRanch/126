@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CalendarBlank, Clock, Plus, CheckCircle, XCircle, Warning, Copy, Trash, PencilSimple, X } from "@phosphor-icons/react"
+import { CalendarBlank, Clock, Plus, CheckCircle, XCircle, Warning, Trash, PencilSimple, X } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -112,8 +112,6 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   const [timeOffRequests, setTimeOffRequests] = useKV<TimeOffRequest[]>("time-off-requests", [])
   const [staffSchedules, setStaffSchedules] = useKV<StaffSchedule[]>("staff-schedules", [])
   const [roleFilter, setRoleFilter] = useState<string>("All")
-  const [selectedMonth, setSelectedMonth] = useState(new Date())
-  const [selectedDates, setSelectedDates] = useState<string[]>([])
   const [requestCalendarMonth, setRequestCalendarMonth] = useState(new Date())
   
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false)
@@ -162,9 +160,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     return dates
   }
 
-  const monthDates = getMonthDates(selectedMonth)
   const requestMonthDates = getMonthDates(requestCalendarMonth)
-  const currentMonth = selectedMonth.getMonth()
 
   const getStaffSchedule = (sId: string): StaffSchedule => {
     const existing = (staffSchedules || []).find(s => s.staffId === sId)
@@ -199,29 +195,6 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     })
   }
 
-  const getAvailabilityForDate = (sId: string, date: Date): WorkBlock[] => {
-    const schedule = getStaffSchedule(sId)
-    const dateStr = date.toISOString().split('T')[0]
-    
-    const approvedTimeOff = (timeOffRequests || []).filter(req => 
-      req.staffId === sId &&
-      req.status === 'Approved' &&
-      dateStr >= req.startDate &&
-      dateStr <= req.endDate
-    )
-    
-    if (approvedTimeOff.length > 0) {
-      return []
-    }
-    
-    const override = schedule.dateOverrides.find(o => o.date === dateStr)
-    if (override) {
-      return override.isUnavailable ? [] : override.blocks
-    }
-    
-    const dayOfWeek = DAYS_OF_WEEK[date.getDay() === 0 ? 6 : date.getDay() - 1]
-    return schedule.weeklyTemplate[dayOfWeek]
-  }
 
   const handleSubmitRequest = () => {
     if (newRequest.dates.length === 0 || !newRequest.reason) {
@@ -323,10 +296,6 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     toast.success("Block removed")
   }
 
-  const handleCopyLastWeek = () => {
-    toast.info("Copy last week - feature coming soon")
-  }
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', { 
       month: 'short', 
@@ -352,40 +321,19 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newDate = new Date(selectedMonth)
-              newDate.setMonth(newDate.getMonth() - 1)
-              setSelectedMonth(newDate)
-            }}
-          >
-            Previous Month
-          </Button>
-          <h3 className="text-lg font-semibold">
-            {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newDate = new Date(selectedMonth)
-              newDate.setMonth(newDate.getMonth() + 1)
-              setSelectedMonth(newDate)
-            }}
-          >
-            Next Month
-          </Button>
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <h3 className="text-xl font-semibold">Weekly Staff Schedule</h3>
+          <p className="text-sm text-muted-foreground">
+            Review weekly availability for every team member in one place.
+          </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {isTeamView && (
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue />
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All roles" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">All Roles</SelectItem>
@@ -404,237 +352,227 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   Request Time Off
                 </Button>
               </DialogTrigger>
-            <DialogContent className="bg-card border-border max-w-lg">
-              <DialogHeader>
-                <DialogTitle>Request Time Off</DialogTitle>
-                <DialogDescription>Select one or more dates for your time-off request</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label>Select Dates *</Label>
-                  <div className="flex items-center justify-between mb-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newDate = new Date(requestCalendarMonth)
-                        newDate.setMonth(newDate.getMonth() - 1)
-                        setRequestCalendarMonth(newDate)
-                      }}
-                    >
-                      Previous
-                    </Button>
-                    <div className="font-semibold">
-                      {requestCalendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              <DialogContent className="bg-card border-border max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Request Time Off</DialogTitle>
+                  <DialogDescription>Select one or more dates for your time-off request</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label>Select Dates *</Label>
+                    <div className="flex items-center justify-between mb-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newDate = new Date(requestCalendarMonth)
+                          newDate.setMonth(newDate.getMonth() - 1)
+                          setRequestCalendarMonth(newDate)
+                        }}
+                      >
+                        Previous
+                      </Button>
+                      <div className="font-semibold">
+                        {requestCalendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newDate = new Date(requestCalendarMonth)
+                          newDate.setMonth(newDate.getMonth() + 1)
+                          setRequestCalendarMonth(newDate)
+                        }}
+                      >
+                        Next
+                      </Button>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newDate = new Date(requestCalendarMonth)
-                        newDate.setMonth(newDate.getMonth() + 1)
-                        setRequestCalendarMonth(newDate)
-                      }}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-7 gap-2 p-4 border rounded-lg">
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
-                      <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
-                    ))}
-                    {requestMonthDates.map((date, i) => {
-                      const dateStr = date.toISOString().split('T')[0]
-                      const isSelected = newRequest.dates.includes(dateStr)
-                      const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
-                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
-                      
-                      return (
-                        <Button
-                          key={i}
-                          type="button"
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          className={`h-8 p-0 ${!isCurrentMonth ? 'opacity-30' : ''} ${isPast ? 'opacity-50' : ''}`}
-                          disabled={isPast}
-                          onClick={() => {
-                            setNewRequest(prev => ({
-                              ...prev,
-                              dates: isSelected 
-                                ? prev.dates.filter(d => d !== dateStr)
-                                : [...prev.dates, dateStr]
-                            }))
-                          }}
-                        >
-                          {date.getDate()}
-                        </Button>
-                      )
-                    })}
-                  </div>
-                  {newRequest.dates.length > 0 && (
-                    <div className="text-sm text-muted-foreground">
-                      {newRequest.dates.length} day{newRequest.dates.length > 1 ? 's' : ''} selected
+                    <div className="grid grid-cols-7 gap-2 p-4 border rounded-lg">
+                      {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
+                        <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
+                      ))}
+                      {requestMonthDates.map((date, i) => {
+                        const dateStr = date.toISOString().split('T')[0]
+                        const isSelected = newRequest.dates.includes(dateStr)
+                        const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
+                        const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
+                        
+                        return (
+                          <Button
+                            key={i}
+                            type="button"
+                            variant={isSelected ? "default" : "outline"}
+                            size="sm"
+                            className={`h-8 p-0 ${!isCurrentMonth ? 'opacity-30' : ''} ${isPast ? 'opacity-50' : ''}`}
+                            disabled={isPast}
+                            onClick={() => {
+                              setNewRequest(prev => ({
+                                ...prev,
+                                dates: isSelected 
+                                  ? prev.dates.filter(d => d !== dateStr)
+                                  : [...prev.dates, dateStr]
+                              }))
+                            }}
+                          >
+                            {date.getDate()}
+                          </Button>
+                        )
+                      })}
                     </div>
-                  )}
-                </div>
+                    {newRequest.dates.length > 0 && (
+                      <div className="text-sm text-muted-foreground">
+                        {newRequest.dates.length} day{newRequest.dates.length > 1 ? 's' : ''} selected
+                      </div>
+                    )}
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="type">Type *</Label>
-                  <Select value={newRequest.type} onValueChange={(value) => setNewRequest({ ...newRequest, type: value as TimeOffRequest['type'] })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Sick">Sick</SelectItem>
-                      <SelectItem value="Personal">Personal</SelectItem>
-                      <SelectItem value="Vacation">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="type">Type *</Label>
+                    <Select value={newRequest.type} onValueChange={(value) => setNewRequest({ ...newRequest, type: value as TimeOffRequest['type'] })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sick">Sick</SelectItem>
+                        <SelectItem value="Personal">Personal</SelectItem>
+                        <SelectItem value="Vacation">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="reason">Reason *</Label>
-                  <Input
-                    id="reason"
-                    placeholder="Brief description"
-                    value={newRequest.reason}
-                    onChange={(e) => setNewRequest({ ...newRequest, reason: e.target.value })}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reason">Reason *</Label>
+                    <Input
+                      id="reason"
+                      placeholder="Brief description"
+                      value={newRequest.reason}
+                      onChange={(e) => setNewRequest({ ...newRequest, reason: e.target.value })}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Additional Notes</Label>
-                  <Textarea
-                    id="notes"
-                    placeholder="Any additional context or details"
-                    rows={3}
-                    value={newRequest.notes}
-                    onChange={(e) => setNewRequest({ ...newRequest, notes: e.target.value })}
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Additional Notes</Label>
+                    <Textarea
+                      id="notes"
+                      placeholder="Any additional context or details"
+                      rows={3}
+                      value={newRequest.notes}
+                      onChange={(e) => setNewRequest({ ...newRequest, notes: e.target.value })}
+                    />
+                  </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsRequestDialogOpen(false)
-                    setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
-                    setRequestCalendarMonth(new Date())
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={handleSubmitRequest}
-                >
-                  Submit Request
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsRequestDialogOpen(false)
+                      setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
+                      setRequestCalendarMonth(new Date())
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    onClick={handleSubmitRequest}
+                  >
+                    Submit Request
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </div>
 
       <Card className="p-4 bg-card border-border">
-        <div className="grid grid-cols-7 gap-2 mb-4 pb-3 border-b border-border">
-          {DAY_LABELS.map((label) => (
-            <div key={label} className="text-center">
+        <div className="overflow-x-auto">
+          <div className="min-w-[900px]">
+            <div className="grid grid-cols-[minmax(200px,1.4fr)_repeat(7,minmax(120px,1fr))] gap-2 pb-3 border-b border-border">
               <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                {label.substring(0, 3)}
+                Staff
               </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="space-y-4">
-          {displayStaff.map((staff) => {
-            const schedule = getStaffSchedule(staff.id)
-            
-            return (
-              <div key={staff.id} className="border-b border-border last:border-0 pb-4 last:pb-0">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <h4 className="font-semibold">{staff.name}</h4>
-                    <Badge variant="secondary" className="text-xs">
-                      {staff.role}
-                    </Badge>
-                    {!schedule.setupComplete && (
-                      <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-500/30">
-                        Needs Schedule
-                      </Badge>
-                    )}
+              {DAY_LABELS.map((label) => (
+                <div key={label} className="text-center">
+                  <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    {label.substring(0, 3)}
                   </div>
-                  {canEdit && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setEditingStaffId(staff.id)
-                        setEditingDay('monday')
-                        setIsEditDialogOpen(true)
-                      }}
-                    >
-                      <PencilSimple size={16} className="mr-2" />
-                      Edit Schedule
-                    </Button>
-                  )}
                 </div>
+              ))}
+            </div>
 
-                <div className="grid grid-cols-7 gap-1">
-                  {monthDates.map((date, index) => {
-                    const blocks = getAvailabilityForDate(staff.id, date)
-                    const isToday = date.toDateString() === new Date().toDateString()
-                    const isCurrentMonth = date.getMonth() === currentMonth
-                    const hasApprovedTimeOff = (timeOffRequests || []).some(req => {
-                      const dateStr = date.toISOString().split('T')[0]
-                      return req.staffId === staff.id &&
-                        req.status === 'Approved' &&
-                        dateStr >= req.startDate &&
-                        dateStr <= req.endDate
-                    })
-                    
-                    return (
-                      <div key={index} className={`min-h-[60px] p-1 rounded ${!isCurrentMonth ? 'opacity-30' : ''}`}>
-                        <div className={`text-center mb-1 ${isToday ? 'bg-primary/20 rounded px-1' : ''}`}>
-                          <div className={`text-xs font-semibold ${isToday ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {date.getDate()}
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-0.5">
-                          {hasApprovedTimeOff ? (
-                            <div className="p-0.5 rounded bg-red-500/10 border border-red-500/30 text-center">
-                              <div className="text-[8px] font-semibold text-red-600">OFF</div>
-                            </div>
-                          ) : blocks.length > 0 ? (
-                            blocks.filter(b => !b.isBreak).map((block) => (
-                              <div
-                                key={block.id}
-                                className="p-0.5 rounded bg-primary/10 border border-primary/30"
-                                title={`${formatTime12Hour(block.startTime)}-${formatTime12Hour(block.endTime)}`}
-                              >
-                                <div className="text-[8px] text-center text-muted-foreground truncate">
-                                  {formatTime12Hour(block.startTime)}
-                                </div>
-                              </div>
-                            ))
-                          ) : isCurrentMonth ? (
-                            <div className="p-0.5 rounded bg-muted/20 text-center">
-                              <div className="text-[8px] text-muted-foreground">-</div>
-                            </div>
-                          ) : null}
-                        </div>
+            <div className="divide-y divide-border">
+              {displayStaff.map((staff) => {
+                const schedule = getStaffSchedule(staff.id)
+
+                return (
+                  <div key={staff.id} className="grid grid-cols-[minmax(200px,1.4fr)_repeat(7,minmax(120px,1fr))] gap-2 py-4">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="font-semibold">{staff.name}</h4>
+                        <Badge variant="secondary" className="text-xs">
+                          {staff.role}
+                        </Badge>
+                        {!schedule.setupComplete && (
+                          <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-500/30">
+                            Needs Schedule
+                          </Badge>
+                        )}
                       </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
+                      {canEdit && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-fit"
+                          onClick={() => {
+                            setEditingStaffId(staff.id)
+                            setEditingDay('monday')
+                            setIsEditDialogOpen(true)
+                          }}
+                        >
+                          <PencilSimple size={16} className="mr-2" />
+                          Edit Schedule
+                        </Button>
+                      )}
+                    </div>
+
+                    {DAYS_OF_WEEK.map((dayKey) => {
+                      const blocks = schedule.weeklyTemplate[dayKey]
+                      const workBlocks = blocks.filter(block => !block.isBreak)
+                      const breakBlocks = blocks.filter(block => block.isBreak)
+
+                      return (
+                        <div key={dayKey} className="space-y-2 rounded-lg border border-border bg-muted/20 p-2 min-h-[96px]">
+                          {workBlocks.length === 0 ? (
+                            <div className="text-xs text-muted-foreground text-center py-6">Off</div>
+                          ) : (
+                            <div className="space-y-1">
+                              {workBlocks.map((block) => (
+                                <div key={block.id} className="rounded-md border border-primary/30 bg-primary/10 px-2 py-1 text-xs text-muted-foreground">
+                                  {formatTime12Hour(block.startTime)} - {formatTime12Hour(block.endTime)}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {breakBlocks.length > 0 && (
+                            <div className="space-y-1 pt-1 border-t border-border/60">
+                              {breakBlocks.map((block) => (
+                                <div key={block.id} className="rounded-md border border-dashed border-border px-2 py-1 text-[10px] text-muted-foreground">
+                                  Break {formatTime12Hour(block.startTime)} - {formatTime12Hour(block.endTime)}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
       </Card>
 

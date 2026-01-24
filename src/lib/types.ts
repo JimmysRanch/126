@@ -97,6 +97,8 @@ export interface InventoryItem {
   reorderLevel: number
   supplier?: string
   description?: string
+  staffCompensationType?: 'fixed' | 'percentage'
+  staffCompensationValue?: number
 }
 
 export interface InventoryValueSnapshot {
