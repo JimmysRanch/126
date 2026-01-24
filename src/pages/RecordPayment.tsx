@@ -16,7 +16,7 @@ export function RecordPayment() {
     client: '',
     amount: '',
     tip: '',
-    method: 'card',
+    method: '',
     date: getTodayInBusinessTimezone(),
     service: '',
     notes: ''
@@ -32,7 +32,7 @@ export function RecordPayment() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!formData.client || !formData.amount) {
+    if (!formData.client || !formData.amount || !formData.method) {
       toast.error('Please fill in all required fields')
       return
     }
@@ -130,8 +130,8 @@ export function RecordPayment() {
                   value={formData.method}
                   onValueChange={(value) => setFormData({ ...formData, method: value })}
                 >
-                  <SelectTrigger id="method">
-                    <SelectValue />
+                  <SelectTrigger id="method" className="border-dashed border-primary/40 bg-muted/10">
+                    <SelectValue placeholder="Select payment method" />
                   </SelectTrigger>
                   <SelectContent>
                     {paymentMethods.map((method) => (
