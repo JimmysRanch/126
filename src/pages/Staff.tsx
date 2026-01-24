@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import { StaffPerformanceP8View } from "@/components/StaffPerformanceP8View"
 import { PayrollOverview } from "@/components/PayrollOverview"
 import GroomerPerformanceP2 from "@/components/GroomerPerformanceP2"
 import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
@@ -113,7 +114,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -259,6 +260,17 @@ export function Staff() {
                 }`}
               >
                 P7
+              </Button>
+              <Button
+                onClick={() => setActiveTab("p8")}
+                variant={activeTab === "p8" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "p8"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                P8
               </Button>
             </div>
 
@@ -494,6 +506,10 @@ export function Staff() {
 
           <TabsContent value="p7" className="mt-0">
             <StaffPerformanceHudP7 />
+          </TabsContent>
+
+          <TabsContent value="p8" className="mt-0">
+            <StaffPerformanceP8View />
           </TabsContent>
         </Tabs>
       </div>
