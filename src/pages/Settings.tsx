@@ -117,6 +117,59 @@ const TIMEZONES = [
   { value: "America/Puerto_Rico", label: "Atlantic Time (AST)" }
 ]
 
+const US_STATES = [
+  { value: "AL", label: "Alabama" },
+  { value: "AK", label: "Alaska" },
+  { value: "AZ", label: "Arizona" },
+  { value: "AR", label: "Arkansas" },
+  { value: "CA", label: "California" },
+  { value: "CO", label: "Colorado" },
+  { value: "CT", label: "Connecticut" },
+  { value: "DE", label: "Delaware" },
+  { value: "FL", label: "Florida" },
+  { value: "GA", label: "Georgia" },
+  { value: "HI", label: "Hawaii" },
+  { value: "ID", label: "Idaho" },
+  { value: "IL", label: "Illinois" },
+  { value: "IN", label: "Indiana" },
+  { value: "IA", label: "Iowa" },
+  { value: "KS", label: "Kansas" },
+  { value: "KY", label: "Kentucky" },
+  { value: "LA", label: "Louisiana" },
+  { value: "ME", label: "Maine" },
+  { value: "MD", label: "Maryland" },
+  { value: "MA", label: "Massachusetts" },
+  { value: "MI", label: "Michigan" },
+  { value: "MN", label: "Minnesota" },
+  { value: "MS", label: "Mississippi" },
+  { value: "MO", label: "Missouri" },
+  { value: "MT", label: "Montana" },
+  { value: "NE", label: "Nebraska" },
+  { value: "NV", label: "Nevada" },
+  { value: "NH", label: "New Hampshire" },
+  { value: "NJ", label: "New Jersey" },
+  { value: "NM", label: "New Mexico" },
+  { value: "NY", label: "New York" },
+  { value: "NC", label: "North Carolina" },
+  { value: "ND", label: "North Dakota" },
+  { value: "OH", label: "Ohio" },
+  { value: "OK", label: "Oklahoma" },
+  { value: "OR", label: "Oregon" },
+  { value: "PA", label: "Pennsylvania" },
+  { value: "RI", label: "Rhode Island" },
+  { value: "SC", label: "South Carolina" },
+  { value: "SD", label: "South Dakota" },
+  { value: "TN", label: "Tennessee" },
+  { value: "TX", label: "Texas" },
+  { value: "UT", label: "Utah" },
+  { value: "VT", label: "Vermont" },
+  { value: "VA", label: "Virginia" },
+  { value: "WA", label: "Washington" },
+  { value: "WV", label: "West Virginia" },
+  { value: "WI", label: "Wisconsin" },
+  { value: "WY", label: "Wyoming" }
+]
+
 interface HoursOfOperation {
   day: string
   isOpen: boolean
@@ -140,7 +193,7 @@ interface BusinessInfo {
 
 export function Settings() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState("staff")
+  const [activeTab, setActiveTab] = useState("business")
   const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
   const [editingPosition, setEditingPosition] = useState<string | null>(null)
@@ -309,7 +362,7 @@ export function Settings() {
     businessEmail: "",
     address: "",
     city: "",
-    state: "",
+    state: "TX",
     zipCode: "",
     timezone: "America/New_York",
     taxId: "",
@@ -323,7 +376,7 @@ export function Settings() {
     businessEmail: "",
     address: "",
     city: "",
-    state: "",
+    state: "TX",
     zipCode: "",
     timezone: "America/New_York",
     taxId: "",
@@ -937,6 +990,17 @@ export function Settings() {
           updated.anchorStartDate = format(periodStart, 'yyyy-MM-dd')
         }
       }
+
+      if (field === 'anchorPayDate' && updated.type === 'weekly') {
+        const payDate = new Date(value)
+        if (!isNaN(payDate.getTime())) {
+          const periodEnd = addDays(payDate, -5)
+          const periodStart = addDays(periodEnd, -6)
+
+          updated.anchorEndDate = format(periodEnd, 'yyyy-MM-dd')
+          updated.anchorStartDate = format(periodStart, 'yyyy-MM-dd')
+        }
+      }
       
       return updated
     })
@@ -954,16 +1018,16 @@ export function Settings() {
           <div className="overflow-x-auto -mx-6 px-6 mb-6 flex justify-center">
             <TabsList className="bg-secondary/50 inline-flex">
               <TabsTrigger 
-                value="staff" 
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
-              >
-                Staff
-              </TabsTrigger>
-              <TabsTrigger 
                 value="business" 
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
               >
                 Business
+              </TabsTrigger>
+              <TabsTrigger 
+                value="staff" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Staff
               </TabsTrigger>
               <TabsTrigger 
                 value="payroll" 
@@ -1212,12 +1276,21 @@ export function Settings() {
                     <Label htmlFor="state" className="text-sm font-medium">
                       State
                     </Label>
-                    <Input
-                      id="state"
-                      placeholder="CA"
+                    <Select
                       value={businessFormData.state}
-                      onChange={(e) => handleBusinessInfoChange('state', e.target.value)}
-                    />
+                      onValueChange={(value) => handleBusinessInfoChange('state', value)}
+                    >
+                      <SelectTrigger id="state" className="w-full">
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {US_STATES.map((state) => (
+                          <SelectItem key={state.value} value={state.value}>
+                            {state.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
@@ -1296,35 +1369,40 @@ export function Settings() {
                           </Label>
                         </div>
                         
-                        {hours.isOpen && (
-                          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 md:flex-1">
-                            <div className="flex items-center gap-2 flex-1">
-                              <Label htmlFor={`open-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
-                                From
-                              </Label>
-                              <Input
-                                id={`open-time-${hours.day}`}
-                                type="time"
-                                value={hours.openTime}
-                                onChange={(e) => handleHoursChange(index, 'openTime', e.target.value)}
-                                className="w-full sm:w-32"
-                              />
-                            </div>
-                            
-                            <div className="flex items-center gap-2 flex-1">
-                              <Label htmlFor={`close-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
-                                To
-                              </Label>
-                              <Input
-                                id={`close-time-${hours.day}`}
-                                type="time"
-                                value={hours.closeTime}
-                                onChange={(e) => handleHoursChange(index, 'closeTime', e.target.value)}
-                                className="w-full sm:w-32"
-                              />
-                            </div>
+                        <div
+                          className={`flex flex-col sm:flex-row gap-3 sm:gap-2 md:flex-1 transition-opacity ${
+                            hours.isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                          }`}
+                          aria-hidden={!hours.isOpen}
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <Label htmlFor={`open-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
+                              From
+                            </Label>
+                            <Input
+                              id={`open-time-${hours.day}`}
+                              type="time"
+                              value={hours.openTime}
+                              onChange={(e) => handleHoursChange(index, 'openTime', e.target.value)}
+                              className="w-full sm:w-32"
+                              disabled={!hours.isOpen}
+                            />
                           </div>
-                        )}
+                          
+                          <div className="flex items-center gap-2 flex-1">
+                            <Label htmlFor={`close-time-${hours.day}`} className="text-sm text-muted-foreground w-12">
+                              To
+                            </Label>
+                            <Input
+                              id={`close-time-${hours.day}`}
+                              type="time"
+                              value={hours.closeTime}
+                              onChange={(e) => handleHoursChange(index, 'closeTime', e.target.value)}
+                              className="w-full sm:w-32"
+                              disabled={!hours.isOpen}
+                            />
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1366,6 +1444,7 @@ export function Settings() {
                         <SelectValue placeholder="Select pay period" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="weekly">Weekly</SelectItem>
                         <SelectItem value="bi-weekly">Bi-Weekly</SelectItem>
                       </SelectContent>
                     </Select>
@@ -1373,6 +1452,61 @@ export function Settings() {
                       How often you pay your staff members
                     </p>
                   </div>
+
+                  {payrollFormData.type === 'weekly' && (
+                    <>
+                      <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                        <h4 className="text-sm font-semibold mb-2 text-primary">Weekly Payroll Rules</h4>
+                        <ul className="text-xs text-muted-foreground space-y-1">
+                          <li>• Pay period: 1 week</li>
+                          <li>• Work weeks: Monday → Sunday</li>
+                          <li>• Payday: Friday</li>
+                          <li>• Payroll locks: When the ACH file is sent (default Wednesday night)</li>
+                          <li>• Holidays: If Friday is a bank holiday, pay Thursday</li>
+                          <li>• Overtime: Over 40 hours in a week = 1.5×</li>
+                        </ul>
+                      </div>
+
+                      <div className="border-t border-border pt-6 space-y-4">
+                        <div>
+                          <h3 className="text-base font-semibold mb-1">First Payday Friday</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Select which Friday you want your first payday to be. The system will calculate all future weekly pay periods from this date.
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="first-weekly-payday-friday" className="text-sm font-medium">
+                            Choose Your First Payday Friday
+                          </Label>
+                          <Select
+                            value={payrollFormData.anchorPayDate}
+                            onValueChange={(value) => handlePayrollChange('anchorPayDate', value)}
+                          >
+                            <SelectTrigger id="first-weekly-payday-friday" className="w-full">
+                              <SelectValue placeholder="Select a Friday" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {getUpcomingFridays().map((friday) => (
+                                <SelectItem key={friday.value} value={friday.value}>
+                                  {friday.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-xs text-muted-foreground">
+                            This will be the Friday you pay your staff for the most recent week
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                          <p className="text-sm text-blue-400">
+                            <strong>How it works:</strong> If you select {payrollFormData.anchorPayDate && format(new Date(payrollFormData.anchorPayDate), 'MMM d, yyyy')}, your staff will be paid every Friday starting from that date. The pay period will cover the week ending the Sunday before payday.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {payrollFormData.type === 'bi-weekly' && (
                     <>
