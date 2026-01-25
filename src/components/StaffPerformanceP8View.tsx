@@ -154,8 +154,7 @@ export function StaffPerformanceP8View() {
         .perf-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(15, 23, 42, 0.6);
-          backdrop-filter: blur(6px);
+          background: rgba(15, 23, 42, 0.35);
           z-index: 30;
         }
 
@@ -163,9 +162,9 @@ export function StaffPerformanceP8View() {
           position: fixed;
           top: 50%;
           left: 50%;
-          width: min(50vw, 540px);
-          height: min(50vh, 460px);
-          transform: translate(-50%, -50%) scale(1.6) !important;
+          width: min(80vw, 980px);
+          height: min(80vh, 760px);
+          transform: translate(-50%, -50%) scale(1) !important;
           z-index: 40;
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
@@ -174,13 +173,34 @@ export function StaffPerformanceP8View() {
           cursor: default;
         }
 
+        .perf-card-expanded .perf-value {
+          font-size: 2.75rem;
+        }
+
+        .perf-card-expanded .perf-unit {
+          font-size: 1.25rem;
+        }
+
+        .perf-card-expanded .perf-label,
+        .perf-card-expanded .perf-header {
+          font-size: 0.9rem;
+        }
+
+        .perf-card-expanded .perf-list-row {
+          padding: 0.75rem 1rem;
+        }
+
+        .perf-card-expanded .perf-chart-slot {
+          padding: 0.75rem;
+        }
+
         .perf-card-detail {
           display: none;
           margin-top: 0.5rem;
           padding-top: 0.5rem;
           border-top: 1px solid hsl(var(--border));
           color: hsl(var(--muted-foreground));
-          font-size: 0.75rem;
+          font-size: 0.85rem;
           line-height: 1.4;
         }
 
@@ -213,6 +233,7 @@ export function StaffPerformanceP8View() {
           pointer-events: none;
           transform: translateZ(1px);
         }
+
 
         .perf-card > * {
           position: relative;
@@ -564,9 +585,9 @@ export function StaffPerformanceP8View() {
           }
 
           .perf-card-expanded {
-            width: min(70vw, 520px);
-            height: min(70vh, 520px);
-            transform: translate(-50%, -50%) scale(1.2) !important;
+            width: min(90vw, 720px);
+            height: min(85vh, 720px);
+            transform: translate(-50%, -50%) scale(1) !important;
           }
         }
       `}</style>
