@@ -32,6 +32,7 @@ import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreak
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
 import { InviteStaff } from '@/pages/InviteStaff'
+import { RecentActivityPage } from '@/pages/RecentActivityPage'
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
             <Route path="/finances/run-payroll" element={<RunPayroll />} />
             <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
             <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+            <Route path="/recent-activity" element={<RecentActivityPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
             <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
