@@ -118,7 +118,7 @@ export function StaffPerformanceP8View() {
 
         .perf-layout.has-active .perf-card {
           pointer-events: none;
-          opacity: 0.55;
+          opacity: 1;
           filter: none;
         }
 
@@ -192,6 +192,11 @@ export function StaffPerformanceP8View() {
 
         .perf-card-expanded .perf-chart-slot {
           padding: 0.75rem;
+        }
+
+        .perf-card-expanded.perf-chart-card {
+          width: min(65vw, 720px);
+          height: min(55vh, 520px);
         }
 
         .perf-card-detail {
@@ -589,6 +594,11 @@ export function StaffPerformanceP8View() {
             height: min(85vh, 720px);
             transform: translate(-50%, -50%) scale(1) !important;
           }
+
+          .perf-card-expanded.perf-chart-card {
+            width: min(85vw, 640px);
+            height: min(70vh, 520px);
+          }
         }
       `}</style>
 
@@ -654,17 +664,6 @@ export function StaffPerformanceP8View() {
                       )
                     })}
                   </div>
-                </div>
-                <div className="perf-card-detail">
-                  <div className="perf-section-title">Detailed view</div>
-                  {chart.labels.map((label, index) => (
-                    <div key={label} className="perf-list-row">
-                      <div className="perf-list-left">{label}</div>
-                      <div className="perf-list-right">
-                        {chart.prefix ?? ""}{chart.prefix ? chart.values[index].toFixed(2) : chart.values[index].toFixed(0)}{chart.suffix ?? ""}
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </motion.div>
             ))}
