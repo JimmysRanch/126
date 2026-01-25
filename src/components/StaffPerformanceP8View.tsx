@@ -97,6 +97,8 @@ export function StaffPerformanceP8View() {
         .perf-immersive-frame {
           height: 100%;
           perspective: 1600px;
+          perspective-origin: 50% 50%;
+          padding: 0.5rem 0.75rem;
         }
 
         .perf-layout {
@@ -106,14 +108,14 @@ export function StaffPerformanceP8View() {
           gap: 0.75rem;
           height: 100%;
           transform-style: preserve-3d;
-          transform: translateZ(0) rotateX(2deg);
+          transform: translateZ(0) rotateX(1.5deg);
         }
 
         .perf-card {
           height: 100%;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
-          border-radius: 0.75rem;
+          border-radius: 1rem;
           box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 0 18px rgba(56, 189, 248, 0.18);
           padding: 0.75rem;
           display: flex;
@@ -121,73 +123,104 @@ export function StaffPerformanceP8View() {
           gap: 0.625rem;
           transform-style: preserve-3d;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          position: relative;
+          overflow: hidden;
         }
 
         .perf-card:hover {
-          transform: translateZ(40px);
+          transform: translateZ(18px);
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.35),
             0 12px 30px rgba(56, 189, 248, 0.35);
         }
 
+        .perf-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background:
+            radial-gradient(120% 80% at 50% 15%, rgba(255, 255, 255, 0.18), transparent 55%),
+            radial-gradient(120% 80% at 50% 120%, rgba(15, 23, 42, 0.35), transparent 60%);
+          opacity: 0.9;
+          pointer-events: none;
+          transform: translateZ(1px);
+        }
+
+        .perf-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(90deg, rgba(15, 23, 42, 0.2), transparent 35%, transparent 65%, rgba(15, 23, 42, 0.2));
+          opacity: 0.6;
+          pointer-events: none;
+          transform: translateZ(1px);
+        }
+
+        .perf-card > * {
+          position: relative;
+          z-index: 1;
+        }
+
         .perf-slot-1 {
           grid-column: 1;
           grid-row: 1;
-          transform: rotateY(8deg) translateZ(20px);
+          transform: rotateY(5deg) translateZ(8px);
         }
 
         .perf-slot-2 {
           grid-column: 2;
           grid-row: 1;
-          transform: translateZ(50px);
+          transform: translateZ(14px);
         }
 
         .perf-slot-3 {
           grid-column: 3;
           grid-row: 1;
-          transform: rotateY(-8deg) translateZ(20px);
+          transform: rotateY(-5deg) translateZ(8px);
         }
 
         .perf-slot-4 {
           grid-column: 1;
           grid-row: 2;
-          transform: rotateY(8deg) translateZ(18px);
+          transform: rotateY(5deg) translateZ(8px);
         }
 
         .perf-slot-5 {
           grid-column: 2;
           grid-row: 2;
-          transform: translateZ(45px);
+          transform: translateZ(12px);
         }
 
         .perf-slot-6 {
           grid-column: 3;
           grid-row: 2;
-          transform: rotateY(-8deg) translateZ(18px);
+          transform: rotateY(-5deg) translateZ(8px);
         }
 
         .perf-slot-7 {
           grid-column: 1;
           grid-row: 3 / span 2;
-          transform: rotateY(8deg) translateZ(14px);
+          transform: rotateY(5deg) translateZ(6px);
         }
 
         .perf-slot-8 {
           grid-column: 2;
           grid-row: 3;
-          transform: translateZ(40px);
+          transform: translateZ(10px);
         }
 
         .perf-slot-9 {
           grid-column: 2;
           grid-row: 4;
-          transform: translateZ(40px);
+          transform: translateZ(10px);
         }
 
         .perf-slot-10 {
           grid-column: 3;
           grid-row: 3 / span 2;
-          transform: rotateY(-8deg) translateZ(14px);
+          transform: rotateY(-5deg) translateZ(6px);
         }
 
         .perf-kpi-card {
