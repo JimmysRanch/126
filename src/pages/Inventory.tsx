@@ -111,7 +111,9 @@ export function Inventory() {
     cost: "",
     reorderLevel: "",
     supplier: "",
-    description: ""
+    description: "",
+    staffCompensationType: "fixed" as "fixed" | "percentage",
+    staffCompensationValue: ""
   })
 
   // Initialize inventory with default items if empty (Critical Issue #1 from AUDIT_REPORT.md)
@@ -195,7 +197,9 @@ export function Inventory() {
         cost: item.cost.toString(),
         reorderLevel: item.reorderLevel.toString(),
         supplier: item.supplier || "",
-        description: item.description || ""
+        description: item.description || "",
+        staffCompensationType: item.staffCompensationType || "fixed",
+        staffCompensationValue: item.staffCompensationValue ? item.staffCompensationValue.toString() : ""
       })
     } else {
       setEditingItem(null)
@@ -208,7 +212,9 @@ export function Inventory() {
         cost: "",
         reorderLevel: "",
         supplier: "",
-        description: ""
+        description: "",
+        staffCompensationType: "fixed",
+        staffCompensationValue: ""
       })
     }
     setDialogOpen(true)
@@ -220,6 +226,9 @@ export function Inventory() {
       return
     }
 
+    const staffCompensationValue = parseFloat(formData.staffCompensationValue)
+    const includeStaffCompensation = formData.category === 'retail' && !Number.isNaN(staffCompensationValue) && staffCompensationValue > 0
+
     const itemData: InventoryItem = {
       id: editingItem?.id || Date.now().toString(),
       name: formData.name,
@@ -230,7 +239,9 @@ export function Inventory() {
       cost: parseFloat(formData.cost),
       reorderLevel: parseInt(formData.reorderLevel) || 0,
       supplier: formData.supplier,
-      description: formData.description
+      description: formData.description,
+      staffCompensationType: includeStaffCompensation ? formData.staffCompensationType : undefined,
+      staffCompensationValue: includeStaffCompensation ? staffCompensationValue : undefined
     }
 
     if (editingItem) {
@@ -457,7 +468,14 @@ export function Inventory() {
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Select value={formData.category} onValueChange={(v: any) => setFormData({ ...formData, category: v })}>
+              <Select
+                value={formData.category}
+                onValueChange={(v: any) => setFormData((prev) => ({
+                  ...prev,
+                  category: v,
+                  ...(v === 'supply' ? { staffCompensationValue: "", staffCompensationType: "fixed" } : {})
+                }))}
+              >
                 <SelectTrigger id="category">
                   <SelectValue />
                 </SelectTrigger>
@@ -507,6 +525,48 @@ export function Inventory() {
                 placeholder="0.00"
               />
             </div>
+
+            {formData.category === 'retail' && (
+              <div className="col-span-2 space-y-3 rounded-lg border border-dashed border-border p-3">
+                <div>
+                  <Label className="text-sm font-semibold">Staff Compensation (Retail Only)</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Set a fixed payout or a percentage for staff when this item is sold.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="staff-comp-type">Compensation Type</Label>
+                    <Select
+                      value={formData.staffCompensationType}
+                      onValueChange={(value: "fixed" | "percentage") => setFormData({ ...formData, staffCompensationType: value })}
+                    >
+                      <SelectTrigger id="staff-comp-type">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
+                        <SelectItem value="percentage">Percentage (%)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="staff-comp-value">
+                      {formData.staffCompensationType === "percentage" ? "Percentage" : "Fixed Amount"}
+                    </Label>
+                    <Input
+                      id="staff-comp-value"
+                      type="number"
+                      min="0"
+                      step={formData.staffCompensationType === "percentage" ? "0.1" : "0.01"}
+                      value={formData.staffCompensationValue}
+                      onChange={(e) => setFormData({ ...formData, staffCompensationValue: e.target.value })}
+                      placeholder={formData.staffCompensationType === "percentage" ? "5" : "2.50"}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="reorder">Reorder Level</Label>
