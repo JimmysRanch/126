@@ -3,17 +3,39 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
 import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, TrendDown, PawPrint } from '@phosphor-icons/react'
 import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { PayrollOverview } from '@/components/PayrollOverview'
 
+interface PaymentDetail {
+  date: string
+  client: string
+  service: string
+  amount: number
+  tip: number
+  method: string
+}
+
 export function Finances() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState('dashboard')
   const isMobile = useIsMobile()
+  const [selectedPayment, setSelectedPayment] = useState<PaymentDetail | null>(null)
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+
+  const payments: PaymentDetail[] = [
+    { date: '12/15/2024', client: 'Sarah Johnson', service: 'Full Groom - Max & Bella', amount: 140.00, tip: 20.00, method: 'Card' },
+    { date: '12/14/2024', client: 'Mike Thompson', service: 'Bath & Trim - Charlie', amount: 75.00, tip: 10.00, method: 'Card' },
+    { date: '12/14/2024', client: 'Emily Davis', service: 'Nail Trim - Luna', amount: 25.00, tip: 5.00, method: 'Cash' },
+    { date: '12/13/2024', client: 'James Wilson', service: 'Full Groom - Rocky', amount: 85.00, tip: 15.00, method: 'Card' },
+    { date: '12/12/2024', client: 'Lisa Martinez', service: 'Deshed Treatment - Bear', amount: 95.00, tip: 15.00, method: 'Card' },
+    { date: '12/12/2024', client: 'Robert Brown', service: 'Bath Only - Buddy', amount: 45.00, tip: 8.00, method: 'Card' },
+  ]
 
   useEffect(() => {
     const tab = searchParams.get('tab')
@@ -485,21 +507,30 @@ export function Finances() {
                 </Button>
               </div>
               <div className="divide-y divide-border">
-                {[
-                  { date: '12/15/2024', client: 'Sarah Johnson', service: 'Full Groom - Max & Bella', amount: 140.00, tip: 20.00, method: 'Card' },
-                  { date: '12/14/2024', client: 'Mike Thompson', service: 'Bath & Trim - Charlie', amount: 75.00, tip: 10.00, method: 'Card' },
-                  { date: '12/14/2024', client: 'Emily Davis', service: 'Nail Trim - Luna', amount: 25.00, tip: 5.00, method: 'Cash' },
-                  { date: '12/13/2024', client: 'James Wilson', service: 'Full Groom - Rocky', amount: 85.00, tip: 15.00, method: 'Card' },
-                  { date: '12/12/2024', client: 'Lisa Martinez', service: 'Deshed Treatment - Bear', amount: 95.00, tip: 15.00, method: 'Card' },
-                  { date: '12/12/2024', client: 'Robert Brown', service: 'Bath Only - Buddy', amount: 45.00, tip: 8.00, method: 'Card' },
-                ].map((payment, i) => {
+                {payments.map((payment, i) => {
                   const serviceParts = payment.service.split(' - ')
                   const serviceType = serviceParts[0]
                   const dogNames = serviceParts[1] || ''
                   const individualDogs = dogNames.split(' & ').map(name => name.trim())
                   
                   return (
-                    <div key={i} className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer">
+                    <div
+                      key={i}
+                      className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        setSelectedPayment(payment)
+                        setPaymentDialogOpen(true)
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault()
+                          setSelectedPayment(payment)
+                          setPaymentDialogOpen(true)
+                        }
+                      }}
+                    >
                       <div className="flex items-start md:items-center justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
@@ -550,6 +581,54 @@ export function Finances() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog
+        open={paymentDialogOpen}
+        onOpenChange={(open) => {
+          setPaymentDialogOpen(open)
+          if (!open) {
+            setSelectedPayment(null)
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Payment Details</DialogTitle>
+          </DialogHeader>
+          {selectedPayment && (
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold">{selectedPayment.client}</h3>
+                  <p className="text-sm text-muted-foreground">{selectedPayment.service}</p>
+                </div>
+                <Badge variant="secondary" className="text-xs uppercase tracking-wider">
+                  {selectedPayment.method}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Date</p>
+                  <p className="font-medium">{selectedPayment.date}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Total</p>
+                  <p className="font-semibold">${(selectedPayment.amount + selectedPayment.tip).toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Service Amount</p>
+                  <p className="font-medium">${selectedPayment.amount.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Tip</p>
+                  <p className="font-medium">${selectedPayment.tip.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

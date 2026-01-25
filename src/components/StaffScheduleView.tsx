@@ -353,33 +353,42 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newDate = new Date(selectedMonth)
-              newDate.setMonth(newDate.getMonth() - 1)
-              setSelectedMonth(newDate)
-            }}
-          >
-            Previous Month
-          </Button>
-          <h3 className="text-lg font-semibold">
-            {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const newDate = new Date(selectedMonth)
-              newDate.setMonth(newDate.getMonth() + 1)
-              setSelectedMonth(newDate)
-            }}
-          >
-            Next Month
-          </Button>
-        </div>
+        {isTeamView ? (
+          <div>
+            <h3 className="text-lg font-semibold">Weekly Staff Schedule</h3>
+            <p className="text-sm text-muted-foreground">
+              Review each team member's recurring availability across the week.
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedMonth)
+                newDate.setMonth(newDate.getMonth() - 1)
+                setSelectedMonth(newDate)
+              }}
+            >
+              Previous Month
+            </Button>
+            <h3 className="text-lg font-semibold">
+              {selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const newDate = new Date(selectedMonth)
+                newDate.setMonth(newDate.getMonth() + 1)
+                setSelectedMonth(newDate)
+              }}
+            >
+              Next Month
+            </Button>
+          </div>
+        )}
 
         <div className="flex items-center gap-3">
           {isTeamView && (
@@ -539,104 +548,147 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
         </div>
       </div>
 
-      <Card className="p-4 bg-card border-border">
-        <div className="grid grid-cols-7 gap-2 mb-4 pb-3 border-b border-border">
-          {DAY_LABELS.map((label) => (
-            <div key={label} className="text-center">
-              <div className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                {label.substring(0, 3)}
+      {isTeamView ? (
+        <Card className="bg-card border-border overflow-hidden">
+          <div className="overflow-x-auto">
+            <div className="min-w-[980px]">
+              <div className="grid grid-cols-[220px_repeat(7,minmax(0,1fr))] bg-muted/40 border-b border-border">
+                <div className="p-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Staff</div>
+                {DAY_LABELS.map((label) => (
+                  <div key={label} className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {label.substring(0, 3)}
+                  </div>
+                ))}
+              </div>
+
+              <div className="divide-y divide-border">
+                {displayStaff.map((staff) => {
+                  const schedule = getStaffSchedule(staff.id)
+
+                  return (
+                    <div key={staff.id} className="grid grid-cols-[220px_repeat(7,minmax(0,1fr))]">
+                      <div className="p-3">
+                        <div className="flex flex-col gap-1">
+                          <div className="font-semibold">{staff.name}</div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
+                              {staff.role}
+                            </Badge>
+                            {!schedule.setupComplete && (
+                              <Badge variant="outline" className="text-[10px] text-yellow-600 border-yellow-500/30">
+                                Needs Schedule
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {DAYS_OF_WEEK.map((day) => {
+                        const blocks = schedule.weeklyTemplate[day]
+
+                        return (
+                          <div key={day} className="p-3 border-l border-border">
+                            {blocks.length === 0 ? (
+                              <div className="text-xs text-muted-foreground">Off</div>
+                            ) : (
+                              <div className="space-y-1">
+                                {blocks.map((block) => (
+                                  <div
+                                    key={block.id}
+                                    className={`rounded-md px-2 py-1 text-[11px] font-medium ${
+                                      block.isBreak
+                                        ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
+                                        : 'bg-primary/10 text-primary border border-primary/20'
+                                    }`}
+                                  >
+                                    {block.isBreak ? 'Break' : 'Work'} · {formatTime12Hour(block.startTime)} - {formatTime12Hour(block.endTime)}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
               </div>
             </div>
-          ))}
-        </div>
-        
-        <div className="space-y-4">
-          {displayStaff.map((staff) => {
-            const schedule = getStaffSchedule(staff.id)
-            
-            return (
-              <div key={staff.id} className="border-b border-border last:border-0 pb-4 last:pb-0">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <h4 className="font-semibold">{staff.name}</h4>
-                    <Badge variant="secondary" className="text-xs">
-                      {staff.role}
-                    </Badge>
-                    {!schedule.setupComplete && (
-                      <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-500/30">
-                        Needs Schedule
+          </div>
+        </Card>
+      ) : (
+        <Card className="bg-card border-border overflow-hidden">
+          <div className="p-4 border-b border-border flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h4 className="text-base font-semibold">Monthly Schedule</h4>
+              <p className="text-sm text-muted-foreground">Availability and time off for this month</p>
+            </div>
+            {displayStaff[0] && (
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm">{displayStaff[0].name}</span>
+                <Badge variant="secondary" className="text-xs">{displayStaff[0].role}</Badge>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-7 bg-muted/40 border-b border-border">
+            {DAY_LABELS.map((label) => (
+              <div key={label} className="p-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {label.substring(0, 3)}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-px bg-border">
+            {displayStaff[0] && monthDates.map((date, index) => {
+              const staff = displayStaff[0]
+              const blocks = getAvailabilityForDate(staff.id, date)
+              const isToday = date.toDateString() === new Date().toDateString()
+              const isCurrentMonth = date.getMonth() === currentMonth
+              const hasApprovedTimeOff = (timeOffRequests || []).some(req => {
+                const dateStr = date.toISOString().split('T')[0]
+                return req.staffId === staff.id &&
+                  req.status === 'Approved' &&
+                  dateStr >= req.startDate &&
+                  dateStr <= req.endDate
+              })
+
+              return (
+                <div
+                  key={index}
+                  className={`min-h-[120px] p-2 bg-card ${!isCurrentMonth ? 'opacity-40' : ''}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className={`text-xs font-semibold ${isToday ? 'text-primary' : 'text-muted-foreground'}`}>
+                      {date.getDate()}
+                    </div>
+                    {hasApprovedTimeOff && (
+                      <Badge variant="outline" className="text-[10px] border-red-500/30 text-red-600">
+                        Off
                       </Badge>
                     )}
                   </div>
-                  {canEdit && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setEditingStaffId(staff.id)
-                        setEditingDay('monday')
-                        setIsEditDialogOpen(true)
-                      }}
-                    >
-                      <PencilSimple size={16} className="mr-2" />
-                      Edit Schedule
-                    </Button>
-                  )}
-                </div>
 
-                <div className="grid grid-cols-7 gap-1">
-                  {monthDates.map((date, index) => {
-                    const blocks = getAvailabilityForDate(staff.id, date)
-                    const isToday = date.toDateString() === new Date().toDateString()
-                    const isCurrentMonth = date.getMonth() === currentMonth
-                    const hasApprovedTimeOff = (timeOffRequests || []).some(req => {
-                      const dateStr = date.toISOString().split('T')[0]
-                      return req.staffId === staff.id &&
-                        req.status === 'Approved' &&
-                        dateStr >= req.startDate &&
-                        dateStr <= req.endDate
-                    })
-                    
-                    return (
-                      <div key={index} className={`min-h-[60px] p-1 rounded ${!isCurrentMonth ? 'opacity-30' : ''}`}>
-                        <div className={`text-center mb-1 ${isToday ? 'bg-primary/20 rounded px-1' : ''}`}>
-                          <div className={`text-xs font-semibold ${isToday ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {date.getDate()}
-                          </div>
+                  <div className="mt-2 space-y-1">
+                    {hasApprovedTimeOff ? (
+                      <div className="text-[11px] font-medium text-red-600">Approved time off</div>
+                    ) : blocks.length > 0 ? (
+                      blocks.filter(b => !b.isBreak).map((block) => (
+                        <div
+                          key={block.id}
+                          className="rounded-md px-2 py-1 text-[11px] bg-primary/10 text-primary border border-primary/20"
+                          title={`${formatTime12Hour(block.startTime)}-${formatTime12Hour(block.endTime)}`}
+                        >
+                          {formatTime12Hour(block.startTime)} - {formatTime12Hour(block.endTime)}
                         </div>
-                        
-                        <div className="space-y-0.5">
-                          {hasApprovedTimeOff ? (
-                            <div className="p-0.5 rounded bg-red-500/10 border border-red-500/30 text-center">
-                              <div className="text-[8px] font-semibold text-red-600">OFF</div>
-                            </div>
-                          ) : blocks.length > 0 ? (
-                            blocks.filter(b => !b.isBreak).map((block) => (
-                              <div
-                                key={block.id}
-                                className="p-0.5 rounded bg-primary/10 border border-primary/30"
-                                title={`${formatTime12Hour(block.startTime)}-${formatTime12Hour(block.endTime)}`}
-                              >
-                                <div className="text-[8px] text-center text-muted-foreground truncate">
-                                  {formatTime12Hour(block.startTime)}
-                                </div>
-                              </div>
-                            ))
-                          ) : isCurrentMonth ? (
-                            <div className="p-0.5 rounded bg-muted/20 text-center">
-                              <div className="text-[8px] text-muted-foreground">-</div>
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    )
-                  })}
+                      ))
+                    ) : (
+                      <div className="text-[11px] text-muted-foreground">No shifts</div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        </div>
-      </Card>
+              )
+            })}
+          </div>
+        </Card>
+      )}
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-card border-border max-w-4xl max-h-[80vh] overflow-y-auto">

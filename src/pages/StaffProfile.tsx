@@ -13,6 +13,22 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 
+interface StaffAppointment {
+  id: string
+  client: string
+  pet: string
+  service: string
+  date: string
+  time: string
+  duration?: string
+  status?: string
+  cost?: string
+  tip?: string
+  rating?: number
+  notes?: string
+  category: "Upcoming" | "Recent"
+}
+
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
@@ -141,6 +157,8 @@ export function StaffProfile() {
   const staff = staffData[staffId as keyof typeof staffData] || staffData["1"]
   const [activeTab, setActiveTab] = useState("overview")
   const isMobile = useIsMobile()
+  const [selectedAppointment, setSelectedAppointment] = useState<StaffAppointment | null>(null)
+  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
@@ -315,7 +333,23 @@ export function StaffProfile() {
                 <div className="space-y-2 sm:space-y-3">
                   {staff.upcomingAppointments.length > 0 ? (
                     staff.upcomingAppointments.map((apt) => (
-                      <Card key={apt.id} className="p-3 sm:p-4 bg-card border-border">
+                      <Card
+                        key={apt.id}
+                        className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          setSelectedAppointment({ ...apt, category: "Upcoming" })
+                          setAppointmentDialogOpen(true)
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
+                            setSelectedAppointment({ ...apt, category: "Upcoming" })
+                            setAppointmentDialogOpen(true)
+                          }
+                        }}
+                      >
                         {isMobile ? (
                           <div className="space-y-2">
                             <div className="flex items-start justify-between gap-2">
@@ -388,7 +422,23 @@ export function StaffProfile() {
                 <div className="space-y-2 sm:space-y-3">
                   {staff.recentAppointments.length > 0 ? (
                     staff.recentAppointments.map((apt) => (
-                      <Card key={apt.id} className="p-3 sm:p-4 bg-card border-border">
+                      <Card
+                        key={apt.id}
+                        className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          setSelectedAppointment({ ...apt, category: "Recent" })
+                          setAppointmentDialogOpen(true)
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
+                            setSelectedAppointment({ ...apt, category: "Recent" })
+                            setAppointmentDialogOpen(true)
+                          }
+                        }}
+                      >
                         {isMobile ? (
                           <div className="space-y-2">
                             <div className="flex items-start justify-between gap-2">
@@ -500,6 +550,94 @@ export function StaffProfile() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog
+        open={appointmentDialogOpen}
+        onOpenChange={(open) => {
+          setAppointmentDialogOpen(open)
+          if (!open) {
+            setSelectedAppointment(null)
+          }
+        }}
+      >
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Appointment Details</DialogTitle>
+          </DialogHeader>
+          {selectedAppointment && (
+            <div className="space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold">{selectedAppointment.client}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedAppointment.pet} • {selectedAppointment.service}
+                  </p>
+                </div>
+                <Badge variant="secondary" className="text-xs uppercase tracking-wider">
+                  {selectedAppointment.category}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Date</p>
+                  <p className="font-medium">{selectedAppointment.date}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Time</p>
+                  <p className="font-medium">{selectedAppointment.time}</p>
+                </div>
+                {selectedAppointment.duration && (
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Duration</p>
+                    <p className="font-medium">{selectedAppointment.duration}</p>
+                  </div>
+                )}
+                {selectedAppointment.status && (
+                  <div>
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
+                    <Badge
+                      variant={selectedAppointment.status === "Confirmed" ? "default" : "secondary"}
+                      className={selectedAppointment.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                    >
+                      {selectedAppointment.status}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              {(selectedAppointment.cost || selectedAppointment.tip || selectedAppointment.rating) && (
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  {selectedAppointment.cost && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Cost</p>
+                      <p className="font-medium">{selectedAppointment.cost}</p>
+                    </div>
+                  )}
+                  {selectedAppointment.tip && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Tip</p>
+                      <p className="font-medium">{selectedAppointment.tip}</p>
+                    </div>
+                  )}
+                  {selectedAppointment.rating && (
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Rating</p>
+                      <p className="font-medium">{selectedAppointment.rating} ⭐</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {selectedAppointment.notes && (
+                <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+                  “{selectedAppointment.notes}”
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

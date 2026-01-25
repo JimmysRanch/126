@@ -55,6 +55,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
     weeklyGuarantee: { enabled: false, amount: 0, payoutMode: "higher" },
     teamOverrides: { enabled: false, overrides: [] }
   })
+  const switchHighlightClass = "data-[state=unchecked]:bg-muted/70 data-[state=unchecked]:border-muted-foreground/40"
 
   const availableStaff = [
     { id: "1", name: "Sarah Johnson" },
@@ -126,6 +127,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
               </div>
               <Switch
                 checked={config.commission.enabled}
+                className={switchHighlightClass}
                 onCheckedChange={(enabled) => {
                   setConfig(prev => ({
                     ...prev,
@@ -168,6 +170,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
               </div>
               <Switch
                 checked={config.hourly.enabled}
+                className={switchHighlightClass}
                 onCheckedChange={(enabled) => {
                   setConfig(prev => ({
                     ...prev,
@@ -211,6 +214,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
               </div>
               <Switch
                 checked={config.salary.enabled}
+                className={switchHighlightClass}
                 onCheckedChange={(enabled) => {
                   setConfig(prev => ({
                     ...prev,
@@ -252,6 +256,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
               </div>
               <Switch
                 checked={config.weeklyGuarantee.enabled}
+                className={switchHighlightClass}
                 onCheckedChange={(enabled) => {
                   setConfig(prev => ({
                     ...prev,
@@ -331,6 +336,7 @@ export function StaffCompensation({ staffName }: StaffCompensationProps) {
               </div>
               <Switch
                 checked={config.teamOverrides.enabled}
+                className={switchHighlightClass}
                 onCheckedChange={(enabled) => {
                   setConfig(prev => ({
                     ...prev,
