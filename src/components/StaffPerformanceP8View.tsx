@@ -94,6 +94,49 @@ export function StaffPerformanceP8View() {
           overflow: hidden;
         }
 
+        .perf-curved-frame {
+          height: 100%;
+          perspective: 1400px;
+          display: flex;
+          align-items: stretch;
+        }
+
+        .perf-curved-screen {
+          position: relative;
+          flex: 1;
+          transform: rotateX(3deg) scale(0.98);
+          transform-style: preserve-3d;
+          border-radius: 1.5rem;
+          box-shadow:
+            0 18px 40px rgba(15, 23, 42, 0.35),
+            inset 0 0 60px rgba(30, 64, 175, 0.25);
+          overflow: hidden;
+        }
+
+        .perf-curved-screen::before {
+          content: "";
+          position: absolute;
+          inset: -5%;
+          border-radius: 2rem;
+          background:
+            radial-gradient(circle at 50% 0%, rgba(248, 250, 252, 0.35), transparent 60%),
+            radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.65), transparent 58%),
+            radial-gradient(circle at 0% 50%, rgba(15, 23, 42, 0.5), transparent 55%),
+            radial-gradient(circle at 100% 50%, rgba(15, 23, 42, 0.5), transparent 55%);
+          pointer-events: none;
+          mix-blend-mode: soft-light;
+        }
+
+        .perf-curved-screen::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          border: 1px solid rgba(148, 163, 184, 0.35);
+          box-shadow: inset 0 0 20px rgba(148, 163, 184, 0.2);
+          pointer-events: none;
+        }
+
         .perf-layout {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -445,142 +488,146 @@ export function StaffPerformanceP8View() {
       `}</style>
 
       <div className="perf-wrap">
-        <motion.div
-          className="perf-layout"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          {kpis.map((kpi, i) => (
-            <div key={i} className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}>
-              <div className="perf-kpi-inner">
-                <div className="perf-kpi-top">
-                  <div className="perf-icon">{kpi.icon}</div>
-                  <div className="perf-value">
-                    {kpi.value}
-                    {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
-                  </div>
-                </div>
-                <div className="perf-label">{kpi.label}</div>
-              </div>
-            </div>
-          ))}
-
-          {charts.map((chart, i) => (
-            <div key={i} className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}>
-              <div className="perf-chart-inner">
-                <div className="perf-header">
-                  <div className="perf-dot" />
-                  <div>{chart.title}</div>
-                </div>
-                <div className="perf-chart-slot">
-                  {chart.labels.map((label, j) => {
-                    const value = chart.values[j]
-                    const max = Math.max(...chart.values)
-                    const height = Math.max(0.18, value / max)
-                    return (
-                      <div key={j} className="perf-chart-column">
-                        <div className="perf-chart-value">
-                          {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
-                        </div>
-                        <div className="perf-chart-bar">
-                          <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
-                        </div>
-                        <div className="perf-chart-label">{label}</div>
+        <div className="perf-curved-frame">
+          <div className="perf-curved-screen">
+            <motion.div
+              className="perf-layout"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {kpis.map((kpi, i) => (
+                <div key={i} className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}>
+                  <div className="perf-kpi-inner">
+                    <div className="perf-kpi-top">
+                      <div className="perf-icon">{kpi.icon}</div>
+                      <div className="perf-value">
+                        {kpi.value}
+                        {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
                       </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <div className="perf-list-card perf-card perf-slot-7 blue">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Earnings by Breed</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {earningsByBreed.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-8 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Top Performing Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {topCombos.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-9 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Lowest Performing Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {bottomCombos.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-10 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>RPM by Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-matrix">
-                  <div className="perf-matrix-head">
-                    <div>Breed</div>
-                    {matrixData.cols.map((col) => (
-                      <div key={col}>{col}</div>
-                    ))}
+                    <div className="perf-label">{kpi.label}</div>
                   </div>
-                  {matrixData.rows.map((row) => (
-                    <div key={row.name} className="perf-matrix-row">
-                      <div className="perf-matrix-breed">{row.name}</div>
-                      {row.cells.map((cell, i) => (
-                        <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
-                          {cell ?? "—"}
+                </div>
+              ))}
+
+              {charts.map((chart, i) => (
+                <div key={i} className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}>
+                  <div className="perf-chart-inner">
+                    <div className="perf-header">
+                      <div className="perf-dot" />
+                      <div>{chart.title}</div>
+                    </div>
+                    <div className="perf-chart-slot">
+                      {chart.labels.map((label, j) => {
+                        const value = chart.values[j]
+                        const max = Math.max(...chart.values)
+                        const height = Math.max(0.18, value / max)
+                        return (
+                          <div key={j} className="perf-chart-column">
+                            <div className="perf-chart-value">
+                              {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
+                            </div>
+                            <div className="perf-chart-bar">
+                              <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
+                            </div>
+                            <div className="perf-chart-label">{label}</div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="perf-list-card perf-card perf-slot-7 blue">
+                <div className="perf-list-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>Earnings by Breed</div>
+                  </div>
+                  <div className="perf-list-slot">
+                    <div className="perf-list">
+                      {earningsByBreed.map((item, i) => (
+                        <div key={i} className="perf-list-row">
+                          <div className="perf-list-left">{item.left}</div>
+                          <div className="perf-list-right">{item.right}</div>
                         </div>
                       ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
-            </div>
+
+              <div className="perf-list-card perf-card perf-slot-8 amber">
+                <div className="perf-list-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>Top Performing Breed & Size</div>
+                  </div>
+                  <div className="perf-list-slot">
+                    <div className="perf-list">
+                      {topCombos.map((item, i) => (
+                        <div key={i} className="perf-list-row">
+                          <div className="perf-list-left">{item.left}</div>
+                          <div className="perf-list-right">{item.right}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="perf-list-card perf-card perf-slot-9 amber">
+                <div className="perf-list-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>Lowest Performing Breed & Size</div>
+                  </div>
+                  <div className="perf-list-slot">
+                    <div className="perf-list">
+                      {bottomCombos.map((item, i) => (
+                        <div key={i} className="perf-list-row">
+                          <div className="perf-list-left">{item.left}</div>
+                          <div className="perf-list-right">{item.right}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="perf-list-card perf-card perf-slot-10 amber">
+                <div className="perf-list-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>RPM by Breed & Size</div>
+                  </div>
+                  <div className="perf-list-slot">
+                    <div className="perf-matrix">
+                      <div className="perf-matrix-head">
+                        <div>Breed</div>
+                        {matrixData.cols.map((col) => (
+                          <div key={col}>{col}</div>
+                        ))}
+                      </div>
+                      {matrixData.rows.map((row) => (
+                        <div key={row.name} className="perf-matrix-row">
+                          <div className="perf-matrix-breed">{row.name}</div>
+                          {row.cells.map((cell, i) => (
+                            <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
+                              {cell ?? "—"}
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </>
   )
