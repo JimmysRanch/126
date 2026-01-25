@@ -163,9 +163,9 @@ export function StaffPerformanceP8View() {
           position: fixed;
           top: 50%;
           left: 50%;
-          width: min(72vw, 980px);
-          height: min(72vh, 720px);
-          transform: translate(-50%, -50%) scale(1) !important;
+          width: min(45vw, 520px);
+          height: min(45vh, 420px);
+          transform: translate(-50%, -50%) scale(2) !important;
           z-index: 40;
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
@@ -564,8 +564,9 @@ export function StaffPerformanceP8View() {
           }
 
           .perf-card-expanded {
-            width: min(90vw, 720px);
-            height: min(85vh, 720px);
+            width: min(48vw, 420px);
+            height: min(48vh, 420px);
+            transform: translate(-50%, -50%) scale(1.7) !important;
           }
         }
       `}</style>
