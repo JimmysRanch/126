@@ -119,7 +119,7 @@ export function StaffPerformanceP8View() {
         .perf-layout.has-active .perf-card {
           pointer-events: none;
           opacity: 0.55;
-          filter: blur(1px);
+          filter: none;
         }
 
         .perf-layout.has-active .perf-card.perf-card-expanded {
@@ -163,9 +163,9 @@ export function StaffPerformanceP8View() {
           position: fixed;
           top: 50%;
           left: 50%;
-          width: min(45vw, 520px);
-          height: min(45vh, 420px);
-          transform: translate(-50%, -50%) scale(2) !important;
+          width: min(50vw, 540px);
+          height: min(50vh, 460px);
+          transform: translate(-50%, -50%) scale(1.6) !important;
           z-index: 40;
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
@@ -564,9 +564,9 @@ export function StaffPerformanceP8View() {
           }
 
           .perf-card-expanded {
-            width: min(48vw, 420px);
-            height: min(48vh, 420px);
-            transform: translate(-50%, -50%) scale(1.7) !important;
+            width: min(70vw, 520px);
+            height: min(70vh, 520px);
+            transform: translate(-50%, -50%) scale(1.2) !important;
           }
         }
       `}</style>
