@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { BookedGauge } from './dashboard/components/BookedGauge'
 import { RecentActivity } from './dashboard/components/RecentActivity'
 import { GroomersWorkloadCard } from './dashboard/components/GroomersWorkloadCard'
@@ -200,14 +201,17 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-4 gap-3">
-          <div className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
+          <Link
+            to="/recent-activity"
+            className="col-span-2 bg-card rounded-xl border border-border flex flex-col overflow-hidden transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             <div className="p-3 pb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
             <div className="overflow-y-auto px-3 pb-3 scrollbar-thin flex-1 min-h-0">
               <RecentActivity />
             </div>
-          </div>
+          </Link>
 
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
@@ -222,7 +226,7 @@ export function Dashboard() {
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <div className="mb-1.5 flex-shrink-0">
               <h2 className="text-sm font-semibold">Groomer Avg</h2>
-              <p className="text-[10px] text-muted-foreground">Daily Metrics</p>
+              <p className="text-[10px] text-muted-foreground">Lifetime Metrics</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
               <GroomerAvgCard />
