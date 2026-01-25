@@ -98,7 +98,7 @@ export function StaffPerformanceP8View() {
           height: 100%;
           perspective: 1600px;
           perspective-origin: 50% 50%;
-          padding: 0.5rem 0.75rem;
+          padding: 0.75rem 1.25rem;
         }
 
         .perf-layout {
@@ -108,14 +108,15 @@ export function StaffPerformanceP8View() {
           gap: 0.75rem;
           height: 100%;
           transform-style: preserve-3d;
-          transform: translateZ(0) rotateX(1.5deg);
+          transform: translateZ(0) rotateX(1deg) scale(0.965);
+          transform-origin: center;
         }
 
         .perf-card {
           height: 100%;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
-          border-radius: 1rem;
+          border-radius: 1.5rem;
           box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 0 18px rgba(56, 189, 248, 0.18);
           padding: 0.75rem;
           display: flex;
@@ -128,7 +129,7 @@ export function StaffPerformanceP8View() {
         }
 
         .perf-card:hover {
-          transform: translateZ(18px);
+          transform: translateZ(12px);
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.35),
             0 12px 30px rgba(56, 189, 248, 0.35);
@@ -140,8 +141,8 @@ export function StaffPerformanceP8View() {
           inset: 0;
           border-radius: inherit;
           background:
-            radial-gradient(120% 80% at 50% 15%, rgba(255, 255, 255, 0.18), transparent 55%),
-            radial-gradient(120% 80% at 50% 120%, rgba(15, 23, 42, 0.35), transparent 60%);
+            radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.24), transparent 60%),
+            radial-gradient(120% 90% at 50% 120%, rgba(15, 23, 42, 0.45), transparent 62%);
           opacity: 0.9;
           pointer-events: none;
           transform: translateZ(1px);
@@ -152,8 +153,10 @@ export function StaffPerformanceP8View() {
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          background: linear-gradient(90deg, rgba(15, 23, 42, 0.2), transparent 35%, transparent 65%, rgba(15, 23, 42, 0.2));
-          opacity: 0.6;
+          background:
+            linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent 35%, transparent 65%, rgba(15, 23, 42, 0.18)),
+            radial-gradient(120% 80% at 50% 50%, rgba(59, 130, 246, 0.12), transparent 70%);
+          opacity: 0.75;
           pointer-events: none;
           transform: translateZ(1px);
         }
@@ -166,61 +169,61 @@ export function StaffPerformanceP8View() {
         .perf-slot-1 {
           grid-column: 1;
           grid-row: 1;
-          transform: rotateY(5deg) translateZ(8px);
+          transform: rotateY(3deg) translateZ(6px);
         }
 
         .perf-slot-2 {
           grid-column: 2;
           grid-row: 1;
-          transform: translateZ(14px);
+          transform: translateZ(10px);
         }
 
         .perf-slot-3 {
           grid-column: 3;
           grid-row: 1;
-          transform: rotateY(-5deg) translateZ(8px);
+          transform: rotateY(-3deg) translateZ(6px);
         }
 
         .perf-slot-4 {
           grid-column: 1;
           grid-row: 2;
-          transform: rotateY(5deg) translateZ(8px);
+          transform: rotateY(3deg) translateZ(6px);
         }
 
         .perf-slot-5 {
           grid-column: 2;
           grid-row: 2;
-          transform: translateZ(12px);
+          transform: translateZ(9px);
         }
 
         .perf-slot-6 {
           grid-column: 3;
           grid-row: 2;
-          transform: rotateY(-5deg) translateZ(8px);
+          transform: rotateY(-3deg) translateZ(6px);
         }
 
         .perf-slot-7 {
           grid-column: 1;
           grid-row: 3 / span 2;
-          transform: rotateY(5deg) translateZ(6px);
+          transform: rotateY(3deg) translateZ(4px);
         }
 
         .perf-slot-8 {
           grid-column: 2;
           grid-row: 3;
-          transform: translateZ(10px);
+          transform: translateZ(7px);
         }
 
         .perf-slot-9 {
           grid-column: 2;
           grid-row: 4;
-          transform: translateZ(10px);
+          transform: translateZ(7px);
         }
 
         .perf-slot-10 {
           grid-column: 3;
           grid-row: 3 / span 2;
-          transform: rotateY(-5deg) translateZ(6px);
+          transform: rotateY(-3deg) translateZ(4px);
         }
 
         .perf-kpi-card {
