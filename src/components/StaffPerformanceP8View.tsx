@@ -334,9 +334,7 @@ export function StaffPerformanceP8View() {
           height: min(80vh, 760px);
           transform: none;
           border: 1px solid rgba(148, 163, 184, 0.45);
-          box-shadow:
-            0 0 0 1px rgba(56, 189, 248, 0.45),
-            0 30px 80px rgba(15, 23, 42, 0.55);
+          box-shadow: none;
           overflow: auto;
           cursor: default;
           pointer-events: auto;
@@ -361,7 +359,7 @@ export function StaffPerformanceP8View() {
         }
 
         .perf-modal-layer .perf-card-expanded {
-          box-shadow: 0 24px 70px rgba(15, 23, 42, 0.55);
+          box-shadow: none;
         }
 
         .perf-modal-close {
