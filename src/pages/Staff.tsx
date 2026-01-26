@@ -111,17 +111,26 @@ const d1Rows = [
   { count: 3, height: "h-24 sm:h-28", depth: 30 },
 ]
 
+const getRowTransform = (rowIndex: number) => {
+  const bend = (rowIndex - 1.25) * 2.5
+  const tilt = 12 + rowIndex * 2.2
+
+  return {
+    transform: `perspective(1400px) rotateX(${tilt}deg) rotateY(${bend}deg)`,
+  }
+}
+
 const getCardTransform = (rowIndex: number, cardIndex: number, count: number, depth: number) => {
   const center = (count - 1) / 2
   const offset = cardIndex - center
-  const curveX = -offset * 4
-  const curveY = (rowIndex - 1.25) * 2.1
-  const zDepth = depth - Math.abs(offset) * 12 - rowIndex * 3
-  const arcY = rowIndex * 6 + Math.abs(offset) * 2.5
-  const arcX = offset * 6
+  const curveX = -offset * 8
+  const curveY = (rowIndex - 1.25) * 2.8
+  const zDepth = depth - Math.abs(offset) * 16 - rowIndex * 4
+  const arcY = rowIndex * 12 + Math.abs(offset) * 3.5
+  const arcX = offset * 12
 
   return {
-    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${10 + curveY}deg) rotateY(${curveX}deg)`,
+    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${14 + curveY}deg) rotateY(${curveX}deg)`,
   }
 }
 
@@ -133,13 +142,13 @@ const D1Card = ({
   style?: CSSProperties
 }) => (
   <div
-    className={`relative ${height} rounded-[22px] bg-gradient-to-b from-[#1f2536] via-[#151b2b] to-[#0a0f1a] border border-[#2a3346]/80 shadow-[0_20px_55px_rgba(5,10,20,0.7),0_0_35px_rgba(59,130,246,0.18)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
+    className={`relative ${height} rounded-[24px] bg-gradient-to-b from-[#21283a] via-[#161c2d] to-[#0a0f1a] border border-[#2a3346]/90 shadow-[0_28px_70px_rgba(4,8,18,0.75),0_0_45px_rgba(59,130,246,0.22)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
     style={style}
   >
-    <div className="absolute inset-[6px] rounded-[18px] border border-[#3b4458]/80 shadow-[inset_0_0_26px_rgba(10,16,30,0.9)]" />
-    <div className="absolute inset-0 rounded-[22px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.26),transparent_50%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.18),transparent_45%)] opacity-70" />
-    <div className="absolute inset-x-4 top-3 h-6 rounded-full bg-white/5 blur-md" />
-    <div className="absolute inset-x-6 bottom-2 h-6 rounded-full bg-black/50 blur-md opacity-80" />
+    <div className="absolute inset-[6px] rounded-[20px] border border-[#3b4458]/85 shadow-[inset_0_0_32px_rgba(10,16,30,0.9)]" />
+    <div className="absolute inset-0 rounded-[24px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.32),transparent_52%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.2),transparent_48%)] opacity-75" />
+    <div className="absolute inset-x-6 top-3 h-8 rounded-full bg-white/10 blur-lg" />
+    <div className="absolute inset-x-8 bottom-2 h-6 rounded-full bg-black/55 blur-lg opacity-90" />
   </div>
 )
 
@@ -570,19 +579,24 @@ export function Staff() {
                 {d1Rows.map((row, rowIndex) => (
                   <div
                     key={`${row.count}-${rowIndex}`}
-                    className={`grid gap-3 sm:gap-4 [transform-style:preserve-3d] ${
-                      row.count === 4
-                        ? "grid-cols-2 lg:grid-cols-4"
-                        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                    }`}
+                    className="[transform-style:preserve-3d]"
+                    style={getRowTransform(rowIndex)}
                   >
-                    {Array.from({ length: row.count }).map((_, cardIndex) => (
-                      <D1Card
-                        key={`${rowIndex}-${cardIndex}`}
-                        height={row.height}
-                        style={getCardTransform(rowIndex, cardIndex, row.count, row.depth)}
-                      />
-                    ))}
+                    <div
+                      className={`grid gap-3 sm:gap-4 [transform-style:preserve-3d] ${
+                        row.count === 4
+                          ? "grid-cols-2 lg:grid-cols-4"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                      }`}
+                    >
+                      {Array.from({ length: row.count }).map((_, cardIndex) => (
+                        <D1Card
+                          key={`${rowIndex}-${cardIndex}`}
+                          height={row.height}
+                          style={getCardTransform(rowIndex, cardIndex, row.count, row.depth)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
