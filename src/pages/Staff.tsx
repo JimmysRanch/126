@@ -48,3 +48,4 @@
     </div>
   </div>
 </TabsContent>
+export { Staff }
