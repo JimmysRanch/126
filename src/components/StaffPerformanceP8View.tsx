@@ -24,7 +24,12 @@ type ListItem = {
 }
 
 export function StaffPerformanceP8View() {
-  const [activeCard, setActiveCard] = useState<string | null>(null)
+  const [activeCard, setActiveCard] = useState<
+    | { type: "kpi"; index: number }
+    | { type: "chart"; index: number }
+    | { type: "earnings" | "top" | "bottom" | "matrix" }
+    | null
+  >(null)
 
   const closeActiveCard = () => setActiveCard(null)
   const kpis: KPI[] = [
@@ -88,6 +93,173 @@ export function StaffPerformanceP8View() {
     ],
   }
 
+  const renderModalContent = () => {
+    if (!activeCard) return null
+
+    if (activeCard.type === "kpi") {
+      const kpi = kpis[activeCard.index]
+      return (
+        <>
+          <div className="perf-kpi-inner">
+            <div className="perf-kpi-top">
+              <div className="perf-icon">{kpi.icon}</div>
+              <div className="perf-value">
+                {kpi.value}
+                {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
+              </div>
+            </div>
+            <div className="perf-label">{kpi.label}</div>
+          </div>
+          <div className="perf-card-detail">
+            {kpi.label} trends and breakdowns appear here when expanded, including daily deltas and comparisons.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "chart") {
+      const chart = charts[activeCard.index]
+      return (
+        <div className="perf-chart-inner">
+          <div className="perf-header">
+            <div className="perf-dot" />
+            <div>{chart.title}</div>
+          </div>
+          <div className="perf-chart-slot">
+            {chart.labels.map((label, j) => {
+              const value = chart.values[j]
+              const max = Math.max(...chart.values)
+              const height = Math.max(0.18, value / max)
+              return (
+                <div key={j} className="perf-chart-column">
+                  <div className="perf-chart-value">
+                    {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
+                  </div>
+                  <div className="perf-chart-bar">
+                    <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
+                  </div>
+                  <div className="perf-chart-label">{label}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    if (activeCard.type === "earnings") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Earnings by Breed</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {earningsByBreed.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            View extended earnings data, seasonality, and price mix analysis when expanded.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "top") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Top Performing Breed & Size</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {topCombos.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            Expanded view highlights the top performers with service mix, repeat rate, and margin.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "bottom") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Lowest Performing Breed & Size</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {bottomCombos.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            Expanded details include appointment drivers, timing breakdowns, and improvement levers.
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <div className="perf-list-inner">
+          <div className="perf-header">
+            <div className="perf-dot" />
+            <div>RPM by Breed & Size</div>
+          </div>
+          <div className="perf-list-slot">
+            <div className="perf-matrix">
+              <div className="perf-matrix-head">
+                <div>Breed</div>
+                {matrixData.cols.map((col) => (
+                  <div key={col}>{col}</div>
+                ))}
+              </div>
+              {matrixData.rows.map((row) => (
+                <div key={row.name} className="perf-matrix-row">
+                  <div className="perf-matrix-breed">{row.name}</div>
+                  {row.cells.map((cell, i) => (
+                    <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
+                      {cell ?? "—"}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="perf-card-detail">
+          Expanded matrix includes filters, percentile bands, and size mix comparisons.
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <style>{`
@@ -114,18 +286,6 @@ export function StaffPerformanceP8View() {
           transform-style: preserve-3d;
           transform: translateZ(0) rotateX(1deg) scale(0.965);
           transform-origin: center;
-        }
-
-        .perf-layout.has-active .perf-card {
-          pointer-events: none;
-          opacity: 1;
-          filter: none;
-        }
-
-        .perf-layout.has-active .perf-card.perf-card-expanded {
-          pointer-events: auto;
-          opacity: 1;
-          filter: none;
         }
 
         .perf-card {
@@ -625,27 +785,33 @@ export function StaffPerformanceP8View() {
 
       <div className="perf-wrap">
         {activeCard && <button className="perf-overlay" onClick={closeActiveCard} aria-label="Close details" />}
+        {activeCard && (
+          <div
+            className={`perf-card perf-card-expanded ${
+              activeCard.type === "chart" ? "perf-chart-card" : "perf-list-card"
+            }`}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+              ✕
+            </button>
+            {renderModalContent()}
+          </div>
+        )}
         <div className="perf-immersive-frame">
           <motion.div
-            className={`perf-layout ${activeCard ? "has-active" : ""}`}
+            className="perf-layout"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             {kpis.map((kpi, i) => (
-              <motion.div
+              <div
                 key={i}
-                layoutId={`perf-card-${i + 1}`}
-                className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent} ${activeCard === `kpi-${i}` ? "perf-card-expanded" : ""}`}
-                onClick={() => setActiveCard(`kpi-${i}`)}
-                role={activeCard === `kpi-${i}` ? "dialog" : undefined}
-                aria-modal={activeCard === `kpi-${i}` ? "true" : undefined}
+                className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}
+                onClick={() => setActiveCard({ type: "kpi", index: i })}
               >
-                {activeCard === `kpi-${i}` && (
-                  <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                    ✕
-                  </button>
-                )}
                 <div className="perf-kpi-inner">
                   <div className="perf-kpi-top">
                     <div className="perf-icon">{kpi.icon}</div>
@@ -656,26 +822,15 @@ export function StaffPerformanceP8View() {
                   </div>
                   <div className="perf-label">{kpi.label}</div>
                 </div>
-                <div className="perf-card-detail">
-                  {kpi.label} trends and breakdowns appear here when expanded, including daily deltas and comparisons.
-                </div>
-              </motion.div>
+              </div>
             ))}
 
             {charts.map((chart, i) => (
-              <motion.div
+              <div
                 key={i}
-                layoutId={`perf-card-${i + 4}`}
-                className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent} ${activeCard === `chart-${i}` ? "perf-card-expanded" : ""}`}
-                onClick={() => setActiveCard(`chart-${i}`)}
-                role={activeCard === `chart-${i}` ? "dialog" : undefined}
-                aria-modal={activeCard === `chart-${i}` ? "true" : undefined}
+                className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}
+                onClick={() => setActiveCard({ type: "chart", index: i })}
               >
-                {activeCard === `chart-${i}` && (
-                  <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                    ✕
-                  </button>
-                )}
                 <div className="perf-chart-inner">
                   <div className="perf-header">
                     <div className="perf-dot" />
@@ -700,21 +855,13 @@ export function StaffPerformanceP8View() {
                     })}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
 
-            <motion.div
-              layoutId="perf-card-7"
-              className={`perf-list-card perf-card perf-slot-7 blue ${activeCard === "earnings" ? "perf-card-expanded" : ""}`}
-              onClick={() => setActiveCard("earnings")}
-              role={activeCard === "earnings" ? "dialog" : undefined}
-              aria-modal={activeCard === "earnings" ? "true" : undefined}
+            <div
+              className="perf-list-card perf-card perf-slot-7 blue"
+              onClick={() => setActiveCard({ type: "earnings" })}
             >
-              {activeCard === "earnings" && (
-                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                  ✕
-                </button>
-              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -731,23 +878,12 @@ export function StaffPerformanceP8View() {
                   </div>
                 </div>
               </div>
-              <div className="perf-card-detail">
-                View extended earnings data, seasonality, and price mix analysis when expanded.
-              </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              layoutId="perf-card-8"
-              className={`perf-list-card perf-card perf-slot-8 amber ${activeCard === "top" ? "perf-card-expanded" : ""}`}
-              onClick={() => setActiveCard("top")}
-              role={activeCard === "top" ? "dialog" : undefined}
-              aria-modal={activeCard === "top" ? "true" : undefined}
+            <div
+              className="perf-list-card perf-card perf-slot-8 amber"
+              onClick={() => setActiveCard({ type: "top" })}
             >
-              {activeCard === "top" && (
-                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                  ✕
-                </button>
-              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -764,23 +900,12 @@ export function StaffPerformanceP8View() {
                   </div>
                 </div>
               </div>
-              <div className="perf-card-detail">
-                Expanded view highlights the top performers with service mix, repeat rate, and margin.
-              </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              layoutId="perf-card-9"
-              className={`perf-list-card perf-card perf-slot-9 amber ${activeCard === "bottom" ? "perf-card-expanded" : ""}`}
-              onClick={() => setActiveCard("bottom")}
-              role={activeCard === "bottom" ? "dialog" : undefined}
-              aria-modal={activeCard === "bottom" ? "true" : undefined}
+            <div
+              className="perf-list-card perf-card perf-slot-9 amber"
+              onClick={() => setActiveCard({ type: "bottom" })}
             >
-              {activeCard === "bottom" && (
-                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                  ✕
-                </button>
-              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -797,23 +922,12 @@ export function StaffPerformanceP8View() {
                   </div>
                 </div>
               </div>
-              <div className="perf-card-detail">
-                Expanded details include appointment drivers, timing breakdowns, and improvement levers.
-              </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              layoutId="perf-card-10"
-              className={`perf-list-card perf-card perf-slot-10 amber ${activeCard === "matrix" ? "perf-card-expanded" : ""}`}
-              onClick={() => setActiveCard("matrix")}
-              role={activeCard === "matrix" ? "dialog" : undefined}
-              aria-modal={activeCard === "matrix" ? "true" : undefined}
+            <div
+              className="perf-list-card perf-card perf-slot-10 amber"
+              onClick={() => setActiveCard({ type: "matrix" })}
             >
-              {activeCard === "matrix" && (
-                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
-                  ✕
-                </button>
-              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -840,10 +954,7 @@ export function StaffPerformanceP8View() {
                   </div>
                 </div>
               </div>
-              <div className="perf-card-detail">
-                Expanded matrix includes filters, percentile bands, and size mix comparisons.
-              </div>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
