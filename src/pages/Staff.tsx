@@ -14,6 +14,7 @@ import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
 import GroomerPerformanceP4 from "@/pages/GroomerPerformanceP4"
 import GroomerPerformanceP6 from "@/pages/GroomerPerformanceP6"
 import StaffPerformanceHudP7 from "@/pages/StaffPerformanceHudP7"
+import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -191,9 +192,10 @@ export function Staff() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
-      <div className="max-w-[1600px] mx-auto">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <CurvedMonitor intensity="subtle" className="w-full h-full">
+      <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
+        <div className="max-w-[1600px] mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             {!isMobile && <div className="flex-1"></div>}
             
@@ -583,28 +585,29 @@ export function Staff() {
               </div>
             </div>
           </TabsContent>
-        </Tabs>
-      </div>
+          </Tabs>
+        </div>
 
-      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Staff Invitation?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently cancel the pending invitation. The staff member will no longer be able to use the invitation link to join your team.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmCancelInvite}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Cancel Invitation
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel Staff Invitation?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently cancel the pending invitation. The staff member will no longer be able to use the invitation link to join your team.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmCancelInvite}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Cancel Invitation
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </CurvedMonitor>
   )
 }
