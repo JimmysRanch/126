@@ -293,7 +293,7 @@ export function StaffPerformanceP8View() {
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
           border-radius: 1.5rem;
-          box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 0 18px rgba(56, 189, 248, 0.18);
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
           padding: 0.75rem;
           display: flex;
           flex-direction: column;
@@ -307,8 +307,8 @@ export function StaffPerformanceP8View() {
         .perf-card:hover {
           transform: translateZ(12px);
           box-shadow:
-            0 0 0 1px rgba(56, 189, 248, 0.35),
-            0 12px 30px rgba(56, 189, 248, 0.35);
+            0 0 0 1px rgba(148, 163, 184, 0.2),
+            0 16px 32px rgba(15, 23, 42, 0.35);
         }
 
         .perf-overlay {
@@ -424,30 +424,9 @@ export function StaffPerformanceP8View() {
           display: block;
         }
 
-        .perf-card::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background:
-            radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.24), transparent 60%),
-            radial-gradient(120% 90% at 50% 120%, rgba(15, 23, 42, 0.45), transparent 62%);
-          opacity: 0.9;
-          pointer-events: none;
-          transform: translateZ(1px);
-        }
-
+        .perf-card::before,
         .perf-card::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background:
-            linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent 35%, transparent 65%, rgba(15, 23, 42, 0.18)),
-            radial-gradient(120% 80% at 50% 50%, rgba(59, 130, 246, 0.12), transparent 70%);
-          opacity: 0.75;
-          pointer-events: none;
-          transform: translateZ(1px);
+          display: none;
         }
 
 
