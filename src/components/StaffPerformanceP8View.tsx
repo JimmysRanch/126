@@ -333,13 +333,14 @@ export function StaffPerformanceP8View() {
           width: min(80vw, 980px);
           height: min(80vh, 760px);
           transform: none;
-          border: 1px solid rgba(148, 163, 184, 0.35);
+          border: 1px solid rgba(148, 163, 184, 0.45);
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
             0 30px 80px rgba(15, 23, 42, 0.55);
           overflow: auto;
           cursor: default;
           pointer-events: auto;
+          background: hsl(var(--card));
         }
 
         .perf-modal-close {
@@ -444,7 +445,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 1;
           transform: translateZ(10px);
-          height: calc(100% - 0.35rem);
+          height: calc(100% - 0.5rem);
         }
 
         .perf-slot-3 {
@@ -463,7 +464,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 2;
           transform: translateZ(9px);
-          height: calc(100% - 0.35rem);
+          height: calc(100% - 0.5rem);
         }
 
         .perf-slot-6 {
