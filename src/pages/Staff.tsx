@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type CSSProperties } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus, PaperPlaneRight, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -104,18 +104,38 @@ const mockStaff = [
 ]
 
 const d1Rows = [
-  { count: 3, height: "h-20 sm:h-24" },
-  { count: 3, height: "h-28 sm:h-32" },
-  { count: 4, height: "h-20 sm:h-24" },
-  { count: 3, height: "h-24 sm:h-28" },
+  { count: 3, height: "h-20 sm:h-24", depth: 26 },
+  { count: 3, height: "h-28 sm:h-32", depth: 40 },
+  { count: 4, height: "h-20 sm:h-24", depth: 22 },
+  { count: 3, height: "h-24 sm:h-28", depth: 30 },
 ]
 
-const D1Card = ({ height }: { height: string }) => (
+const getCardTransform = (rowIndex: number, cardIndex: number, count: number, depth: number) => {
+  const center = (count - 1) / 2
+  const offset = cardIndex - center
+  const curveX = -offset * 4
+  const curveY = (rowIndex - 1.25) * 1.5
+  const zDepth = depth - Math.abs(offset) * 10 - rowIndex * 2
+
+  return {
+    transform: `perspective(1400px) translateZ(${zDepth}px) rotateX(${8 + curveY}deg) rotateY(${curveX}deg)`,
+  }
+}
+
+const D1Card = ({
+  height,
+  style,
+}: {
+  height: string
+  style?: CSSProperties
+}) => (
   <div
-    className={`relative ${height} rounded-[18px] bg-gradient-to-b from-[#1d2333] via-[#141a28] to-[#0e131f] border border-[#2c3446]/70 shadow-[0_0_25px_rgba(56,189,248,0.15)] overflow-hidden`}
+    className={`relative ${height} rounded-[20px] bg-gradient-to-b from-[#1d2333] via-[#141a28] to-[#0b101c] border border-[#2a3346]/70 shadow-[0_18px_45px_rgba(5,10,20,0.65),0_0_30px_rgba(59,130,246,0.12)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
+    style={style}
   >
-    <div className="absolute inset-[6px] rounded-[14px] border border-[#3a4358]/80 shadow-[inset_0_0_18px_rgba(15,23,42,0.8)]" />
-    <div className="absolute inset-0 rounded-[18px] bg-[radial-gradient(circle_at_20%_10%,rgba(125,211,252,0.12),transparent_45%),radial-gradient(circle_at_85%_20%,rgba(253,224,71,0.1),transparent_40%)] opacity-80" />
+    <div className="absolute inset-[6px] rounded-[16px] border border-[#3b4458]/80 shadow-[inset_0_0_22px_rgba(10,16,30,0.9)]" />
+    <div className="absolute inset-0 rounded-[20px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.2),transparent_45%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.16),transparent_42%)] opacity-70" />
+    <div className="absolute -bottom-4 left-6 right-6 h-6 rounded-full bg-black/60 blur-md opacity-80" />
   </div>
 )
 
@@ -540,19 +560,23 @@ export function Staff() {
           </TabsContent>
 
           <TabsContent value="d1" className="mt-0">
-            <div className="rounded-[28px] border border-[#1f2534] bg-[#0a0f1a]/95 p-4 sm:p-6 shadow-[0_35px_120px_rgba(15,23,42,0.65)]">
+            <div className="rounded-[28px] border border-[#1f2534] bg-[#0a0f1a]/95 p-4 sm:p-6 shadow-[0_35px_120px_rgba(15,23,42,0.65)] [perspective:1600px] [transform-style:preserve-3d]">
               <div className="space-y-3 sm:space-y-4">
                 {d1Rows.map((row, rowIndex) => (
                   <div
                     key={`${row.count}-${rowIndex}`}
-                    className={`grid gap-3 sm:gap-4 ${
+                    className={`grid gap-3 sm:gap-4 [transform-style:preserve-3d] ${
                       row.count === 4
                         ? "grid-cols-2 lg:grid-cols-4"
                         : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                     }`}
                   >
                     {Array.from({ length: row.count }).map((_, cardIndex) => (
-                      <D1Card key={`${rowIndex}-${cardIndex}`} height={row.height} />
+                      <D1Card
+                        key={`${rowIndex}-${cardIndex}`}
+                        height={row.height}
+                        style={getCardTransform(rowIndex, cardIndex, row.count, row.depth)}
+                      />
                     ))}
                   </div>
                 ))}
