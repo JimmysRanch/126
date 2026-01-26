@@ -48,4 +48,6 @@
     </div>
   </div>
 </TabsContent>
-export { Staff }
+export const Staff = () => {
+  // ... all your code inside remains the same
+}
