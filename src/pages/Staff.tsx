@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type CSSProperties } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus, PaperPlaneRight, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
 import GroomerPerformanceP4 from "@/pages/GroomerPerformanceP4"
 import GroomerPerformanceP6 from "@/pages/GroomerPerformanceP6"
 import StaffPerformanceHudP7 from "@/pages/StaffPerformanceHudP7"
+import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -103,6 +104,59 @@ const mockStaff = [
   }
 ]
 
+const d1Rows = [
+  { count: 3, height: "h-20 sm:h-24", depth: 26 },
+  { count: 3, height: "h-28 sm:h-32", depth: 40 },
+  { count: 4, height: "h-20 sm:h-24", depth: 22 },
+  { count: 3, height: "h-24 sm:h-28", depth: 30 },
+]
+
+const d1WrapStyle: CSSProperties = {
+  transform: "perspective(1600px) rotateX(12deg) rotateY(-6deg) scaleX(1.08)",
+  transformStyle: "preserve-3d",
+}
+
+const getRowTransform = (rowIndex: number) => {
+  const bend = (rowIndex - 1.25) * 5.5
+  const tilt = 18 + rowIndex * 3.2
+
+  return {
+    transform: `perspective(1400px) rotateX(${tilt}deg) rotateY(${bend}deg)`,
+  }
+}
+
+const getCardTransform = (rowIndex: number, cardIndex: number, count: number, depth: number) => {
+  const center = (count - 1) / 2
+  const offset = cardIndex - center
+  const curveX = -offset * 12
+  const curveY = (rowIndex - 1.25) * 4.2
+  const zDepth = depth - Math.abs(offset) * 22 - rowIndex * 6
+  const arcY = rowIndex * 18 + Math.abs(offset) * 6
+  const arcX = offset * 22
+
+  return {
+    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${20 + curveY}deg) rotateY(${curveX}deg)`,
+  }
+}
+
+const D1Card = ({
+  height,
+  style,
+}: {
+  height: string
+  style?: CSSProperties
+}) => (
+  <div
+    className={`relative ${height} rounded-[24px] bg-gradient-to-b from-[#21283a] via-[#161c2d] to-[#0a0f1a] border border-[#2a3346]/90 shadow-[0_28px_70px_rgba(4,8,18,0.75),0_0_45px_rgba(59,130,246,0.22)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
+    style={style}
+  >
+    <div className="absolute inset-[6px] rounded-[20px] border border-[#3b4458]/85 shadow-[inset_0_0_32px_rgba(10,16,30,0.9)]" />
+    <div className="absolute inset-0 rounded-[24px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.32),transparent_52%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.2),transparent_48%)] opacity-75" />
+    <div className="absolute inset-x-6 top-3 h-8 rounded-full bg-white/10 blur-lg" />
+    <div className="absolute inset-x-8 bottom-2 h-6 rounded-full bg-black/55 blur-lg opacity-90" />
+  </div>
+)
+
 export function Staff() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -114,7 +168,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8', 'd1'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -155,9 +209,10 @@ export function Staff() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
-      <div className="max-w-[1600px] mx-auto">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <CurvedMonitor intensity="subtle" className="w-full h-full">
+      <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
+        <div className="max-w-[1600px] mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
             {!isMobile && <div className="flex-1"></div>}
             
@@ -271,6 +326,17 @@ export function Staff() {
                 }`}
               >
                 P8
+              </Button>
+              <Button
+                onClick={() => setActiveTab("d1")}
+                variant={activeTab === "d1" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "d1"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                D1
               </Button>
             </div>
 
@@ -511,28 +577,59 @@ export function Staff() {
           <TabsContent value="p8" className="mt-0">
             <StaffPerformanceP8View />
           </TabsContent>
-        </Tabs>
-      </div>
 
-      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Staff Invitation?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently cancel the pending invitation. The staff member will no longer be able to use the invitation link to join your team.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmCancelInvite}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Cancel Invitation
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+          <TabsContent value="d1" className="mt-0">
+            <div className="rounded-[28px] border border-[#1f2534] bg-[#0a0f1a]/95 p-4 sm:p-6 shadow-[0_35px_120px_rgba(15,23,42,0.65)] [perspective:1600px] [transform-style:preserve-3d]">
+              <div className="space-y-3 sm:space-y-4" style={d1WrapStyle}>
+                {d1Rows.map((row, rowIndex) => (
+                  <div
+                    key={`${row.count}-${rowIndex}`}
+                    className="[transform-style:preserve-3d]"
+                    style={getRowTransform(rowIndex)}
+                  >
+                    <div
+                      className={`grid gap-3 sm:gap-4 [transform-style:preserve-3d] ${
+                        row.count === 4
+                          ? "grid-cols-2 lg:grid-cols-4"
+                          : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                      }`}
+                    >
+                      {Array.from({ length: row.count }).map((_, cardIndex) => (
+                        <D1Card
+                          key={`${rowIndex}-${cardIndex}`}
+                          height={row.height}
+                          style={getCardTransform(rowIndex, cardIndex, row.count, row.depth)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+          </Tabs>
+        </div>
+
+        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel Staff Invitation?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently cancel the pending invitation. The staff member will no longer be able to use the invitation link to join your team.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep Invitation</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmCancelInvite}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Cancel Invitation
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </CurvedMonitor>
   )
 }
