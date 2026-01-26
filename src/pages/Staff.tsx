@@ -51,3 +51,4 @@
 export const Staff = () => {
   // ... all your code inside remains the same
 }
+export { Staff }
