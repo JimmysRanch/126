@@ -115,11 +115,13 @@ const getCardTransform = (rowIndex: number, cardIndex: number, count: number, de
   const center = (count - 1) / 2
   const offset = cardIndex - center
   const curveX = -offset * 4
-  const curveY = (rowIndex - 1.25) * 1.5
-  const zDepth = depth - Math.abs(offset) * 10 - rowIndex * 2
+  const curveY = (rowIndex - 1.25) * 2.1
+  const zDepth = depth - Math.abs(offset) * 12 - rowIndex * 3
+  const arcY = rowIndex * 6 + Math.abs(offset) * 2.5
+  const arcX = offset * 6
 
   return {
-    transform: `perspective(1400px) translateZ(${zDepth}px) rotateX(${8 + curveY}deg) rotateY(${curveX}deg)`,
+    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${10 + curveY}deg) rotateY(${curveX}deg)`,
   }
 }
 
@@ -131,12 +133,13 @@ const D1Card = ({
   style?: CSSProperties
 }) => (
   <div
-    className={`relative ${height} rounded-[20px] bg-gradient-to-b from-[#1d2333] via-[#141a28] to-[#0b101c] border border-[#2a3346]/70 shadow-[0_18px_45px_rgba(5,10,20,0.65),0_0_30px_rgba(59,130,246,0.12)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
+    className={`relative ${height} rounded-[22px] bg-gradient-to-b from-[#1f2536] via-[#151b2b] to-[#0a0f1a] border border-[#2a3346]/80 shadow-[0_20px_55px_rgba(5,10,20,0.7),0_0_35px_rgba(59,130,246,0.18)] overflow-hidden transform-gpu [transform-style:preserve-3d]`}
     style={style}
   >
-    <div className="absolute inset-[6px] rounded-[16px] border border-[#3b4458]/80 shadow-[inset_0_0_22px_rgba(10,16,30,0.9)]" />
-    <div className="absolute inset-0 rounded-[20px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.2),transparent_45%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.16),transparent_42%)] opacity-70" />
-    <div className="absolute -bottom-4 left-6 right-6 h-6 rounded-full bg-black/60 blur-md opacity-80" />
+    <div className="absolute inset-[6px] rounded-[18px] border border-[#3b4458]/80 shadow-[inset_0_0_26px_rgba(10,16,30,0.9)]" />
+    <div className="absolute inset-0 rounded-[22px] bg-[radial-gradient(circle_at_18%_12%,rgba(125,211,252,0.26),transparent_50%),radial-gradient(circle_at_80%_18%,rgba(253,224,71,0.18),transparent_45%)] opacity-70" />
+    <div className="absolute inset-x-4 top-3 h-6 rounded-full bg-white/5 blur-md" />
+    <div className="absolute inset-x-6 bottom-2 h-6 rounded-full bg-black/50 blur-md opacity-80" />
   </div>
 )
 
