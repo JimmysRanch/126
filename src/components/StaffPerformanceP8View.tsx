@@ -315,7 +315,7 @@ export function StaffPerformanceP8View() {
           position: fixed;
           inset: 0;
           background: rgba(15, 23, 42, 0.35);
-          z-index: 30;
+          z-index: 60;
         }
 
         .perf-card-expanded {
@@ -325,7 +325,7 @@ export function StaffPerformanceP8View() {
           width: min(80vw, 980px);
           height: min(80vh, 760px);
           transform: translate(-50%, -50%) scale(1) !important;
-          z-index: 40;
+          z-index: 80;
           border: 1px solid rgba(148, 163, 184, 0.35);
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
@@ -436,6 +436,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 1;
           transform: translateZ(10px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-3 {
@@ -454,6 +455,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 2;
           transform: translateZ(9px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-6 {
@@ -472,12 +474,14 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 3;
           transform: translateZ(7px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-9 {
           grid-column: 2;
           grid-row: 4;
           transform: translateZ(7px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-10 {
