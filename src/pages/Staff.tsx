@@ -4,16 +4,11 @@ import { Plus, PaperPlaneRight, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffPerformanceP8View } from "@/components/StaffPerformanceP8View"
 import { PayrollOverview } from "@/components/PayrollOverview"
-import GroomerPerformanceP2 from "@/components/GroomerPerformanceP2"
-import GroomerPerformanceP3 from "@/pages/GroomerPerformanceP3"
-import GroomerPerformanceP4 from "@/pages/GroomerPerformanceP4"
-import GroomerPerformanceP6 from "@/pages/GroomerPerformanceP6"
-import StaffPerformanceHudP7 from "@/pages/StaffPerformanceHudP7"
 import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
@@ -55,7 +50,7 @@ export const Staff = () => {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p8'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -147,61 +142,6 @@ export const Staff = () => {
                   }`}
                 >
                   Performance
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("p2")}
-                  variant={activeTab === "p2" ? "default" : "secondary"}
-                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                    activeTab === "p2" 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-secondary/50 hover:bg-secondary"
-                  }`}
-                >
-                  P2
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("p3")}
-                  variant={activeTab === "p3" ? "default" : "secondary"}
-                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                    activeTab === "p3" 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-secondary/50 hover:bg-secondary"
-                  }`}
-                >
-                  P3
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("p4")}
-                  variant={activeTab === "p4" ? "default" : "secondary"}
-                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                    activeTab === "p4" 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-secondary/50 hover:bg-secondary"
-                  }`}
-                >
-                  P4
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("p6")}
-                  variant={activeTab === "p6" ? "default" : "secondary"}
-                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                    activeTab === "p6" 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-secondary/50 hover:bg-secondary"
-                  }`}
-                >
-                  P6
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("p7")}
-                  variant={activeTab === "p7" ? "default" : "secondary"}
-                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
-                    activeTab === "p7" 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-secondary/50 hover:bg-secondary"
-                  }`}
-                >
-                  P7
                 </Button>
                 <Button
                   onClick={() => setActiveTab("p8")}
@@ -428,26 +368,6 @@ export const Staff = () => {
 
             <TabsContent value="performance" className="mt-0">
               <StaffPerformanceView />
-            </TabsContent>
-
-            <TabsContent value="p2" className="mt-0">
-              <GroomerPerformanceP2 />
-            </TabsContent>
-
-            <TabsContent value="p3" className="mt-0">
-              <GroomerPerformanceP3 />
-            </TabsContent>
-
-            <TabsContent value="p4" className="mt-0">
-              <GroomerPerformanceP4 />
-            </TabsContent>
-
-            <TabsContent value="p6" className="mt-0">
-              <GroomerPerformanceP6 />
-            </TabsContent>
-
-            <TabsContent value="p7" className="mt-0">
-              <StaffPerformanceHudP7 />
             </TabsContent>
 
             <TabsContent value="p8" className="mt-0">
