@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { motion } from "framer-motion"
 
 type KPI = {
@@ -23,6 +24,14 @@ type ListItem = {
 }
 
 export function StaffPerformanceP8View() {
+  const [activeCard, setActiveCard] = useState<
+    | { type: "kpi"; index: number }
+    | { type: "chart"; index: number }
+    | { type: "earnings" | "top" | "bottom" | "matrix" }
+    | null
+  >(null)
+
+  const closeActiveCard = () => setActiveCard(null)
   const kpis: KPI[] = [
     { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
     { icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
@@ -84,6 +93,173 @@ export function StaffPerformanceP8View() {
     ],
   }
 
+  const renderModalContent = () => {
+    if (!activeCard) return null
+
+    if (activeCard.type === "kpi") {
+      const kpi = kpis[activeCard.index]
+      return (
+        <>
+          <div className="perf-kpi-inner">
+            <div className="perf-kpi-top">
+              <div className="perf-icon">{kpi.icon}</div>
+              <div className="perf-value">
+                {kpi.value}
+                {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
+              </div>
+            </div>
+            <div className="perf-label">{kpi.label}</div>
+          </div>
+          <div className="perf-card-detail">
+            {kpi.label} trends and breakdowns appear here when expanded, including daily deltas and comparisons.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "chart") {
+      const chart = charts[activeCard.index]
+      return (
+        <div className="perf-chart-inner">
+          <div className="perf-header">
+            <div className="perf-dot" />
+            <div>{chart.title}</div>
+          </div>
+          <div className="perf-chart-slot">
+            {chart.labels.map((label, j) => {
+              const value = chart.values[j]
+              const max = Math.max(...chart.values)
+              const height = Math.max(0.18, value / max)
+              return (
+                <div key={j} className="perf-chart-column">
+                  <div className="perf-chart-value">
+                    {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
+                  </div>
+                  <div className="perf-chart-bar">
+                    <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
+                  </div>
+                  <div className="perf-chart-label">{label}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    if (activeCard.type === "earnings") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Earnings by Breed</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {earningsByBreed.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            View extended earnings data, seasonality, and price mix analysis when expanded.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "top") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Top Performing Breed & Size</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {topCombos.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            Expanded view highlights the top performers with service mix, repeat rate, and margin.
+          </div>
+        </>
+      )
+    }
+
+    if (activeCard.type === "bottom") {
+      return (
+        <>
+          <div className="perf-list-inner">
+            <div className="perf-header">
+              <div className="perf-dot" />
+              <div>Lowest Performing Breed & Size</div>
+            </div>
+            <div className="perf-list-slot">
+              <div className="perf-list">
+                {bottomCombos.map((item, i) => (
+                  <div key={i} className="perf-list-row">
+                    <div className="perf-list-left">{item.left}</div>
+                    <div className="perf-list-right">{item.right}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="perf-card-detail">
+            Expanded details include appointment drivers, timing breakdowns, and improvement levers.
+          </div>
+        </>
+      )
+    }
+
+    return (
+      <>
+        <div className="perf-list-inner">
+          <div className="perf-header">
+            <div className="perf-dot" />
+            <div>RPM by Breed & Size</div>
+          </div>
+          <div className="perf-list-slot">
+            <div className="perf-matrix">
+              <div className="perf-matrix-head">
+                <div>Breed</div>
+                {matrixData.cols.map((col) => (
+                  <div key={col}>{col}</div>
+                ))}
+              </div>
+              {matrixData.rows.map((row) => (
+                <div key={row.name} className="perf-matrix-row">
+                  <div className="perf-matrix-breed">{row.name}</div>
+                  {row.cells.map((cell, i) => (
+                    <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
+                      {cell ?? "—"}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="perf-card-detail">
+          Expanded matrix includes filters, percentile bands, and size mix comparisons.
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <style>{`
@@ -94,74 +270,232 @@ export function StaffPerformanceP8View() {
           overflow: hidden;
         }
 
+        .perf-immersive-frame {
+          height: 100%;
+          perspective: 1600px;
+          perspective-origin: 50% 50%;
+          padding: 0.75rem 1.25rem;
+        }
+
         .perf-layout {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           grid-template-rows: 1fr 2fr 2fr 2fr;
           gap: 0.75rem;
           height: 100%;
+          transform-style: preserve-3d;
+          transform: translateZ(0) rotateX(1deg) scale(0.965);
+          transform-origin: center;
         }
 
         .perf-card {
           height: 100%;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
-          border-radius: 0.75rem;
+          border-radius: 1.5rem;
           box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 0 18px rgba(56, 189, 248, 0.18);
           padding: 0.75rem;
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
+          transform-style: preserve-3d;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .perf-card:hover {
+          transform: translateZ(12px);
+          box-shadow:
+            0 0 0 1px rgba(56, 189, 248, 0.35),
+            0 12px 30px rgba(56, 189, 248, 0.35);
+        }
+
+        .perf-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.35);
+          z-index: 60;
+        }
+
+        .perf-modal-layer {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 80;
+          pointer-events: none;
+        }
+
+        .perf-card-expanded {
+          position: relative;
+          width: min(80vw, 980px);
+          height: min(80vh, 760px);
+          transform: none;
+          border: 1px solid rgba(148, 163, 184, 0.35);
+          box-shadow:
+            0 0 0 1px rgba(56, 189, 248, 0.45),
+            0 30px 80px rgba(15, 23, 42, 0.55);
+          overflow: auto;
+          cursor: default;
+          pointer-events: auto;
+        }
+
+        .perf-modal-close {
+          position: absolute;
+          top: 0.75rem;
+          right: 0.75rem;
+          width: 2rem;
+          height: 2rem;
+          border-radius: 999px;
+          border: 1px solid hsl(var(--border));
+          background: hsl(var(--secondary));
+          color: hsl(var(--foreground));
+          display: grid;
+          place-items: center;
+          font-size: 1rem;
+          z-index: 2;
+        }
+
+        .perf-modal-close:hover {
+          background: hsl(var(--card));
+        }
+
+        .perf-card-expanded .perf-value {
+          font-size: 2.75rem;
+        }
+
+        .perf-card-expanded .perf-unit {
+          font-size: 1.25rem;
+        }
+
+        .perf-card-expanded .perf-label,
+        .perf-card-expanded .perf-header {
+          font-size: 0.9rem;
+        }
+
+        .perf-card-expanded .perf-list-row {
+          padding: 0.75rem 1rem;
+        }
+
+        .perf-card-expanded .perf-chart-slot {
+          padding: 0.75rem;
+        }
+
+        .perf-card-expanded.perf-chart-card {
+          width: min(65vw, 720px);
+          height: min(55vh, 520px);
+        }
+
+        .perf-card-detail {
+          display: none;
+          margin-top: 0.5rem;
+          padding-top: 0.5rem;
+          border-top: 1px solid hsl(var(--border));
+          color: hsl(var(--muted-foreground));
+          font-size: 0.85rem;
+          line-height: 1.4;
+        }
+
+        .perf-card-expanded .perf-card-detail {
+          display: block;
+        }
+
+        .perf-card::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background:
+            radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.24), transparent 60%),
+            radial-gradient(120% 90% at 50% 120%, rgba(15, 23, 42, 0.45), transparent 62%);
+          opacity: 0.9;
+          pointer-events: none;
+          transform: translateZ(1px);
+        }
+
+        .perf-card::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background:
+            linear-gradient(90deg, rgba(15, 23, 42, 0.18), transparent 35%, transparent 65%, rgba(15, 23, 42, 0.18)),
+            radial-gradient(120% 80% at 50% 50%, rgba(59, 130, 246, 0.12), transparent 70%);
+          opacity: 0.75;
+          pointer-events: none;
+          transform: translateZ(1px);
+        }
+
+
+        .perf-card > * {
+          position: relative;
+          z-index: 1;
         }
 
         .perf-slot-1 {
           grid-column: 1;
           grid-row: 1;
+          transform: rotateY(6deg) translateZ(8px);
         }
 
         .perf-slot-2 {
           grid-column: 2;
           grid-row: 1;
+          transform: translateZ(10px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-3 {
           grid-column: 3;
           grid-row: 1;
+          transform: rotateY(-6deg) translateZ(8px);
         }
 
         .perf-slot-4 {
           grid-column: 1;
           grid-row: 2;
+          transform: rotateY(6deg) translateZ(8px);
         }
 
         .perf-slot-5 {
           grid-column: 2;
           grid-row: 2;
+          transform: translateZ(9px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-6 {
           grid-column: 3;
           grid-row: 2;
+          transform: rotateY(-6deg) translateZ(8px);
         }
 
         .perf-slot-7 {
           grid-column: 1;
           grid-row: 3 / span 2;
+          transform: rotateY(6deg) translateZ(6px);
         }
 
         .perf-slot-8 {
           grid-column: 2;
           grid-row: 3;
+          transform: translateZ(7px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-9 {
           grid-column: 2;
           grid-row: 4;
+          transform: translateZ(7px);
+          height: calc(100% - 0.35rem);
         }
 
         .perf-slot-10 {
           grid-column: 3;
           grid-row: 3 / span 2;
+          transform: rotateY(-6deg) translateZ(6px);
         }
 
         .perf-kpi-card {
@@ -434,153 +768,207 @@ export function StaffPerformanceP8View() {
             grid-template-columns: 1fr;
             grid-template-rows: none;
             height: auto;
+            transform: none;
           }
 
           .perf-card {
             grid-column: auto;
             grid-row: auto;
             min-height: 12rem;
+            transform: none;
+          }
+
+          .perf-card:hover {
+            transform: none;
+          }
+
+          .perf-card-expanded {
+            width: min(90vw, 720px);
+            height: min(85vh, 720px);
+            transform: none;
+          }
+
+          .perf-card-expanded.perf-chart-card {
+            width: min(85vw, 640px);
+            height: min(70vh, 520px);
           }
         }
       `}</style>
 
       <div className="perf-wrap">
-        <motion.div
-          className="perf-layout"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          {kpis.map((kpi, i) => (
-            <div key={i} className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}>
-              <div className="perf-kpi-inner">
-                <div className="perf-kpi-top">
-                  <div className="perf-icon">{kpi.icon}</div>
-                  <div className="perf-value">
-                    {kpi.value}
-                    {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
+        {activeCard && <button className="perf-overlay" onClick={closeActiveCard} aria-label="Close details" />}
+        {activeCard && (
+          <div className="perf-modal-layer" role="dialog" aria-modal="true">
+            <div
+              className={`perf-card perf-card-expanded ${
+                activeCard.type === "chart" ? "perf-chart-card" : "perf-list-card"
+              }`}
+            >
+              <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                ✕
+              </button>
+              {renderModalContent()}
+            </div>
+          </div>
+        )}
+        <div className="perf-immersive-frame">
+          <motion.div
+            className="perf-layout"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {kpis.map((kpi, i) => (
+              <div
+                key={i}
+                className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}
+                onClick={() => setActiveCard({ type: "kpi", index: i })}
+              >
+                <div className="perf-kpi-inner">
+                  <div className="perf-kpi-top">
+                    <div className="perf-icon">{kpi.icon}</div>
+                    <div className="perf-value">
+                      {kpi.value}
+                      {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
+                    </div>
+                  </div>
+                  <div className="perf-label">{kpi.label}</div>
+                </div>
+              </div>
+            ))}
+
+            {charts.map((chart, i) => (
+              <div
+                key={i}
+                className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}
+                onClick={() => setActiveCard({ type: "chart", index: i })}
+              >
+                <div className="perf-chart-inner">
+                  <div className="perf-header">
+                    <div className="perf-dot" />
+                    <div>{chart.title}</div>
+                  </div>
+                  <div className="perf-chart-slot">
+                    {chart.labels.map((label, j) => {
+                      const value = chart.values[j]
+                      const max = Math.max(...chart.values)
+                      const height = Math.max(0.18, value / max)
+                      return (
+                        <div key={j} className="perf-chart-column">
+                          <div className="perf-chart-value">
+                            {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
+                          </div>
+                          <div className="perf-chart-bar">
+                            <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
+                          </div>
+                          <div className="perf-chart-label">{label}</div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
-                <div className="perf-label">{kpi.label}</div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {charts.map((chart, i) => (
-            <div key={i} className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}>
-              <div className="perf-chart-inner">
+            <div
+              className="perf-list-card perf-card perf-slot-7 blue"
+              onClick={() => setActiveCard({ type: "earnings" })}
+            >
+              <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
-                  <div>{chart.title}</div>
+                  <div>Earnings by Breed</div>
                 </div>
-                <div className="perf-chart-slot">
-                  {chart.labels.map((label, j) => {
-                    const value = chart.values[j]
-                    const max = Math.max(...chart.values)
-                    const height = Math.max(0.18, value / max)
-                    return (
-                      <div key={j} className="perf-chart-column">
-                        <div className="perf-chart-value">
-                          {chart.prefix ?? ""}{chart.prefix ? value.toFixed(2) : value.toFixed(0)}{chart.suffix ?? ""}
-                        </div>
-                        <div className="perf-chart-bar">
-                          <div className="perf-chart-bar-fill" style={{ height: `${height * 100}%` }} />
-                        </div>
-                        <div className="perf-chart-label">{label}</div>
+                <div className="perf-list-slot">
+                  <div className="perf-list">
+                    {earningsByBreed.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
                       </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <div className="perf-list-card perf-card perf-slot-7 blue">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Earnings by Breed</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {earningsByBreed.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-8 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Top Performing Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {topCombos.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-9 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>Lowest Performing Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-list">
-                  {bottomCombos.map((item, i) => (
-                    <div key={i} className="perf-list-row">
-                      <div className="perf-list-left">{item.left}</div>
-                      <div className="perf-list-right">{item.right}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="perf-list-card perf-card perf-slot-10 amber">
-            <div className="perf-list-inner">
-              <div className="perf-header">
-                <div className="perf-dot" />
-                <div>RPM by Breed & Size</div>
-              </div>
-              <div className="perf-list-slot">
-                <div className="perf-matrix">
-                  <div className="perf-matrix-head">
-                    <div>Breed</div>
-                    {matrixData.cols.map((col) => (
-                      <div key={col}>{col}</div>
                     ))}
                   </div>
-                  {matrixData.rows.map((row) => (
-                    <div key={row.name} className="perf-matrix-row">
-                      <div className="perf-matrix-breed">{row.name}</div>
-                      {row.cells.map((cell, i) => (
-                        <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
-                          {cell ?? "—"}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+
+            <div
+              className="perf-list-card perf-card perf-slot-8 amber"
+              onClick={() => setActiveCard({ type: "top" })}
+            >
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>Top Performing Breed & Size</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-list">
+                    {topCombos.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="perf-list-card perf-card perf-slot-9 amber"
+              onClick={() => setActiveCard({ type: "bottom" })}
+            >
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>Lowest Performing Breed & Size</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-list">
+                    {bottomCombos.map((item, i) => (
+                      <div key={i} className="perf-list-row">
+                        <div className="perf-list-left">{item.left}</div>
+                        <div className="perf-list-right">{item.right}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="perf-list-card perf-card perf-slot-10 amber"
+              onClick={() => setActiveCard({ type: "matrix" })}
+            >
+              <div className="perf-list-inner">
+                <div className="perf-header">
+                  <div className="perf-dot" />
+                  <div>RPM by Breed & Size</div>
+                </div>
+                <div className="perf-list-slot">
+                  <div className="perf-matrix">
+                    <div className="perf-matrix-head">
+                      <div>Breed</div>
+                      {matrixData.cols.map((col) => (
+                        <div key={col}>{col}</div>
+                      ))}
+                    </div>
+                    {matrixData.rows.map((row) => (
+                      <div key={row.name} className="perf-matrix-row">
+                        <div className="perf-matrix-breed">{row.name}</div>
+                        {row.cells.map((cell, i) => (
+                          <div key={i} className={`perf-matrix-cell ${cell ? "" : "muted"}`}>
+                            {cell ?? "—"}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </>
   )
