@@ -111,9 +111,14 @@ const d1Rows = [
   { count: 3, height: "h-24 sm:h-28", depth: 30 },
 ]
 
+const d1WrapStyle: CSSProperties = {
+  transform: "perspective(1600px) rotateX(12deg) rotateY(-6deg) scaleX(1.08)",
+  transformStyle: "preserve-3d",
+}
+
 const getRowTransform = (rowIndex: number) => {
-  const bend = (rowIndex - 1.25) * 2.5
-  const tilt = 12 + rowIndex * 2.2
+  const bend = (rowIndex - 1.25) * 5.5
+  const tilt = 18 + rowIndex * 3.2
 
   return {
     transform: `perspective(1400px) rotateX(${tilt}deg) rotateY(${bend}deg)`,
@@ -123,14 +128,14 @@ const getRowTransform = (rowIndex: number) => {
 const getCardTransform = (rowIndex: number, cardIndex: number, count: number, depth: number) => {
   const center = (count - 1) / 2
   const offset = cardIndex - center
-  const curveX = -offset * 8
-  const curveY = (rowIndex - 1.25) * 2.8
-  const zDepth = depth - Math.abs(offset) * 16 - rowIndex * 4
-  const arcY = rowIndex * 12 + Math.abs(offset) * 3.5
-  const arcX = offset * 12
+  const curveX = -offset * 12
+  const curveY = (rowIndex - 1.25) * 4.2
+  const zDepth = depth - Math.abs(offset) * 22 - rowIndex * 6
+  const arcY = rowIndex * 18 + Math.abs(offset) * 6
+  const arcX = offset * 22
 
   return {
-    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${14 + curveY}deg) rotateY(${curveX}deg)`,
+    transform: `perspective(1400px) translate3d(${arcX}px, ${arcY}px, ${zDepth}px) rotateX(${20 + curveY}deg) rotateY(${curveX}deg)`,
   }
 }
 
@@ -575,7 +580,7 @@ export function Staff() {
 
           <TabsContent value="d1" className="mt-0">
             <div className="rounded-[28px] border border-[#1f2534] bg-[#0a0f1a]/95 p-4 sm:p-6 shadow-[0_35px_120px_rgba(15,23,42,0.65)] [perspective:1600px] [transform-style:preserve-3d]">
-              <div className="space-y-3 sm:space-y-4">
+              <div className="space-y-3 sm:space-y-4" style={d1WrapStyle}>
                 {d1Rows.map((row, rowIndex) => (
                   <div
                     key={`${row.count}-${rowIndex}`}
