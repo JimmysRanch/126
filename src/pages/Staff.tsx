@@ -120,132 +120,47 @@ export const Staff = () => {
               {activeTab !== "list" && !isMobile && <div className="flex-1"></div>}
             </div>
 
-            <TabsContent value="list" className="mt-0">
-              <div className="grid grid-cols-1 gap-3">
-                {(pendingStaff || []).map(staff => (
-                  <Card key={staff.id} className="p-3 sm:p-5 bg-card border-border border-dashed opacity-75">
-                    {isMobile ? (
-                      <div className="space-y-3">
-                        <h3 className="text-base font-semibold">{staff.email}</h3>
-                        <Badge variant="secondary" className="text-xs bg-yellow-500/20 text-yellow-600 border-yellow-500/30">Pending Invite</Badge>
-                        <div className="grid grid-cols-1 gap-2 pt-2 border-t border-border">
-                          <div className="bg-secondary/30 rounded-md p-2 text-center">
-                            <div className="text-[10px] text-muted-foreground uppercase">Invited</div>
-                            <div className="text-xs font-semibold">{new Date(staff.invitedAt).toLocaleDateString()}</div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="flex-1" onClick={() => handleResendInvite(staff.id, staff.email)}>
-                            <PaperPlaneRight size={14} className="mr-1.5" /> Resend
-                          </Button>
-                          <Button size="sm" variant="outline" className="flex-1 text-destructive" onClick={() => handleCancelInvite(staff.id)}>
-                            <Trash size={14} className="mr-1.5" /> Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-6">
-                        <h3 className="text-lg font-semibold">{staff.email}</h3>
-                        <Badge variant="secondary" className="text-xs bg-yellow-500/20 text-yellow-600 border-yellow-500/30">Pending Invite</Badge>
-                        <div className="text-center">
-                          <div className="text-xs text-muted-foreground uppercase">Invited</div>
-                          <div className="font-semibold">{new Date(staff.invitedAt).toLocaleDateString()}</div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" onClick={() => handleResendInvite(staff.id, staff.email)}>Resend Invite</Button>
-                          <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleCancelInvite(staff.id)}>Cancel Invite</Button>
-                        </div>
-                      </div>
-                    )}
-                  </Card>
-                ))}
-                {mockStaff.map(staff => (
-                  <Card key={staff.id} className="p-3 sm:p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer" onClick={() => navigate(`/staff/${staff.id}`)}>
-                    {isMobile ? (
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <h3 className="text-base font-semibold">{staff.name}</h3>
-                          <div className="text-xs text-muted-foreground">{staff.totalAppointments} appts</div>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          <Badge variant="secondary">{staff.role}</Badge>
-                          <Badge variant={staff.status === "Active" ? "default" : "secondary"} className={staff.status === "Active" ? "bg-primary" : ""}>{staff.status}</Badge>
-                        </div>
-                        <div className="pt-2 border-t border-border">
-                          <div className="bg-secondary/30 rounded-md p-2 text-center">
-                            <div className="text-[10px] text-muted-foreground uppercase">Hired</div>
-                            <div className="text-xs font-semibold">{staff.hireDate}</div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-4">
-                            <h3 className="text-lg font-semibold">{staff.name}</h3>
-                            <Badge variant="secondary">{staff.role}</Badge>
-                          </div>
-                        </div>
-                        <div className="flex gap-8 text-sm">
-                          <div className="text-center w-24">
-                            <div className="text-xs text-muted-foreground uppercase">Status</div>
-                            <Badge variant={staff.status === "Active" ? "default" : "secondary"} className={staff.status === "Active" ? "bg-primary" : ""}>{staff.status}</Badge>
-                          </div>
-                          <div className="text-center w-24">
-                            <div className="text-xs text-muted-foreground uppercase">Appointments</div>
-                            <div className="font-semibold">{staff.totalAppointments}</div>
-                          </div>
-                          <div className="text-center w-28">
-                            <div className="text-xs text-muted-foreground uppercase">Hired</div>
-                            <div className="font-semibold">{staff.hireDate}</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </Card>
-                ))}
-              </div>
-           <TabsContent value="d1" className="mt-0">
-  <div className="relative min-h-[680px] rounded-3xl border border-slate-800/60 bg-gradient-to-b from-[#0a0f1a] to-black p-6 shadow-2xl [perspective:1600px] [transform-style:preserve-3d]">
+            <TabsContent value="d1" className="mt-0">
+  <div className="relative min-h-[700px] rounded-3xl border border-slate-700/40 bg-black/80 p-4 sm:p-8 shadow-[0_0_80px_rgba(0,0,0,0.9)] [perspective:2800px] [transform-style:preserve-3d] overflow-hidden">
     <div
-      className="relative mx-auto max-w-7xl"
+      className="relative mx-auto max-w-6xl"
       style={{
-        transform: "rotateX(15deg) rotateY(-4deg) scale(1.04)",
+        transform: "rotateX(22deg) rotateY(-5deg) scale(1.06)",
         transformStyle: "preserve-3d",
       }}
     >
       {d1Rows.map((row, rowIdx) => (
         <div
           key={rowIdx}
-          className="[transform-style:preserve-3d]"
+          className="[transform-style:preserve-3d] mb-[-60px] last:mb-[-20px]"
           style={{
-            transform: `rotateX(${10 + rowIdx * 5}deg) rotateY(${(rowIdx - 1.5) * 6}deg)`,
+            transform: `rotateX(${16 + rowIdx * 9}deg) rotateY(${(rowIdx - 1.5) * 11}deg)`,
           }}
         >
           <div
-            className={`grid gap-5 [transform-style:preserve-3d] justify-items-center ${
+            className={`grid gap-6 sm:gap-8 [transform-style:preserve-3d] justify-items-center ${
               row.count === 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3"
             }`}
           >
             {Array.from({ length: row.count }).map((_, colIdx) => {
               const center = (row.count - 1) / 2
               const offset = colIdx - center
-              const z = row.depth - Math.abs(offset) * 45 + (Math.abs(offset) < 1 ? 60 : 0)
-              const rotY = offset * -16
-              const rotX = 4 + Math.abs(offset) * 5
-              const tx = offset * 22
-              const ty = rowIdx * 16 + Math.abs(offset) * 10
+              const z = row.depth + 100 - Math.abs(offset) * 70
+              const rotY = offset * -22
+              const rotX = 8 + Math.abs(offset) * 8 + rowIdx * 4
+              const tx = offset * 35
+              const ty = rowIdx * 24 + Math.abs(offset) * 16
 
               return (
                 <div
                   key={colIdx}
-                  className={`${row.height} w-full max-w-[380px] rounded-2xl bg-gradient-to-br from-[#1a2335] via-[#0f172a] to-black border border-slate-700/70 shadow-[0_30px_80px_rgba(0,0,0,0.85),inset_0_1px_6px_rgba(200,220,255,0.04)] [transform-style:preserve-3d] transition-all duration-400 hover:scale-[1.06] hover:shadow-cyan-950/40`}
+                  className={`${row.height} w-full max-w-[360px] rounded-2xl bg-gradient-to-br from-slate-900 via-black to-slate-950 border border-slate-600/50 shadow-[0_50px_120px_rgba(0,0,0,1),inset_0_2px_10px_rgba(255,255,255,0.03)] [transform-style:preserve-3d] transition-all duration-300 hover:scale-110 hover:z-20 hover:shadow-cyan-900/30`}
                   style={{
                     transform: `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
                   }}
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 via-transparent to-transparent/20 pointer-events-none" />
-                  <div className="absolute inset-[2px] rounded-[14px] border border-cyan-800/25 opacity-60 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent via-black/30 to-black/60 pointer-events-none" />
+                  <div className="absolute inset-[1px] rounded-[15px] border border-cyan-900/30 opacity-70 pointer-events-none" />
                 </div>
               )
             })}
