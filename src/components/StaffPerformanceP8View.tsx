@@ -166,11 +166,32 @@ export function StaffPerformanceP8View() {
           height: min(80vh, 760px);
           transform: translate(-50%, -50%) scale(1) !important;
           z-index: 40;
+          border: 1px solid rgba(148, 163, 184, 0.35);
           box-shadow:
             0 0 0 1px rgba(56, 189, 248, 0.45),
             0 30px 80px rgba(15, 23, 42, 0.55);
           overflow: auto;
           cursor: default;
+        }
+
+        .perf-modal-close {
+          position: absolute;
+          top: 0.75rem;
+          right: 0.75rem;
+          width: 2rem;
+          height: 2rem;
+          border-radius: 999px;
+          border: 1px solid hsl(var(--border));
+          background: hsl(var(--secondary));
+          color: hsl(var(--foreground));
+          display: grid;
+          place-items: center;
+          font-size: 1rem;
+          z-index: 2;
+        }
+
+        .perf-modal-close:hover {
+          background: hsl(var(--card));
         }
 
         .perf-card-expanded .perf-value {
@@ -617,7 +638,14 @@ export function StaffPerformanceP8View() {
                 layoutId={`perf-card-${i + 1}`}
                 className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent} ${activeCard === `kpi-${i}` ? "perf-card-expanded" : ""}`}
                 onClick={() => setActiveCard(`kpi-${i}`)}
+                role={activeCard === `kpi-${i}` ? "dialog" : undefined}
+                aria-modal={activeCard === `kpi-${i}` ? "true" : undefined}
               >
+                {activeCard === `kpi-${i}` && (
+                  <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                    ✕
+                  </button>
+                )}
                 <div className="perf-kpi-inner">
                   <div className="perf-kpi-top">
                     <div className="perf-icon">{kpi.icon}</div>
@@ -640,7 +668,14 @@ export function StaffPerformanceP8View() {
                 layoutId={`perf-card-${i + 4}`}
                 className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent} ${activeCard === `chart-${i}` ? "perf-card-expanded" : ""}`}
                 onClick={() => setActiveCard(`chart-${i}`)}
+                role={activeCard === `chart-${i}` ? "dialog" : undefined}
+                aria-modal={activeCard === `chart-${i}` ? "true" : undefined}
               >
+                {activeCard === `chart-${i}` && (
+                  <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                    ✕
+                  </button>
+                )}
                 <div className="perf-chart-inner">
                   <div className="perf-header">
                     <div className="perf-dot" />
@@ -672,7 +707,14 @@ export function StaffPerformanceP8View() {
               layoutId="perf-card-7"
               className={`perf-list-card perf-card perf-slot-7 blue ${activeCard === "earnings" ? "perf-card-expanded" : ""}`}
               onClick={() => setActiveCard("earnings")}
+              role={activeCard === "earnings" ? "dialog" : undefined}
+              aria-modal={activeCard === "earnings" ? "true" : undefined}
             >
+              {activeCard === "earnings" && (
+                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                  ✕
+                </button>
+              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -698,7 +740,14 @@ export function StaffPerformanceP8View() {
               layoutId="perf-card-8"
               className={`perf-list-card perf-card perf-slot-8 amber ${activeCard === "top" ? "perf-card-expanded" : ""}`}
               onClick={() => setActiveCard("top")}
+              role={activeCard === "top" ? "dialog" : undefined}
+              aria-modal={activeCard === "top" ? "true" : undefined}
             >
+              {activeCard === "top" && (
+                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                  ✕
+                </button>
+              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -724,7 +773,14 @@ export function StaffPerformanceP8View() {
               layoutId="perf-card-9"
               className={`perf-list-card perf-card perf-slot-9 amber ${activeCard === "bottom" ? "perf-card-expanded" : ""}`}
               onClick={() => setActiveCard("bottom")}
+              role={activeCard === "bottom" ? "dialog" : undefined}
+              aria-modal={activeCard === "bottom" ? "true" : undefined}
             >
+              {activeCard === "bottom" && (
+                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                  ✕
+                </button>
+              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -750,7 +806,14 @@ export function StaffPerformanceP8View() {
               layoutId="perf-card-10"
               className={`perf-list-card perf-card perf-slot-10 amber ${activeCard === "matrix" ? "perf-card-expanded" : ""}`}
               onClick={() => setActiveCard("matrix")}
+              role={activeCard === "matrix" ? "dialog" : undefined}
+              aria-modal={activeCard === "matrix" ? "true" : undefined}
             >
+              {activeCard === "matrix" && (
+                <button className="perf-modal-close" onClick={closeActiveCard} aria-label="Close card">
+                  ✕
+                </button>
+              )}
               <div className="perf-list-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
