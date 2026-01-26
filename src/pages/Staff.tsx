@@ -103,6 +103,22 @@ const mockStaff = [
   }
 ]
 
+const d1Rows = [
+  { count: 3, height: "h-20 sm:h-24" },
+  { count: 3, height: "h-28 sm:h-32" },
+  { count: 4, height: "h-20 sm:h-24" },
+  { count: 3, height: "h-24 sm:h-28" },
+]
+
+const D1Card = ({ height }: { height: string }) => (
+  <div
+    className={`relative ${height} rounded-[18px] bg-gradient-to-b from-[#1d2333] via-[#141a28] to-[#0e131f] border border-[#2c3446]/70 shadow-[0_0_25px_rgba(56,189,248,0.15)] overflow-hidden`}
+  >
+    <div className="absolute inset-[6px] rounded-[14px] border border-[#3a4358]/80 shadow-[inset_0_0_18px_rgba(15,23,42,0.8)]" />
+    <div className="absolute inset-0 rounded-[18px] bg-[radial-gradient(circle_at_20%_10%,rgba(125,211,252,0.12),transparent_45%),radial-gradient(circle_at_85%_20%,rgba(253,224,71,0.1),transparent_40%)] opacity-80" />
+  </div>
+)
+
 export function Staff() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -114,7 +130,7 @@ export function Staff() {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p2', 'p3', 'p4', 'p6', 'p7', 'p8', 'd1'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -271,6 +287,17 @@ export function Staff() {
                 }`}
               >
                 P8
+              </Button>
+              <Button
+                onClick={() => setActiveTab("d1")}
+                variant={activeTab === "d1" ? "default" : "secondary"}
+                className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                  activeTab === "d1"
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-secondary/50 hover:bg-secondary"
+                }`}
+              >
+                D1
               </Button>
             </div>
 
@@ -510,6 +537,27 @@ export function Staff() {
 
           <TabsContent value="p8" className="mt-0">
             <StaffPerformanceP8View />
+          </TabsContent>
+
+          <TabsContent value="d1" className="mt-0">
+            <div className="rounded-[28px] border border-[#1f2534] bg-[#0a0f1a]/95 p-4 sm:p-6 shadow-[0_35px_120px_rgba(15,23,42,0.65)]">
+              <div className="space-y-3 sm:space-y-4">
+                {d1Rows.map((row, rowIndex) => (
+                  <div
+                    key={`${row.count}-${rowIndex}`}
+                    className={`grid gap-3 sm:gap-4 ${
+                      row.count === 4
+                        ? "grid-cols-2 lg:grid-cols-4"
+                        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    }`}
+                  >
+                    {Array.from({ length: row.count }).map((_, cardIndex) => (
+                      <D1Card key={`${rowIndex}-${cardIndex}`} height={row.height} />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
