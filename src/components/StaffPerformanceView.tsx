@@ -1,7 +1,10 @@
+import { useState } from "react"
 import { motion } from "framer-motion"
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+
 type KPI = {
-  icon: string
+  icon?: string
   value: string
   unit?: string
   label: string
@@ -22,11 +25,19 @@ type ListItem = {
   right: string
 }
 
+type CardDetail = {
+  title: string
+  description: string
+  items?: string[]
+}
+
 export function StaffPerformanceView() {
+  const [selectedCard, setSelectedCard] = useState<CardDetail | null>(null)
+
   const kpis: KPI[] = [
-    { icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
+    { value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
     { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
-    { icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
+    { value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
   ]
 
   const charts: BarData[] = [
@@ -47,8 +58,8 @@ export function StaffPerformanceView() {
     {
       title: "RPM by Dog Size",
       accent: "amber",
-      labels: ["Small", "Medium", "Large"],
-      values: [1.56, 1.95, 2.24],
+      labels: ["Small", "Medium", "Large", "XL"],
+      values: [1.56, 1.95, 2.24, 2.48],
       prefix: "$",
     },
   ]
@@ -113,6 +124,16 @@ export function StaffPerformanceView() {
           display: flex;
           flex-direction: column;
           gap: 0.625rem;
+        }
+
+        .perf-card-button {
+          cursor: pointer;
+          transition: transform 150ms ease, box-shadow 150ms ease;
+        }
+
+        .perf-card-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3), 0 0 24px rgba(56, 189, 248, 0.25);
         }
 
         .perf-slot-1 {
@@ -457,10 +478,19 @@ export function StaffPerformanceView() {
           transition={{ duration: 0.4 }}
         >
           {kpis.map((kpi, i) => (
-            <div key={i} className={`perf-kpi-card perf-card perf-slot-${i + 1} ${kpi.accent}`}>
+            <div
+              key={i}
+              className={`perf-kpi-card perf-card perf-card-button perf-slot-${i + 1} ${kpi.accent}`}
+              onClick={() =>
+                setSelectedCard({
+                  title: kpi.label,
+                  description: `Current value: ${kpi.value}${kpi.unit ? ` ${kpi.unit}` : ""}.`,
+                })
+              }
+            >
               <div className="perf-kpi-inner">
                 <div className="perf-kpi-top">
-                  <div className="perf-icon">{kpi.icon}</div>
+                  {kpi.icon && <div className="perf-icon">{kpi.icon}</div>}
                   <div className="perf-value">
                     {kpi.value}
                     {kpi.unit && <span className="perf-unit">{kpi.unit}</span>}
@@ -472,7 +502,23 @@ export function StaffPerformanceView() {
           ))}
 
           {charts.map((chart, i) => (
-            <div key={i} className={`perf-chart-card perf-card perf-slot-${i + 4} ${chart.accent}`}>
+            <div
+              key={i}
+              className={`perf-chart-card perf-card perf-card-button perf-slot-${i + 4} ${chart.accent}`}
+              onClick={() =>
+                setSelectedCard({
+                  title: chart.title,
+                  description: "Monthly performance snapshot for this metric.",
+                  items: chart.labels.map((label, index) => {
+                    const value = chart.values[index]
+                    const formattedValue = chart.prefix
+                      ? `${chart.prefix}${value.toFixed(2)}`
+                      : `${value.toFixed(0)}${chart.suffix ?? ""}`
+                    return `${label}: ${formattedValue}`
+                  }),
+                })
+              }
+            >
               <div className="perf-chart-inner">
                 <div className="perf-header">
                   <div className="perf-dot" />
@@ -500,7 +546,16 @@ export function StaffPerformanceView() {
             </div>
           ))}
 
-          <div className="perf-list-card perf-card perf-slot-7 blue">
+          <div
+            className="perf-list-card perf-card perf-card-button perf-slot-7 blue"
+            onClick={() =>
+              setSelectedCard({
+                title: "Earnings by Breed",
+                description: "Average RPM contribution by breed.",
+                items: earningsByBreed.map((item) => `${item.left}: ${item.right}`),
+              })
+            }
+          >
             <div className="perf-list-inner">
               <div className="perf-header">
                 <div className="perf-dot" />
@@ -519,7 +574,16 @@ export function StaffPerformanceView() {
             </div>
           </div>
 
-          <div className="perf-list-card perf-card perf-slot-8 amber">
+          <div
+            className="perf-list-card perf-card perf-card-button perf-slot-8 amber"
+            onClick={() =>
+              setSelectedCard({
+                title: "Top Performing Breed & Size",
+                description: "Highest RPM combinations.",
+                items: topCombos.map((item) => `${item.left}: ${item.right}`),
+              })
+            }
+          >
             <div className="perf-list-inner">
               <div className="perf-header">
                 <div className="perf-dot" />
@@ -538,7 +602,16 @@ export function StaffPerformanceView() {
             </div>
           </div>
 
-          <div className="perf-list-card perf-card perf-slot-9 amber">
+          <div
+            className="perf-list-card perf-card perf-card-button perf-slot-9 amber"
+            onClick={() =>
+              setSelectedCard({
+                title: "Lowest Performing Breed & Size",
+                description: "Lowest RPM combinations.",
+                items: bottomCombos.map((item) => `${item.left}: ${item.right}`),
+              })
+            }
+          >
             <div className="perf-list-inner">
               <div className="perf-header">
                 <div className="perf-dot" />
@@ -557,7 +630,16 @@ export function StaffPerformanceView() {
             </div>
           </div>
 
-          <div className="perf-list-card perf-card perf-slot-10 amber">
+          <div
+            className="perf-list-card perf-card perf-card-button perf-slot-10 amber"
+            onClick={() =>
+              setSelectedCard({
+                title: "RPM by Breed & Size",
+                description: "RPM matrix across breeds and size categories.",
+                items: matrixData.rows.map((row) => `${row.name}: ${row.cells.map((cell) => cell ?? "—").join(" | ")}`),
+              })
+            }
+          >
             <div className="perf-list-inner">
               <div className="perf-header">
                 <div className="perf-dot" />
@@ -587,6 +669,24 @@ export function StaffPerformanceView() {
           </div>
         </motion.div>
       </div>
+
+      <Dialog open={Boolean(selectedCard)} onOpenChange={(open) => !open && setSelectedCard(null)}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>{selectedCard?.title}</DialogTitle>
+            <DialogDescription>{selectedCard?.description}</DialogDescription>
+          </DialogHeader>
+          {selectedCard?.items && (
+            <ul className="space-y-2 text-sm text-foreground">
+              {selectedCard.items.map((item) => (
+                <li key={item} className="rounded-md border border-border bg-background/50 px-3 py-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
