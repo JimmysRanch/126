@@ -24,8 +24,8 @@ type ListItem = {
 
 export function StaffPerformanceView() {
   const kpis: KPI[] = [
-    { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
     { icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
+    { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
     { icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
   ]
 
@@ -88,10 +88,11 @@ export function StaffPerformanceView() {
     <>
       <style>{`
         .perf-wrap {
-          padding: 0.75rem 0 0.5rem;
+          padding: 0.75rem 0.75rem 0.5rem;
           height: calc(100vh - 9rem);
           max-height: calc(100vh - 9rem);
-          overflow: hidden;
+          overflow-x: visible;
+          overflow-y: hidden;
         }
 
         .perf-layout {
@@ -181,11 +182,14 @@ export function StaffPerformanceView() {
           justify-content: center;
           gap: 0.375rem;
           height: 100%;
+          text-align: center;
+          align-items: center;
         }
 
         .perf-kpi-top {
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 0.75rem;
         }
 
@@ -223,6 +227,7 @@ export function StaffPerformanceView() {
           letter-spacing: 0.04rem;
           text-transform: none;
           color: hsl(var(--muted-foreground));
+          text-align: center;
         }
 
         .perf-chart-card {
