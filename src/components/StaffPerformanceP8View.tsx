@@ -341,6 +341,9 @@ export function StaffPerformanceP8View() {
           cursor: default;
           pointer-events: auto;
           background: hsl(var(--card));
+          background-image: none;
+          opacity: 1;
+          isolation: isolate;
         }
 
         .perf-card-expanded::before,
