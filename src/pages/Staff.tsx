@@ -97,7 +97,7 @@ export const Staff = () => {
 
   return (
     <CurvedMonitor intensity="subtle" className="w-full h-full">
-      <div className="min-h-screen bg-background text-foreground p-2 sm:p-3">
+      <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
         <div className="max-w-[1600px] mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
