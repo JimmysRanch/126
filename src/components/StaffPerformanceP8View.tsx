@@ -343,6 +343,11 @@ export function StaffPerformanceP8View() {
           background: hsl(var(--card));
         }
 
+        .perf-card-expanded::before,
+        .perf-card-expanded::after {
+          display: none;
+        }
+
         .perf-modal-close {
           position: absolute;
           top: 0.75rem;
@@ -445,7 +450,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 1;
           transform: translateZ(10px);
-          height: calc(100% - 0.5rem);
+          height: calc(100% - 0.75rem);
         }
 
         .perf-slot-3 {
@@ -464,7 +469,7 @@ export function StaffPerformanceP8View() {
           grid-column: 2;
           grid-row: 2;
           transform: translateZ(9px);
-          height: calc(100% - 0.5rem);
+          height: calc(100% - 0.75rem);
         }
 
         .perf-slot-6 {
