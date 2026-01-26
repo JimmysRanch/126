@@ -205,71 +205,56 @@ export const Staff = () => {
                   </Card>
                 ))}
               </div>
-            </TabsContent>
+           <TabsContent value="d1" className="mt-0">
+  <div className="relative min-h-[680px] rounded-3xl border border-slate-800/60 bg-gradient-to-b from-[#0a0f1a] to-black p-6 shadow-2xl [perspective:1600px] [transform-style:preserve-3d]">
+    <div
+      className="relative mx-auto max-w-7xl"
+      style={{
+        transform: "rotateX(15deg) rotateY(-4deg) scale(1.04)",
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {d1Rows.map((row, rowIdx) => (
+        <div
+          key={rowIdx}
+          className="[transform-style:preserve-3d]"
+          style={{
+            transform: `rotateX(${10 + rowIdx * 5}deg) rotateY(${(rowIdx - 1.5) * 6}deg)`,
+          }}
+        >
+          <div
+            className={`grid gap-5 [transform-style:preserve-3d] justify-items-center ${
+              row.count === 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
+            {Array.from({ length: row.count }).map((_, colIdx) => {
+              const center = (row.count - 1) / 2
+              const offset = colIdx - center
+              const z = row.depth - Math.abs(offset) * 45 + (Math.abs(offset) < 1 ? 60 : 0)
+              const rotY = offset * -16
+              const rotX = 4 + Math.abs(offset) * 5
+              const tx = offset * 22
+              const ty = rowIdx * 16 + Math.abs(offset) * 10
 
-            <TabsContent value="schedule" className="mt-0"><StaffScheduleView allowEditing={false} /></TabsContent>
-            <TabsContent value="payroll" className="mt-0"><PayrollOverview /></TabsContent>
-            <TabsContent value="performance" className="mt-0"><StaffPerformanceView /></TabsContent>
-            <TabsContent value="p2" className="mt-0"><GroomerPerformanceP2 /></TabsContent>
-            <TabsContent value="p3" className="mt-0"><GroomerPerformanceP3 /></TabsContent>
-            <TabsContent value="p4" className="mt-0"><GroomerPerformanceP4 /></TabsContent>
-            <TabsContent value="p6" className="mt-0"><GroomerPerformanceP6 /></TabsContent>
-            <TabsContent value="p7" className="mt-0"><StaffPerformanceHudP7 /></TabsContent>
-            <TabsContent value="p8" className="mt-0"><StaffPerformanceP8View /></TabsContent>
-
-            <TabsContent value="d1" className="mt-0">
-              <div className="relative min-h-[700px] rounded-3xl border border-slate-700/40 bg-black/80 p-4 sm:p-8 shadow-[0_0_80px_rgba(0,0,0,0.9)] [perspective:2800px] [transform-style:preserve-3d] overflow-hidden">
+              return (
                 <div
-                  className="relative mx-auto max-w-6xl"
+                  key={colIdx}
+                  className={`${row.height} w-full max-w-[380px] rounded-2xl bg-gradient-to-br from-[#1a2335] via-[#0f172a] to-black border border-slate-700/70 shadow-[0_30px_80px_rgba(0,0,0,0.85),inset_0_1px_6px_rgba(200,220,255,0.04)] [transform-style:preserve-3d] transition-all duration-400 hover:scale-[1.06] hover:shadow-cyan-950/40`}
                   style={{
-                    transform: "rotateX(22deg) rotateY(-5deg) scale(1.06)",
-                    transformStyle: "preserve-3d",
+                    transform: `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
                   }}
                 >
-                  {d1Rows.map((row, rowIdx) => (
-                    <div
-                      key={rowIdx}
-                      className="[transform-style:preserve-3d] mb-[-60px] last:mb-[-20px]"
-                      style={{
-                        transform: `rotateX(${16 + rowIdx * 9}deg) rotateY(${(rowIdx - 1.5) * 11}deg)`,
-                      }}
-                    >
-                      <div
-                        className={`grid gap-6 sm:gap-8 [transform-style:preserve-3d] justify-items-center ${
-                          row.count === 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-2 lg:grid-cols-3"
-                        }`}
-                      >
-                        {Array.from({ length: row.count }).map((_, colIdx) => {
-                          const center = (row.count - 1) / 2
-                          const offset = colIdx - center
-                          const z = row.depth + 100 - Math.abs(offset) * 70
-                          const rotY = offset * -22
-                          const rotX = 8 + Math.abs(offset) * 8 + rowIdx * 4
-                          const tx = offset * 35
-                          const ty = rowIdx * 24 + Math.abs(offset) * 16
-
-                          return (
-                            <div
-                              key={colIdx}
-                              className={`${row.height} w-full max-w-[360px] rounded-2xl bg-gradient-to-br from-slate-900 via-black to-slate-950 border border-slate-600/50 shadow-[0_50px_120px_rgba(0,0,0,1),inset_0_2px_10px_rgba(255,255,255,0.03)] [transform-style:preserve-3d] transition-all duration-300 hover:scale-110 hover:z-20 hover:shadow-cyan-900/30`}
-                              style={{
-                                transform: `translate3d(${tx}px, ${ty}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg)`,
-                              }}
-                            >
-                              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-transparent via-black/30 to-black/60 pointer-events-none" />
-                              <div className="absolute inset-[1px] rounded-[15px] border border-cyan-900/30 opacity-70 pointer-events-none" />
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  ))}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 via-transparent to-transparent/20 pointer-events-none" />
+                  <div className="absolute inset-[2px] rounded-[14px] border border-cyan-800/25 opacity-60 pointer-events-none" />
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+              )
+            })}
+          </div>
         </div>
-
+      ))}
+    </div>
+  </div>
+</TabsContent>
         <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
