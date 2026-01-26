@@ -269,7 +269,7 @@ export function StaffPerformanceP8View() {
         .perf-slot-1 {
           grid-column: 1;
           grid-row: 1;
-          transform: rotateY(3deg) translateZ(6px);
+          transform: rotateY(6deg) translateZ(8px);
         }
 
         .perf-slot-2 {
@@ -281,13 +281,13 @@ export function StaffPerformanceP8View() {
         .perf-slot-3 {
           grid-column: 3;
           grid-row: 1;
-          transform: rotateY(-3deg) translateZ(6px);
+          transform: rotateY(-6deg) translateZ(8px);
         }
 
         .perf-slot-4 {
           grid-column: 1;
           grid-row: 2;
-          transform: rotateY(3deg) translateZ(6px);
+          transform: rotateY(6deg) translateZ(8px);
         }
 
         .perf-slot-5 {
@@ -299,13 +299,13 @@ export function StaffPerformanceP8View() {
         .perf-slot-6 {
           grid-column: 3;
           grid-row: 2;
-          transform: rotateY(-3deg) translateZ(6px);
+          transform: rotateY(-6deg) translateZ(8px);
         }
 
         .perf-slot-7 {
           grid-column: 1;
           grid-row: 3 / span 2;
-          transform: rotateY(3deg) translateZ(4px);
+          transform: rotateY(6deg) translateZ(6px);
         }
 
         .perf-slot-8 {
@@ -323,7 +323,7 @@ export function StaffPerformanceP8View() {
         .perf-slot-10 {
           grid-column: 3;
           grid-row: 3 / span 2;
-          transform: rotateY(-3deg) translateZ(4px);
+          transform: rotateY(-6deg) translateZ(6px);
         }
 
         .perf-kpi-card {
