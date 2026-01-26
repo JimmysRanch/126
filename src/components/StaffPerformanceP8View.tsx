@@ -364,7 +364,7 @@ export function StaffPerformanceP8View() {
           overflow: auto;
           cursor: default;
           pointer-events: auto;
-          background: hsl(var(--card));
+          background: hsl(var(--card) / 1);
           background-image: none;
           opacity: 1;
           isolation: isolate;
@@ -373,6 +373,16 @@ export function StaffPerformanceP8View() {
         .perf-card-expanded::before,
         .perf-card-expanded::after {
           display: none;
+        }
+
+        .perf-modal-layer .perf-card-expanded::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: hsl(var(--card) / 1);
+          opacity: 1;
+          z-index: 0;
         }
 
         .perf-modal-close {
