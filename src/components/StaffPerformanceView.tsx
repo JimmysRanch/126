@@ -301,7 +301,9 @@ export function StaffPerformanceView() {
           font-weight: 600;
           letter-spacing: 0.0125rem;
           color: hsl(var(--foreground));
-          padding: 0;
+          padding: 0.35rem 0.6rem;
+          border-radius: 0.6rem;
+          background: hsl(var(--muted));
         }
 
         .perf-dot {
@@ -315,6 +317,18 @@ export function StaffPerformanceView() {
         .amber .perf-dot {
           background: hsl(var(--secondary));
           box-shadow: none;
+        }
+
+        .blue .perf-header {
+          background: rgba(56, 189, 248, 0.18);
+        }
+
+        .amber .perf-header {
+          background: rgba(250, 204, 21, 0.18);
+        }
+
+        .green .perf-header {
+          background: rgba(34, 197, 94, 0.18);
         }
 
         .perf-chart-slot {
