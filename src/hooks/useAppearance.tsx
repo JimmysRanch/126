@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 
 export type AppearanceTheme = 'classic' | 'rose' | 'midnight'
 export type AppearanceUi = 'classic' | 'compact' | 'focus'
@@ -15,9 +15,59 @@ const AppearanceContext = createContext<AppearanceContextValue | undefined>(unde
 export const appearanceThemes: AppearanceTheme[] = ['classic', 'rose', 'midnight']
 export const appearanceUis: AppearanceUi[] = ['classic', 'compact', 'focus']
 
+const THEME_STORAGE_KEY = 'spark.appearance.theme'
+const UI_STORAGE_KEY = 'spark.appearance.ui'
+
+const readStoredValue = <T extends string>(key: string, allowedValues: T[], fallback: T): T => {
+  if (typeof window === 'undefined') {
+    return fallback
+  }
+
+  try {
+    const storedValue = window.localStorage.getItem(key) as T | null
+    if (storedValue && allowedValues.includes(storedValue)) {
+      return storedValue
+    }
+  } catch {
+    return fallback
+  }
+
+  return fallback
+}
+
+const persistStoredValue = (key: string, value: string) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    if (value === 'classic') {
+      window.localStorage.removeItem(key)
+    } else {
+      window.localStorage.setItem(key, value)
+    }
+  } catch {
+    return
+  }
+}
+
 export function AppearanceProvider({ children }: { children: ReactNode }) {
-  const [selectedTheme, setSelectedTheme] = useState<AppearanceTheme>('classic')
-  const [selectedUi, setSelectedUi] = useState<AppearanceUi>('classic')
+  const [selectedTheme, setSelectedThemeState] = useState<AppearanceTheme>(() =>
+    readStoredValue(THEME_STORAGE_KEY, appearanceThemes, 'classic')
+  )
+  const [selectedUi, setSelectedUiState] = useState<AppearanceUi>(() =>
+    readStoredValue(UI_STORAGE_KEY, appearanceUis, 'classic')
+  )
+
+  const setSelectedTheme = useCallback((theme: AppearanceTheme) => {
+    setSelectedThemeState(theme)
+    persistStoredValue(THEME_STORAGE_KEY, theme)
+  }, [])
+
+  const setSelectedUi = useCallback((ui: AppearanceUi) => {
+    setSelectedUiState(ui)
+    persistStoredValue(UI_STORAGE_KEY, ui)
+  }, [])
 
   const value = useMemo(
     () => ({
@@ -26,7 +76,7 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
       setSelectedTheme,
       setSelectedUi
     }),
-    [selectedTheme, selectedUi]
+    [selectedTheme, selectedUi, setSelectedTheme, setSelectedUi]
   )
 
   return <AppearanceContext.Provider value={value}>{children}</AppearanceContext.Provider>
