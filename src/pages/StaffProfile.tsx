@@ -163,140 +163,139 @@ export function StaffProfile() {
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
       <div className="max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
-        <header className="flex flex-col sm:flex-row items-stretch sm:items-start justify-between gap-3 sm:gap-4">
-          <div className="flex items-start gap-3 sm:gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
-              onClick={() => navigate('/staff')}
-            >
-              <ArrowLeft size={isMobile ? 20 : 24} />
-            </Button>
-            <div className="flex-1 min-w-0">
-              <h1 className={`${isMobile ? 'text-xl' : 'text-[32px]'} font-bold tracking-tight leading-none`}>
-                {staff.name}
-              </h1>
-              <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
-                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
-                  {staff.role} • SINCE {staff.hireDate.toUpperCase()}
-                </p>
-                {staff.status !== "Active" && (
-                  <Badge 
-                    variant="secondary"
-                    className="text-xs"
-                  >
-                    {staff.status}
-                  </Badge>
-                )}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <header className="grid gap-3 sm:gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-start">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
+                onClick={() => navigate('/staff')}
+              >
+                <ArrowLeft size={isMobile ? 20 : 24} />
+              </Button>
+              <div className="flex-1 min-w-0">
+                <h1 className={`${isMobile ? 'text-xl' : 'text-[32px]'} font-bold tracking-tight leading-none`}>
+                  {staff.name}
+                </h1>
+                <div className="flex items-center gap-2 sm:gap-3 mt-1 flex-wrap">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
+                    {staff.role} • SINCE {staff.hireDate.toUpperCase()}
+                  </p>
+                  {staff.status !== "Active" && (
+                    <Badge 
+                      variant="secondary"
+                      className="text-xs"
+                    >
+                      {staff.status}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="secondary"
-                  className={`font-semibold transition-colors duration-200 ${isMobile ? 'flex-1' : ''}`}
+            <div className="flex justify-center">
+              <TabsList className="flex flex-wrap justify-center">
+                <TabsTrigger 
+                  value="overview"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
                 >
-                  Contact
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Contact Information</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
-                    <Phone size={20} className="text-primary" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs text-muted-foreground">Phone</div>
-                      <div className="font-medium">{staff.phone}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
-                    <Envelope size={20} className="text-primary" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs text-muted-foreground">Email</div>
-                      <div className="font-medium break-words">{staff.email}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
-                    <MapPin size={20} className="text-primary shrink-0 mt-0.5" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs text-muted-foreground">Address</div>
-                      <div className="font-medium">{staff.address}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="border-t border-border pt-4 mt-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                      Emergency Contact
-                    </h4>
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
-                      <User size={20} className="text-primary shrink-0 mt-0.5" />
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="groomer-performance"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                >
+                  Groomer Performance
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="payroll"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                >
+                  Payroll
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="schedule"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                >
+                  Schedule
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="compensation"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                >
+                  Compensation
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="history"
+                  className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                >
+                  History
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 justify-start sm:justify-end">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    className={`font-semibold transition-colors duration-200 ${isMobile ? 'flex-1' : ''}`}
+                  >
+                    Contact
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Contact Information</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                      <Phone size={20} className="text-primary" />
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium">{staff.emergencyContact.name}</div>
-                        <div className="text-xs text-muted-foreground">{staff.emergencyContact.relation}</div>
-                        <div className="text-sm font-medium mt-1">{staff.emergencyContact.phone}</div>
+                        <div className="text-xs text-muted-foreground">Phone</div>
+                        <div className="font-medium">{staff.phone}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                      <Envelope size={20} className="text-primary" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground">Email</div>
+                        <div className="font-medium break-words">{staff.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
+                      <MapPin size={20} className="text-primary shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground">Address</div>
+                        <div className="font-medium">{staff.address}</div>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-border pt-4 mt-4">
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                        Emergency Contact
+                      </h4>
+                      <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
+                        <User size={20} className="text-primary shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium">{staff.emergencyContact.name}</div>
+                          <div className="text-xs text-muted-foreground">{staff.emergencyContact.relation}</div>
+                          <div className="text-sm font-medium mt-1">{staff.emergencyContact.phone}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-secondary transition-colors duration-200 shrink-0"
-              onClick={() => navigate(`/staff/${staffId}/edit`)}
-            >
-              <PencilSimple size={isMobile ? 18 : 20} />
-            </Button>
-          </div>
-        </header>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-center mb-4 sm:mb-6">
-            <TabsList>
-              <TabsTrigger 
-                value="overview"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                </DialogContent>
+              </Dialog>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-secondary transition-colors duration-200 shrink-0"
+                onClick={() => navigate(`/staff/${staffId}/edit`)}
               >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger 
-                value="groomer-performance"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                Groomer Performance
-              </TabsTrigger>
-              <TabsTrigger 
-                value="payroll"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                Payroll
-              </TabsTrigger>
-              <TabsTrigger 
-                value="schedule"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                Schedule
-              </TabsTrigger>
-              <TabsTrigger 
-                value="compensation"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                Compensation
-              </TabsTrigger>
-              <TabsTrigger 
-                value="history"
-                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-              >
-                History
-              </TabsTrigger>
-            </TabsList>
-          </div>
+                <PencilSimple size={isMobile ? 18 : 20} />
+              </Button>
+            </div>
+          </header>
 
           <TabsContent value="overview" className="mt-0 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
