@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, type CSSProperties } from "react"
 import { motion } from "framer-motion"
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -212,11 +212,13 @@ export const teamPerformanceData: PerformanceData = {
 type StaffPerformanceViewProps = {
   data?: PerformanceData
   scopeLabel?: string
+  headerBackground?: string
 }
 
 export function StaffPerformanceView({
   data = groomerPerformanceData,
   scopeLabel = "this groomer",
+  headerBackground,
 }: StaffPerformanceViewProps) {
   const [selectedCard, setSelectedCard] = useState<CardDetail | null>(null)
 
@@ -231,6 +233,7 @@ export function StaffPerformanceView({
           max-height: calc(100vh - 9rem);
           overflow-x: visible;
           overflow-y: hidden;
+          --perf-header-bg: #fde68a;
         }
 
         .perf-layout {
@@ -406,7 +409,7 @@ export function StaffPerformanceView({
           color: hsl(var(--foreground));
           padding: 0.35rem 0.6rem;
           border-radius: 0.6rem;
-          background: #fde68a;
+          background: var(--perf-header-bg);
         }
 
         .perf-dot {
@@ -614,7 +617,14 @@ export function StaffPerformanceView({
         }
       `}</style>
 
-      <div className="perf-wrap">
+      <div
+        className="perf-wrap"
+        style={
+          headerBackground
+            ? ({ "--perf-header-bg": headerBackground } as CSSProperties)
+            : undefined
+        }
+      >
         <motion.div
           className="perf-layout"
           initial={{ opacity: 0, y: 20 }}
