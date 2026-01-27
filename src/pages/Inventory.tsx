@@ -16,81 +16,6 @@ import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
-const DEFAULT_INVENTORY: InventoryItem[] = [
-  {
-    id: "1",
-    name: "Premium Dog Shampoo",
-    category: "supply",
-    sku: "SUP-001",
-    quantity: 45,
-    price: 0,
-    cost: 12.50,
-    reorderLevel: 10,
-    supplier: "Pet Supply Co",
-    description: "Hypoallergenic shampoo for sensitive skin"
-  },
-  {
-    id: "2",
-    name: "Luxury Pet Cologne",
-    category: "retail",
-    sku: "RET-001",
-    quantity: 28,
-    price: 24.99,
-    cost: 10.00,
-    reorderLevel: 5,
-    supplier: "Luxury Pet Products",
-    description: "Long-lasting pet fragrance"
-  },
-  {
-    id: "3",
-    name: "Microfiber Towels",
-    category: "supply",
-    sku: "SUP-002",
-    quantity: 120,
-    price: 0,
-    cost: 3.50,
-    reorderLevel: 20,
-    supplier: "Grooming Supplies Inc",
-    description: "Quick-dry towels for bathing"
-  },
-  {
-    id: "4",
-    name: "Dog Treats - Gourmet Mix",
-    category: "retail",
-    sku: "RET-002",
-    quantity: 65,
-    price: 12.99,
-    cost: 5.00,
-    reorderLevel: 15,
-    supplier: "Treat Factory",
-    description: "Assorted premium dog treats"
-  },
-  {
-    id: "5",
-    name: "Nail Clippers - Professional",
-    category: "supply",
-    sku: "SUP-003",
-    quantity: 8,
-    price: 0,
-    cost: 18.00,
-    reorderLevel: 3,
-    supplier: "Professional Grooming Tools",
-    description: "Heavy-duty nail clippers"
-  },
-  {
-    id: "6",
-    name: "Pet Bow Ties (Assorted)",
-    category: "retail",
-    sku: "RET-003",
-    quantity: 42,
-    price: 8.99,
-    cost: 3.50,
-    reorderLevel: 10,
-    supplier: "Pet Fashion Co",
-    description: "Fashionable bow ties in various colors"
-  }
-]
-
 export function Inventory() {
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
   const [valueHistory, setValueHistory] = useKV<InventoryValueSnapshot[]>("inventory-value-history", [])
@@ -115,14 +40,6 @@ export function Inventory() {
     staffCompensationType: "fixed" as "fixed" | "percentage",
     staffCompensationValue: ""
   })
-
-  // Initialize inventory with default items if empty (Critical Issue #1 from AUDIT_REPORT.md)
-  // setInventory is stable from useKV hook, safe to omit from dependencies
-  useEffect(() => {
-    if (!inventory || inventory.length === 0) {
-      setInventory(DEFAULT_INVENTORY)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Calculate and track inventory value snapshots
   useEffect(() => {

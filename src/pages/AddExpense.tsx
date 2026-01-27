@@ -9,9 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, Receipt } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { useKV } from "@github/spark/hooks"
+import { ExpenseRecord } from "@/lib/finance-types"
 
 export function AddExpense() {
   const navigate = useNavigate()
+  const [expenses, setExpenses] = useKV<ExpenseRecord[]>("expenses", [])
   const [formData, setFormData] = useState({
     vendor: '',
     amount: '',
@@ -40,6 +43,17 @@ export function AddExpense() {
       return
     }
 
+    const newExpense: ExpenseRecord = {
+      id: Date.now().toString(),
+      category: formData.category,
+      vendor: formData.vendor.trim(),
+      date: formData.date,
+      status: formData.status === "yes" ? "Paid" : "Pending",
+      amount: Number.parseFloat(formData.amount),
+      description: formData.description.trim()
+    }
+
+    setExpenses((current) => [...(current || []), newExpense])
     toast.success('Expense added successfully')
     navigate('/finances?tab=expenses')
   }

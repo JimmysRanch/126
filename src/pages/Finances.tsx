@@ -10,15 +10,8 @@ import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { PayrollOverview } from '@/components/PayrollOverview'
-
-interface PaymentDetail {
-  date: string
-  client: string
-  service: string
-  amount: number
-  tip: number
-  method: string
-}
+import { useKV } from "@github/spark/hooks"
+import { ExpenseRecord, PaymentDetail } from "@/lib/finance-types"
 
 export function Finances() {
   const navigate = useNavigate()
@@ -27,15 +20,85 @@ export function Finances() {
   const isMobile = useIsMobile()
   const [selectedPayment, setSelectedPayment] = useState<PaymentDetail | null>(null)
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
+  const [payments] = useKV<PaymentDetail[]>("payments", [])
+  const [expenses] = useKV<ExpenseRecord[]>("expenses", [])
 
-  const payments: PaymentDetail[] = [
-    { date: '12/15/2024', client: 'Sarah Johnson', service: 'Full Groom - Max & Bella', amount: 140.00, tip: 20.00, method: 'Card' },
-    { date: '12/14/2024', client: 'Mike Thompson', service: 'Bath & Trim - Charlie', amount: 75.00, tip: 10.00, method: 'Card' },
-    { date: '12/14/2024', client: 'Emily Davis', service: 'Nail Trim - Luna', amount: 25.00, tip: 5.00, method: 'Cash' },
-    { date: '12/13/2024', client: 'James Wilson', service: 'Full Groom - Rocky', amount: 85.00, tip: 15.00, method: 'Card' },
-    { date: '12/12/2024', client: 'Lisa Martinez', service: 'Deshed Treatment - Bear', amount: 95.00, tip: 15.00, method: 'Card' },
-    { date: '12/12/2024', client: 'Robert Brown', service: 'Bath Only - Buddy', amount: 45.00, tip: 8.00, method: 'Card' },
-  ]
+  const parseDate = (date: string) => new Date(date + "T00:00:00")
+  const monthKey = (date: Date) => date.toLocaleString("en-US", { month: "short" }).toUpperCase()
+  const totals = payments.reduce(
+    (acc, payment) => {
+      const date = parseDate(payment.date)
+      if (date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()) {
+        acc.monthPayments += payment.amount + payment.tip
+      }
+      acc.totalPayments += payment.amount + payment.tip
+      return acc
+    },
+    { monthPayments: 0, totalPayments: 0 }
+  )
+  const expenseTotals = expenses.reduce(
+    (acc, expense) => {
+      const date = parseDate(expense.date)
+      if (date.getMonth() === new Date().getMonth() && date.getFullYear() === new Date().getFullYear()) {
+        acc.monthExpenses += expense.amount
+      }
+      acc.totalExpenses += expense.amount
+      if (expense.status === "Pending") {
+        acc.pending += expense.amount
+      }
+      return acc
+    },
+    { monthExpenses: 0, totalExpenses: 0, pending: 0 }
+  )
+
+  const monthlyData = (() => {
+    const map = new Map<string, { revenue: number; expenses: number }>()
+    payments.forEach((payment) => {
+      const date = parseDate(payment.date)
+      const key = monthKey(date)
+      const entry = map.get(key) || { revenue: 0, expenses: 0 }
+      entry.revenue += payment.amount + payment.tip
+      map.set(key, entry)
+    })
+    expenses.forEach((expense) => {
+      const date = parseDate(expense.date)
+      const key = monthKey(date)
+      const entry = map.get(key) || { revenue: 0, expenses: 0 }
+      entry.expenses += expense.amount
+      map.set(key, entry)
+    })
+    return Array.from(map.entries()).map(([month, values]) => ({
+      month: `${month} ${new Date().getFullYear()}`,
+      shortMonth: month,
+      revenue: values.revenue,
+      expenses: values.expenses,
+      profit: values.revenue - values.expenses
+    }))
+  })()
+  const monthlyExpenses = monthlyData.map((entry) => ({ month: entry.shortMonth, amount: entry.expenses }))
+  const averageMonthlyExpense = monthlyExpenses.length > 0
+    ? Math.round(monthlyExpenses.reduce((sum, entry) => sum + entry.amount, 0) / monthlyExpenses.length)
+    : 0
+  const expenseBreakdown = (() => {
+    const totals = new Map<string, number>()
+    expenses.forEach((expense) => totals.set(expense.category, (totals.get(expense.category) || 0) + expense.amount))
+    const total = Array.from(totals.values()).reduce((sum, value) => sum + value, 0) || 1
+    const palette = [
+      'oklch(0.70 0.25 200)',
+      'oklch(0.75 0.25 330)',
+      'oklch(0.72 0.24 85)',
+      'oklch(0.68 0.22 280)',
+      'oklch(0.76 0.23 25)'
+    ]
+    return Array.from(totals.entries()).map(([category, amount], index) => ({
+      category,
+      amount,
+      percentage: Math.round((amount / total) * 100),
+      color: palette[index % palette.length]
+    }))
+  })()
+  const recentExpenses = [...expenses].slice(-5).reverse()
+  const pendingBills = expenses.filter((expense) => expense.status === "Pending")
 
   useEffect(() => {
     const tab = searchParams.get('tab')
@@ -90,7 +153,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PAYMENTS</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,195</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${totals.totalPayments.toLocaleString()}</p>
                   </div>
                   <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 shrink-0">LEDGER</Button>
                 </div>
@@ -124,10 +187,12 @@ export function Finances() {
                     <p className="text-xs md:text-sm uppercase tracking-wider text-muted-foreground font-medium mb-1">
                       MONEY IN (THIS MONTH)
                     </p>
-                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">$2,194.89</p>
+                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">
+                      ${totals.monthPayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
                     <div className="flex items-center gap-1 mt-2">
-                      <TrendUp size={14} className="text-green-500 flex-shrink-0" weight="bold" />
-                      <p className="text-xs text-green-500 font-medium truncate">+100.0% vs previous month</p>
+                      <TrendUp size={14} className="text-muted-foreground flex-shrink-0" weight="bold" />
+                      <p className="text-xs text-muted-foreground font-medium truncate">No prior data</p>
                     </div>
                   </div>
                   <TrendUp size={isMobile ? 18 : 20} className="text-green-500 flex-shrink-0 ml-2" weight="bold" />
@@ -140,10 +205,12 @@ export function Finances() {
                     <p className="text-xs md:text-sm uppercase tracking-wider text-muted-foreground font-medium mb-1">
                       MONEY OUT (THIS MONTH)
                     </p>
-                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">$400.00</p>
+                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">
+                      ${expenseTotals.monthExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
                     <div className="flex items-center gap-1 mt-2">
-                      <TrendUp size={14} className="text-green-500 flex-shrink-0" weight="bold" />
-                      <p className="text-xs text-green-500 font-medium truncate">+100.0% vs previous month</p>
+                      <TrendUp size={14} className="text-muted-foreground flex-shrink-0" weight="bold" />
+                      <p className="text-xs text-muted-foreground font-medium truncate">No prior data</p>
                     </div>
                   </div>
                   <TrendUp size={isMobile ? 18 : 20} className="text-green-500 flex-shrink-0 ml-2" weight="bold" />
@@ -156,10 +223,12 @@ export function Finances() {
                     <p className="text-xs md:text-sm uppercase tracking-wider text-muted-foreground font-medium mb-1">
                       WHAT'S LEFT (THIS MONTH)
                     </p>
-                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">$1,794.89</p>
+                    <p className="text-3xl md:text-4xl font-bold mt-2 truncate">
+                      ${(totals.monthPayments - expenseTotals.monthExpenses).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
                     <div className="flex items-center gap-1 mt-2">
-                      <TrendUp size={14} className="text-green-500 flex-shrink-0" weight="bold" />
-                      <p className="text-xs text-green-500 font-medium truncate">+100.0% vs previous month</p>
+                      <TrendUp size={14} className="text-muted-foreground flex-shrink-0" weight="bold" />
+                      <p className="text-xs text-muted-foreground font-medium truncate">No prior data</p>
                     </div>
                   </div>
                   <TrendUp size={isMobile ? 18 : 20} className="text-green-500 flex-shrink-0 ml-2" weight="bold" />
@@ -172,7 +241,7 @@ export function Finances() {
                 <h3 className="text-base md:text-lg font-bold">Monthly Overview</h3>
                 <p className="text-xs md:text-sm text-muted-foreground">Revenue, expenses, and profit trends for the last six months.</p>
               </div>
-              <FinancialChart />
+              <FinancialChart data={monthlyData} />
               {isMobile && (
                 <div className="mt-4 flex flex-wrap gap-3 justify-center">
                   <div className="flex items-center gap-2">
@@ -198,7 +267,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD EXPENSES</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$400</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${expenseTotals.monthExpenses.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -206,7 +275,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD EXPENSES</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$4,850</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${expenseTotals.totalExpenses.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -214,7 +283,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">PENDING</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$1,380</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${expenseTotals.pending.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -222,7 +291,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG MONTHLY</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$485</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${averageMonthlyExpense.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -237,19 +306,14 @@ export function Finances() {
                 <div className="p-2.5 flex-1 min-h-0">
                   <div className="relative h-full min-h-[160px]">
                     <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
-                      {(() => {
-                        const monthlyExpenses = [
-                          { month: 'Aug', amount: 650 },
-                          { month: 'Sep', amount: 720 },
-                          { month: 'Oct', amount: 850 },
-                          { month: 'Nov', amount: 920 },
-                          { month: 'Dec', amount: 1100 },
-                          { month: 'Jan', amount: 1200 },
-                        ]
-                        const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
-                        
-                        return monthlyExpenses.map((data, i) => {
-                          const height = (data.amount / maxExpense) * 100
+                      {monthlyExpenses.length === 0 ? (
+                        <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+                          No expense history yet
+                        </div>
+                      ) : (
+                        monthlyExpenses.map((data, i) => {
+                          const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
+                          const height = maxExpense > 0 ? (data.amount / maxExpense) * 100 : 0
                           return (
                             <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                               <div className="relative w-full" style={{ height: `${height}%`, minHeight: '20px' }}>
@@ -269,7 +333,7 @@ export function Finances() {
                             </div>
                           )
                         })
-                      })()}
+                      )}
                     </div>
                     
                     <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: '45%' }}>
@@ -309,21 +373,21 @@ export function Finances() {
                       <span className="text-right">Amount</span>
                       <span className="text-right">Status</span>
                     </div>
-                    {[
-                      { vendor: 'City Electric', dueIn: '3 days', warning: true, amount: 312, status: 312 },
-                      { vendor: 'Grooming Warehouse', dueIn: '5 days', warning: false, amount: 190, status: 190 },
-                      { vendor: 'Rent', dueIn: '9 days', warning: false, amount: 1200, status: 1200 },
-                    ].map((bill, i) => (
-                      <div key={i} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                        <span className="text-sm font-medium truncate">{bill.vendor}</span>
-                        <span className="text-sm text-center flex items-center justify-center gap-1">
-                          {bill.dueIn}
-                          {bill.warning && <Circle size={8} className="text-yellow-500" weight="fill" />}
-                        </span>
-                        <span className="text-sm font-bold text-right">${bill.amount}</span>
-                        <span className="text-sm font-bold text-right">${bill.status}</span>
-                      </div>
-                    ))}
+                    {pendingBills.length === 0 ? (
+                      <div className="text-sm text-muted-foreground px-2 py-3">No upcoming bills yet.</div>
+                    ) : (
+                      pendingBills.map((bill) => (
+                        <div key={bill.id} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                          <span className="text-sm font-medium truncate">{bill.vendor}</span>
+                          <span className="text-sm text-center flex items-center justify-center gap-1">
+                            Pending
+                            <Circle size={8} className="text-yellow-500" weight="fill" />
+                          </span>
+                          <span className="text-sm font-bold text-right">${bill.amount.toFixed(2)}</span>
+                          <span className="text-sm font-bold text-right">${bill.amount.toFixed(2)}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </Card>
@@ -339,17 +403,10 @@ export function Finances() {
                   <div className="relative flex-shrink-0" style={{ width: '200px', height: '200px' }}>
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                       {(() => {
-                        const breakdownData = [
-                          { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)' },
-                          { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)' },
-                          { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)' },
-                          { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)' },
-                          { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)' },
-                        ]
                         const radius = 65
                         const circumference = 2 * Math.PI * radius
                         let currentOffset = 0
-                        return breakdownData.map((item, i) => {
+                        return expenseBreakdown.map((item, i) => {
                           const offset = currentOffset
                           const dashArray = (item.percentage / 100) * circumference
                           currentOffset += dashArray
@@ -371,36 +428,36 @@ export function Finances() {
                       })()}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold tabular-nums">$4.9k</span>
+                      <span className="text-2xl font-bold tabular-nums">
+                        ${(expenseBreakdown.reduce((sum, item) => sum + item.amount, 0) / 1000).toFixed(1).replace(/\.0$/, '')}k
+                      </span>
                       <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total</span>
                     </div>
                   </div>
                   
                   <div className="flex-1 w-full space-y-0.5">
-                    {[
-                      { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.70 0.25 200)' },
-                      { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.75 0.25 330)' },
-                      { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.72 0.24 85)' },
-                      { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.68 0.22 280)' },
-                      { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.76 0.23 25)' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <div 
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform" 
-                            style={{ 
-                              backgroundColor: item.color,
-                              boxShadow: `0 0 8px ${item.color}`
-                            }} 
-                          />
-                          <span className="text-xs font-semibold">{item.category}</span>
+                    {expenseBreakdown.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">No expenses yet.</div>
+                    ) : (
+                      expenseBreakdown.map((item, i) => (
+                        <div key={i} className="flex items-center hover:bg-muted/40 p-1 rounded-md transition-all cursor-pointer group">
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <div 
+                              className="w-2.5 h-2.5 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform" 
+                              style={{ 
+                                backgroundColor: item.color,
+                                boxShadow: `0 0 8px ${item.color}`
+                              }} 
+                            />
+                            <span className="text-xs font-semibold">{item.category}</span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+                            <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
+                            <span className="text-xs text-muted-foreground w-7 text-right font-semibold">{item.percentage}%</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
-                          <span className="text-sm font-bold tabular-nums">${(item.amount / 1000).toFixed(1).replace(/\.0$/, '')}k</span>
-                          <span className="text-xs text-muted-foreground w-7 text-right font-semibold">{item.percentage}%</span>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </Card>
@@ -435,14 +492,11 @@ export function Finances() {
                       <span>Status</span>
                       <span className="text-right">Amount</span>
                     </div>
-                    {[
-                      { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
-                      { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
-                      { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
-                      { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
-                      { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
-                    ].map((expense, i) => (
-                      <div key={i} className="grid grid-cols-5 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                    {recentExpenses.length === 0 ? (
+                      <div className="text-sm text-muted-foreground px-2 py-3">No expenses recorded yet.</div>
+                    ) : (
+                      recentExpenses.map((expense) => (
+                        <div key={expense.id} className="grid grid-cols-5 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
                         <span className="text-sm truncate">{expense.category}</span>
                         <span className="text-sm truncate">{expense.vendor}</span>
                         <span className="text-sm">{expense.date}</span>
@@ -455,7 +509,8 @@ export function Finances() {
                         </span>
                         <span className="text-sm font-semibold text-right">${expense.amount.toFixed(2)}</span>
                       </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </Card>
@@ -468,7 +523,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">MTD REVENUE</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,194.89</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${totals.monthPayments.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -476,7 +531,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">YTD REVENUE</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,194.89</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${totals.totalPayments.toLocaleString()}</p>
                   </div>
                 </div>
               </Card>
@@ -484,7 +539,7 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NEXT PAYOUT</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$2,195.00</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">$0.00</p>
                   </div>
                 </div>
               </Card>
@@ -492,7 +547,9 @@ export function Finances() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">AVG TRANSACTION</p>
-                    <p className="text-lg md:text-xl font-bold mt-0.5">$68.59</p>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">
+                      ${payments.length > 0 ? (totals.totalPayments / payments.length).toFixed(2) : "0.00"}
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -507,7 +564,10 @@ export function Finances() {
                 </Button>
               </div>
               <div className="divide-y divide-border">
-                {payments.map((payment, i) => {
+                {payments.length === 0 && (
+                  <div className="p-4 text-sm text-muted-foreground">No payments recorded yet.</div>
+                )}
+                {payments.map((payment) => {
                   const serviceParts = payment.service.split(' - ')
                   const serviceType = serviceParts[0]
                   const dogNames = serviceParts[1] || ''
@@ -515,7 +575,7 @@ export function Finances() {
                   
                   return (
                     <div
-                      key={i}
+                      key={payment.id}
                       className="p-3 md:p-4 hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                       role="button"
                       tabIndex={0}

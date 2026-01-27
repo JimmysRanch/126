@@ -14,7 +14,6 @@ import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
-import { DEFAULT_STAFF } from "@/lib/defaults"
 import { Staff } from "@/lib/types"
 
 type StaffAppointmentSummary = {
@@ -67,7 +66,7 @@ export function StaffProfile() {
     "staff-profile-details",
     {}
   )
-  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
+  const [staffMembers] = useKV<Staff[]>("staff", [])
   const staffFromList = (staffMembers || []).find((member) => member.id === staffId)
   const fallbackProfile: StaffProfileDetail = {
     name: staffFromList?.name ?? "Staff Member",
@@ -95,11 +94,32 @@ export function StaffProfile() {
     recentAppointments: []
   }
 
-  const staff = staffProfiles?.[staffId ?? ""] ?? fallbackProfile
+  const staffProfileEntry = staffProfiles?.[staffId ?? ""]
+  const staff = staffProfileEntry ?? (staffFromList ? fallbackProfile : null)
   const [activeTab, setActiveTab] = useState("overview")
   const isMobile = useIsMobile()
   const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
+
+  if (!staff) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+        <div className="max-w-[1200px] mx-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-secondary transition-all duration-200"
+            onClick={() => navigate('/staff')}
+          >
+            <ArrowLeft size={24} />
+          </Button>
+          <Card className="mt-4 p-6 text-center text-muted-foreground">
+            Staff member not found.
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">

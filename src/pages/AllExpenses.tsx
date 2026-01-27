@@ -5,27 +5,17 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, MagnifyingGlass, FunnelSimple, Download, Plus } from '@phosphor-icons/react'
+import { useKV } from "@github/spark/hooks"
+import { ExpenseRecord } from "@/lib/finance-types"
 
 export function AllExpenses() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [expenses] = useKV<ExpenseRecord[]>("expenses", [])
 
-  const allExpenses = [
-    { id: '1', category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00, description: 'Shampoos and conditioners' },
-    { id: '2', category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00, description: 'Monthly electricity bill' },
-    { id: '3', category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00, description: 'Software subscription' },
-    { id: '4', category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00, description: 'Grooming tools and equipment' },
-    { id: '5', category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00, description: 'Monthly rent' },
-    { id: '6', category: 'Supplies', vendor: 'Pet Supply Co', date: '12/01/2024', status: 'Paid', amount: 175.00, description: 'Towels and cleaning supplies' },
-    { id: '7', category: 'Utilities', vendor: 'City Water', date: '12/05/2024', status: 'Paid', amount: 42.00, description: 'Water and sewage' },
-    { id: '8', category: 'Software', vendor: 'Cloud Services', date: '11/28/2024', status: 'Paid', amount: 125.00, description: 'Cloud storage' },
-    { id: '9', category: 'Supplies', vendor: 'Grooming Warehouse', date: '11/20/2024', status: 'Paid', amount: 225.00, description: 'Clipper blades and accessories' },
-    { id: '10', category: 'Other', vendor: 'Marketing Agency', date: '11/15/2024', status: 'Paid', amount: 350.00, description: 'Social media advertising' },
-  ]
-
-  const filteredExpenses = allExpenses.filter(expense => {
+  const filteredExpenses = (expenses || []).filter(expense => {
     const matchesSearch = expense.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          expense.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = categoryFilter === 'all' || expense.category === categoryFilter

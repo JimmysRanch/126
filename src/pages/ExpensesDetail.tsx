@@ -1,58 +1,70 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Faders, FunnelSimple, CaretRight, CaretDown, Warning, Plus, TrendUp, TrendDown } from '@phosphor-icons/react'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useKV } from "@github/spark/hooks"
+import { ExpenseRecord } from "@/lib/finance-types"
 
 export function ExpensesDetail() {
   const navigate = useNavigate()
   const [timeRange, setTimeRange] = useState('last-6-months')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const isMobile = useIsMobile()
+  const [expenses] = useKV<ExpenseRecord[]>("expenses", [])
 
-  const expenseData = {
-    mtd: 400,
-    ytd: 4850,
-    pending: 1380,
-    avgMonthly: 485,
-    last6Months: 485
-  }
+  const expenseData = useMemo(() => {
+    const now = new Date()
+    const startOfYear = new Date(now.getFullYear(), 0, 1)
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const parseDate = (date: string) => new Date(date + "T00:00:00")
+    const mtd = (expenses || []).filter((exp) => parseDate(exp.date) >= startOfMonth).reduce((sum, exp) => sum + exp.amount, 0)
+    const ytd = (expenses || []).filter((exp) => parseDate(exp.date) >= startOfYear).reduce((sum, exp) => sum + exp.amount, 0)
+    const pending = (expenses || []).filter((exp) => exp.status === "Pending").reduce((sum, exp) => sum + exp.amount, 0)
+    return {
+      mtd,
+      ytd,
+      pending
+    }
+  }, [expenses])
 
-  const monthlyExpenses = [
-    { month: 'Aug', amount: 650 },
-    { month: 'Sep', amount: 720 },
-    { month: 'Oct', amount: 850 },
-    { month: 'Nov', amount: 920 },
-    { month: 'Dec', amount: 1100 },
-    { month: 'Jan', amount: 1200 },
-  ]
+  const monthlyExpenses = useMemo(() => {
+    const grouped = new Map<string, number>()
+    ;(expenses || []).forEach((exp) => {
+      const date = new Date(exp.date + "T00:00:00")
+      const key = date.toLocaleString("en-US", { month: "short" })
+      grouped.set(key, (grouped.get(key) || 0) + exp.amount)
+    })
+    return Array.from(grouped.entries()).map(([month, amount]) => ({ month, amount }))
+  }, [expenses])
 
-  const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
-  const avgMonthly = 485
+  const maxExpense = monthlyExpenses.length > 0 ? Math.max(...monthlyExpenses.map(m => m.amount)) : 0
+  const avgMonthly = monthlyExpenses.length > 0 ? Math.round(monthlyExpenses.reduce((sum, m) => sum + m.amount, 0) / monthlyExpenses.length) : 0
 
-  const breakdownData = [
-    { category: 'Supplies', amount: 2340, percentage: 48, color: 'oklch(0.65 0.30 260)' },
-    { category: 'Rent', amount: 1200, percentage: 25, color: 'oklch(0.70 0.28 330)' },
-    { category: 'Utilities', amount: 725, percentage: 15, color: 'oklch(0.75 0.26 150)' },
-    { category: 'Software', amount: 375, percentage: 8, color: 'oklch(0.72 0.25 50)' },
-    { category: 'Other', amount: 210, percentage: 4, color: 'oklch(0.68 0.24 25)' },
-  ]
+  const breakdownData = useMemo(() => {
+    const totals = new Map<string, number>()
+    ;(expenses || []).forEach((exp) => totals.set(exp.category, (totals.get(exp.category) || 0) + exp.amount))
+    const total = Array.from(totals.values()).reduce((sum, val) => sum + val, 0) || 1
+    const palette = [
+      'oklch(0.65 0.30 260)',
+      'oklch(0.70 0.28 330)',
+      'oklch(0.75 0.26 150)',
+      'oklch(0.72 0.25 50)',
+      'oklch(0.68 0.24 25)'
+    ]
+    return Array.from(totals.entries()).map(([category, amount], index) => ({
+      category,
+      amount,
+      percentage: Math.round((amount / total) * 100),
+      color: palette[index % palette.length]
+    }))
+  }, [expenses])
 
-  const recentExpenses = [
-    { category: 'Supplies', vendor: 'Pet Supply Co', date: '1/10/2024', status: 'Paid', amount: 250.00 },
-    { category: 'Utilities', vendor: 'City Electric', date: '1/10/2024', status: 'Paid', amount: 85.00 },
-    { category: 'Software', vendor: 'Business Tools Inc', date: '12/08/2024', status: 'Pending', amount: 65.00 },
-    { category: 'Supplies', vendor: 'Grooming Warehouse', date: '12/09/2024', status: 'Pending', amount: 190.00 },
-    { category: 'Rent', vendor: 'Property Management LLC', date: '12/08/2024', status: 'Pending', amount: 1200.00 },
-  ]
+  const recentExpenses = useMemo(() => (expenses || []).slice(-5).reverse(), [expenses])
 
-  const upcomingBills = [
-    { vendor: 'City Electric', dueIn: '3 days', warning: true, amount: 312, status: '$312' },
-    { vendor: 'Grooming Warehouse', dueIn: '5 days', warning: false, amount: 190, status: '$190' },
-    { vendor: 'Rent', dueIn: '9 days', warning: false, amount: 1200, status: '$1,200' },
-  ]
+  const upcomingBills: Array<{ vendor: string; dueIn: string; warning: boolean; amount: number; status: string }> = []
 
   const circumference = 2 * Math.PI * 75
   let currentOffset = 0
@@ -100,33 +112,39 @@ export function ExpensesDetail() {
             <div className="px-4 pb-4 flex-1 min-h-0">
               <div className="relative h-full">
                 <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
-                  {monthlyExpenses.map((data, i) => {
-                    const height = (data.amount / maxExpense) * 100
-                    const isHighest = data.amount === maxExpense
-                    return (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                        <div className="relative w-full group" style={{ height: `${height}%`, minHeight: '30px' }}>
-                          <div 
-                            className="absolute bottom-0 w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 cursor-pointer relative overflow-visible"
-                            style={{ 
-                              height: '100%',
-                              background: isHighest 
-                                ? 'linear-gradient(to top, oklch(0.70 0.25 200), oklch(0.75 0.28 210))'
-                                : 'linear-gradient(to top, oklch(0.68 0.22 200 / 0.8), oklch(0.72 0.24 205))',
-                              boxShadow: isHighest 
-                                ? '0 4px 24px oklch(0.70 0.25 200 / 0.5), 0 0 32px oklch(0.75 0.28 210 / 0.3)' 
-                                : '0 2px 16px oklch(0.70 0.22 200 / 0.3)'
-                            }}
-                          >
-                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gradient-to-br from-primary to-primary/90 text-primary-foreground px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap shadow-lg">
-                              ${data.amount}
+                  {monthlyExpenses.length === 0 ? (
+                    <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+                      No expense history yet
+                    </div>
+                  ) : (
+                    monthlyExpenses.map((data, i) => {
+                      const height = maxExpense > 0 ? (data.amount / maxExpense) * 100 : 0
+                      const isHighest = data.amount === maxExpense
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                          <div className="relative w-full group" style={{ height: `${height}%`, minHeight: '30px' }}>
+                            <div 
+                              className="absolute bottom-0 w-full rounded-t-lg transition-all duration-300 group-hover:scale-105 cursor-pointer relative overflow-visible"
+                              style={{ 
+                                height: '100%',
+                                background: isHighest 
+                                  ? 'linear-gradient(to top, oklch(0.70 0.25 200), oklch(0.75 0.28 210))'
+                                  : 'linear-gradient(to top, oklch(0.68 0.22 200 / 0.8), oklch(0.72 0.24 205))',
+                                boxShadow: isHighest 
+                                  ? '0 4px 24px oklch(0.70 0.25 200 / 0.5), 0 0 32px oklch(0.75 0.28 210 / 0.3)' 
+                                  : '0 2px 16px oklch(0.70 0.22 200 / 0.3)'
+                              }}
+                            >
+                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gradient-to-br from-primary to-primary/90 text-primary-foreground px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap shadow-lg">
+                                ${data.amount}
+                              </div>
                             </div>
                           </div>
+                          <span className="text-xs font-bold text-muted-foreground">{data.month}</span>
                         </div>
-                        <span className="text-xs font-bold text-muted-foreground">{data.month}</span>
-                      </div>
-                    )
-                  })}
+                      )
+                    })
+                  )}
                 </div>
                 
                 <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: `${(avgMonthly / maxExpense) * 100 * 0.75 + 32}px` }}>
@@ -176,20 +194,24 @@ export function ExpensesDetail() {
                 <span className="text-right">Amount</span>
               </div>
               <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin">
-                <div className="divide-y divide-border/30">
-                  {upcomingBills.map((bill, i) => (
-                    <div key={i} className="px-3 py-2.5 hover:bg-primary/5 transition-all cursor-pointer group">
-                      <div className="grid grid-cols-[1fr,auto,auto] gap-3 items-center">
-                        <span className="font-bold text-sm truncate group-hover:text-primary transition-colors">{bill.vendor}</span>
-                        <span className="text-xs text-right flex items-center gap-1 justify-end">
-                          {bill.warning && <Warning size={14} className="text-yellow-500" weight="fill" />}
-                          <span className={bill.warning ? 'text-yellow-500 font-bold' : 'text-muted-foreground font-semibold'}>{bill.dueIn}</span>
-                        </span>
-                        <span className="text-sm font-bold text-right tabular-nums">{bill.status}</span>
+                {upcomingBills.length === 0 ? (
+                  <div className="px-3 py-6 text-sm text-muted-foreground">No upcoming bills yet.</div>
+                ) : (
+                  <div className="divide-y divide-border/30">
+                    {upcomingBills.map((bill, i) => (
+                      <div key={i} className="px-3 py-2.5 hover:bg-primary/5 transition-all cursor-pointer group">
+                        <div className="grid grid-cols-[1fr,auto,auto] gap-3 items-center">
+                          <span className="font-bold text-sm truncate group-hover:text-primary transition-colors">{bill.vendor}</span>
+                          <span className="text-xs text-right flex items-center gap-1 justify-end">
+                            {bill.warning && <Warning size={14} className="text-yellow-500" weight="fill" />}
+                            <span className={bill.warning ? 'text-yellow-500 font-bold' : 'text-muted-foreground font-semibold'}>{bill.dueIn}</span>
+                          </span>
+                          <span className="text-sm font-bold text-right tabular-nums">{bill.status}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </Card>
@@ -238,6 +260,11 @@ export function ExpensesDetail() {
                       })
                     })()}
                   </svg>
+                  {breakdownData.length === 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+                      No expense breakdown yet
+                    </div>
+                  )}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-3xl font-bold tabular-nums bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">
                       ${(breakdownData.reduce((sum, item) => sum + item.amount, 0) / 1000).toFixed(1).replace(/\.0$/, '')}k

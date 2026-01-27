@@ -25,7 +25,6 @@ import {
   HoursOfOperation,
   isTimeWithinBusinessHours
 } from "@/lib/business-hours"
-import { DEFAULT_STAFF } from "@/lib/defaults"
 
 interface BusinessInfo {
   hoursOfOperation?: HoursOfOperation[]
@@ -38,7 +37,7 @@ export function NewAppointment() {
   
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [clients] = useKV<Client[]>("clients", [])
-  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
+  const [staffMembers] = useKV<Staff[]>("staff", [])
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
   const [businessInfo] = useKV<BusinessInfo>("business-info", {
@@ -180,6 +179,11 @@ export function NewAppointment() {
 
     if (!isTimeWithinBusinessHours(appointmentDate, appointmentTime, hoursOfOperation)) {
       toast.error("Selected time is outside business hours")
+      return
+    }
+
+    if (groomers.length === 0) {
+      toast.error("Add a groomer before scheduling appointments")
       return
     }
 
@@ -432,6 +436,11 @@ export function NewAppointment() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
+                  {groomers.length === 0 && (
+                    <SelectItem value="none" disabled>
+                      No groomers available
+                    </SelectItem>
+                  )}
                   {groomers.map(groomer => (
                     <SelectItem key={groomer.id} value={groomer.id}>
                       {groomer.name}
