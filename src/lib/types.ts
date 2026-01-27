@@ -61,6 +61,8 @@ export interface Appointment {
   services: AppointmentService[]
   totalPrice: number
   status: 'scheduled' | 'checked-in' | 'in-progress' | 'completed' | 'notified' | 'paid' | 'cancelled'
+  tipAmount?: number
+  tipPaymentMethod?: 'cash' | 'card'
   notes?: string
   groomingPreferences?: {
     overallLength?: string
@@ -126,6 +128,8 @@ export interface Transaction {
   additionalFees: number
   additionalFeesDescription?: string
   total: number
+  tipAmount: number
+  tipPaymentMethod?: 'cash' | 'card'
   paymentMethod: string
   status: 'pending' | 'completed' | 'refunded'
   type: 'appointment' | 'retail' | 'mixed'

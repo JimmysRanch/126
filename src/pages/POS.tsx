@@ -15,7 +15,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 export function POS() {
-  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [inventory] = useKV<InventoryItem[]>("inventory", [])
   const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
   const [paymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", [
@@ -32,11 +32,14 @@ export function POS() {
   const [discountDescription, setDiscountDescription] = useState("")
   const [additionalFees, setAdditionalFees] = useState(0)
   const [additionalFeesDescription, setAdditionalFeesDescription] = useState("")
+  const [tipAmount, setTipAmount] = useState(0)
+  const [tipPaymentMethod, setTipPaymentMethod] = useState("")
   const [paymentMethod, setPaymentMethod] = useState("")
   const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false)
   const isMobile = useIsMobile()
   
   const enabledPaymentMethods = (paymentMethods || []).filter(pm => pm.enabled)
+  const tipPaymentLabel = tipPaymentMethod === "cash" ? "Cash" : tipPaymentMethod === "card" ? "Card" : ""
 
   const todayAppointments = (appointments || []).filter(apt => {
     const today = getTodayInBusinessTimezone()
@@ -100,7 +103,7 @@ export function POS() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal()
-    return subtotal - discount + additionalFees
+    return subtotal - discount + additionalFees + tipAmount
   }
 
   const handleCheckout = () => {
@@ -111,6 +114,11 @@ export function POS() {
     
     if (!paymentMethod) {
       toast.error("Please select a payment method")
+      return
+    }
+
+    if (tipAmount > 0 && !tipPaymentMethod) {
+      toast.error("Please select a tip payment method")
       return
     }
 
@@ -127,12 +135,28 @@ export function POS() {
       additionalFees,
       additionalFeesDescription,
       total: calculateTotal(),
+      tipAmount,
+      tipPaymentMethod: tipAmount > 0 ? (tipPaymentMethod as "cash" | "card") : undefined,
       paymentMethod,
       status: 'completed',
       type: selectedAppointment ? 'appointment' : 'retail'
     }
 
     setTransactions((current) => [...(current || []), newTransaction])
+
+    if (selectedAppointment) {
+      setAppointments((current) =>
+        (current || []).map((apt) =>
+          apt.id === selectedAppointment.id
+            ? {
+                ...apt,
+                tipAmount,
+                tipPaymentMethod: tipAmount > 0 ? (tipPaymentMethod as "cash" | "card") : undefined
+              }
+            : apt
+        )
+      )
+    }
     
     cartItems.filter(item => item.type === 'product').forEach(item => {
       const product = (inventory || []).find(p => p.id === item.id)
@@ -153,6 +177,8 @@ export function POS() {
     setDiscountDescription("")
     setAdditionalFees(0)
     setAdditionalFeesDescription("")
+    setTipAmount(0)
+    setTipPaymentMethod("")
     setPaymentMethod("")
   }
 
@@ -337,6 +363,34 @@ export function POS() {
               )}
 
               <div className="space-y-2">
+                <Label htmlFor="tip">Tip Amount ($)</Label>
+                <Input
+                  id="tip"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={tipAmount}
+                  onChange={(e) => setTipAmount(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                />
+              </div>
+
+              {tipAmount > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="tip-method">Tip Payment Method</Label>
+                  <Select value={tipPaymentMethod} onValueChange={setTipPaymentMethod}>
+                    <SelectTrigger id="tip-method">
+                      <SelectValue placeholder="Select tip payment method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">Cash</SelectItem>
+                      <SelectItem value="card">Card</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="space-y-2">
                 <Label htmlFor="payment">Payment Method</Label>
                 <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                   <SelectTrigger id="payment">
@@ -374,6 +428,14 @@ export function POS() {
                     Additional Fees {additionalFeesDescription && `(${additionalFeesDescription})`}
                   </span>
                   <span className="font-medium">+${additionalFees.toFixed(2)}</span>
+                </div>
+              )}
+              {tipAmount > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    Tip {tipPaymentLabel && `(${tipPaymentLabel})`}
+                  </span>
+                  <span className="font-medium">+${tipAmount.toFixed(2)}</span>
                 </div>
               )}
               <Separator />
@@ -454,6 +516,14 @@ export function POS() {
                     Additional Fees {additionalFeesDescription && `(${additionalFeesDescription})`}
                   </span>
                   <span>+${additionalFees.toFixed(2)}</span>
+                </div>
+              )}
+              {tipAmount > 0 && (
+                <div className="flex items-center justify-between">
+                  <span>
+                    Tip {tipPaymentLabel && `(${tipPaymentLabel})`}
+                  </span>
+                  <span>+${tipAmount.toFixed(2)}</span>
                 </div>
               )}
               <Separator />
