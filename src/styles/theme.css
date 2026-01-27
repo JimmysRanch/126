@@ -332,4 +332,23 @@
     --size-scale: 1.08;
     --radius-factor: 1.1;
   }
+
+  #spark-app.ui-showroom {
+    --size-scale: 1.16;
+    --radius-factor: 1.25;
+    --color-bg-inset: var(--color-neutral-1);
+    --color-bg-overlay: var(--color-neutral-1);
+    --color-focus-ring: var(--color-accent-secondary-9);
+  }
+
+  #spark-app.ui-showroom nav {
+    box-shadow: 0 18px 40px -30px rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(8px);
+  }
+
+  #spark-app.ui-showroom .bg-card {
+    box-shadow:
+      0 30px 60px -50px rgba(15, 23, 42, 0.55),
+      0 8px 18px -12px rgba(15, 23, 42, 0.25);
+  }
 }
