@@ -2045,6 +2045,11 @@ export function Settings() {
                           id: "ui-focus",
                           label: "Focus Mode",
                           description: "Minimal chrome with larger workspaces for groomers."
+                        },
+                        {
+                          id: "ui-showroom",
+                          label: "Showroom",
+                          description: "Elevated layout with airy spacing, premium cards, and refined visual depth."
                         }
                       ].map((layout) => (
                         <Label
