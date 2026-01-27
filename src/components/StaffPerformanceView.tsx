@@ -525,6 +525,11 @@ export function StaffPerformanceView({
           line-height: 1.15;
         }
 
+        .perf-list-row.rpm-breed {
+          font-size: 0.9rem;
+          line-height: 1.2;
+        }
+
         .perf-list-left {
           color: hsl(var(--foreground));
         }
@@ -720,7 +725,7 @@ export function StaffPerformanceView({
               <div className="perf-list-slot">
                 <div className="perf-list">
                   {earningsByBreed.map((item, i) => (
-                    <div key={i} className="perf-list-row">
+                    <div key={i} className="perf-list-row rpm-breed">
                       <div className="perf-list-left">{item.left}</div>
                       <div className="perf-list-right">{item.right}</div>
                     </div>
