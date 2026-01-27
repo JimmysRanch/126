@@ -12,8 +12,12 @@ import { toZonedTime, fromZonedTime } from 'date-fns-tz'
  */
 export function getBusinessTimezone(): string {
   try {
-    const settings = localStorage.getItem('kv:business-settings')
-    if (settings) {
+    const settingsSources = ['kv:business-info', 'kv:business-settings']
+    for (const key of settingsSources) {
+      const settings = localStorage.getItem(key)
+      if (!settings) {
+        continue
+      }
       const parsed = JSON.parse(settings)
       if (parsed?.timezone) {
         return parsed.timezone

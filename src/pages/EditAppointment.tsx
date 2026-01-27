@@ -21,8 +21,10 @@ export function EditAppointment() {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [clients] = useKV<Client[]>("clients", [])
   const [staff] = useKV<any[]>("staff", [])
-  const [mainServices] = useKV<MainService[]>("mainServices", [])
-  const [addOns] = useKV<AddOn[]>("addOns", [])
+  const [mainServices, setMainServices] = useKV<MainService[]>("main-services", [])
+  const [addOns, setAddOns] = useKV<AddOn[]>("service-addons", [])
+  const [legacyMainServices, setLegacyMainServices] = useKV<MainService[]>("mainServices", [])
+  const [legacyAddOns, setLegacyAddOns] = useKV<AddOn[]>("addOns", [])
 
   const appointment = (appointments || []).find(apt => apt.id === appointmentId)
 
@@ -38,6 +40,17 @@ export function EditAppointment() {
   )
   const [notes, setNotes] = useState(appointment?.notes || "")
   const [totalPrice, setTotalPrice] = useState(appointment?.totalPrice || 0)
+
+  useEffect(() => {
+    if ((mainServices || []).length === 0 && (legacyMainServices || []).length > 0) {
+      setMainServices(legacyMainServices)
+      setLegacyMainServices([])
+    }
+    if ((addOns || []).length === 0 && (legacyAddOns || []).length > 0) {
+      setAddOns(legacyAddOns)
+      setLegacyAddOns([])
+    }
+  }, [addOns, legacyAddOns, legacyMainServices, mainServices, setAddOns, setLegacyAddOns, setLegacyMainServices, setMainServices])
 
   const selectedClient = clients?.find(c => c.id === selectedClientId)
   const selectedPet = selectedClient?.pets.find(p => p.id === selectedPetId)
