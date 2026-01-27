@@ -169,88 +169,88 @@ export function StaffProfile() {
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-start sm:gap-4">
                   <div className="flex items-start gap-3 sm:gap-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
-                    onClick={() => navigate('/staff')}
-                  >
-                    <ArrowLeft size={isMobile ? 20 : 24} />
-                  </Button>
-                  <div className="flex-1 min-w-0">
-                    <h1 className={`${isMobile ? 'text-xl' : 'text-[32px]'} font-bold tracking-tight leading-none`}>
-                      {staff.name}
-                    </h1>
-                  </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="mt-0.5 sm:mt-1 hover:bg-secondary transition-all duration-200 shrink-0"
+                      onClick={() => navigate('/staff')}
+                    >
+                      <ArrowLeft size={isMobile ? 20 : 24} />
+                    </Button>
+                    <div className="flex-1 min-w-0">
+                      <h1 className={`${isMobile ? 'text-xl' : 'text-[32px]'} font-bold tracking-tight leading-none`}>
+                        {staff.name}
+                      </h1>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 sm:gap-3 sm:justify-end">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        className={`font-semibold transition-colors duration-200 ${isMobile ? 'flex-1' : ''}`}
-                      >
-                        Contact
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-card border-border max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Contact Information</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 pt-4">
-                        <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
-                          <Phone size={20} className="text-primary" />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs text-muted-foreground">Phone</div>
-                            <div className="font-medium">{staff.phone}</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
-                          <Envelope size={20} className="text-primary" />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs text-muted-foreground">Email</div>
-                            <div className="font-medium break-words">{staff.email}</div>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
-                          <MapPin size={20} className="text-primary shrink-0 mt-0.5" />
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs text-muted-foreground">Address</div>
-                            <div className="font-medium">{staff.address}</div>
-                          </div>
-                        </div>
-                        
-                        <div className="border-t border-border pt-4 mt-4">
-                          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                            Emergency Contact
-                          </h4>
-                          <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
-                            <User size={20} className="text-primary shrink-0 mt-0.5" />
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          className={`font-semibold transition-colors duration-200 ${isMobile ? 'flex-1' : ''}`}
+                        >
+                          Contact
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-card border-border max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Contact Information</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 pt-4">
+                          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                            <Phone size={20} className="text-primary" />
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium">{staff.emergencyContact.name}</div>
-                              <div className="text-xs text-muted-foreground">{staff.emergencyContact.relation}</div>
-                              <div className="text-sm font-medium mt-1">{staff.emergencyContact.phone}</div>
+                              <div className="text-xs text-muted-foreground">Phone</div>
+                              <div className="font-medium">{staff.phone}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors cursor-pointer">
+                            <Envelope size={20} className="text-primary" />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs text-muted-foreground">Email</div>
+                              <div className="font-medium break-words">{staff.email}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
+                            <MapPin size={20} className="text-primary shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs text-muted-foreground">Address</div>
+                              <div className="font-medium">{staff.address}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="border-t border-border pt-4 mt-4">
+                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                              Emergency Contact
+                            </h4>
+                            <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/30">
+                              <User size={20} className="text-primary shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium">{staff.emergencyContact.name}</div>
+                                <div className="text-xs text-muted-foreground">{staff.emergencyContact.relation}</div>
+                                <div className="text-sm font-medium mt-1">{staff.emergencyContact.phone}</div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-secondary transition-colors duration-200 shrink-0"
-                    onClick={() => navigate(`/staff/${staffId}/edit`)}
-                  >
-                    <PencilSimple size={isMobile ? 18 : 20} />
-                  </Button>
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-secondary transition-colors duration-200 shrink-0"
+                      onClick={() => navigate(`/staff/${staffId}/edit`)}
+                    >
+                      <PencilSimple size={isMobile ? 18 : 20} />
+                    </Button>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-4">
-                  <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider">
+                <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-end sm:gap-4">
+                  <div className="flex items-end gap-2 sm:gap-3 flex-wrap">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider leading-none">
                       {staff.role} • SINCE {staff.hireDate.toUpperCase()}
                     </p>
                     {staff.status !== "Active" && (
@@ -263,8 +263,8 @@ export function StaffProfile() {
                     )}
                   </div>
 
-                  <div className="flex justify-center">
-                    <TabsList className="flex flex-wrap justify-center">
+                  <div className="flex justify-center items-end">
+                    <TabsList className="flex flex-wrap justify-center items-end">
                       <TabsTrigger 
                         value="overview"
                         className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
