@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Download, CalendarBlank, TrendUp } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useKV } from "@github/spark/hooks"
+import { Appointment, Transaction } from "@/lib/types"
 
 interface PayPeriod {
   period: string
@@ -36,97 +38,92 @@ interface StaffPayrollDetailProps {
   hourlyRate: number
 }
 
-const mockPayPeriods: PayPeriod[] = [
-  {
-    period: "Jan 16 - Jan 31, 2025",
-    startDate: "Jan 16, 2025",
-    endDate: "Jan 31, 2025",
-    regularHours: 80,
-    overtimeHours: 4,
-    hourlyRate: 35,
-    overtimeRate: 52.5,
-    regularPay: 2800,
-    overtimePay: 210,
-    grossPay: 3010,
+const getPeriodRange = (appointments: Appointment[]) => {
+  if (appointments.length === 0) {
+    return {
+      period: "No completed appointments",
+      startDate: "—",
+      endDate: "—"
+    }
+  }
+  const sortedDates = appointments
+    .map((apt) => new Date(apt.date))
+    .filter((date) => !Number.isNaN(date.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime())
+  if (sortedDates.length === 0) {
+    return {
+      period: "No completed appointments",
+      startDate: "—",
+      endDate: "—"
+    }
+  }
+  const startDate = sortedDates[0].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  const endDate = sortedDates[sortedDates.length - 1].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  return {
+    period: `${startDate} - ${endDate}`,
+    startDate,
+    endDate
+  }
+}
+
+export function StaffPayrollDetail({ staffId, hourlyRate }: StaffPayrollDetailProps) {
+  const isMobile = useIsMobile()
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [transactions] = useKV<Transaction[]>("transactions", [])
+  
+  const staffAppointments = (appointments || []).filter(
+    (apt) => apt.groomerId === staffId && (apt.status === "completed" || apt.status === "paid")
+  )
+  const transactionsByAppointment = new Map(
+    (transactions || [])
+      .filter((transaction) => transaction.appointmentId)
+      .map((transaction) => [transaction.appointmentId as string, transaction])
+  )
+  const tipTotal = staffAppointments.reduce((sum, apt) => {
+    const transaction = transactionsByAppointment.get(apt.id)
+    return sum + (transaction?.tipAmount ?? apt.tipAmount ?? 0)
+  }, 0)
+  const grossPay = staffAppointments.reduce((sum, apt) => {
+    const transaction = transactionsByAppointment.get(apt.id)
+    const tipAmount = transaction?.tipAmount ?? apt.tipAmount ?? 0
+    const revenue = transaction ? Math.max(0, transaction.total - tipAmount) : apt.totalPrice
+    return sum + revenue
+  }, 0)
+  const periodRange = getPeriodRange(staffAppointments)
+  const currentPeriod: PayPeriod = {
+    period: periodRange.period,
+    startDate: periodRange.startDate,
+    endDate: periodRange.endDate,
+    regularHours: 0,
+    overtimeHours: 0,
+    hourlyRate,
+    overtimeRate: hourlyRate * 1.5,
+    regularPay: grossPay,
+    overtimePay: 0,
+    grossPay,
     deductions: {
-      federalTax: 452,
-      stateTax: 90,
-      socialSecurity: 187,
-      medicare: 44,
-      healthInsurance: 150,
-      retirement: 90
+      federalTax: 0,
+      stateTax: 0,
+      socialSecurity: 0,
+      medicare: 0,
+      healthInsurance: 0,
+      retirement: 0
     },
-    netPay: 1997,
-    appointmentsCompleted: 42,
-    tips: 1180,
+    netPay: grossPay + tipTotal,
+    appointmentsCompleted: staffAppointments.length,
+    tips: tipTotal,
     bonuses: 0,
     status: "Pending"
-  },
-  {
-    period: "Jan 1 - Jan 15, 2025",
-    startDate: "Jan 1, 2025",
-    endDate: "Jan 15, 2025",
-    regularHours: 80,
-    overtimeHours: 2,
-    hourlyRate: 35,
-    overtimeRate: 52.5,
-    regularPay: 2800,
-    overtimePay: 105,
-    grossPay: 2905,
-    deductions: {
-      federalTax: 436,
-      stateTax: 87,
-      socialSecurity: 180,
-      medicare: 42,
-      healthInsurance: 150,
-      retirement: 87
-    },
-    netPay: 1923,
-    appointmentsCompleted: 39,
-    tips: 1050,
-    bonuses: 0,
-    status: "Paid"
-  },
-  {
-    period: "Dec 16 - Dec 31, 2024",
-    startDate: "Dec 16, 2024",
-    endDate: "Dec 31, 2024",
-    regularHours: 80,
-    overtimeHours: 8,
-    hourlyRate: 35,
-    overtimeRate: 52.5,
-    regularPay: 2800,
-    overtimePay: 420,
-    grossPay: 3220,
-    deductions: {
-      federalTax: 483,
-      stateTax: 97,
-      socialSecurity: 200,
-      medicare: 47,
-      healthInsurance: 150,
-      retirement: 97
-    },
-    netPay: 2146,
-    appointmentsCompleted: 48,
-    tips: 1420,
-    bonuses: 200,
-    status: "Paid"
   }
-]
-
-export function StaffPayrollDetail({ staffId, staffName, hourlyRate }: StaffPayrollDetailProps) {
-  const isMobile = useIsMobile()
-  
-  const currentPeriod = mockPayPeriods[0]
   const totalDeductions = Object.values(currentPeriod.deductions).reduce((acc, val) => acc + val, 0)
 
   const yearToDateStats = {
-    grossPay: mockPayPeriods.reduce((acc, p) => acc + p.grossPay, 0),
-    netPay: mockPayPeriods.reduce((acc, p) => acc + p.netPay, 0),
-    tips: mockPayPeriods.reduce((acc, p) => acc + p.tips, 0),
-    bonuses: mockPayPeriods.reduce((acc, p) => acc + p.bonuses, 0),
-    totalHours: mockPayPeriods.reduce((acc, p) => acc + p.regularHours + p.overtimeHours, 0),
-    appointments: mockPayPeriods.reduce((acc, p) => acc + p.appointmentsCompleted, 0)
+    grossPay: currentPeriod.grossPay,
+    netPay: currentPeriod.netPay,
+    tips: currentPeriod.tips,
+    bonuses: currentPeriod.bonuses,
+    totalHours: currentPeriod.regularHours + currentPeriod.overtimeHours,
+    appointments: currentPeriod.appointmentsCompleted
   }
 
   return (

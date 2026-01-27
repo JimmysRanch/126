@@ -7,6 +7,8 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useKV } from "@github/spark/hooks"
+import { Appointment, Transaction } from "@/lib/types"
 
 interface AppointmentDetail {
   id: string
@@ -32,239 +34,29 @@ interface AppointmentDetail {
   status: "Completed" | "Cancelled" | "No-Show"
 }
 
-const mockAppointments: Record<string, AppointmentDetail[]> = {
-  "1": [
-    {
-      id: "APT-2025-001",
-      date: "Jan 28, 2025",
-      time: "9:00 AM",
-      clientName: "George Moodys",
-      petName: "Trying",
-      petBreed: "Golden Retriever",
-      service: "Full Groom Package",
-      serviceDuration: "2h",
-      basePrice: 95,
-      discountApplied: true,
-      discountAmount: 10,
-      discountReason: "First-time client discount",
-      discountNotes: "Promotional offer for new customers during January. Applied automatically at booking.",
-      finalPrice: 85,
-      tipAmount: 45,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Credit Card",
-      staffEarnings: 42.50,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-002",
-      date: "Jan 28, 2025",
-      time: "11:30 AM",
-      clientName: "Sarah Johnson",
-      petName: "Bella",
-      petBreed: "Poodle Mix",
-      service: "Bath & Brush",
-      serviceDuration: "1h",
-      basePrice: 55,
-      discountApplied: false,
-      discountAmount: 0,
-      discountReason: "",
-      discountNotes: "",
-      finalPrice: 55,
-      tipAmount: 20,
-      tipPaymentMethod: "Cash",
-      tipPaidInPayroll: false,
-      paymentMethod: "Cash",
-      staffEarnings: 27.50,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-003",
-      date: "Jan 27, 2025",
-      time: "2:00 PM",
-      clientName: "Michael Chen",
-      petName: "Charlie",
-      petBreed: "Labrador",
-      service: "De-shedding Treatment",
-      serviceDuration: "1.5h",
-      basePrice: 75,
-      discountApplied: true,
-      discountAmount: 15,
-      discountReason: "Loyalty program - 10th visit",
-      discountNotes: "Customer reached 10 visits milestone. 20% discount applied as per loyalty rewards program.",
-      finalPrice: 60,
-      tipAmount: 25,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Credit Card",
-      staffEarnings: 30.00,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-004",
-      date: "Jan 27, 2025",
-      time: "10:00 AM",
-      clientName: "Emily Rodriguez",
-      petName: "Max",
-      petBreed: "German Shepherd",
-      service: "Full Groom Package",
-      serviceDuration: "2.5h",
-      basePrice: 110,
-      discountApplied: true,
-      discountAmount: 30,
-      discountReason: "Service recovery - previous appointment issue",
-      discountNotes: "Customer experienced scheduling conflict last visit. Manager approved 30% discount as goodwill gesture. Ref: Case #SR-2025-012",
-      finalPrice: 80,
-      tipAmount: 35,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Debit Card",
-      staffEarnings: 40.00,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-005",
-      date: "Jan 26, 2025",
-      time: "3:30 PM",
-      clientName: "David Thompson",
-      petName: "Luna",
-      petBreed: "Shih Tzu",
-      service: "Puppy First Groom",
-      serviceDuration: "1h",
-      basePrice: 45,
-      discountApplied: false,
-      discountAmount: 0,
-      discountReason: "",
-      discountNotes: "",
-      finalPrice: 45,
-      tipAmount: 15,
-      tipPaymentMethod: "Cash",
-      tipPaidInPayroll: false,
-      paymentMethod: "Credit Card",
-      staffEarnings: 22.50,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-006",
-      date: "Jan 26, 2025",
-      time: "1:00 PM",
-      clientName: "Amanda White",
-      petName: "Rocky",
-      petBreed: "Beagle",
-      service: "Nail Trim & Ear Cleaning",
-      serviceDuration: "30m",
-      basePrice: 30,
-      discountApplied: true,
-      discountAmount: 5,
-      discountReason: "Bundle discount - booked with bath service",
-      discountNotes: "Customer also booked bath service for next week. Applied 15% discount for bundled services.",
-      finalPrice: 25,
-      tipAmount: 10,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Cash",
-      staffEarnings: 12.50,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-007",
-      date: "Jan 25, 2025",
-      time: "4:00 PM",
-      clientName: "Jessica Martinez",
-      petName: "Buddy",
-      petBreed: "Mixed Breed",
-      service: "Bath & Brush",
-      serviceDuration: "1h",
-      basePrice: 50,
-      discountApplied: false,
-      discountAmount: 0,
-      discountReason: "",
-      discountNotes: "",
-      finalPrice: 50,
-      tipAmount: 18,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Credit Card",
-      staffEarnings: 25.00,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-008",
-      date: "Jan 25, 2025",
-      time: "10:30 AM",
-      clientName: "Robert Williams",
-      petName: "Daisy",
-      petBreed: "Yorkshire Terrier",
-      service: "Show Cut Styling",
-      serviceDuration: "2h",
-      basePrice: 120,
-      discountApplied: true,
-      discountAmount: 20,
-      discountReason: "Referral program discount",
-      discountNotes: "Customer referred by existing client Jennifer Park. Both customers received $20 credit. Referral ID: REF-2025-045",
-      finalPrice: 100,
-      tipAmount: 40,
-      tipPaymentMethod: "Cash",
-      tipPaidInPayroll: false,
-      paymentMethod: "Credit Card",
-      staffEarnings: 50.00,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-009",
-      date: "Jan 24, 2025",
-      time: "2:30 PM",
-      clientName: "Patricia Lee",
-      petName: "Oliver",
-      petBreed: "Cavalier King Charles",
-      service: "Full Groom Package",
-      serviceDuration: "1.5h",
-      basePrice: 85,
-      discountApplied: false,
-      discountAmount: 0,
-      discountReason: "",
-      discountNotes: "",
-      finalPrice: 85,
-      tipAmount: 30,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Debit Card",
-      staffEarnings: 42.50,
-      commissionRate: 50,
-      status: "Completed"
-    },
-    {
-      id: "APT-2025-010",
-      date: "Jan 24, 2025",
-      time: "9:30 AM",
-      clientName: "Christopher Davis",
-      petName: "Zeus",
-      petBreed: "Rottweiler",
-      service: "Bath & De-shed",
-      serviceDuration: "2h",
-      basePrice: 90,
-      discountApplied: true,
-      discountAmount: 18,
-      discountReason: "Senior pet discount",
-      discountNotes: "Zeus is 12 years old. Applied 20% senior pet discount (ages 10+) as per pricing policy.",
-      finalPrice: 72,
-      tipAmount: 28,
-      tipPaymentMethod: "Card",
-      tipPaidInPayroll: true,
-      paymentMethod: "Credit Card",
-      staffEarnings: 36.00,
-      commissionRate: 50,
-      status: "Completed"
-    }
-  ]
+const formatDateLabel = (dateString: string) => {
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime())) return dateString
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+}
+
+const normalizeTipMethod = (method?: string, paymentMethod?: string): "Cash" | "Card" => {
+  if (method === "cash") return "Cash"
+  if (method === "card") return "Card"
+  if (paymentMethod?.toLowerCase().includes("cash")) return "Cash"
+  return "Card"
+}
+
+const getPayPeriodLabel = (staffAppointments: Appointment[]) => {
+  if (staffAppointments.length === 0) return "No completed appointments"
+  const sortedDates = staffAppointments
+    .map((apt) => new Date(apt.date))
+    .filter((date) => !Number.isNaN(date.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime())
+  if (sortedDates.length === 0) return "No completed appointments"
+  const start = sortedDates[0].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  const end = sortedDates[sortedDates.length - 1].toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  return `${start} - ${end}`
 }
 
 export function FinancesStaffPayrollBreakdown() {
@@ -272,31 +64,65 @@ export function FinancesStaffPayrollBreakdown() {
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const [selectedPeriod, setSelectedPeriod] = useState("current")
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [transactions] = useKV<Transaction[]>("transactions", [])
 
-  const staffData: Record<string, any> = {
-    "1": {
-      name: "Sarah Johnson",
-      role: "Senior Groomer",
-      hourlyRate: 35,
-      commissionRate: 50
-    },
-    "2": {
-      name: "Mike Torres",
-      role: "Groomer",
-      hourlyRate: 28,
-      commissionRate: 50
+  const staffAppointments = (appointments || []).filter(
+    (apt) => apt.groomerId === staffId && (apt.status === "completed" || apt.status === "paid")
+  )
+  const transactionsByAppointment = new Map(
+    (transactions || [])
+      .filter((transaction) => transaction.appointmentId)
+      .map((transaction) => [transaction.appointmentId as string, transaction])
+  )
+  const appointmentDetails: AppointmentDetail[] = staffAppointments.map((apt) => {
+    const transaction = transactionsByAppointment.get(apt.id)
+    const tipAmount = transaction?.tipAmount ?? apt.tipAmount ?? 0
+    const tipPaymentMethod = normalizeTipMethod(transaction?.tipPaymentMethod ?? apt.tipPaymentMethod, transaction?.paymentMethod)
+    const discountAmount = transaction?.discount ?? 0
+    const discountApplied = discountAmount > 0
+    const finalPrice = transaction ? Math.max(0, transaction.total - tipAmount) : apt.totalPrice
+    const commissionRate = 50
+    const staffEarnings = finalPrice * (commissionRate / 100)
+
+    return {
+      id: apt.id,
+      date: formatDateLabel(apt.date),
+      time: apt.startTime,
+      clientName: apt.clientName,
+      petName: apt.petName,
+      petBreed: "",
+      service: apt.services?.map((service) => service.serviceName).join(", ") || "Service",
+      serviceDuration: "—",
+      basePrice: apt.totalPrice,
+      discountApplied,
+      discountAmount,
+      discountReason: transaction?.discountDescription ?? "",
+      discountNotes: "",
+      finalPrice,
+      tipAmount,
+      tipPaymentMethod,
+      tipPaidInPayroll: tipPaymentMethod === "Card",
+      paymentMethod: transaction?.paymentMethod ?? "—",
+      staffEarnings,
+      commissionRate,
+      status: apt.status === "completed" || apt.status === "paid" ? "Completed" : "Cancelled"
     }
+  })
+  const staff = {
+    name: staffAppointments[0]?.groomerName ?? "Staff Member",
+    role: "Groomer",
+    hourlyRate: 0,
+    commissionRate: 50
   }
+  const payPeriodLabel = getPayPeriodLabel(staffAppointments)
 
-  const staff = staffData[staffId as string] || staffData["1"]
-  const appointments = mockAppointments[staffId as string] || mockAppointments["1"]
-
-  const totalEarnings = appointments.reduce((sum, apt) => sum + apt.staffEarnings, 0)
-  const totalTips = appointments.reduce((sum, apt) => sum + apt.tipAmount, 0)
-  const totalTipsInPayroll = appointments.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? apt.tipAmount : 0), 0)
-  const totalTipsCash = appointments.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? 0 : apt.tipAmount), 0)
-  const totalRevenue = appointments.reduce((sum, apt) => sum + apt.finalPrice, 0)
-  const totalDiscounts = appointments.reduce((sum, apt) => sum + apt.discountAmount, 0)
+  const totalEarnings = appointmentDetails.reduce((sum, apt) => sum + apt.staffEarnings, 0)
+  const totalTips = appointmentDetails.reduce((sum, apt) => sum + apt.tipAmount, 0)
+  const totalTipsInPayroll = appointmentDetails.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? apt.tipAmount : 0), 0)
+  const totalTipsCash = appointmentDetails.reduce((sum, apt) => sum + (apt.tipPaidInPayroll ? 0 : apt.tipAmount), 0)
+  const totalRevenue = appointmentDetails.reduce((sum, apt) => sum + apt.finalPrice, 0)
+  const totalDiscounts = appointmentDetails.reduce((sum, apt) => sum + apt.discountAmount, 0)
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
@@ -339,9 +165,7 @@ export function FinancesStaffPayrollBreakdown() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="current">Jan 16 - Jan 31, 2025</SelectItem>
-                <SelectItem value="previous">Jan 1 - Jan 15, 2025</SelectItem>
-                <SelectItem value="dec2">Dec 16 - Dec 31, 2024</SelectItem>
+                <SelectItem value="current">{payPeriodLabel}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -352,7 +176,7 @@ export function FinancesStaffPayrollBreakdown() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">APPOINTMENTS</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">{appointments.length}</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{appointmentDetails.length}</p>
               </div>
             </div>
           </Card>
@@ -397,7 +221,7 @@ export function FinancesStaffPayrollBreakdown() {
         <Card className="p-4 sm:p-6 bg-card border-border">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base sm:text-lg font-bold">Appointment Details</h2>
-            <Badge variant="secondary">{appointments.length} total</Badge>
+            <Badge variant="secondary">{appointmentDetails.length} total</Badge>
           </div>
 
           <div className="overflow-x-auto">
@@ -417,7 +241,7 @@ export function FinancesStaffPayrollBreakdown() {
                 </tr>
               </thead>
               <tbody>
-                {appointments.map((apt, index) => (
+                {appointmentDetails.map((apt, index) => (
                   <tr 
                     key={apt.id}
                     className={`border-b border-border hover:bg-secondary/20 transition-colors ${index % 2 === 0 ? 'bg-secondary/5' : ''}`}
