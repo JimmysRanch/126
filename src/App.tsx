@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import { TopNav } from '@/components/TopNav'
+import { SunburstShell } from '@/components/SunburstShell'
 import { Dashboard } from '@/pages/Dashboard'
 import { ClientsList } from '@/pages/ClientsList'
 import { ClientProfile } from '@/pages/ClientProfile'
@@ -60,49 +61,55 @@ function App() {
     appearanceClasses.forEach((className) => sparkApp.classList.add(className))
   }, [appearanceClasses])
 
+  const routes = (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/appointments" element={<Appointments />} />
+      <Route path="/appointments/new" element={<NewAppointment />} />
+      <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
+      <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
+      <Route path="/clients" element={<ClientsList />} />
+      <Route path="/clients/new" element={<AddClient />} />
+      <Route path="/clients/:clientId" element={<ClientProfile />} />
+      <Route path="/clients/:clientId/edit" element={<EditClient />} />
+      <Route path="/clients/:clientId/add-pet" element={<AddPet />} />
+      <Route path="/clients/:clientId/pets/:petId/edit" element={<EditPet />} />
+      <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
+      <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
+      <Route path="/staff" element={<Staff />} />
+      <Route path="/staff/invite" element={<InviteStaff />} />
+      <Route path="/staff/:staffId" element={<StaffProfile />} />
+      <Route path="/staff/:staffId/edit" element={<EditStaff />} />
+      <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
+      <Route path="/pos" element={<POS />} />
+      <Route path="/inventory" element={<Inventory />} />
+      <Route path="/finances" element={<Finances />} />
+      <Route path="/finances/expenses" element={<ExpensesDetail />} />
+      <Route path="/finances/all-expenses" element={<AllExpenses />} />
+      <Route path="/finances/add-expense" element={<AddExpense />} />
+      <Route path="/finances/record-payment" element={<RecordPayment />} />
+      <Route path="/finances/file-taxes" element={<FileTaxes />} />
+      <Route path="/finances/run-payroll" element={<RunPayroll />} />
+      <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
+      <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+      <Route path="/recent-activity" element={<RecentActivityPage />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
+      <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
+    </Routes>
+  )
+
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
-        <TopNav />
-        <div className="flex-1 min-h-0">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/appointments/new" element={<NewAppointment />} />
-            <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
-            <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
-            <Route path="/clients" element={<ClientsList />} />
-            <Route path="/clients/new" element={<AddClient />} />
-            <Route path="/clients/:clientId" element={<ClientProfile />} />
-            <Route path="/clients/:clientId/edit" element={<EditClient />} />
-            <Route path="/clients/:clientId/add-pet" element={<AddPet />} />
-            <Route path="/clients/:clientId/pets/:petId/edit" element={<EditPet />} />
-            <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
-            <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/staff/invite" element={<InviteStaff />} />
-            <Route path="/staff/:staffId" element={<StaffProfile />} />
-            <Route path="/staff/:staffId/edit" element={<EditStaff />} />
-            <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
-            <Route path="/pos" element={<POS />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/finances" element={<Finances />} />
-            <Route path="/finances/expenses" element={<ExpensesDetail />} />
-            <Route path="/finances/all-expenses" element={<AllExpenses />} />
-            <Route path="/finances/add-expense" element={<AddExpense />} />
-            <Route path="/finances/record-payment" element={<RecordPayment />} />
-            <Route path="/finances/file-taxes" element={<FileTaxes />} />
-            <Route path="/finances/run-payroll" element={<RunPayroll />} />
-            <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
-            <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
-            <Route path="/recent-activity" element={<RecentActivityPage />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
-            <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
-          </Routes>
+      {selectedUi === 'sunburst' ? (
+        <SunburstShell>{routes}</SunburstShell>
+      ) : (
+        <div className="min-h-screen bg-background text-foreground flex flex-col">
+          <TopNav />
+          <div className="flex-1 min-h-0">{routes}</div>
+          <Toaster />
         </div>
-        <Toaster />
-      </div>
+      )}
     </Router>
   )
 }

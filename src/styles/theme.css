@@ -332,4 +332,230 @@
     --size-scale: 1.08;
     --radius-factor: 1.1;
   }
+
+  #spark-app.ui-sunburst {
+    --size-scale: 1.04;
+    --radius-factor: 1.45;
+    --background: #d6ecff;
+    --foreground: #1d2353;
+    --card: #ffffff;
+    --card-foreground: #1d2353;
+    --popover: #ffffff;
+    --popover-foreground: #1d2353;
+    --primary: #5c6cff;
+    --primary-foreground: #ffffff;
+    --secondary: #ffe1a6;
+    --secondary-foreground: #4b3400;
+    --muted: #dbe6ff;
+    --muted-foreground: #465080;
+    --accent: #ff9ac7;
+    --accent-foreground: #35112c;
+    --destructive: #ff6b5f;
+    --border: #b6caff;
+    --input: #b6caff;
+    --ring: #66b2ff;
+    --chart-1: #5c6cff;
+    --chart-2: #ff9ac7;
+    --chart-3: #64d2ff;
+    --chart-4: #ffc36a;
+    --chart-5: #8f6bff;
+    --color-bg: #d6ecff;
+    --color-bg-inset: #eff5ff;
+    --color-bg-overlay: #ffffff;
+    --color-fg: #1d2353;
+    --color-fg-secondary: #475487;
+  }
+}
+
+@layer base {
+  #spark-app.ui-sunburst .bg-background {
+    background: linear-gradient(180deg, #55b6ff 0%, #a7d1ff 36%, #f8df9f 100%);
+  }
+
+  #spark-app.ui-sunburst [data-slot="card"] {
+    background: linear-gradient(145deg, #ffffff 0%, #ebf1ff 50%, #fde9ff 100%);
+    border-color: rgba(92, 108, 255, 0.28);
+    box-shadow:
+      0 22px 38px rgba(76, 94, 207, 0.2),
+      0 8px 18px rgba(255, 170, 225, 0.25);
+  }
+
+  #spark-app.ui-sunburst .bg-primary {
+    background: linear-gradient(135deg, #5c6cff 0%, #8f6bff 45%, #ff8ac8 100%);
+  }
+
+  #spark-app.ui-sunburst .text-primary-foreground {
+    color: #ffffff;
+  }
+
+  #spark-app.ui-sunburst .bg-secondary\\/20 {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  #spark-app.ui-sunburst .sunburst-shell {
+    display: grid;
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    #spark-app.ui-sunburst .sunburst-shell {
+      grid-template-columns: 260px 1fr;
+    }
+  }
+
+  #spark-app.ui-sunburst .sunburst-sidebar {
+    background: linear-gradient(180deg, #5a6cff 0%, #7cb4ff 50%, #f8c4ff 100%);
+    color: #1d2353;
+    padding: 28px 24px;
+    gap: 28px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ffd26f 0%, #ff9ac7 100%);
+    display: grid;
+    place-items: center;
+    color: #2c1a57;
+    box-shadow: 0 12px 22px rgba(255, 170, 110, 0.45);
+  }
+
+  #spark-app.ui-sunburst .sunburst-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-nav-button {
+    text-align: left;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #1d2353;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  #spark-app.ui-sunburst .sunburst-nav-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px rgba(48, 62, 148, 0.25);
+  }
+
+  #spark-app.ui-sunburst .sunburst-nav-button-active {
+    background: linear-gradient(135deg, #ffffff 0%, #fff2c7 100%);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  #spark-app.ui-sunburst .sunburst-side-card {
+    margin-top: auto;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 14px 26px rgba(48, 62, 148, 0.22);
+  }
+
+  #spark-app.ui-sunburst .sunburst-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #5c6cff 0%, #8f6bff 100%);
+    color: #ffffff;
+    box-shadow: 0 10px 18px rgba(76, 94, 207, 0.35);
+  }
+
+  #spark-app.ui-sunburst .sunburst-main {
+    padding: 20px 24px 32px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 18px 22px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 14px 24px rgba(76, 94, 207, 0.18);
+  }
+
+  @media (min-width: 768px) {
+    #spark-app.ui-sunburst .sunburst-header {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  #spark-app.ui-sunburst .sunburst-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-search {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(92, 108, 255, 0.2);
+  }
+
+  #spark-app.ui-sunburst .sunburst-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.85rem;
+    width: 220px;
+    color: #1d2353;
+  }
+
+  @media (min-width: 1024px) {
+    #spark-app.ui-sunburst .sunburst-search {
+      display: inline-flex;
+    }
+  }
+
+  #spark-app.ui-sunburst .sunburst-icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(92, 108, 255, 0.2);
+    color: #1d2353;
+    box-shadow: 0 10px 18px rgba(76, 94, 207, 0.18);
+  }
+
+  #spark-app.ui-sunburst .sunburst-content {
+    padding-bottom: 24px;
+  }
+
+  #spark-app.ui-sunburst .sunburst-sheet {
+    background: linear-gradient(180deg, #5a6cff 0%, #7cb4ff 60%, #f8c4ff 100%);
+    color: #1d2353;
+  }
 }
