@@ -2045,6 +2045,11 @@ export function Settings() {
                           id: "ui-focus",
                           label: "Focus Mode",
                           description: "Minimal chrome with larger workspaces for groomers."
+                        },
+                        {
+                          id: "ui-sunburst",
+                          label: "Sunburst Dashboard",
+                          description: "Bright cards, rounded surfaces, and playful gradients inspired by the dashboard mockup."
                         }
                       ].map((layout) => (
                         <Label

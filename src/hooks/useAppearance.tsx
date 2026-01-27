@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 
 export type AppearanceTheme = 'classic' | 'rose' | 'midnight'
-export type AppearanceUi = 'classic' | 'compact' | 'focus'
+export type AppearanceUi = 'classic' | 'compact' | 'focus' | 'sunburst'
 
 type AppearanceContextValue = {
   selectedTheme: AppearanceTheme
@@ -13,7 +13,7 @@ type AppearanceContextValue = {
 const AppearanceContext = createContext<AppearanceContextValue | undefined>(undefined)
 
 export const appearanceThemes: AppearanceTheme[] = ['classic', 'rose', 'midnight']
-export const appearanceUis: AppearanceUi[] = ['classic', 'compact', 'focus']
+export const appearanceUis: AppearanceUi[] = ['classic', 'compact', 'focus', 'sunburst']
 
 const THEME_STORAGE_KEY = 'spark.appearance.theme'
 const UI_STORAGE_KEY = 'spark.appearance.ui'

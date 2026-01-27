@@ -332,4 +332,82 @@
     --size-scale: 1.08;
     --radius-factor: 1.1;
   }
+
+  #spark-app.ui-sunburst {
+    --size-scale: 1.02;
+    --radius-factor: 1.35;
+    --background: #d7ecff;
+    --foreground: #1f2454;
+    --card: #f7f3ff;
+    --card-foreground: #1f2454;
+    --popover: #ffffff;
+    --popover-foreground: #1f2454;
+    --primary: #5c6cff;
+    --primary-foreground: #ffffff;
+    --secondary: #ffe6a8;
+    --secondary-foreground: #4b3400;
+    --muted: #dbe6ff;
+    --muted-foreground: #4f5b85;
+    --accent: #ff9ac7;
+    --accent-foreground: #35112c;
+    --destructive: #ff6b5f;
+    --border: #b5c8ff;
+    --input: #b5c8ff;
+    --ring: #66b2ff;
+    --chart-1: #5c6cff;
+    --chart-2: #ff9ac7;
+    --chart-3: #64d2ff;
+    --chart-4: #ffc36a;
+    --chart-5: #8f6bff;
+    --color-bg: #d7ecff;
+    --color-bg-inset: #eff5ff;
+    --color-bg-overlay: #ffffff;
+    --color-fg: #1f2454;
+    --color-fg-secondary: #475487;
+  }
+}
+
+@layer base {
+  #spark-app.ui-sunburst .bg-background {
+    background: linear-gradient(180deg, #4db7ff 0%, #a6d1ff 35%, #f8e1a8 100%);
+  }
+
+  #spark-app.ui-sunburst [data-slot="card"] {
+    background: linear-gradient(135deg, #ffffff 0%, #e8f0ff 45%, #f9e6ff 100%);
+    border-color: rgba(92, 108, 255, 0.3);
+    box-shadow:
+      0 18px 30px rgba(76, 94, 207, 0.18),
+      0 6px 14px rgba(255, 165, 225, 0.2);
+  }
+
+  #spark-app.ui-sunburst nav {
+    background: linear-gradient(90deg, #6a7bff 0%, #7db1ff 50%, #f3a8ff 100%);
+    border-bottom-color: transparent;
+    box-shadow: 0 10px 24px rgba(70, 80, 170, 0.25);
+  }
+
+  #spark-app.ui-sunburst nav button {
+    color: #1f2454;
+  }
+
+  #spark-app.ui-sunburst nav button:hover {
+    color: #2c2a6b;
+  }
+
+  #spark-app.ui-sunburst nav button.border-primary,
+  #spark-app.ui-sunburst nav button.text-primary {
+    color: #2c2a6b;
+  }
+
+  #spark-app.ui-sunburst .bg-primary {
+    background: linear-gradient(135deg, #5c6cff 0%, #8f6bff 45%, #ff8ac8 100%);
+  }
+
+  #spark-app.ui-sunburst .text-primary-foreground {
+    color: #ffffff;
+  }
+
+  #spark-app.ui-sunburst .bg-secondary\\/20 {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
 }
