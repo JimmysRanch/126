@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { topBreedsData } from '../data/dashboardMockData'
+import { useKV } from "@github/spark/hooks"
+import { dashboardTopBreedsData } from '../data/dashboardDefaults'
 import { Dog, PawPrint } from '@phosphor-icons/react'
 
 export function TopBreedsCard() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const maxCount = Math.max(...topBreedsData.map(b => b.count))
+  const [breeds] = useKV<typeof dashboardTopBreedsData>("dashboard-top-breeds", dashboardTopBreedsData)
+  const safeBreeds = breeds || []
+  const maxCount = safeBreeds.length > 0 ? Math.max(...safeBreeds.map(b => b.count)) : 1
 
   return (
     <div className="h-full flex flex-col">
@@ -26,7 +29,7 @@ export function TopBreedsCard() {
       </div>
 
       <div className="flex-1 space-y-2">
-        {topBreedsData.map((breed, index) => {
+        {safeBreeds.map((breed, index) => {
           const widthPercent = (breed.count / maxCount) * 100
           const isHovered = hoveredIndex === index
 

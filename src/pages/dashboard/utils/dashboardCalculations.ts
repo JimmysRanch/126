@@ -1,6 +1,13 @@
-import { appointmentData } from '../data/dashboardMockData'
+type AppointmentSummary = {
+  today: {
+    scheduled: number
+    completed: number
+    canceled: number
+    noShows: number
+  }
+}
 
-export function calculateAppointmentProgress() {
+export function calculateAppointmentProgress(appointmentData: AppointmentSummary) {
   const { scheduled, completed, canceled, noShows } = appointmentData.today
   const remaining = scheduled - completed - canceled - noShows
   const total = scheduled

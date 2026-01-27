@@ -6,14 +6,17 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
-import { StaffPerformanceView, groomerPerformanceData } from "@/components/StaffPerformanceView"
+import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useKV } from "@github/spark/hooks"
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { Appointment, Staff } from "@/lib/types"
 
-interface StaffAppointment {
+type StaffAppointmentSummary = {
   id: string
   client: string
   pet: string
@@ -26,139 +29,170 @@ interface StaffAppointment {
   tip?: string
   rating?: number
   notes?: string
-  category: "Upcoming" | "Recent"
+}
+
+type StaffProfileDetail = {
+  name: string
+  role: string
+  email: string
+  phone: string
+  address: string
+  emergencyContact: {
+    name: string
+    relation: string
+    phone: string
+  }
+  hireDate: string
+  status: "Active" | "On Leave" | "Inactive"
+  hourlyRate: number
+  specialties: string[]
+  stats: {
+    totalAppointments: number
+    revenue: string
+    avgTip: string
+    noShows: number
+    lateArrivals: number
+  }
+  upcomingAppointments: StaffAppointmentSummary[]
+  recentAppointments: StaffAppointmentSummary[]
 }
 
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
-
-  const staffData = {
-    "1": {
-      name: "Sarah Johnson",
-      role: "Groomer",
-      email: "sarah.j@pawhub.com",
-      phone: "(555) 123-4567",
-      address: "1234 Bark Lane, Scruffyville, TX 78701",
-      emergencyContact: {
-        name: "John Johnson",
-        relation: "Spouse",
-        phone: "(555) 987-6543"
-      },
-      hireDate: "Mar 15, 2022",
-      status: "Active",
-      hourlyRate: 35,
-      specialties: ["Large Breeds", "Show Cuts", "Hand Stripping"],
-      stats: {
-        totalAppointments: 324,
-        revenue: "$45,280",
-        avgTip: "$28",
-        noShows: 3,
-        lateArrivals: 2
-      },
-      upcomingAppointments: [
-        {
-          id: "1",
-          client: "George moodys",
-          pet: "Trying",
-          service: "Full Groom Package",
-          date: "Jan 28, 2025",
-          time: "9:00 AM",
-          duration: "2h",
-          status: "Confirmed"
-        },
-        {
-          id: "2",
-          client: "Sarah Johnson",
-          pet: "Bella",
-          service: "Bath & Brush",
-          date: "Jan 28, 2025",
-          time: "11:30 AM",
-          duration: "1h",
-          status: "Confirmed"
-        },
-        {
-          id: "3",
-          client: "Michael Chen",
-          pet: "Charlie",
-          service: "Nail Trim",
-          date: "Jan 28, 2025",
-          time: "2:00 PM",
-          duration: "30m",
-          status: "Pending"
-        }
-      ],
-      recentAppointments: [
-        {
-          id: "1",
-          client: "George moodys",
-          pet: "Trying",
-          service: "Full Groom Package",
-          date: "Jan 15, 2025",
-          time: "9:00 AM",
-          cost: "$85",
-          tip: "$45",
-          rating: 5,
-          notes: "Client very happy with the cut!"
-        },
-        {
-          id: "2",
-          client: "Emily Rodriguez",
-          pet: "Rocky",
-          service: "Bath & Brush",
-          date: "Jan 14, 2025",
-          time: "1:30 PM",
-          cost: "$55",
-          tip: "$20",
-          rating: 5,
-          notes: "Rocky was well-behaved today."
-        },
-        {
-          id: "3",
-          client: "David Thompson",
-          pet: "Coco",
-          service: "Luxury Spa Package",
-          date: "Jan 12, 2025",
-          time: "10:00 AM",
-          cost: "$120",
-          tip: "$35",
-          rating: 5,
-          notes: "Perfect spa day!"
-        }
-      ]
+  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
+  const groomerPerformanceData = groomerPerformance ?? EMPTY_PERFORMANCE_DATA
+  const [staffProfiles] = useKV<Record<string, StaffProfileDetail>>(
+    "staff-profile-details",
+    {}
+  )
+  const [staffMembers] = useKV<Staff[]>("staff", [])
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const staffFromList = (staffMembers || []).find((member) => member.id === staffId)
+  const fallbackProfile: StaffProfileDetail = {
+    name: staffFromList?.name ?? "Staff Member",
+    role: staffFromList?.role ?? "Groomer",
+    email: staffFromList?.email ?? "",
+    phone: staffFromList?.phone ?? "",
+    address: "—",
+    emergencyContact: {
+      name: "—",
+      relation: "—",
+      phone: "—"
     },
-    "2": {
-      name: "Mike Torres",
-      role: "Groomer",
-      email: "mike.t@pawhub.com",
-      phone: "(555) 234-5678",
-      address: "5678 Paws Street, Scruffyville, TX 78702",
-      emergencyContact: {
-        name: "Maria Torres",
-        relation: "Sister",
-        phone: "(555) 876-5432"
-      },
-      hireDate: "Aug 20, 2022",
-      status: "Active",
-      hourlyRate: 28,
-      specialties: ["Anxious Dogs", "Creative Styling", "Nail Care"],
-      stats: {
-        totalAppointments: 256,
-        revenue: "$38,620",
-        avgTip: "$22",
-        noShows: 5,
-        lateArrivals: 4
-      },
-      upcomingAppointments: [],
-      recentAppointments: []
+    hireDate: staffFromList?.hireDate ?? "—",
+    status: staffFromList?.status ?? "Active",
+    hourlyRate: 0,
+    specialties: staffFromList?.specialties ?? [],
+    stats: {
+      totalAppointments: staffFromList?.totalAppointments ?? 0,
+      revenue: "$0",
+      avgTip: "$0",
+      noShows: 0,
+      lateArrivals: 0
+    },
+    upcomingAppointments: [],
+    recentAppointments: []
+  }
+
+  const staffProfileEntry = staffProfiles?.[staffId ?? ""]
+  const staff = staffProfileEntry ?? (staffFromList ? fallbackProfile : null)
+  const [activeTab, setActiveTab] = useState("overview")
+  const isMobile = useIsMobile()
+  const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)
+  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
+  const staffAppointments = useMemo(
+    () => (appointments || []).filter((appointment) => appointment.groomerId === staffId),
+    [appointments, staffId]
+  )
+  const requestedAppointments = staffAppointments.filter((appointment) => appointment.groomerRequested).length
+  const completedRevenue = staffAppointments
+    .filter((appointment) => appointment.status === "completed")
+    .reduce((sum, appointment) => sum + appointment.totalPrice, 0)
+  const computedStats = {
+    totalAppointments: staffAppointments.length,
+    revenue: `$${completedRevenue.toFixed(2)}`,
+    avgTip: "$0",
+    noShows: staffAppointments.filter((appointment) => (appointment.status as string) === "no-show").length,
+    lateArrivals: 0
+  }
+  const mapAppointment = (appointment: Appointment): StaffAppointmentSummary => ({
+    id: appointment.id,
+    client: appointment.clientName,
+    pet: appointment.petName,
+    service: appointment.services.length > 0
+      ? appointment.services.map((service) => service.serviceName).join(", ")
+      : "Service",
+    date: appointment.date,
+    time: appointment.startTime,
+    status: appointment.status,
+    cost: `$${appointment.totalPrice.toFixed(2)}`,
+    notes: appointment.notes
+  })
+  const upcomingAppointments = useMemo(() => {
+    const today = new Date().setHours(0, 0, 0, 0)
+    return staffAppointments
+      .filter((appointment) => {
+        const appointmentDate = new Date(`${appointment.date}T00:00:00`).setHours(0, 0, 0, 0)
+        return appointmentDate >= today && appointment.status !== "cancelled"
+      })
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 5)
+      .map(mapAppointment)
+  }, [staffAppointments])
+  const recentAppointments = useMemo(() => {
+    const today = new Date().setHours(0, 0, 0, 0)
+    return staffAppointments
+      .filter((appointment) => {
+        const appointmentDate = new Date(`${appointment.date}T00:00:00`).setHours(0, 0, 0, 0)
+        return appointmentDate < today && appointment.status !== "cancelled"
+      })
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 5)
+      .map(mapAppointment)
+  }, [staffAppointments])
+
+  const formatStatusLabel = (status?: string) => {
+    if (!status) return "Scheduled"
+    return status
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ')
+  }
+  const getStatusBadgeClasses = (status?: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-emerald-500 text-white"
+      case "checked-in":
+        return "bg-amber-500 text-white"
+      case "in-progress":
+        return "bg-indigo-500 text-white"
+      case "cancelled":
+        return "bg-muted text-muted-foreground"
+      default:
+        return "bg-primary text-primary-foreground"
     }
   }
 
-  const staff = staffData[staffId as keyof typeof staffData] || staffData["1"]
-  const [activeTab, setActiveTab] = useState("overview")
-  const isMobile = useIsMobile()
-  const [selectedAppointment, setSelectedAppointment] = useState<StaffAppointment | null>(null)
-  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
+  if (!staff) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+        <div className="max-w-[1200px] mx-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-secondary transition-all duration-200"
+            onClick={() => navigate('/staff')}
+          >
+            <ArrowLeft size={24} />
+          </Button>
+          <Card className="mt-4 p-6 text-center text-muted-foreground">
+            Staff member not found.
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
@@ -301,24 +335,24 @@ export function StaffProfile() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
               <StatWidget
                 stats={[
-                  { label: "TOTAL APPTS", value: staff.stats.totalAppointments.toString() },
-                  { label: "REQUESTED APPTS", value: "28" }
+                  { label: "TOTAL APPTS", value: computedStats.totalAppointments.toString() },
+                  { label: "REQUESTED APPTS", value: requestedAppointments.toString() }
                 ]}
                 onClick={() => console.log('Total Appointments clicked')}
               />
 
               <StatWidget
                 stats={[
-                  { label: "REVENUE", value: staff.stats.revenue },
-                  { label: "AVG TIP", value: staff.stats.avgTip }
+                  { label: "REVENUE", value: computedStats.revenue },
+                  { label: "AVG TIP", value: computedStats.avgTip }
                 ]}
                 onClick={() => console.log('Revenue clicked')}
               />
 
               <StatWidget
                 stats={[
-                  { label: "NO-SHOWS", value: staff.stats.noShows.toString() },
-                  { label: "LATE", value: staff.stats.lateArrivals.toString() }
+                  { label: "NO-SHOWS", value: computedStats.noShows.toString() },
+                  { label: "LATE", value: computedStats.lateArrivals.toString() }
                 ]}
                 onClick={() => console.log('No-shows clicked')}
               />
@@ -330,8 +364,8 @@ export function StaffProfile() {
                   Upcoming Appointments
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
-                  {staff.upcomingAppointments.length > 0 ? (
-                    staff.upcomingAppointments.map((apt) => (
+                  {upcomingAppointments.length > 0 ? (
+                    upcomingAppointments.map((apt) => (
                       <Card
                         key={apt.id}
                         className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
@@ -360,10 +394,10 @@ export function StaffProfile() {
                                     {apt.pet}
                                   </Badge>
                                   <Badge 
-                                    variant={apt.status === "Confirmed" ? "default" : "secondary"}
-                                    className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                                    variant="secondary"
+                                    className={`text-xs ${getStatusBadgeClasses(apt.status)}`}
                                   >
-                                    {apt.status}
+                                    {formatStatusLabel(apt.status)}
                                   </Badge>
                                 </div>
                               </div>
@@ -386,10 +420,10 @@ export function StaffProfile() {
                                   {apt.pet}
                                 </Badge>
                                 <Badge 
-                                  variant={apt.status === "Confirmed" ? "default" : "secondary"}
-                                  className={apt.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                                  variant="secondary"
+                                  className={`text-xs ${getStatusBadgeClasses(apt.status)}`}
                                 >
-                                  {apt.status}
+                                  {formatStatusLabel(apt.status)}
                                 </Badge>
                               </div>
                               <div className="text-sm text-muted-foreground">
@@ -419,8 +453,8 @@ export function StaffProfile() {
                   Recent Appointments
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
-                  {staff.recentAppointments.length > 0 ? (
-                    staff.recentAppointments.map((apt) => (
+                  {recentAppointments.length > 0 ? (
+                    recentAppointments.map((apt) => (
                       <Card
                         key={apt.id}
                         className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
@@ -600,10 +634,10 @@ export function StaffProfile() {
                   <div>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
                     <Badge
-                      variant={selectedAppointment.status === "Confirmed" ? "default" : "secondary"}
-                      className={selectedAppointment.status === "Confirmed" ? "bg-primary text-primary-foreground text-xs" : "text-xs"}
+                      variant="secondary"
+                      className={`text-xs ${getStatusBadgeClasses(selectedAppointment.status)}`}
                     >
-                      {selectedAppointment.status}
+                      {formatStatusLabel(selectedAppointment.status)}
                     </Badge>
                   </div>
                 )}

@@ -14,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
+import { Appointment, MainService, AddOn, AppointmentService, Client, Staff, getWeightCategory, getPriceForWeight } from "@/lib/types"
 import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X, Check, CaretUpDown } from "@phosphor-icons/react"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 import {
@@ -26,23 +26,6 @@ import {
   isTimeWithinBusinessHours
 } from "@/lib/business-hours"
 
-interface Client {
-  id: string
-  name: string
-  pets: Array<{
-    id: string
-    name: string
-    breed: string
-    weight: number
-  }>
-}
-
-interface Groomer {
-  id: string
-  name: string
-  appointmentCount: number
-}
-
 interface BusinessInfo {
   hoursOfOperation?: HoursOfOperation[]
 }
@@ -53,6 +36,8 @@ export function NewAppointment() {
   const preSelectedClientId = searchParams.get('clientId')
   
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
+  const [clients] = useKV<Client[]>("clients", [])
+  const [staffMembers] = useKV<Staff[]>("staff", [])
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
   const [businessInfo] = useKV<BusinessInfo>("business-info", {
@@ -81,40 +66,9 @@ export function NewAppointment() {
   const [openClientCombobox, setOpenClientCombobox] = useState(false)
   const [clientSearch, setClientSearch] = useState("")
 
-  const mockClients: Client[] = [
-    {
-      id: "1",
-      name: "John Smith",
-      pets: [
-        { id: "1", name: "Buddy", breed: "Golden Retriever", weight: 65 },
-        { id: "2", name: "Max", breed: "Poodle", weight: 42 }
-      ]
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      pets: [
-        { id: "3", name: "Luna", breed: "Labrador", weight: 58 }
-      ]
-    },
-    {
-      id: "3",
-      name: "Mike Davis",
-      pets: [
-        { id: "4", name: "Charlie", breed: "Chihuahua", weight: 8 },
-        { id: "5", name: "Rocky", breed: "German Shepherd", weight: 85 }
-      ]
-    }
-  ]
-
-  const mockGroomers: Groomer[] = [
-    { id: "1", name: "Sarah Johnson", appointmentCount: 0 },
-    { id: "2", name: "Mike Torres", appointmentCount: 0 },
-    { id: "3", name: "Emma Roberts", appointmentCount: 0 }
-  ]
-
-  const client = mockClients.find(c => c.id === selectedClient)
+  const client = (clients || []).find(c => c.id === selectedClient)
   const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
+  const groomers = (staffMembers || []).filter(member => member.isGroomer)
   const hoursOfOperation = businessInfo?.hoursOfOperation?.length
     ? businessInfo.hoursOfOperation
     : DEFAULT_HOURS_OF_OPERATION
@@ -203,7 +157,7 @@ export function NewAppointment() {
   }
 
   const getAutoGroomer = () => {
-    const groomerCounts = mockGroomers.map(g => ({
+    const groomerCounts = groomers.map(g => ({
       ...g,
       count: (appointments || []).filter(apt => apt.groomerId === g.id && apt.status !== 'cancelled').length
     }))
@@ -228,7 +182,12 @@ export function NewAppointment() {
       return
     }
 
-    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
+    if (groomers.length === 0) {
+      toast.error("Add a groomer before scheduling appointments")
+      return
+    }
+
+    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : groomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
       return
@@ -343,7 +302,7 @@ export function NewAppointment() {
                       className="w-full justify-between h-9 font-normal"
                     >
                       {selectedClient
-                        ? mockClients.find(c => c.id === selectedClient)?.name
+                        ? (clients || []).find(c => c.id === selectedClient)?.name
                         : "Search or select client..."}
                       <CaretUpDown className="ml-2 opacity-50" />
                     </Button>
@@ -354,7 +313,7 @@ export function NewAppointment() {
                       <CommandList>
                         <CommandEmpty>No client found.</CommandEmpty>
                         <CommandGroup>
-                          {mockClients.map((client) => (
+                          {(clients || []).map((client) => (
                             <CommandItem
                               key={client.id}
                               value={client.name}
@@ -477,7 +436,12 @@ export function NewAppointment() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
-                  {mockGroomers.map(groomer => (
+                  {groomers.length === 0 && (
+                    <SelectItem value="none" disabled>
+                      No groomers available
+                    </SelectItem>
+                  )}
+                  {groomers.map(groomer => (
                     <SelectItem key={groomer.id} value={groomer.id}>
                       {groomer.name}
                     </SelectItem>
@@ -851,7 +815,7 @@ export function NewAppointment() {
                 <div className="pt-2 border-t border-border">
                   <div className="text-xs text-muted-foreground mb-1">Groomer</div>
                   <div className="font-medium text-sm">
-                    {mockGroomers.find(g => g.id === selectedGroomer)?.name}
+                    {groomers.find(g => g.id === selectedGroomer)?.name}
                   </div>
                   <Badge variant="secondary" className="text-xs mt-1">Client Requested</Badge>
                 </div>

@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
 import { useKV } from "@github/spark/hooks"
+import { Client, getWeightCategory } from "@/lib/types"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -79,6 +80,7 @@ interface PetInfo {
 
 export function AddClient() {
   const navigate = useNavigate()
+  const [clients, setClients] = useKV<Client[]>("clients", [])
   const [temperamentOptionsRaw] = useKV<string[]>("temperament-options", [
     "Friendly",
     "Energetic",
@@ -260,18 +262,36 @@ export function AddClient() {
       return
     }
 
-    console.log('Saving client:', {
-      firstName,
-      lastName,
-      email,
-      phone,
-      streetAddress,
-      city,
-      state,
-      zipCode,
-      referralSource,
-      pets
+    const clientId = Date.now().toString()
+    const formattedPets = pets.map((pet, index) => {
+      const weight = Number.parseFloat(pet.weight)
+      return {
+        id: `${clientId}-pet-${index + 1}`,
+        name: pet.name.trim(),
+        breed: pet.breed.trim(),
+        weight,
+        weightCategory: getWeightCategory(weight),
+        ownerId: clientId
+      }
     })
+    const newClient: Client = {
+      id: clientId,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      pets: formattedPets,
+      address: {
+        street: streetAddress.trim(),
+        city: city.trim(),
+        state: state.trim(),
+        zip: zipCode.trim()
+      },
+      referralSource: referralSource.trim()
+    }
+
+    setClients((current) => [...(current || []), newClient])
     
     toast.success('Client saved successfully!')
     navigate('/clients')

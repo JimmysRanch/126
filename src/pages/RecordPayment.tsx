@@ -9,9 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { ArrowLeft, CreditCard } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { useKV } from "@github/spark/hooks"
+import { PaymentDetail } from "@/lib/finance-types"
 
 export function RecordPayment() {
   const navigate = useNavigate()
+  const [payments, setPayments] = useKV<PaymentDetail[]>("payments", [])
   const [formData, setFormData] = useState({
     client: '',
     amount: '',
@@ -37,6 +40,18 @@ export function RecordPayment() {
       return
     }
 
+    const newPayment: PaymentDetail = {
+      id: Date.now().toString(),
+      date: formData.date,
+      client: formData.client.trim(),
+      service: formData.service.trim(),
+      amount: Number.parseFloat(formData.amount),
+      tip: Number.parseFloat(formData.tip || '0'),
+      method: formData.method,
+      notes: formData.notes.trim()
+    }
+
+    setPayments((current) => [...(current || []), newPayment])
     toast.success('Payment recorded successfully')
     navigate('/finances')
   }

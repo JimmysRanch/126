@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion'
-import { revenueData } from '../data/dashboardMockData'
+import { useKV } from "@github/spark/hooks"
+import { revenueData } from '../data/dashboardDefaults'
 import { TrendUp, TrendDown } from '@phosphor-icons/react'
 import { useState } from 'react'
 
 export function RevenueMiniChart() {
-  const { thisWeek } = revenueData
+  const [revenue] = useKV<typeof revenueData>("dashboard-revenue-data", revenueData)
+  const { thisWeek } = revenue || revenueData
   const maxAmount = Math.max(...thisWeek.daily.map(d => d.amount))
   const minAmount = Math.min(...thisWeek.daily.map(d => d.amount))
   const isPositive = thisWeek.percentChange >= 0

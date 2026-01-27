@@ -6,13 +6,15 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
-import { StaffPerformanceView, teamPerformanceData } from "@/components/StaffPerformanceView"
+import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffPerformanceP8View } from "@/components/StaffPerformanceP8View"
 import { PayrollOverview } from "@/components/PayrollOverview"
 import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { Staff } from "@/lib/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,20 +33,15 @@ interface PendingStaff {
   status: 'pending'
 }
 
-const mockStaff = [
-  { id: "1", name: "Sarah Johnson", role: "Groomer", email: "sarah.j@pawhub.com", phone: "(555) 123-4567", status: "Active", specialties: ["Large Breeds", "Show Cuts", "Hand Stripping"], hourlyRate: "$35/hr", totalAppointments: 324, rating: 4.9, hireDate: "Mar 15, 2022" },
-  { id: "2", name: "Mike Torres", role: "Groomer", email: "mike.t@pawhub.com", phone: "(555) 234-5678", status: "Active", specialties: ["Anxious Dogs", "Creative Styling", "Nail Care"], hourlyRate: "$28/hr", totalAppointments: 256, rating: 4.8, hireDate: "Aug 20, 2022" },
-  { id: "3", name: "Emma Roberts", role: "Spa Specialist", email: "emma.r@pawhub.com", phone: "(555) 345-6789", status: "Active", specialties: ["Spa Treatments", "Small Breeds", "Facials"], hourlyRate: "$32/hr", totalAppointments: 198, rating: 5.0, hireDate: "Jan 10, 2023" },
-  { id: "4", name: "Carlos Martinez", role: "Bather", email: "carlos.m@pawhub.com", phone: "(555) 456-7890", status: "Active", specialties: ["De-shedding", "Quick Service", "Puppy Care"], hourlyRate: "$22/hr", totalAppointments: 412, rating: 4.7, hireDate: "May 5, 2023" },
-  { id: "5", name: "Lisa Chen", role: "Groomer", email: "lisa.c@pawhub.com", phone: "(555) 567-8901", status: "On Leave", specialties: ["Poodle Cuts", "Color & Styling", "Competition Prep"], hourlyRate: "$30/hr", totalAppointments: 187, rating: 4.9, hireDate: "Nov 12, 2023" }
-]
-
 export const Staff = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
+  const [staffMembers] = useKV<Staff[]>("staff", [])
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
+  const [teamPerformance] = useKV<PerformanceData>("performance-team", EMPTY_PERFORMANCE_DATA)
+  const teamPerformanceData = teamPerformance ?? EMPTY_PERFORMANCE_DATA
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [staffToCancel, setStaffToCancel] = useState<string | null>(null)
 
@@ -274,7 +271,7 @@ export const Staff = () => {
                   </Card>
                 ))}
                 
-                {mockStaff.map((staff) => (
+                {(staffMembers || []).map((staff) => (
                   <Card
                     key={staff.id}
                     className="p-3 sm:p-5 bg-card border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
@@ -298,7 +295,7 @@ export const Staff = () => {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <div className="text-xs text-muted-foreground">{staff.totalAppointments} appts</div>
+                            <div className="text-xs text-muted-foreground">{staff.totalAppointments ?? 0} appts</div>
                           </div>
                         </div>
 
@@ -307,7 +304,7 @@ export const Staff = () => {
                             <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
                               Hired
                             </div>
-                            <div className="text-xs font-semibold">{staff.hireDate}</div>
+                            <div className="text-xs font-semibold">{staff.hireDate ?? "—"}</div>
                           </div>
                         </div>
                       </div>
@@ -339,14 +336,14 @@ export const Staff = () => {
                             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                               Appointments
                             </div>
-                            <div className="font-semibold">{staff.totalAppointments}</div>
+                            <div className="font-semibold">{staff.totalAppointments ?? 0}</div>
                           </div>
 
                           <div className="text-center w-28">
                             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                               Hired
                             </div>
-                            <div className="font-semibold">{staff.hireDate}</div>
+                            <div className="font-semibold">{staff.hireDate ?? "—"}</div>
                           </div>
                         </div>
                       </div>

@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion'
 import { getBookingColor } from '../utils/dashboardCalculations'
-import { bookingHeatmapData } from '../data/dashboardMockData'
+import { bookingHeatmapData } from '../data/dashboardDefaults'
 import { useState } from 'react'
+import { useKV } from "@github/spark/hooks"
 
 export function BookingHeatmap14() {
   const [hoveredDay, setHoveredDay] = useState<number | null>(null)
+  const [heatmapDays] = useKV<typeof bookingHeatmapData>("dashboard-booking-heatmap", bookingHeatmapData)
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-7 gap-2">
-        {bookingHeatmapData.map((day, index) => (
+        {(heatmapDays || []).map((day, index) => (
           <motion.div
             key={day.date}
             initial={{ opacity: 0, scale: 0.8 }}

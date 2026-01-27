@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -7,12 +7,43 @@ import { CalendarView } from "@/components/appointments/CalendarView"
 import { ListView } from "@/components/appointments/ListView"
 import { GroomerView } from "@/components/appointments/GroomerView"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useKV } from "@github/spark/hooks"
+import { Appointment } from "@/lib/types"
 
 export function Appointments() {
   const [activeView, setActiveView] = useState("groomer")
   const [statusFilter, setStatusFilter] = useState("all")
   const navigate = useNavigate()
   const isMobile = useIsMobile()
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+
+  const { scheduled, checkedIn, completed, cancelled, noShow, projectedRevenue } = useMemo(() => {
+    const now = new Date()
+    return (appointments || []).reduce(
+      (acc, appointment) => {
+        const status = appointment.status
+        if (status === "scheduled") acc.scheduled += 1
+        if (status === "checked-in") acc.checkedIn += 1
+        if (status === "completed") acc.completed += 1
+        if (status === "cancelled") acc.cancelled += 1
+        if ((status as string) === "no-show") acc.noShow += 1
+
+        const appointmentDate = new Date(`${appointment.date}T00:00:00`)
+        if (appointmentDate >= now && status !== "cancelled") {
+          acc.projectedRevenue += appointment.totalPrice
+        }
+        return acc
+      },
+      {
+        scheduled: 0,
+        checkedIn: 0,
+        completed: 0,
+        cancelled: 0,
+        noShow: 0,
+        projectedRevenue: 0
+      }
+    )
+  }, [appointments])
 
   return (
     <div className="min-h-screen bg-background px-3 sm:px-6 pt-2 sm:pt-3 pb-3 sm:pb-6">
@@ -29,7 +60,7 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Scheduled</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">24</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{scheduled}</p>
               </div>
             </div>
           </Card>
@@ -45,7 +76,7 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Checked In</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">8</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{checkedIn}</p>
               </div>
             </div>
           </Card>
@@ -61,7 +92,7 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Completed</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">15</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{completed}</p>
               </div>
             </div>
           </Card>
@@ -77,7 +108,7 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">No Show</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">2</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{noShow}</p>
               </div>
             </div>
           </Card>
@@ -93,7 +124,7 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Canceled</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5">3</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5">{cancelled}</p>
               </div>
             </div>
           </Card>
@@ -102,7 +133,9 @@ export function Appointments() {
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Projected Revenue</p>
-                <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">$2,450</p>
+                <p className="text-lg md:text-xl font-bold mt-0.5 text-primary">
+                  ${projectedRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
               </div>
             </div>
           </Card>

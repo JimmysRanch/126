@@ -1,16 +1,15 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { useIsMobile } from '@/hooks/use-mobile'
 
-const data = [
-  { month: 'JUL 2025', shortMonth: 'JUL', revenue: 0, expenses: 0, profit: 0 },
-  { month: 'AUG 2025', shortMonth: 'AUG', revenue: 0, expenses: 0, profit: 0 },
-  { month: 'SEP 2025', shortMonth: 'SEP', revenue: 0, expenses: 0, profit: 0 },
-  { month: 'OCT 2025', shortMonth: 'OCT', revenue: 0, expenses: 0, profit: 0 },
-  { month: 'NOV 2025', shortMonth: 'NOV', revenue: 2200, expenses: 400, profit: 1800 },
-  { month: 'DEC 2025', shortMonth: 'DEC', revenue: 2700, expenses: 700, profit: 2000 },
-]
+type FinancialPoint = {
+  month: string
+  shortMonth: string
+  revenue: number
+  expenses: number
+  profit: number
+}
 
-export function FinancialChart() {
+export function FinancialChart({ data = [] }: { data?: FinancialPoint[] }) {
   const isMobile = useIsMobile()
 
   return (

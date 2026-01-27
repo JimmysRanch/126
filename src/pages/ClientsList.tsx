@@ -1,114 +1,21 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MagnifyingGlass, Plus, PawPrint } from "@phosphor-icons/react"
+import { MagnifyingGlass, Plus, PawPrint, Phone, Envelope } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useIsMobile } from "@/hooks/use-mobile"
-
-const mockClients = [
-  {
-    id: "1",
-    name: "George moodys",
-    email: "george.moodys@email.com",
-    phone: "(555) 123-4567",
-    pets: [
-      { name: "Trying", breed: "Labrador Retriever" },
-      { name: "Luna", breed: "Golden Retriever" },
-      { name: "Max", breed: "Poodle Mix" }
-    ],
-    lastVisit: "Jan 15, 2025",
-    nextVisit: "Feb 12, 2025"
-  },
-  {
-    id: "2",
-    name: "Sarah Johnson",
-    email: "sarah.j@email.com",
-    phone: "(555) 234-5678",
-    pets: [
-      { name: "Bella", breed: "French Bulldog" }
-    ],
-    lastVisit: "Jan 20, 2025",
-    nextVisit: "Feb 17, 2025"
-  },
-  {
-    id: "3",
-    name: "Michael Chen",
-    email: "m.chen@email.com",
-    phone: "(555) 345-6789",
-    pets: [
-      { name: "Charlie", breed: "Beagle" },
-      { name: "Daisy", breed: "Cavalier King Charles" }
-    ],
-    lastVisit: "Jan 18, 2025",
-    nextVisit: "Feb 15, 2025"
-  },
-  {
-    id: "4",
-    name: "Emily Rodriguez",
-    email: "emily.r@email.com",
-    phone: "(555) 456-7890",
-    pets: [
-      { name: "Rocky", breed: "German Shepherd" }
-    ],
-    lastVisit: "Jan 22, 2025",
-    nextVisit: "Feb 19, 2025"
-  },
-  {
-    id: "5",
-    name: "David Thompson",
-    email: "d.thompson@email.com",
-    phone: "(555) 567-8901",
-    pets: [
-      { name: "Coco", breed: "Pomeranian" },
-      { name: "Milo", breed: "Shih Tzu" }
-    ],
-    lastVisit: "Jan 12, 2025",
-    nextVisit: "Feb 9, 2025"
-  },
-  {
-    id: "6",
-    name: "Jessica Martinez",
-    email: "jess.martinez@email.com",
-    phone: "(555) 678-9012",
-    pets: [
-      { name: "Buddy", breed: "Labrador Mix" }
-    ],
-    lastVisit: "Jan 25, 2025",
-    nextVisit: "Feb 22, 2025"
-  },
-  {
-    id: "7",
-    name: "Robert Kim",
-    email: "rob.kim@email.com",
-    phone: "(555) 789-0123",
-    pets: [
-      { name: "Zeus", breed: "Rottweiler" },
-      { name: "Apollo", breed: "Doberman" }
-    ],
-    lastVisit: "Jan 8, 2025",
-    nextVisit: "Feb 5, 2025"
-  },
-  {
-    id: "8",
-    name: "Amanda Lee",
-    email: "amanda.lee@email.com",
-    phone: "(555) 890-1234",
-    pets: [
-      { name: "Princess", breed: "Maltese" }
-    ],
-    lastVisit: "Jan 19, 2025",
-    nextVisit: "Feb 16, 2025"
-  }
-]
+import { useKV } from "@github/spark/hooks"
+import { Client } from "@/lib/types"
 
 export function ClientsList() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
   const isMobile = useIsMobile()
+  const [clients] = useKV<Client[]>("clients", [])
 
-  const filteredClients = mockClients.filter(client => 
+  const filteredClients = (clients || []).filter(client => 
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.pets.some(pet => pet.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pet.breed.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -165,13 +72,13 @@ export function ClientsList() {
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
                         Last Visit
                       </div>
-                      <div className="text-xs font-semibold">{client.lastVisit}</div>
+                      <div className="text-xs font-semibold">{client.lastVisit ?? "Not yet"}</div>
                     </div>
                     <div className="bg-secondary/30 rounded-md p-2">
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
                         Next Visit
                       </div>
-                      <div className="text-xs font-semibold">{client.nextVisit}</div>
+                      <div className="text-xs font-semibold">{client.nextVisit ?? "Not scheduled"}</div>
                     </div>
                   </div>
                 </div>
@@ -196,14 +103,14 @@ export function ClientsList() {
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                         Last Visit
                       </div>
-                      <div className="font-semibold">{client.lastVisit}</div>
+                      <div className="font-semibold">{client.lastVisit ?? "Not yet"}</div>
                     </div>
 
                     <div className="text-center">
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                         Next Visit
                       </div>
-                      <div className="font-semibold">{client.nextVisit}</div>
+                      <div className="font-semibold">{client.nextVisit ?? "Not scheduled"}</div>
                     </div>
                   </div>
                 </div>

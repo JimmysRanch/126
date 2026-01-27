@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { groomerData } from '../data/dashboardMockData'
+import { useKV } from "@github/spark/hooks"
+import { dashboardGroomerData } from '../data/dashboardDefaults'
 
 interface GroomerWorkloadItemProps {
   groomer: typeof groomerData[0]
@@ -50,9 +51,10 @@ function GroomerWorkloadItem({ groomer, delay }: GroomerWorkloadItemProps) {
 }
 
 export function GroomersWorkloadCard() {
+  const [groomers] = useKV<typeof dashboardGroomerData>("dashboard-groomer-data", dashboardGroomerData)
   return (
     <div className="space-y-1.5 h-full flex flex-col justify-center">
-      {groomerData.slice(0, 3).map((groomer, index) => (
+      {(groomers || []).slice(0, 3).map((groomer, index) => (
         <GroomerWorkloadItem
           key={groomer.id}
           groomer={groomer}

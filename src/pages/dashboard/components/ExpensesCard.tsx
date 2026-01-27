@@ -1,13 +1,22 @@
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
-import { expensesData } from '../data/dashboardMockData'
+import { useEffect, useMemo, useState } from 'react'
+import { useKV } from "@github/spark/hooks"
+import { dashboardExpensesData } from '../data/dashboardDefaults'
 
 export function ExpensesCard() {
-  const sortedExpenses = [...expensesData].sort((a, b) => b.amount - a.amount)
+  const [expenses] = useKV<typeof dashboardExpensesData>("dashboard-expenses", dashboardExpensesData)
+  const sortedExpenses = useMemo(
+    () => [...(expenses || [])].sort((a, b) => b.amount - a.amount),
+    [expenses]
+  )
   const [animatedValues, setAnimatedValues] = useState(sortedExpenses.map(() => 0))
   
   const total = sortedExpenses.reduce((sum, expense) => sum + expense.amount, 0)
   
+  useEffect(() => {
+    setAnimatedValues(sortedExpenses.map(() => 0))
+  }, [sortedExpenses])
+
   useEffect(() => {
     const timers = sortedExpenses.map((_, index) => 
       setTimeout(() => {
@@ -35,7 +44,7 @@ export function ExpensesCard() {
       }, index * 100)
     )
     return () => timers.forEach(timer => clearTimeout(timer))
-  }, [])
+  }, [sortedExpenses])
 
   let cumulativePercentage = 0
 

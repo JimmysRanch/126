@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { topServicesData } from '../data/dashboardMockData'
+import { useKV } from "@github/spark/hooks"
+import { dashboardTopServicesData } from '../data/dashboardDefaults'
 import { Scissors, Sparkle, Eyedropper } from '@phosphor-icons/react'
 
 const iconMap = {
@@ -11,7 +12,9 @@ const iconMap = {
 
 export function TopServicesCard() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const maxRevenue = Math.max(...topServicesData.map(s => s.revenue))
+  const [services] = useKV<typeof dashboardTopServicesData>("dashboard-top-services", dashboardTopServicesData)
+  const safeServices = services || []
+  const maxRevenue = safeServices.length > 0 ? Math.max(...safeServices.map(s => s.revenue)) : 1
 
   return (
     <div className="h-full flex flex-col">
@@ -32,7 +35,7 @@ export function TopServicesCard() {
       </div>
 
       <div className="flex-1 space-y-2">
-        {topServicesData.map((service, index) => {
+        {safeServices.map((service, index) => {
           const Icon = iconMap[service.icon as keyof typeof iconMap]
           const widthPercent = (service.revenue / maxRevenue) * 100
           const isHovered = hoveredIndex === index

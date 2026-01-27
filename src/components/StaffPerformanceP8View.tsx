@@ -1,27 +1,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
-
-type KPI = {
-  icon: string
-  value: string
-  unit?: string
-  label: string
-  accent: "blue" | "amber" | "green"
-}
-
-type BarData = {
-  title: string
-  accent: "blue" | "amber"
-  labels: string[]
-  values: number[]
-  prefix?: string
-  suffix?: string
-}
-
-type ListItem = {
-  left: string
-  right: string
-}
+import { useKV } from "@github/spark/hooks"
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
 
 export function StaffPerformanceP8View() {
   const [activeCard, setActiveCard] = useState<
@@ -30,68 +10,16 @@ export function StaffPerformanceP8View() {
     | { type: "earnings" | "top" | "bottom" | "matrix" }
     | null
   >(null)
+  const [performanceData] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
+  const data = performanceData ?? EMPTY_PERFORMANCE_DATA
 
   const closeActiveCard = () => setActiveCard(null)
-  const kpis: KPI[] = [
-    { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
-    { icon: "$", value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
-    { icon: "🐾", value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
-  ]
-
-  const charts: BarData[] = [
-    {
-      title: "RPM (Monthly)",
-      accent: "blue",
-      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
-      values: [2.02, 1.92, 1.94, 1.96, 1.97],
-      prefix: "$",
-    },
-    {
-      title: "Average Minutes per Appointment",
-      accent: "blue",
-      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
-      values: [42, 45, 46, 46, 47],
-      suffix: "m",
-    },
-    {
-      title: "RPM by Dog Size",
-      accent: "amber",
-      labels: ["Small", "Medium", "Large"],
-      values: [1.56, 1.95, 2.24],
-      prefix: "$",
-    },
-  ]
-
-  const earningsByBreed: ListItem[] = [
-    { left: "Golden Retrievers", right: "$1.77" },
-    { left: "Cavaliers", right: "$1.72" },
-    { left: "Dachshunds", right: "$1.65" },
-    { left: "Poodles", right: "$1.58" },
-    { left: "Maltese", right: "$1.52" },
-  ]
-
-  const topCombos: ListItem[] = [
-    { left: "Golden Retrievers Large", right: "$1.77" },
-    { left: "Cavaliers Small", right: "$1.72" },
-    { left: "Dachshunds Small", right: "$1.65" },
-  ]
-
-  const bottomCombos: ListItem[] = [
-    { left: "Goldendoodles Large", right: "$1.22" },
-    { left: "Labradors Large", right: "$1.18" },
-    { left: "Mixed Breed XL", right: "$1.05" },
-  ]
-
-  const matrixData = {
-    cols: ["Small", "Medium", "Large", "XL"],
-    rows: [
-      { name: "Cavalier", cells: ["$1.72", null, null, null] },
-      { name: "Dachshund", cells: ["$1.65", null, null, null] },
-      { name: "Bichon Frise", cells: ["$1.58", "$1.41", "$1.41", "$1.48"] },
-      { name: "Golden Retriever", cells: ["$1.58", "$1.52", "$1.60", "$1.61"] },
-      { name: "Goldendoodle", cells: [null, "$1.55", "$1.60", null] },
-    ],
-  }
+  const kpis = data.kpis
+  const charts = data.charts
+  const earningsByBreed = data.earningsByBreed
+  const topCombos = data.topCombos
+  const bottomCombos = data.bottomCombos
+  const matrixData = data.matrixData
 
   const renderModalContent = () => {
     if (!activeCard) return null

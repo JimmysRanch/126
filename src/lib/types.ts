@@ -13,6 +13,17 @@ export interface Client {
   email: string
   phone: string
   pets: Pet[]
+  firstName?: string
+  lastName?: string
+  lastVisit?: string
+  nextVisit?: string
+  address?: {
+    street?: string
+    city?: string
+    state?: string
+    zip?: string
+  }
+  referralSource?: string
 }
 
 export interface ServicePricing {
@@ -86,6 +97,11 @@ export interface Staff {
   phone: string
   status: 'Active' | 'On Leave' | 'Inactive'
   isGroomer: boolean
+  specialties?: string[]
+  hourlyRate?: string
+  totalAppointments?: number
+  rating?: number
+  hireDate?: string
 }
 
 export interface InventoryItem {

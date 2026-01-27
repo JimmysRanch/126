@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { groomerData } from '../data/dashboardMockData'
+import { useKV } from "@github/spark/hooks"
+import { dashboardGroomerData } from '../data/dashboardDefaults'
 
 interface GroomerAvgItemProps {
   groomer: typeof groomerData[0]
@@ -41,7 +42,8 @@ function GroomerAvgItem({ groomer, delay, dogsPerDay, revenuePerDay }: GroomerAv
 }
 
 export function GroomerAvgCard() {
-  const groomerStats = groomerData.map(groomer => ({
+  const [groomers] = useKV<typeof dashboardGroomerData>("dashboard-groomer-data", dashboardGroomerData)
+  const groomerStats = (groomers || []).map(groomer => ({
     ...groomer,
     dogsPerDay: groomer.appointmentCount,
     revenuePerDay: Math.round(groomer.appointmentCount * 85 * (groomer.bookedPercentage / 100))
