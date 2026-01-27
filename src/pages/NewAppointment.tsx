@@ -17,6 +17,14 @@ import { toast } from "sonner"
 import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
 import { PawPrint, Receipt, ArrowLeft, Plus, Upload, X, Check, CaretUpDown } from "@phosphor-icons/react"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
+import {
+  DEFAULT_HOURS_OF_OPERATION,
+  formatTimeLabel,
+  getHoursForDate,
+  getTimeSlotsForDate,
+  HoursOfOperation,
+  isTimeWithinBusinessHours
+} from "@/lib/business-hours"
 
 interface Client {
   id: string
@@ -35,6 +43,10 @@ interface Groomer {
   appointmentCount: number
 }
 
+interface BusinessInfo {
+  hoursOfOperation?: HoursOfOperation[]
+}
+
 export function NewAppointment() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -43,6 +55,9 @@ export function NewAppointment() {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
+  const [businessInfo] = useKV<BusinessInfo>("business-info", {
+    hoursOfOperation: DEFAULT_HOURS_OF_OPERATION
+  })
 
   const [selectedClient, setSelectedClient] = useState(preSelectedClientId || "")
   const [selectedPets, setSelectedPets] = useState<string[]>([])
@@ -100,6 +115,21 @@ export function NewAppointment() {
 
   const client = mockClients.find(c => c.id === selectedClient)
   const selectedPetsData = client?.pets.filter(p => selectedPets.includes(p.id)) || []
+  const hoursOfOperation = businessInfo?.hoursOfOperation?.length
+    ? businessInfo.hoursOfOperation
+    : DEFAULT_HOURS_OF_OPERATION
+  const hoursForSelectedDate = appointmentDate
+    ? getHoursForDate(appointmentDate, hoursOfOperation)
+    : null
+  const timeSlots = appointmentDate
+    ? getTimeSlotsForDate(appointmentDate, hoursOfOperation)
+    : []
+  const isClosedDay = Boolean(appointmentDate && (!hoursForSelectedDate || !hoursForSelectedDate.isOpen))
+  const isOutsideBusinessHours = Boolean(
+    appointmentDate &&
+      appointmentTime &&
+      !isTimeWithinBusinessHours(appointmentDate, appointmentTime, hoursOfOperation)
+  )
   
   const togglePet = (petId: string) => {
     if (selectedPets.includes(petId)) {
@@ -193,6 +223,11 @@ export function NewAppointment() {
       return
     }
 
+    if (!isTimeWithinBusinessHours(appointmentDate, appointmentTime, hoursOfOperation)) {
+      toast.error("Selected time is outside business hours")
+      return
+    }
+
     const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
@@ -273,10 +308,13 @@ export function NewAppointment() {
     return parts.join(", ").charAt(0).toUpperCase() + parts.join(", ").slice(1) + "."
   }
 
-  const timeSlots = Array.from({ length: 10 }, (_, i) => {
-    const hour = i + 8
-    return `${hour > 12 ? hour - 12 : hour}:00 ${hour >= 12 ? 'PM' : 'AM'}`
-  })
+  useEffect(() => {
+    if (!appointmentDate || !appointmentTime) return
+    if (!isTimeWithinBusinessHours(appointmentDate, appointmentTime, hoursOfOperation)) {
+      setAppointmentTime("")
+      toast.error("Selected time is outside business hours")
+    }
+  }, [appointmentDate, appointmentTime, hoursOfOperation])
 
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
@@ -391,18 +429,43 @@ export function NewAppointment() {
 
               <div className="space-y-1.5">
                 <Label htmlFor="time" className="text-sm">Time *</Label>
-                <Select value={appointmentTime} onValueChange={setAppointmentTime}>
+                <Select
+                  value={appointmentTime}
+                  onValueChange={setAppointmentTime}
+                  disabled={!appointmentDate || isClosedDay}
+                >
                   <SelectTrigger id="time" className="h-9">
                     <SelectValue placeholder="Select time" />
                   </SelectTrigger>
                   <SelectContent>
-                    {timeSlots.map(slot => (
+                    {!appointmentDate && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        Select a date to see available times.
+                      </div>
+                    )}
+                    {appointmentDate && timeSlots.length === 0 && (
+                      <div className="px-3 py-2 text-xs text-muted-foreground">
+                        No open hours for the selected date.
+                      </div>
+                    )}
+                    {timeSlots.map((slot) => (
                       <SelectItem key={slot} value={slot}>
                         {slot}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {appointmentDate && hoursForSelectedDate?.isOpen && (
+                  <p className="text-xs text-muted-foreground">
+                    Open {formatTimeLabel(hoursForSelectedDate.openTime)} - {formatTimeLabel(hoursForSelectedDate.closeTime)}.
+                  </p>
+                )}
+                {isClosedDay && (
+                  <p className="text-xs text-destructive">Selected date is outside business hours.</p>
+                )}
+                {isOutsideBusinessHours && (
+                  <p className="text-xs text-destructive">Selected time is outside business hours.</p>
+                )}
               </div>
             </div>
 
@@ -798,7 +861,16 @@ export function NewAppointment() {
             <Button 
               onClick={handleSubmit} 
               className="w-full mt-4 h-9"
-              disabled={!selectedClient || selectedPets.length === 0 || !selectedMainService || !appointmentDate || !appointmentTime || !styleConfirmed}
+              disabled={
+                !selectedClient ||
+                selectedPets.length === 0 ||
+                !selectedMainService ||
+                !appointmentDate ||
+                !appointmentTime ||
+                !styleConfirmed ||
+                isClosedDay ||
+                isOutsideBusinessHours
+              }
             >
               Create Appointment{selectedPets.length > 1 ? 's' : ''}
             </Button>
