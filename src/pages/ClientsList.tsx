@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MagnifyingGlass, Plus, PawPrint, Phone, Envelope } from "@phosphor-icons/react"
+import { MagnifyingGlass, Plus, PawPrint } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -14,7 +14,6 @@ const mockClients = [
     email: "george.moodys@email.com",
     phone: "(555) 123-4567",
     pets: [
-      { name: "Trying", breed: "Labrador Retriever" },
       { name: "Luna", breed: "Golden Retriever" },
       { name: "Max", breed: "Poodle Mix" }
     ],
@@ -160,17 +159,6 @@ export function ClientsList() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                      <Envelope size={14} className="shrink-0" />
-                      <span className="truncate">{client.email}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <Phone size={14} />
-                      <span>{client.phone}</span>
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border">
                     <div className="bg-secondary/30 rounded-md p-2">
                       <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
@@ -199,10 +187,6 @@ export function ClientsList() {
                           </Badge>
                         ))}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                      <span>{client.email}</span>
-                      <span>{client.phone}</span>
                     </div>
                   </div>
 
