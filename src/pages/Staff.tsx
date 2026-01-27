@@ -32,7 +32,7 @@ interface PendingStaff {
 }
 
 const mockStaff = [
-  { id: "1", name: "Sarah Johnson", role: "Senior Groomer", email: "sarah.j@pawhub.com", phone: "(555) 123-4567", status: "Active", specialties: ["Large Breeds", "Show Cuts", "Hand Stripping"], hourlyRate: "$35/hr", totalAppointments: 324, rating: 4.9, hireDate: "Mar 15, 2022" },
+  { id: "1", name: "Sarah Johnson", role: "Groomer", email: "sarah.j@pawhub.com", phone: "(555) 123-4567", status: "Active", specialties: ["Large Breeds", "Show Cuts", "Hand Stripping"], hourlyRate: "$35/hr", totalAppointments: 324, rating: 4.9, hireDate: "Mar 15, 2022" },
   { id: "2", name: "Mike Torres", role: "Groomer", email: "mike.t@pawhub.com", phone: "(555) 234-5678", status: "Active", specialties: ["Anxious Dogs", "Creative Styling", "Nail Care"], hourlyRate: "$28/hr", totalAppointments: 256, rating: 4.8, hireDate: "Aug 20, 2022" },
   { id: "3", name: "Emma Roberts", role: "Spa Specialist", email: "emma.r@pawhub.com", phone: "(555) 345-6789", status: "Active", specialties: ["Spa Treatments", "Small Breeds", "Facials"], hourlyRate: "$32/hr", totalAppointments: 198, rating: 5.0, hireDate: "Jan 10, 2023" },
   { id: "4", name: "Carlos Martinez", role: "Bather", email: "carlos.m@pawhub.com", phone: "(555) 456-7890", status: "Active", specialties: ["De-shedding", "Quick Service", "Puppy Care"], hourlyRate: "$22/hr", totalAppointments: 412, rating: 4.7, hireDate: "May 5, 2023" },
