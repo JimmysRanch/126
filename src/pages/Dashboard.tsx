@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BookedGauge } from './dashboard/components/BookedGauge'
 import { RecentActivity } from './dashboard/components/RecentActivity'
@@ -20,18 +20,6 @@ import {
 import { calculateAppointmentProgress } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
 import { useKV } from "@github/spark/hooks"
-import { Staff, Client, Appointment, MainService } from "@/lib/types"
-
-type BusinessInfo = {
-  companyName?: string
-  businessPhone?: string
-  businessEmail?: string
-  address?: string
-  city?: string
-  state?: string
-  zipCode?: string
-  timezone?: string
-}
 
 function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value: number; delay?: number; prefix?: string; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -69,12 +57,6 @@ export function Dashboard() {
   const [dogsGroomedSummary] = useKV<typeof dogsGroomedData>("dashboard-dogs-groomed", dogsGroomedData)
   const [bookedSummary] = useKV<typeof bookedPercentageData>("dashboard-booked-percentage", bookedPercentageData)
   const [clientsSummary] = useKV<typeof clientsData>("dashboard-clients-summary", clientsData)
-  const [businessInfo] = useKV<BusinessInfo>("business-info", {})
-  const [staffMembers] = useKV<Staff[]>("staff", [])
-  const [mainServices] = useKV<MainService[]>("main-services", [])
-  const [clients] = useKV<Client[]>("clients", [])
-  const [appointments] = useKV<Appointment[]>("appointments", [])
-  const [onboardingDismissed, setOnboardingDismissed] = useKV<boolean>("onboarding-dismissed", false)
   const appointmentStats = appointmentsSummary || appointmentData
   const capacityStats = capacitySummary || capacityData
   const revenueStats = revenueSummary || revenueData
@@ -83,113 +65,9 @@ export function Dashboard() {
   const bookedStats = bookedSummary || bookedPercentageData
   const clientsStats = clientsSummary || clientsData
   const progress = calculateAppointmentProgress(appointmentStats)
-  const onboardingSteps = useMemo(() => {
-    const businessComplete = Boolean(
-      businessInfo?.companyName?.trim() &&
-      businessInfo?.businessPhone?.trim() &&
-      businessInfo?.businessEmail?.trim()
-    )
-    return [
-      {
-        id: "business",
-        title: "Add your business details",
-        description: "Set your salon name, contact info, address, and timezone.",
-        href: "/settings",
-        complete: businessComplete
-      },
-      {
-        id: "services",
-        title: "Confirm service pricing",
-        description: "Review main services and add-ons so quotes are accurate.",
-        href: "/settings",
-        complete: (mainServices || []).length > 0
-      },
-      {
-        id: "staff",
-        title: "Invite your staff",
-        description: "Add groomers and front desk team members.",
-        href: "/staff/invite",
-        complete: (staffMembers || []).length > 0
-      },
-      {
-        id: "clients",
-        title: "Add your first clients",
-        description: "Import or create client profiles and their pets.",
-        href: "/clients/new",
-        complete: (clients || []).length > 0
-      },
-      {
-        id: "appointments",
-        title: "Book your first appointment",
-        description: "Schedule a service to populate your calendar.",
-        href: "/appointments/new",
-        complete: (appointments || []).length > 0
-      }
-    ]
-  }, [appointments, businessInfo, clients, mainServices, staffMembers])
-  const completedSteps = onboardingSteps.filter((step) => step.complete).length
-
   return (
     <div className="h-[calc(100vh-57px)] overflow-hidden bg-background p-3">
       <div className="h-full grid auto-rows-min gap-3 overflow-y-auto pr-1">
-        {!onboardingDismissed && (
-          <div className="bg-card rounded-xl border border-border p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                  Quick Start Checklist
-                </p>
-                <h2 className="text-lg font-semibold">Get your salon ready in minutes</h2>
-                <p className="text-sm text-muted-foreground">
-                  Knock out the essentials so your team can start booking right away.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-sm text-muted-foreground">
-                  {completedSteps} of {onboardingSteps.length} completed
-                </div>
-                <button
-                  className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => setOnboardingDismissed(true)}
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-4 h-2 w-full rounded-full bg-secondary">
-              <div
-                className="h-2 rounded-full bg-primary transition-all"
-                style={{ width: `${(completedSteps / onboardingSteps.length) * 100}%` }}
-              />
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {onboardingSteps.map((step) => (
-                <Link
-                  key={step.id}
-                  to={step.href}
-                  className="group rounded-lg border border-border/60 p-3 transition hover:border-primary/60 hover:bg-primary/5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold">{step.title}</p>
-                      <p className="text-xs text-muted-foreground">{step.description}</p>
-                    </div>
-                    <span
-                      className={`text-[10px] font-semibold uppercase tracking-wider ${
-                        step.complete ? "text-emerald-500" : "text-muted-foreground"
-                      }`}
-                    >
-                      {step.complete ? "Done" : "Next"}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-        
         <div className="grid grid-cols-4 gap-3">
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Appointments Today</h2>
