@@ -269,7 +269,7 @@ export function StaffProfile() {
                 value="performance"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
-                Performance
+                Groomer Performance
               </TabsTrigger>
               <TabsTrigger 
                 value="payroll"

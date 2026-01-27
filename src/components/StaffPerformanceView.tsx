@@ -70,18 +70,37 @@ export function StaffPerformanceView() {
     { left: "Dachshunds", right: "$1.65" },
     { left: "Poodles", right: "$1.58" },
     { left: "Maltese", right: "$1.52" },
+    { left: "Shih Tzus", right: "$1.49" },
+    { left: "Yorkies", right: "$1.46" },
+    { left: "Cocker Spaniels", right: "$1.44" },
+    { left: "Schnauzers", right: "$1.41" },
+    { left: "French Bulldogs", right: "$1.38" },
   ]
 
   const topCombos: ListItem[] = [
     { left: "Golden Retrievers Large", right: "$1.77" },
     { left: "Cavaliers Small", right: "$1.72" },
     { left: "Dachshunds Small", right: "$1.65" },
+    { left: "Poodles Medium", right: "$1.62" },
+    { left: "Shih Tzus Small", right: "$1.59" },
+    { left: "Yorkies Small", right: "$1.56" },
+    { left: "Cocker Spaniels Medium", right: "$1.53" },
+    { left: "Schnauzers Medium", right: "$1.50" },
+    { left: "Labradors Large", right: "$1.48" },
+    { left: "French Bulldogs Small", right: "$1.46" },
   ]
 
   const bottomCombos: ListItem[] = [
     { left: "Goldendoodles Large", right: "$1.22" },
     { left: "Labradors Large", right: "$1.18" },
     { left: "Mixed Breed XL", right: "$1.05" },
+    { left: "Great Danes XL", right: "$1.02" },
+    { left: "Saint Bernards XL", right: "$1.00" },
+    { left: "Bernese Mountain Dogs XL", right: "$0.98" },
+    { left: "Newfoundlands XL", right: "$0.96" },
+    { left: "Mastiffs XL", right: "$0.94" },
+    { left: "Akitas Large", right: "$0.92" },
+    { left: "Huskies Large", right: "$0.90" },
   ]
 
   const matrixData = {
@@ -92,6 +111,11 @@ export function StaffPerformanceView() {
       { name: "Bichon Frise", cells: ["$1.58", "$1.41", "$1.41", "$1.48"] },
       { name: "Golden Retriever", cells: ["$1.58", "$1.52", "$1.60", "$1.61"] },
       { name: "Goldendoodle", cells: [null, "$1.55", "$1.60", null] },
+      { name: "Labrador", cells: [null, "$1.42", "$1.48", "$1.50"] },
+      { name: "Poodle", cells: ["$1.60", "$1.54", "$1.58", "$1.56"] },
+      { name: "Shih Tzu", cells: ["$1.49", null, null, null] },
+      { name: "Schnauzer", cells: ["$1.46", "$1.50", "$1.44", null] },
+      { name: "French Bulldog", cells: ["$1.38", "$1.40", null, null] },
     ],
   }
 
