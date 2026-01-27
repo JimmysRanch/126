@@ -67,7 +67,7 @@ export function Dashboard() {
   const progress = calculateAppointmentProgress(appointmentStats)
   return (
     <div className="h-[calc(100vh-57px)] overflow-hidden bg-background p-3">
-      <div className="h-full grid auto-rows-min gap-3 overflow-y-auto pr-1">
+      <div className="h-full grid grid-rows-3 gap-3">
         <div className="grid grid-cols-4 gap-3">
           <div className="bg-card rounded-xl p-3 border border-border flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold mb-1.5 flex-shrink-0">Appointments Today</h2>
