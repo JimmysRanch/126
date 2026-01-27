@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from "@/lib/payroll-utils"
+import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/useAppearance"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 
 interface WeightRange {
@@ -193,6 +194,7 @@ interface BusinessInfo {
 
 export function Settings() {
   const navigate = useNavigate()
+  const { selectedTheme, selectedUi, setSelectedTheme, setSelectedUi } = useAppearance()
   const [activeTab, setActiveTab] = useState("business")
   const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
@@ -1969,7 +1971,11 @@ export function Settings() {
                       <Button variant="outline">Customize</Button>
                     </div>
 
-                    <RadioGroup defaultValue="theme-classic" className="space-y-3">
+                    <RadioGroup
+                      value={`theme-${selectedTheme}`}
+                      onValueChange={(value) => setSelectedTheme(value.replace('theme-', '') as AppearanceTheme)}
+                      className="space-y-3"
+                    >
                       {[
                         {
                           id: "theme-classic",
@@ -2019,7 +2025,11 @@ export function Settings() {
                       Switching layouts overhauls the interface and should update immediately.
                     </div>
 
-                    <RadioGroup defaultValue="ui-classic" className="space-y-3">
+                    <RadioGroup
+                      value={`ui-${selectedUi}`}
+                      onValueChange={(value) => setSelectedUi(value.replace('ui-', '') as AppearanceUi)}
+                      className="space-y-3"
+                    >
                       {[
                         {
                           id: "ui-classic",

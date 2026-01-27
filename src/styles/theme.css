@@ -259,4 +259,77 @@
     --color-bg-inset: #000000;
     --color-bg-overlay: var(--color-neutral-3);
   }
+
+  #spark-app.theme-rose {
+    --color-accent-1: var(--crimson-1);
+    --color-accent-2: var(--crimson-2);
+    --color-accent-3: var(--crimson-3);
+    --color-accent-4: var(--crimson-4);
+    --color-accent-5: var(--crimson-5);
+    --color-accent-6: var(--crimson-6);
+    --color-accent-7: var(--crimson-7);
+    --color-accent-8: var(--crimson-8);
+    --color-accent-9: var(--crimson-9);
+    --color-accent-10: var(--crimson-10);
+    --color-accent-11: var(--crimson-11);
+    --color-accent-12: var(--crimson-12);
+    --color-accent-contrast: var(--crimson-contrast);
+
+    --color-accent-secondary-1: var(--pink-1);
+    --color-accent-secondary-2: var(--pink-2);
+    --color-accent-secondary-3: var(--pink-3);
+    --color-accent-secondary-4: var(--pink-4);
+    --color-accent-secondary-5: var(--pink-5);
+    --color-accent-secondary-6: var(--pink-6);
+    --color-accent-secondary-7: var(--pink-7);
+    --color-accent-secondary-8: var(--pink-8);
+    --color-accent-secondary-9: var(--pink-9);
+    --color-accent-secondary-10: var(--pink-10);
+    --color-accent-secondary-11: var(--pink-11);
+    --color-accent-secondary-12: var(--pink-12);
+    --color-accent-secondary-contrast: var(--pink-contrast);
+  }
+
+  #spark-app.theme-midnight {
+    --color-accent-1: var(--indigo-1);
+    --color-accent-2: var(--indigo-2);
+    --color-accent-3: var(--indigo-3);
+    --color-accent-4: var(--indigo-4);
+    --color-accent-5: var(--indigo-5);
+    --color-accent-6: var(--indigo-6);
+    --color-accent-7: var(--indigo-7);
+    --color-accent-8: var(--indigo-8);
+    --color-accent-9: var(--indigo-9);
+    --color-accent-10: var(--indigo-10);
+    --color-accent-11: var(--indigo-11);
+    --color-accent-12: var(--indigo-12);
+    --color-accent-contrast: var(--indigo-contrast);
+
+    --color-accent-secondary-1: var(--sky-1);
+    --color-accent-secondary-2: var(--sky-2);
+    --color-accent-secondary-3: var(--sky-3);
+    --color-accent-secondary-4: var(--sky-4);
+    --color-accent-secondary-5: var(--sky-5);
+    --color-accent-secondary-6: var(--sky-6);
+    --color-accent-secondary-7: var(--sky-7);
+    --color-accent-secondary-8: var(--sky-8);
+    --color-accent-secondary-9: var(--sky-9);
+    --color-accent-secondary-10: var(--sky-10);
+    --color-accent-secondary-11: var(--sky-11);
+    --color-accent-secondary-12: var(--sky-12);
+    --color-accent-secondary-contrast: var(--sky-contrast);
+
+    --color-bg-inset: var(--slate-1);
+    --color-bg-overlay: var(--slate-2);
+  }
+
+  #spark-app.ui-compact {
+    --size-scale: 0.92;
+    --radius-factor: 0.95;
+  }
+
+  #spark-app.ui-focus {
+    --size-scale: 1.08;
+    --radius-factor: 1.1;
+  }
 }
