@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useKV } from "@github/spark/hooks"
-import { Appointment, Staff } from "@/lib/types"
+import { Appointment } from "@/lib/types"
+import { SEED_STAFF_PROFILES, StaffProfile } from "@/lib/seed-data"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
@@ -17,20 +18,25 @@ interface GroomerViewProps {
 
 export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [staffMembers] = useKV<StaffProfile[]>("staff", SEED_STAFF_PROFILES)
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<ViewMode>('day')
 
-  const groomers = Array.from(
-    new Set((appointments || []).map(apt => apt.groomerId))
-  ).map(id => {
-    const apt = (appointments || []).find(a => a.groomerId === id)
+  const groomersFromStaff = (staffMembers || [])
+    .filter((member) => member.isGroomer)
+    .map((member) => ({ id: member.id, name: member.name }))
+  const groomersFromAppointments = Array.from(
+    new Set((appointments || []).map((apt) => apt.groomerId))
+  ).map((id) => {
+    const apt = (appointments || []).find((a) => a.groomerId === id)
     return {
       id,
-      name: apt?.groomerName || 'Unknown'
+      name: apt?.groomerName || "Unknown"
     }
   })
+  const groomers = groomersFromStaff.length > 0 ? groomersFromStaff : groomersFromAppointments
 
   const getDateRange = () => {
     switch (viewMode) {
