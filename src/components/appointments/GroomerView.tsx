@@ -192,7 +192,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate flex items-center gap-1">
-                          <PawPrint size={14} />
+                          <PawPrint size={14} weight="fill" className="text-primary shrink-0" />
                           {apt.petName}
                         </div>
                         <div className="text-xs text-muted-foreground truncate">{apt.clientName}</div>

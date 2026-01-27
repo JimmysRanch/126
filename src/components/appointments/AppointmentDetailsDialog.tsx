@@ -56,7 +56,7 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-2xl font-bold flex items-center gap-2">
-                <PawPrint size={24} />
+                <PawPrint size={24} weight="fill" className="text-primary shrink-0" />
                 {appointment.petName}
               </h3>
               <p className="text-muted-foreground">{appointment.clientName}</p>
