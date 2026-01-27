@@ -32,9 +32,34 @@ import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreak
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
 import { InviteStaff } from '@/pages/InviteStaff'
+import { useEffect, useMemo } from 'react'
 import { RecentActivityPage } from '@/pages/RecentActivityPage'
+import { useAppearance } from '@/hooks/useAppearance'
 
 function App() {
+  const { selectedTheme, selectedUi } = useAppearance()
+  const appearanceClasses = useMemo(
+    () =>
+      [
+        selectedTheme !== 'classic' ? `theme-${selectedTheme}` : null,
+        selectedUi !== 'classic' ? `ui-${selectedUi}` : null
+      ].filter(Boolean) as string[],
+    [selectedTheme, selectedUi]
+  )
+
+  useEffect(() => {
+    const sparkApp = document.getElementById('spark-app')
+    if (!sparkApp) {
+      return
+    }
+
+    const classesToRemove = Array.from(sparkApp.classList).filter(
+      (className) => className.startsWith('theme-') || className.startsWith('ui-')
+    )
+    classesToRemove.forEach((className) => sparkApp.classList.remove(className))
+    appearanceClasses.forEach((className) => sparkApp.classList.add(className))
+  }, [appearanceClasses])
+
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground flex flex-col">
