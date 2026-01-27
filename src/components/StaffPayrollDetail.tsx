@@ -5,7 +5,6 @@ import { Download, CalendarBlank, TrendUp } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Transaction } from "@/lib/types"
-import { PayrollHistoryItem, SEED_PAYROLL_HISTORY } from "@/lib/seed-data"
 
 interface PayPeriod {
   period: string
@@ -71,7 +70,7 @@ export function StaffPayrollDetail({ staffId, hourlyRate }: StaffPayrollDetailPr
   const isMobile = useIsMobile()
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [transactions] = useKV<Transaction[]>("transactions", [])
-  const [payrollHistory] = useKV<PayrollHistoryItem[]>("payroll-history", SEED_PAYROLL_HISTORY)
+  const [payrollHistory] = useKV<PayPeriod[]>("payroll-history", [])
   
   const staffAppointments = (appointments || []).filter(
     (apt) => apt.groomerId === staffId && (apt.status === "completed" || apt.status === "paid")

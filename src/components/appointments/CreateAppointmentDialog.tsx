@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { Appointment, MainService, AddOn, AppointmentService, getWeightCategory, getPriceForWeight } from "@/lib/types"
+import { Appointment, MainService, AddOn, AppointmentService, Client, Staff, getWeightCategory, getPriceForWeight } from "@/lib/types"
 import { PawPrint, Receipt, User } from "@phosphor-icons/react"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 import {
@@ -22,7 +22,7 @@ import {
   HoursOfOperation,
   isTimeWithinBusinessHours
 } from "@/lib/business-hours"
-import { ClientRecord, SEED_CLIENTS, SEED_STAFF_PROFILES, StaffProfile } from "@/lib/seed-data"
+import { DEFAULT_STAFF } from "@/lib/defaults"
 
 interface CreateAppointmentDialogProps {
   open: boolean
@@ -35,8 +35,8 @@ interface BusinessInfo {
 
 export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmentDialogProps) {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
-  const [clients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
-  const [staffMembers] = useKV<StaffProfile[]>("staff", SEED_STAFF_PROFILES)
+  const [clients] = useKV<Client[]>("clients", [])
+  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
   const [businessInfo] = useKV<BusinessInfo>("business-info", {

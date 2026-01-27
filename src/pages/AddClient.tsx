@@ -15,8 +15,7 @@ import { toast } from "sonner"
 import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
 import { useKV } from "@github/spark/hooks"
-import { getWeightCategory } from "@/lib/types"
-import { ClientRecord, SEED_CLIENTS } from "@/lib/seed-data"
+import { Client, getWeightCategory } from "@/lib/types"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -81,7 +80,7 @@ interface PetInfo {
 
 export function AddClient() {
   const navigate = useNavigate()
-  const [clients, setClients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
+  const [clients, setClients] = useKV<Client[]>("clients", [])
   const [temperamentOptionsRaw] = useKV<string[]>("temperament-options", [
     "Friendly",
     "Energetic",
@@ -275,7 +274,7 @@ export function AddClient() {
         ownerId: clientId
       }
     })
-    const newClient: ClientRecord = {
+    const newClient: Client = {
       id: clientId,
       firstName: firstName.trim(),
       lastName: lastName.trim(),

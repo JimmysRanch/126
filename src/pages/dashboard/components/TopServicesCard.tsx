@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useKV } from "@github/spark/hooks"
-import { topServicesData } from '../data/dashboardMockData'
+import { dashboardTopServicesData } from '../data/dashboardDefaults'
 import { Scissors, Sparkle, Eyedropper } from '@phosphor-icons/react'
 
 const iconMap = {
@@ -12,7 +12,7 @@ const iconMap = {
 
 export function TopServicesCard() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [services] = useKV<typeof topServicesData>("dashboard-top-services", topServicesData)
+  const [services] = useKV<typeof dashboardTopServicesData>("dashboard-top-services", dashboardTopServicesData)
   const safeServices = services || []
   const maxRevenue = safeServices.length > 0 ? Math.max(...safeServices.map(s => s.revenue)) : 1
 

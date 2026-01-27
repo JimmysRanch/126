@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { getBookingColor } from '../utils/dashboardCalculations'
-import { bookingHeatmapData } from '../data/dashboardMockData'
+import { bookingHeatmapData } from '../data/dashboardDefaults'
 import { useState } from 'react'
 import { useKV } from "@github/spark/hooks"
 

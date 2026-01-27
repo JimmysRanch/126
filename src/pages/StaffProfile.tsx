@@ -13,20 +13,89 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
-import { PerformanceData, SEED_GROOMER_PERFORMANCE } from "@/lib/performance-data"
-import { SEED_STAFF_PROFILE_DETAILS, StaffAppointmentSummary, StaffProfileDetail } from "@/lib/seed-data"
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { DEFAULT_STAFF } from "@/lib/defaults"
+import { Staff } from "@/lib/types"
+
+type StaffAppointmentSummary = {
+  id: string
+  client: string
+  pet: string
+  service: string
+  date: string
+  time: string
+  duration?: string
+  status?: string
+  cost?: string
+  tip?: string
+  rating?: number
+  notes?: string
+}
+
+type StaffProfileDetail = {
+  name: string
+  role: string
+  email: string
+  phone: string
+  address: string
+  emergencyContact: {
+    name: string
+    relation: string
+    phone: string
+  }
+  hireDate: string
+  status: "Active" | "On Leave" | "Inactive"
+  hourlyRate: number
+  specialties: string[]
+  stats: {
+    totalAppointments: number
+    revenue: string
+    avgTip: string
+    noShows: number
+    lateArrivals: number
+  }
+  upcomingAppointments: StaffAppointmentSummary[]
+  recentAppointments: StaffAppointmentSummary[]
+}
 
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
-  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", SEED_GROOMER_PERFORMANCE)
-  const groomerPerformanceData = groomerPerformance ?? SEED_GROOMER_PERFORMANCE
+  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
+  const groomerPerformanceData = groomerPerformance ?? EMPTY_PERFORMANCE_DATA
   const [staffProfiles] = useKV<Record<string, StaffProfileDetail>>(
     "staff-profile-details",
-    SEED_STAFF_PROFILE_DETAILS
+    {}
   )
+  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
+  const staffFromList = (staffMembers || []).find((member) => member.id === staffId)
+  const fallbackProfile: StaffProfileDetail = {
+    name: staffFromList?.name ?? "Staff Member",
+    role: staffFromList?.role ?? "Groomer",
+    email: staffFromList?.email ?? "",
+    phone: staffFromList?.phone ?? "",
+    address: "—",
+    emergencyContact: {
+      name: "—",
+      relation: "—",
+      phone: "—"
+    },
+    hireDate: staffFromList?.hireDate ?? "—",
+    status: staffFromList?.status ?? "Active",
+    hourlyRate: 0,
+    specialties: staffFromList?.specialties ?? [],
+    stats: {
+      totalAppointments: staffFromList?.totalAppointments ?? 0,
+      revenue: "$0",
+      avgTip: "$0",
+      noShows: 0,
+      lateArrivals: 0
+    },
+    upcomingAppointments: [],
+    recentAppointments: []
+  }
 
-  const staff = staffProfiles?.[staffId ?? ""] ?? SEED_STAFF_PROFILE_DETAILS["1"]
+  const staff = staffProfiles?.[staffId ?? ""] ?? fallbackProfile
   const [activeTab, setActiveTab] = useState("overview")
   const isMobile = useIsMobile()
   const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)

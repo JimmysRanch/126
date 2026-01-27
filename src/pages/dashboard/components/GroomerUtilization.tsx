@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 import { useKV } from "@github/spark/hooks"
-import { groomerWeekData } from '../data/dashboardMockData'
+import { dashboardGroomerWeekData } from '../data/dashboardDefaults'
 import { useNavigate } from 'react-router-dom'
 
 export function GroomerUtilization() {
   const navigate = useNavigate()
-  const [groomers] = useKV<typeof groomerWeekData>("dashboard-groomer-week-data", groomerWeekData)
+  const [groomers] = useKV<typeof dashboardGroomerWeekData>("dashboard-groomer-week-data", dashboardGroomerWeekData)
   const workdayStart = 8
   const workdayEnd = 18
   const workdayHours = workdayEnd - workdayStart

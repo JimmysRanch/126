@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { useKV } from "@github/spark/hooks"
-import { PerformanceData, SEED_GROOMER_PERFORMANCE } from "@/lib/performance-data"
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
 
 export function StaffPerformanceP8View() {
   const [activeCard, setActiveCard] = useState<
@@ -10,8 +10,8 @@ export function StaffPerformanceP8View() {
     | { type: "earnings" | "top" | "bottom" | "matrix" }
     | null
   >(null)
-  const [performanceData] = useKV<PerformanceData>("performance-groomer", SEED_GROOMER_PERFORMANCE)
-  const data = performanceData ?? SEED_GROOMER_PERFORMANCE
+  const [performanceData] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
+  const data = performanceData ?? EMPTY_PERFORMANCE_DATA
 
   const closeActiveCard = () => setActiveCard(null)
   const kpis = data.kpis

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useKV } from "@github/spark/hooks"
-import { revenueData } from '../data/dashboardMockData'
+import { revenueData } from '../data/dashboardDefaults'
 import { TrendUp, TrendDown } from '@phosphor-icons/react'
 import { useState } from 'react'
 

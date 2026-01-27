@@ -13,8 +13,9 @@ import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
-import { PerformanceData, SEED_TEAM_PERFORMANCE } from "@/lib/performance-data"
-import { SEED_STAFF_PROFILES, StaffProfile } from "@/lib/seed-data"
+import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { DEFAULT_STAFF } from "@/lib/defaults"
+import { Staff } from "@/lib/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,10 +39,10 @@ export const Staff = () => {
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
-  const [staffMembers] = useKV<StaffProfile[]>("staff", SEED_STAFF_PROFILES)
+  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
-  const [teamPerformance] = useKV<PerformanceData>("performance-team", SEED_TEAM_PERFORMANCE)
-  const teamPerformanceData = teamPerformance ?? SEED_TEAM_PERFORMANCE
+  const [teamPerformance] = useKV<PerformanceData>("performance-team", EMPTY_PERFORMANCE_DATA)
+  const teamPerformanceData = teamPerformance ?? EMPTY_PERFORMANCE_DATA
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [staffToCancel, setStaffToCancel] = useState<string | null>(null)
 
@@ -295,7 +296,7 @@ export const Staff = () => {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <div className="text-xs text-muted-foreground">{staff.totalAppointments} appts</div>
+                            <div className="text-xs text-muted-foreground">{staff.totalAppointments ?? 0} appts</div>
                           </div>
                         </div>
 
@@ -304,7 +305,7 @@ export const Staff = () => {
                             <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
                               Hired
                             </div>
-                            <div className="text-xs font-semibold">{staff.hireDate}</div>
+                            <div className="text-xs font-semibold">{staff.hireDate ?? "—"}</div>
                           </div>
                         </div>
                       </div>
@@ -336,14 +337,14 @@ export const Staff = () => {
                             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                               Appointments
                             </div>
-                            <div className="font-semibold">{staff.totalAppointments}</div>
+                            <div className="font-semibold">{staff.totalAppointments ?? 0}</div>
                           </div>
 
                           <div className="text-center w-28">
                             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
                               Hired
                             </div>
-                            <div className="font-semibold">{staff.hireDate}</div>
+                            <div className="font-semibold">{staff.hireDate ?? "—"}</div>
                           </div>
                         </div>
                       </div>

@@ -4,8 +4,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useKV } from "@github/spark/hooks"
-import { Appointment } from "@/lib/types"
-import { SEED_STAFF_PROFILES, StaffProfile } from "@/lib/seed-data"
+import { Appointment, Staff } from "@/lib/types"
+import { DEFAULT_STAFF } from "@/lib/defaults"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
@@ -18,7 +18,7 @@ interface GroomerViewProps {
 
 export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
-  const [staffMembers] = useKV<StaffProfile[]>("staff", SEED_STAFF_PROFILES)
+  const [staffMembers] = useKV<Staff[]>("staff", DEFAULT_STAFF)
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())

@@ -7,13 +7,13 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
-import { ClientRecord, SEED_CLIENTS } from "@/lib/seed-data"
+import { Client } from "@/lib/types"
 
 export function ClientsList() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
   const isMobile = useIsMobile()
-  const [clients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
+  const [clients] = useKV<Client[]>("clients", [])
 
   const filteredClients = (clients || []).filter(client => 
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

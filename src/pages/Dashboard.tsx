@@ -16,7 +16,7 @@ import {
   dogsGroomedData,
   bookedPercentageData,
   clientsData
-} from './dashboard/data/dashboardMockData'
+} from './dashboard/data/dashboardDefaults'
 import { calculateAppointmentProgress } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
 import { useKV } from "@github/spark/hooks"

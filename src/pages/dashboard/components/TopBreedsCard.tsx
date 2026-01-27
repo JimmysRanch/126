@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useKV } from "@github/spark/hooks"
-import { topBreedsData } from '../data/dashboardMockData'
+import { dashboardTopBreedsData } from '../data/dashboardDefaults'
 import { Dog, PawPrint } from '@phosphor-icons/react'
 
 export function TopBreedsCard() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [breeds] = useKV<typeof topBreedsData>("dashboard-top-breeds", topBreedsData)
+  const [breeds] = useKV<typeof dashboardTopBreedsData>("dashboard-top-breeds", dashboardTopBreedsData)
   const safeBreeds = breeds || []
   const maxCount = safeBreeds.length > 0 ? Math.max(...safeBreeds.map(b => b.count)) : 1
 

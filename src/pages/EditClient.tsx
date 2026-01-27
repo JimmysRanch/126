@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { useKV } from "@github/spark/hooks"
-import { ClientRecord, SEED_CLIENTS } from "@/lib/seed-data"
+import { Client } from "@/lib/types"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -32,7 +32,7 @@ const REFERRAL_SOURCES = [
 export function EditClient() {
   const navigate = useNavigate()
   const { clientId } = useParams()
-  const [clients, setClients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
+  const [clients, setClients] = useKV<Client[]>("clients", [])
   
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')

@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from "react"
 import { motion } from "framer-motion"
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { PerformanceData } from "@/lib/performance-data"
+import { PerformanceData } from "@/lib/performance-types"
 
 type CardDetail = {
   title: string
