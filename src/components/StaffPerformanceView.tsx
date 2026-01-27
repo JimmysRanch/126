@@ -31,16 +31,27 @@ type CardDetail = {
   items?: string[]
 }
 
-export function StaffPerformanceView() {
-  const [selectedCard, setSelectedCard] = useState<CardDetail | null>(null)
+type MatrixData = {
+  cols: string[]
+  rows: Array<{ name: string; cells: Array<string | null> }>
+}
 
-  const kpis: KPI[] = [
+type PerformanceData = {
+  kpis: KPI[]
+  charts: BarData[]
+  earningsByBreed: ListItem[]
+  topCombos: ListItem[]
+  bottomCombos: ListItem[]
+  matrixData: MatrixData
+}
+
+export const groomerPerformanceData: PerformanceData = {
+  kpis: [
     { value: "$3.75", label: "REVENUE PER MIN | RPM", accent: "amber" },
     { icon: "⏱", value: "64", unit: "mins", label: "AVG MINUTES / APPOINTMENT", accent: "blue" },
     { value: "75", label: "COMPLETED APPOINTMENTS", accent: "green" },
-  ]
-
-  const charts: BarData[] = [
+  ],
+  charts: [
     {
       title: "RPM (Monthly)",
       accent: "blue",
@@ -62,9 +73,8 @@ export function StaffPerformanceView() {
       values: [1.56, 1.95, 2.24, 2.48],
       prefix: "$",
     },
-  ]
-
-  const earningsByBreed: ListItem[] = [
+  ],
+  earningsByBreed: [
     { left: "Golden Retrievers", right: "$1.77" },
     { left: "Cavaliers", right: "$1.72" },
     { left: "Dachshunds", right: "$1.65" },
@@ -75,9 +85,8 @@ export function StaffPerformanceView() {
     { left: "Cocker Spaniels", right: "$1.44" },
     { left: "Schnauzers", right: "$1.41" },
     { left: "French Bulldogs", right: "$1.38" },
-  ]
-
-  const topCombos: ListItem[] = [
+  ],
+  topCombos: [
     { left: "Golden Retrievers Large", right: "$1.77" },
     { left: "Cavaliers Small", right: "$1.72" },
     { left: "Dachshunds Small", right: "$1.65" },
@@ -88,9 +97,8 @@ export function StaffPerformanceView() {
     { left: "Schnauzers Medium", right: "$1.50" },
     { left: "Labradors Large", right: "$1.48" },
     { left: "French Bulldogs Small", right: "$1.46" },
-  ]
-
-  const bottomCombos: ListItem[] = [
+  ],
+  bottomCombos: [
     { left: "Goldendoodles Large", right: "$1.22" },
     { left: "Labradors Large", right: "$1.18" },
     { left: "Mixed Breed XL", right: "$1.05" },
@@ -101,9 +109,8 @@ export function StaffPerformanceView() {
     { left: "Mastiffs XL", right: "$0.94" },
     { left: "Akitas Large", right: "$0.92" },
     { left: "Huskies Large", right: "$0.90" },
-  ]
-
-  const matrixData = {
+  ],
+  matrixData: {
     cols: ["Small", "Medium", "Large", "XL"],
     rows: [
       { name: "Cavalier", cells: ["$1.72", null, null, null] },
@@ -117,7 +124,103 @@ export function StaffPerformanceView() {
       { name: "Schnauzer", cells: ["$1.46", "$1.50", "$1.44", null] },
       { name: "French Bulldog", cells: ["$1.38", "$1.40", null, null] },
     ],
-  }
+  },
+}
+
+export const teamPerformanceData: PerformanceData = {
+  kpis: [
+    { value: "$3.58", label: "TEAM RPM AVERAGE", accent: "amber" },
+    { icon: "⏱", value: "67", unit: "mins", label: "TEAM AVG MINUTES", accent: "blue" },
+    { value: "412", label: "TOTAL COMPLETED APPOINTMENTS", accent: "green" },
+  ],
+  charts: [
+    {
+      title: "RPM (Monthly)",
+      accent: "blue",
+      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
+      values: [1.92, 1.88, 1.95, 2.01, 2.08],
+      prefix: "$",
+    },
+    {
+      title: "Average Minutes per Appointment",
+      accent: "blue",
+      labels: ["JAN", "FEB", "MAR", "APR", "MAY"],
+      values: [45, 46, 44, 43, 42],
+      suffix: "m",
+    },
+    {
+      title: "RPM by Dog Size",
+      accent: "amber",
+      labels: ["Small", "Medium", "Large", "XL"],
+      values: [1.48, 1.86, 2.12, 2.32],
+      prefix: "$",
+    },
+  ],
+  earningsByBreed: [
+    { left: "Golden Retrievers", right: "$1.70" },
+    { left: "Cavaliers", right: "$1.66" },
+    { left: "Dachshunds", right: "$1.59" },
+    { left: "Poodles", right: "$1.54" },
+    { left: "Maltese", right: "$1.49" },
+    { left: "Shih Tzus", right: "$1.45" },
+    { left: "Yorkies", right: "$1.42" },
+    { left: "Cocker Spaniels", right: "$1.40" },
+    { left: "Schnauzers", right: "$1.37" },
+    { left: "French Bulldogs", right: "$1.34" },
+  ],
+  topCombos: [
+    { left: "Golden Retrievers Large", right: "$1.72" },
+    { left: "Cavaliers Small", right: "$1.68" },
+    { left: "Dachshunds Small", right: "$1.61" },
+    { left: "Poodles Medium", right: "$1.58" },
+    { left: "Shih Tzus Small", right: "$1.55" },
+    { left: "Yorkies Small", right: "$1.52" },
+    { left: "Cocker Spaniels Medium", right: "$1.49" },
+    { left: "Schnauzers Medium", right: "$1.46" },
+    { left: "Labradors Large", right: "$1.44" },
+    { left: "French Bulldogs Small", right: "$1.41" },
+  ],
+  bottomCombos: [
+    { left: "Goldendoodles Large", right: "$1.18" },
+    { left: "Labradors Large", right: "$1.14" },
+    { left: "Mixed Breed XL", right: "$1.02" },
+    { left: "Great Danes XL", right: "$1.00" },
+    { left: "Saint Bernards XL", right: "$0.98" },
+    { left: "Bernese Mountain Dogs XL", right: "$0.96" },
+    { left: "Newfoundlands XL", right: "$0.94" },
+    { left: "Mastiffs XL", right: "$0.92" },
+    { left: "Akitas Large", right: "$0.90" },
+    { left: "Huskies Large", right: "$0.88" },
+  ],
+  matrixData: {
+    cols: ["Small", "Medium", "Large", "XL"],
+    rows: [
+      { name: "Cavalier", cells: ["$1.68", null, null, null] },
+      { name: "Dachshund", cells: ["$1.61", null, null, null] },
+      { name: "Bichon Frise", cells: ["$1.52", "$1.36", "$1.38", "$1.40"] },
+      { name: "Golden Retriever", cells: ["$1.55", "$1.48", "$1.56", "$1.58"] },
+      { name: "Goldendoodle", cells: [null, "$1.50", "$1.55", null] },
+      { name: "Labrador", cells: [null, "$1.40", "$1.44", "$1.46"] },
+      { name: "Poodle", cells: ["$1.56", "$1.50", "$1.52", "$1.54"] },
+      { name: "Shih Tzu", cells: ["$1.45", null, null, null] },
+      { name: "Schnauzer", cells: ["$1.42", "$1.46", "$1.40", null] },
+      { name: "French Bulldog", cells: ["$1.34", "$1.36", null, null] },
+    ],
+  },
+}
+
+type StaffPerformanceViewProps = {
+  data?: PerformanceData
+  scopeLabel?: string
+}
+
+export function StaffPerformanceView({
+  data = groomerPerformanceData,
+  scopeLabel = "this groomer",
+}: StaffPerformanceViewProps) {
+  const [selectedCard, setSelectedCard] = useState<CardDetail | null>(null)
+
+  const { kpis, charts, earningsByBreed, topCombos, bottomCombos, matrixData } = data
 
   return (
     <>
@@ -408,24 +511,26 @@ export function StaffPerformanceView() {
           border: none;
           box-shadow: none;
           margin: 0;
-          padding: 0.5rem;
+          padding: 0.4rem;
           overflow-y: auto;
         }
 
         .perf-list {
           display: grid;
-          gap: 0.625rem;
+          gap: 0.4rem;
         }
 
         .perf-list-row {
           display: grid;
           grid-template-columns: 1fr auto;
-          gap: 0.75rem;
+          gap: 0.5rem;
           align-items: center;
-          padding: 0.5rem 0.75rem;
+          padding: 0.35rem 0.6rem;
           border-radius: 0.625rem;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
+          font-size: 0.75rem;
+          line-height: 1.1;
         }
 
         .perf-list-left {
@@ -454,9 +559,9 @@ export function StaffPerformanceView() {
         .perf-matrix-head,
         .perf-matrix-row {
           display: grid;
-          grid-template-columns: 1.45fr repeat(4, 0.75fr);
-          gap: 0.625rem;
-          align-items: center;
+          grid-template-columns: minmax(0, 1.6fr) repeat(4, minmax(0, 0.85fr));
+          gap: 0.5rem;
+          align-items: stretch;
         }
 
         .perf-matrix-head {
@@ -464,24 +569,34 @@ export function StaffPerformanceView() {
           font-size: 0.6875rem;
           letter-spacing: 0.0625rem;
           text-transform: uppercase;
+          text-align: center;
+        }
+
+        .perf-matrix-head div:first-child {
+          text-align: left;
         }
 
         .perf-matrix-breed,
         .perf-matrix-cell {
-          padding: 0.5rem 0.75rem;
+          padding: 0.4rem 0.6rem;
           border-radius: 0.625rem;
           background: hsl(var(--card));
           border: 1px solid hsl(var(--border));
+          min-height: 2.25rem;
         }
 
         .perf-matrix-breed {
           color: hsl(var(--foreground));
+          text-align: left;
+          font-weight: 600;
         }
 
         .perf-matrix-cell {
-          text-align: center;
           font-weight: 900;
           color: hsl(var(--foreground));
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .perf-matrix-cell.muted {
@@ -522,7 +637,7 @@ export function StaffPerformanceView() {
               onClick={() =>
                 setSelectedCard({
                   title: kpi.label,
-                  description: `Current value: ${kpi.value}${kpi.unit ? ` ${kpi.unit}` : ""}.`,
+                  description: `Current ${scopeLabel} value: ${kpi.value}${kpi.unit ? ` ${kpi.unit}` : ""}.`,
                 })
               }
             >
@@ -546,7 +661,7 @@ export function StaffPerformanceView() {
               onClick={() =>
                 setSelectedCard({
                   title: chart.title,
-                  description: "Monthly performance snapshot for this metric.",
+                  description: `Monthly performance snapshot for ${scopeLabel}.`,
                   items: chart.labels.map((label, index) => {
                     const value = chart.values[index]
                     const formattedValue = chart.prefix
@@ -588,8 +703,8 @@ export function StaffPerformanceView() {
             className="perf-list-card perf-card perf-card-button perf-slot-7 blue"
             onClick={() =>
               setSelectedCard({
-                title: "Earnings by Breed",
-                description: "Average RPM contribution by breed.",
+                title: "RPM by Breed",
+                description: `Average RPM contribution by breed for ${scopeLabel}.`,
                 items: earningsByBreed.map((item) => `${item.left}: ${item.right}`),
               })
             }
@@ -597,7 +712,7 @@ export function StaffPerformanceView() {
             <div className="perf-list-inner">
               <div className="perf-header">
                 <div className="perf-dot" />
-                <div>Earnings by Breed</div>
+                <div>RPM by Breed</div>
               </div>
               <div className="perf-list-slot">
                 <div className="perf-list">
@@ -617,7 +732,7 @@ export function StaffPerformanceView() {
             onClick={() =>
               setSelectedCard({
                 title: "Top Performing Breed & Size",
-                description: "Highest RPM combinations.",
+                description: `Highest RPM combinations for ${scopeLabel}.`,
                 items: topCombos.map((item) => `${item.left}: ${item.right}`),
               })
             }
@@ -645,7 +760,7 @@ export function StaffPerformanceView() {
             onClick={() =>
               setSelectedCard({
                 title: "Lowest Performing Breed & Size",
-                description: "Lowest RPM combinations.",
+                description: `Lowest RPM combinations for ${scopeLabel}.`,
                 items: bottomCombos.map((item) => `${item.left}: ${item.right}`),
               })
             }
@@ -673,7 +788,7 @@ export function StaffPerformanceView() {
             onClick={() =>
               setSelectedCard({
                 title: "RPM by Breed & Size",
-                description: "RPM matrix across breeds and size categories.",
+                description: `RPM matrix across breeds and size categories for ${scopeLabel}.`,
                 items: matrixData.rows.map((row) => `${row.name}: ${row.cells.map((cell) => cell ?? "—").join(" | ")}`),
               })
             }
