@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CalendarBlank, Clock, Plus, CheckCircle, XCircle, Warning, Copy, Trash, PencilSimple, X } from "@phosphor-icons/react"
 import { toast } from "sonner"
+import { Staff } from "@/lib/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -68,13 +69,6 @@ interface StaffSchedule {
 const DAYS_OF_WEEK = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const
 const DAY_LABELS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
-const MOCK_STAFF = [
-  { id: "1", name: "Sarah Johnson", role: "Groomer" },
-  { id: "2", name: "Mike Torres", role: "Groomer" },
-  { id: "3", name: "Emma Roberts", role: "Bather" },
-  { id: "4", name: "Carlos Martinez", role: "Front Desk" },
-]
-
 function formatTime12Hour(time: string): string {
   const [hours, minutes] = time.split(':').map(Number)
   const period = hours >= 12 ? 'PM' : 'AM'
@@ -111,6 +105,7 @@ function getEmptyWeeklyTemplate(): WeeklyTemplate {
 export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true }: { staffId?: string; isOwner?: boolean; allowEditing?: boolean }) {
   const [timeOffRequests, setTimeOffRequests] = useKV<TimeOffRequest[]>("time-off-requests", [])
   const [staffSchedules, setStaffSchedules] = useKV<StaffSchedule[]>("staff-schedules", [])
+  const [staffMembers] = useKV<Staff[]>("staff", [])
   const [roleFilter, setRoleFilter] = useState<string>("All")
   const [selectedMonth, setSelectedMonth] = useState(new Date())
   const [selectedDates, setSelectedDates] = useState<string[]>([])
@@ -229,8 +224,8 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
       return
     }
 
-    const currentStaffId = staffId || "1"
-    const staffName = MOCK_STAFF.find(s => s.id === currentStaffId)?.name || "Current User"
+    const currentStaffId = staffId || staffMembers?.[0]?.id || "unknown"
+    const staffName = staffMembers?.find(s => s.id === currentStaffId)?.name || "Current User"
 
     const sortedDates = [...newRequest.dates].sort()
     const request: TimeOffRequest = {
@@ -336,11 +331,11 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
   }
 
   const filteredStaff = roleFilter === "All" 
-    ? MOCK_STAFF 
-    : MOCK_STAFF.filter(s => s.role === roleFilter)
+    ? (staffMembers || [])
+    : (staffMembers || []).filter(s => s.role === roleFilter)
 
   const displayStaff = staffId 
-    ? MOCK_STAFF.filter(s => s.id === staffId)
+    ? (staffMembers || []).filter(s => s.id === staffId)
     : filteredStaff
 
   const filteredRequests = staffId
@@ -562,6 +557,9 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
               </div>
 
               <div className="divide-y divide-border">
+                {displayStaff.length === 0 && (
+                  <div className="p-6 text-sm text-muted-foreground">No staff members available.</div>
+                )}
                 {displayStaff.map((staff) => {
                   const schedule = getStaffSchedule(staff.id)
 
@@ -637,6 +635,11 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
             ))}
           </div>
           <div className="grid grid-cols-7 gap-px bg-border">
+            {!displayStaff[0] && (
+              <div className="col-span-7 p-6 text-sm text-muted-foreground">
+                No staff member selected.
+              </div>
+            )}
             {displayStaff[0] && monthDates.map((date, index) => {
               const staff = displayStaff[0]
               const blocks = getAvailabilityForDate(staff.id, date)
