@@ -17,7 +17,7 @@ export function EditStaff() {
   const staffData = {
     "1": {
       name: "Sarah Johnson",
-      role: "Senior Groomer",
+      role: "Groomer",
       email: "sarah.j@pawhub.com",
       phone: "(555) 123-4567",
       hireDate: "Mar 15, 2022",
