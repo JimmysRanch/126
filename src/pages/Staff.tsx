@@ -141,7 +141,7 @@ export const Staff = () => {
                       : "bg-secondary/50 hover:bg-secondary"
                   }`}
                 >
-                  Performance
+                  Groomers Performance
                 </Button>
                 <Button
                   onClick={() => setActiveTab("p8")}
