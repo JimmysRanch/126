@@ -1953,115 +1953,64 @@ export function Settings() {
             <Card className="p-4 md:p-6 bg-card border-border">
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-semibold mb-2">Appearance Settings</h2>
+                  <h2 className="text-lg font-semibold mb-2">Choose your appearance</h2>
                   <p className="text-sm text-muted-foreground mb-6">
-                    Customize the look and feel of your Scruffy Butts application.
+                    Pick a preset to update colors and layout together.
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-base font-semibold">Themes</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Light visual tweaks to refine colors, shadows, and accents.
-                        </p>
-                      </div>
-                      <Button variant="outline">Customize</Button>
-                    </div>
-
-                    <RadioGroup
-                      value={`theme-${selectedTheme}`}
-                      onValueChange={(value) => setSelectedTheme(value.replace('theme-', '') as AppearanceTheme)}
-                      className="space-y-3"
+                <RadioGroup
+                  value={
+                    [
+                      { id: "classic", theme: "classic", ui: "classic" },
+                      { id: "rose-glow", theme: "rose", ui: "compact" },
+                      { id: "midnight-focus", theme: "midnight", ui: "focus" }
+                    ].find((preset) => preset.theme === selectedTheme && preset.ui === selectedUi)?.id ?? "classic"
+                  }
+                  onValueChange={(value) => {
+                    const presetMap: Record<string, { theme: AppearanceTheme; ui: AppearanceUi }> = {
+                      classic: { theme: "classic", ui: "classic" },
+                      "rose-glow": { theme: "rose", ui: "compact" },
+                      "midnight-focus": { theme: "midnight", ui: "focus" }
+                    }
+                    const preset = presetMap[value]
+                    if (preset) {
+                      setSelectedTheme(preset.theme)
+                      setSelectedUi(preset.ui)
+                    }
+                  }}
+                  className="space-y-3"
+                >
+                  {[
+                    {
+                      id: "classic",
+                      label: "Classic",
+                      description: "Balanced neutrals with the signature Scruffy Butts palette."
+                    },
+                    {
+                      id: "rose-glow",
+                      label: "Rose Glow",
+                      description: "Warmer highlights paired with a compact layout for a cozy flow."
+                    },
+                    {
+                      id: "midnight-focus",
+                      label: "Midnight Focus",
+                      description: "Cooler tones and a distraction-free layout built for focus."
+                    }
+                  ].map((preset) => (
+                    <Label
+                      key={preset.id}
+                      htmlFor={`appearance-${preset.id}`}
+                      className="flex items-start gap-3 rounded-lg border border-border bg-secondary/20 p-4 hover:border-primary/50 transition-colors"
                     >
-                      {[
-                        {
-                          id: "theme-classic",
-                          label: "Classic",
-                          description: "Balanced neutrals with the signature Scruffy Butts palette."
-                        },
-                        {
-                          id: "theme-rose",
-                          label: "Rose Glow",
-                          description: "Warmer highlights and softer contrast for a cozy vibe."
-                        },
-                        {
-                          id: "theme-midnight",
-                          label: "Midnight",
-                          description: "Cooler tones with deeper shadows for focus-heavy days."
-                        }
-                      ].map((theme) => (
-                        <Label
-                          key={theme.id}
-                          htmlFor={theme.id}
-                          className="flex items-start gap-3 rounded-lg border border-border bg-secondary/20 p-4 hover:border-primary/50 transition-colors"
-                        >
-                          <RadioGroupItem id={theme.id} value={theme.id} className="mt-1" />
-                          <div>
-                            <p className="font-medium text-sm">{theme.label}</p>
-                            <p className="text-sm text-muted-foreground">{theme.description}</p>
-                          </div>
-                        </Label>
-                      ))}
-                    </RadioGroup>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between gap-3">
+                      <RadioGroupItem id={`appearance-${preset.id}`} value={preset.id} className="mt-1" />
                       <div>
-                        <h3 className="text-base font-semibold">User Interface</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Layout presets that restructure navigation, spacing, and panels.
-                        </p>
+                        <p className="font-medium text-sm">{preset.label}</p>
+                        <p className="text-sm text-muted-foreground">{preset.description}</p>
                       </div>
-                      <Button variant="outline">Manage Layouts</Button>
-                    </div>
-
-                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
-                      Switching layouts overhauls the interface and should update immediately.
-                    </div>
-
-                    <RadioGroup
-                      value={`ui-${selectedUi}`}
-                      onValueChange={(value) => setSelectedUi(value.replace('ui-', '') as AppearanceUi)}
-                      className="space-y-3"
-                    >
-                      {[
-                        {
-                          id: "ui-classic",
-                          label: "Classic",
-                          description: "Familiar layout with the current navigation and panels."
-                        },
-                        {
-                          id: "ui-compact",
-                          label: "Compact Studio",
-                          description: "Denser layout optimized for quick actions and fewer scrolls."
-                        },
-                        {
-                          id: "ui-focus",
-                          label: "Focus Mode",
-                          description: "Minimal chrome with larger workspaces for groomers."
-                        }
-                      ].map((layout) => (
-                        <Label
-                          key={layout.id}
-                          htmlFor={layout.id}
-                          className="flex items-start gap-3 rounded-lg border border-border bg-secondary/20 p-4 hover:border-primary/50 transition-colors"
-                        >
-                          <RadioGroupItem id={layout.id} value={layout.id} className="mt-1" />
-                          <div>
-                            <p className="font-medium text-sm">{layout.label}</p>
-                            <p className="text-sm text-muted-foreground">{layout.description}</p>
-                          </div>
-                        </Label>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                </div>
+                    </Label>
+                  ))}
+                </RadioGroup>
               </div>
             </Card>
           </TabsContent>
