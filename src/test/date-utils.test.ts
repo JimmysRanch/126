@@ -10,10 +10,18 @@ describe('Date Utilities - Timezone Handling', () => {
   describe('getBusinessTimezone', () => {
     it('should return timezone from business settings if available', () => {
       const settings = { timezone: 'America/Los_Angeles' }
-      localStorage.setItem('kv:business-settings', JSON.stringify(settings))
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
       
       const timezone = getBusinessTimezone()
       expect(timezone).toBe('America/Los_Angeles')
+    })
+
+    it('should return timezone from legacy business settings if available', () => {
+      const settings = { timezone: 'America/Denver' }
+      localStorage.setItem('kv:business-settings', JSON.stringify(settings))
+
+      const timezone = getBusinessTimezone()
+      expect(timezone).toBe('America/Denver')
     })
 
     it('should fallback to browser timezone if settings not available', () => {
@@ -24,7 +32,7 @@ describe('Date Utilities - Timezone Handling', () => {
     })
 
     it('should handle invalid JSON in settings gracefully', () => {
-      localStorage.setItem('kv:business-settings', 'invalid json')
+      localStorage.setItem('kv:business-info', 'invalid json')
       
       const timezone = getBusinessTimezone()
       const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -43,7 +51,7 @@ describe('Date Utilities - Timezone Handling', () => {
     it('should use business timezone from settings', () => {
       // Set timezone to a known value
       const settings = { timezone: 'America/New_York' }
-      localStorage.setItem('kv:business-settings', JSON.stringify(settings))
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
       
       const today = getTodayInBusinessTimezone()
       
@@ -63,7 +71,7 @@ describe('Date Utilities - Timezone Handling', () => {
 
     it('should use business timezone', () => {
       const settings = { timezone: 'America/Chicago' }
-      localStorage.setItem('kv:business-settings', JSON.stringify(settings))
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
       
       const now = getNowInBusinessTimezone()
       
@@ -76,7 +84,7 @@ describe('Date Utilities - Timezone Handling', () => {
     it('should not change date across timezone conversions', () => {
       // This test ensures we don't have off-by-one date errors
       const settings = { timezone: 'America/New_York' }
-      localStorage.setItem('kv:business-settings', JSON.stringify(settings))
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
       
       const dateString = getTodayInBusinessTimezone()
       const [year, month, day] = dateString.split('-').map(Number)
