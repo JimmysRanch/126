@@ -2045,6 +2045,11 @@ export function Settings() {
                           id: "ui-focus",
                           label: "Focus Mode",
                           description: "Minimal chrome with larger workspaces for groomers."
+                        },
+                        {
+                          id: "ui-neon",
+                          label: "Neon Skyline",
+                          description: "Cinematic gradients, glowing surfaces, and elevated contrast."
                         }
                       ].map((layout) => (
                         <Label
