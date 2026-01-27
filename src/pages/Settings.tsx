@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from "@/lib/payroll-utils"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 
@@ -1956,15 +1957,99 @@ export function Settings() {
                   </p>
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-base font-semibold mb-2">Appearance Mode</h3>
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-semibold">Themes</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Light visual tweaks to refine colors, shadows, and accents.
+                        </p>
+                      </div>
+                      <Button variant="outline">Customize</Button>
+                    </div>
+
+                    <RadioGroup defaultValue="theme-classic" className="space-y-3">
+                      {[
+                        {
+                          id: "theme-classic",
+                          label: "Classic",
+                          description: "Balanced neutrals with the signature Scruffy Butts palette."
+                        },
+                        {
+                          id: "theme-rose",
+                          label: "Rose Glow",
+                          description: "Warmer highlights and softer contrast for a cozy vibe."
+                        },
+                        {
+                          id: "theme-midnight",
+                          label: "Midnight",
+                          description: "Cooler tones with deeper shadows for focus-heavy days."
+                        }
+                      ].map((theme) => (
+                        <Label
+                          key={theme.id}
+                          htmlFor={theme.id}
+                          className="flex items-start gap-3 rounded-lg border border-border bg-secondary/20 p-4 hover:border-primary/50 transition-colors"
+                        >
+                          <RadioGroupItem id={theme.id} value={theme.id} className="mt-1" />
+                          <div>
+                            <p className="font-medium text-sm">{theme.label}</p>
+                            <p className="text-sm text-muted-foreground">{theme.description}</p>
+                          </div>
+                        </Label>
+                      ))}
+                    </RadioGroup>
                   </div>
-                  
-                  <div className="p-8 md:p-12 text-center rounded-lg bg-secondary/20 border border-border">
-                    <p className="text-muted-foreground">
-                      Appearance mode options will appear here.
-                    </p>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-base font-semibold">User Interface</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Layout presets that restructure navigation, spacing, and panels.
+                        </p>
+                      </div>
+                      <Button variant="outline">Manage Layouts</Button>
+                    </div>
+
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
+                      Switching layouts overhauls the interface and should update immediately.
+                    </div>
+
+                    <RadioGroup defaultValue="ui-classic" className="space-y-3">
+                      {[
+                        {
+                          id: "ui-classic",
+                          label: "Classic",
+                          description: "Familiar layout with the current navigation and panels."
+                        },
+                        {
+                          id: "ui-compact",
+                          label: "Compact Studio",
+                          description: "Denser layout optimized for quick actions and fewer scrolls."
+                        },
+                        {
+                          id: "ui-focus",
+                          label: "Focus Mode",
+                          description: "Minimal chrome with larger workspaces for groomers."
+                        }
+                      ].map((layout) => (
+                        <Label
+                          key={layout.id}
+                          htmlFor={layout.id}
+                          className="flex items-start gap-3 rounded-lg border border-border bg-secondary/20 p-4 hover:border-primary/50 transition-colors"
+                        >
+                          <RadioGroupItem id={layout.id} value={layout.id} className="mt-1" />
+                          <div>
+                            <p className="font-medium text-sm">{layout.label}</p>
+                            <p className="text-sm text-muted-foreground">{layout.description}</p>
+                          </div>
+                        </Label>
+                      ))}
+                    </RadioGroup>
                   </div>
                 </div>
               </div>
