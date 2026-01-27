@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, Transaction, TransactionItem, InventoryItem } from "@/lib/types"
-import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar } from "@phosphor-icons/react"
+import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar, PawPrint } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
@@ -182,7 +182,10 @@ export function POS() {
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium">{apt.petName} - {apt.clientName}</div>
+                        <div className="font-medium flex items-center gap-2">
+                          <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
+                          <span>{apt.petName} - {apt.clientName}</span>
+                        </div>
                         <div className="text-sm text-muted-foreground">{apt.startTime}</div>
                       </div>
                       <div className="text-lg font-bold text-primary">${apt.totalPrice.toFixed(2)}</div>
@@ -420,7 +423,10 @@ export function POS() {
               <div className="p-3 bg-muted/50 rounded-lg">
                 <div className="text-sm text-muted-foreground mb-1">Client</div>
                 <div className="font-medium">{selectedAppointment.clientName}</div>
-                <div className="text-sm">{selectedAppointment.petName}</div>
+                <div className="text-sm flex items-center gap-2">
+                  <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
+                  <span>{selectedAppointment.petName}</span>
+                </div>
               </div>
             )}
 

@@ -170,7 +170,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
                         className={`w-full text-left p-1 rounded text-xs hover:opacity-80 transition-opacity ${getStatusColor(apt.status)}`}
                       >
                         <div className="font-medium truncate flex items-center gap-1">
-                          <PawPrint size={10} />
+                          <PawPrint size={10} weight="fill" className="text-primary shrink-0" />
                           {apt.petName}
                         </div>
                         <div className="truncate text-[10px] opacity-80">{apt.startTime}</div>
@@ -228,7 +228,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
                               className={`w-full text-left p-2 rounded text-xs mb-1 hover:opacity-80 transition-opacity ${getStatusColor(apt.status)}`}
                             >
                               <div className="font-medium truncate flex items-center gap-1">
-                                <PawPrint size={12} />
+                                <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
                                 {apt.petName}
                               </div>
                               <div className="truncate opacity-80">{apt.groomerName}</div>
