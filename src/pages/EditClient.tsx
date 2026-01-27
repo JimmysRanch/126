@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, User } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
+import { useKV } from "@github/spark/hooks"
+import { ClientRecord, SEED_CLIENTS } from "@/lib/seed-data"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -30,16 +32,33 @@ const REFERRAL_SOURCES = [
 export function EditClient() {
   const navigate = useNavigate()
   const { clientId } = useParams()
+  const [clients, setClients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
   
-  const [firstName, setFirstName] = useState('George')
-  const [lastName, setLastName] = useState('Moodys')
-  const [email, setEmail] = useState('george.moodys@email.com')
-  const [phone, setPhone] = useState('(555) 123-4567')
-  const [streetAddress, setStreetAddress] = useState('123 Main Street')
-  const [city, setCity] = useState('Natalia')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [streetAddress, setStreetAddress] = useState('')
+  const [city, setCity] = useState('')
   const [state, setState] = useState('Texas')
-  const [zipCode, setZipCode] = useState('78059')
-  const [referralSource, setReferralSource] = useState('Word-of-mouth')
+  const [zipCode, setZipCode] = useState('')
+  const [referralSource, setReferralSource] = useState('')
+
+  useEffect(() => {
+    if (!clientId) return
+    const client = (clients || []).find((item) => item.id === clientId)
+    if (!client) return
+    const [first, ...rest] = (client.name || "").split(" ")
+    setFirstName(client.firstName ?? first ?? "")
+    setLastName(client.lastName ?? rest.join(" "))
+    setEmail(client.email ?? "")
+    setPhone(client.phone ?? "")
+    setStreetAddress(client.address?.street ?? "")
+    setCity(client.address?.city ?? "")
+    setState(client.address?.state ?? "Texas")
+    setZipCode(client.address?.zip ?? "")
+    setReferralSource(client.referralSource ?? "")
+  }, [clientId, clients])
 
   const formatPhoneNumber = (value: string) => {
     const phoneNumber = value.replace(/\D/g, '')
@@ -110,17 +129,26 @@ export function EditClient() {
       return
     }
 
-    console.log('Updating client:', {
-      firstName,
-      lastName,
-      email,
-      phone,
-      streetAddress,
-      city,
-      state,
-      zipCode,
-      referralSource
-    })
+    setClients((current) =>
+      (current || []).map((client) => {
+        if (client.id !== clientId) return client
+        return {
+          ...client,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          address: {
+            street: streetAddress.trim(),
+            city: city.trim(),
+            state: state.trim(),
+            zip: zipCode.trim()
+          },
+          referralSource: referralSource.trim()
+        }
+      })
+    )
     
     toast.success('Client updated successfully!')
     navigate(`/clients/${clientId}`)

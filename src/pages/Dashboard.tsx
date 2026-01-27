@@ -19,6 +19,7 @@ import {
 } from './dashboard/data/dashboardMockData'
 import { calculateAppointmentProgress } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
+import { useKV } from "@github/spark/hooks"
 
 function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value: number; delay?: number; prefix?: string; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -49,7 +50,21 @@ function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value:
 }
 
 export function Dashboard() {
-  const progress = calculateAppointmentProgress()
+  const [appointmentsSummary] = useKV<typeof appointmentData>("dashboard-appointments-summary", appointmentData)
+  const [capacitySummary] = useKV<typeof capacityData>("dashboard-capacity", capacityData)
+  const [revenueSummary] = useKV<typeof revenueData>("dashboard-revenue-data", revenueData)
+  const [issuesSummary] = useKV<typeof issuesData>("dashboard-issues", issuesData)
+  const [dogsGroomedSummary] = useKV<typeof dogsGroomedData>("dashboard-dogs-groomed", dogsGroomedData)
+  const [bookedSummary] = useKV<typeof bookedPercentageData>("dashboard-booked-percentage", bookedPercentageData)
+  const [clientsSummary] = useKV<typeof clientsData>("dashboard-clients-summary", clientsData)
+  const appointmentStats = appointmentsSummary || appointmentData
+  const capacityStats = capacitySummary || capacityData
+  const revenueStats = revenueSummary || revenueData
+  const issuesStats = issuesSummary || issuesData
+  const dogsGroomedStats = dogsGroomedSummary || dogsGroomedData
+  const bookedStats = bookedSummary || bookedPercentageData
+  const clientsStats = clientsSummary || clientsData
+  const progress = calculateAppointmentProgress(appointmentStats)
 
   return (
     <div className="h-[calc(100vh-57px)] overflow-hidden bg-background p-3">
@@ -65,7 +80,7 @@ export function Dashboard() {
                   <span className="text-muted-foreground truncate">Scheduled</span>
                 </div>
                 <div className="font-semibold text-right">
-                  <AnimatedNumber value={appointmentData.today.scheduled} delay={0.1} />
+                  <AnimatedNumber value={appointmentStats.today.scheduled} delay={0.1} />
                 </div>
                 
                 <div className="flex items-center gap-1">
@@ -73,7 +88,7 @@ export function Dashboard() {
                   <span className="text-muted-foreground truncate">Completed</span>
                 </div>
                 <div className="font-semibold text-right">
-                  <AnimatedNumber value={appointmentData.today.completed} delay={0.15} />
+                  <AnimatedNumber value={appointmentStats.today.completed} delay={0.15} />
                 </div>
                 
                 <div className="flex items-center gap-1">
@@ -81,7 +96,7 @@ export function Dashboard() {
                   <span className="text-muted-foreground truncate">Canceled</span>
                 </div>
                 <div className="font-semibold text-right">
-                  <AnimatedNumber value={appointmentData.today.canceled} delay={0.2} />
+                  <AnimatedNumber value={appointmentStats.today.canceled} delay={0.2} />
                 </div>
                 
                 <div className="flex items-center gap-1">
@@ -89,7 +104,7 @@ export function Dashboard() {
                   <span className="text-muted-foreground truncate">No-Shows</span>
                 </div>
                 <div className="font-semibold text-right">
-                  <AnimatedNumber value={appointmentData.today.noShows} delay={0.25} />
+                  <AnimatedNumber value={appointmentStats.today.noShows} delay={0.25} />
                 </div>
                 
                 <div className="flex items-center gap-1">
@@ -97,7 +112,7 @@ export function Dashboard() {
                   <span className="text-muted-foreground truncate">Late</span>
                 </div>
                 <div className="font-semibold text-right">
-                  <AnimatedNumber value={appointmentData.today.late} delay={0.3} />
+                  <AnimatedNumber value={appointmentStats.today.late} delay={0.3} />
                 </div>
               </div>
 
@@ -122,8 +137,8 @@ export function Dashboard() {
             <h2 className="text-sm font-semibold mb-2 flex-shrink-0">Booked</h2>
             <div className="flex-1 min-h-0 flex items-center justify-center">
               <BookedGauge 
-                percentage={capacityData.bookedPercentage} 
-                target={capacityData.target}
+                percentage={capacityStats.bookedPercentage} 
+                target={capacityStats.target}
                 delay={0.2}
               />
             </div>
@@ -134,7 +149,7 @@ export function Dashboard() {
             <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div className="flex-shrink-0">
                 <div className="text-2xl font-bold">
-                  <AnimatedNumber value={revenueData.today.total} delay={0.3} prefix="$" />
+                  <AnimatedNumber value={revenueStats.today.total} delay={0.3} prefix="$" />
                 </div>
                 <div className="text-[10px] text-muted-foreground mt-0.5">Total Revenue Today</div>
               </div>
@@ -143,21 +158,21 @@ export function Dashboard() {
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Profit After Commissions</span>
                   <span className="font-semibold text-green-500">
-                    <AnimatedNumber value={revenueData.today.profit} delay={0.35} prefix="$" />
+                    <AnimatedNumber value={revenueStats.today.profit} delay={0.35} prefix="$" />
                   </span>
                 </div>
                 
                 <div className="flex justify-between text-[10px]">
                   <span className="text-muted-foreground">Tips (excluded)</span>
                   <span className="font-medium">
-                    <AnimatedNumber value={revenueData.today.tips} delay={0.4} prefix="$" />
+                    <AnimatedNumber value={revenueStats.today.tips} delay={0.4} prefix="$" />
                   </span>
                 </div>
                 
                 <div className="flex justify-between text-[10px]">
                   <span className="text-muted-foreground">Commission estimate</span>
                   <span className="font-medium">
-                    <AnimatedNumber value={revenueData.today.commission} delay={0.45} prefix="$" />
+                    <AnimatedNumber value={revenueStats.today.commission} delay={0.45} prefix="$" />
                   </span>
                 </div>
               </div>
@@ -173,7 +188,7 @@ export function Dashboard() {
                   <span className="text-xs truncate">Late arrivals</span>
                 </div>
                 <div className="text-lg font-bold">
-                  <AnimatedNumber value={issuesData.lateArrivals} delay={0.35} />
+                  <AnimatedNumber value={issuesStats.lateArrivals} delay={0.35} />
                 </div>
               </div>
               
@@ -183,7 +198,7 @@ export function Dashboard() {
                   <span className="text-xs truncate">No-shows</span>
                 </div>
                 <div className="text-lg font-bold">
-                  <AnimatedNumber value={issuesData.noShows} delay={0.4} />
+                  <AnimatedNumber value={issuesStats.noShows} delay={0.4} />
                 </div>
               </div>
               
@@ -193,7 +208,7 @@ export function Dashboard() {
                   <span className="text-xs truncate">Canceled</span>
                 </div>
                 <div className="text-lg font-bold">
-                  <AnimatedNumber value={issuesData.canceled} delay={0.45} />
+                  <AnimatedNumber value={issuesStats.canceled} delay={0.45} />
                 </div>
               </div>
             </div>
@@ -251,7 +266,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Appointment History</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <DogsGroomedCard data={dogsGroomedData} />
+              <DogsGroomedCard data={dogsGroomedStats} />
             </div>
           </div>
 
@@ -261,7 +276,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Store Capacity</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <BookedPercentageCard data={bookedPercentageData} />
+              <BookedPercentageCard data={bookedStats} />
             </div>
           </div>
 
@@ -271,7 +286,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Client Metrics</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <ClientsCard data={clientsData} />
+              <ClientsCard data={clientsStats} />
             </div>
           </div>
         </div>

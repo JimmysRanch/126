@@ -22,27 +22,11 @@ import {
   HoursOfOperation,
   isTimeWithinBusinessHours
 } from "@/lib/business-hours"
+import { ClientRecord, SEED_CLIENTS, SEED_STAFF_PROFILES, StaffProfile } from "@/lib/seed-data"
 
 interface CreateAppointmentDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-}
-
-interface Client {
-  id: string
-  name: string
-  pets: Array<{
-    id: string
-    name: string
-    breed: string
-    weight: number
-  }>
-}
-
-interface Groomer {
-  id: string
-  name: string
-  appointmentCount: number
 }
 
 interface BusinessInfo {
@@ -51,6 +35,8 @@ interface BusinessInfo {
 
 export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmentDialogProps) {
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
+  const [clients] = useKV<ClientRecord[]>("clients", SEED_CLIENTS)
+  const [staffMembers] = useKV<StaffProfile[]>("staff", SEED_STAFF_PROFILES)
   const [mainServices] = useKV<MainService[]>("main-services", [])
   const [addOns] = useKV<AddOn[]>("service-addons", [])
   const [businessInfo] = useKV<BusinessInfo>("business-info", {
@@ -67,41 +53,10 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
   const [appointmentTime, setAppointmentTime] = useState("")
   const [notes, setNotes] = useState("")
 
-  const mockClients: Client[] = [
-    {
-      id: "1",
-      name: "John Smith",
-      pets: [
-        { id: "1", name: "Buddy", breed: "Golden Retriever", weight: 65 },
-        { id: "2", name: "Max", breed: "Poodle", weight: 42 }
-      ]
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      pets: [
-        { id: "3", name: "Luna", breed: "Labrador", weight: 58 }
-      ]
-    },
-    {
-      id: "3",
-      name: "Mike Davis",
-      pets: [
-        { id: "4", name: "Charlie", breed: "Chihuahua", weight: 8 },
-        { id: "5", name: "Rocky", breed: "German Shepherd", weight: 85 }
-      ]
-    }
-  ]
-
-  const mockGroomers: Groomer[] = [
-    { id: "1", name: "Sarah Johnson", appointmentCount: 0 },
-    { id: "2", name: "Mike Torres", appointmentCount: 0 },
-    { id: "3", name: "Emma Roberts", appointmentCount: 0 }
-  ]
-
-  const client = mockClients.find(c => c.id === selectedClient)
+  const client = (clients || []).find(c => c.id === selectedClient)
   const pet = client?.pets.find(p => p.id === selectedPet)
   const weightCategory = pet ? getWeightCategory(pet.weight) : null
+  const groomers = (staffMembers || []).filter(member => member.isGroomer)
   const hoursOfOperation = businessInfo?.hoursOfOperation?.length
     ? businessInfo.hoursOfOperation
     : DEFAULT_HOURS_OF_OPERATION
@@ -177,7 +132,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
   }
 
   const getAutoGroomer = () => {
-    const groomerCounts = mockGroomers.map(g => ({
+    const groomerCounts = groomers.map(g => ({
       ...g,
       count: (appointments || []).filter(apt => apt.groomerId === g.id && apt.status !== 'cancelled').length
     }))
@@ -197,7 +152,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
       return
     }
 
-    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : mockGroomers.find(g => g.id === selectedGroomer)
+    const groomer = selectedGroomer === "auto" ? getAutoGroomer() : groomers.find(g => g.id === selectedGroomer)
     if (!groomer) {
       toast.error("Could not assign groomer")
       return
@@ -274,7 +229,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
                     <SelectValue placeholder="Select client" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockClients.map(client => (
+                    {(clients || []).map(client => (
                       <SelectItem key={client.id} value={client.id}>
                         {client.name}
                       </SelectItem>
@@ -453,7 +408,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="auto">Auto-Assign (Balance Workload)</SelectItem>
-                  {mockGroomers.map(groomer => (
+                  {groomers.map(groomer => (
                     <SelectItem key={groomer.id} value={groomer.id}>
                       {groomer.name}
                     </SelectItem>
@@ -548,7 +503,7 @@ export function CreateAppointmentDialog({ open, onOpenChange }: CreateAppointmen
                   <div className="pt-3 border-t border-border text-sm">
                     <div className="text-muted-foreground mb-1">Groomer</div>
                     <div className="font-medium">
-                      {mockGroomers.find(g => g.id === selectedGroomer)?.name}
+                      {groomers.find(g => g.id === selectedGroomer)?.name}
                     </div>
                     <Badge variant="secondary" className="text-xs mt-1">Client Requested</Badge>
                   </div>

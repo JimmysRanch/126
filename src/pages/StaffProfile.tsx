@@ -9,155 +9,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
-import { StaffPerformanceView, groomerPerformanceData } from "@/components/StaffPerformanceView"
+import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
-
-interface StaffAppointment {
-  id: string
-  client: string
-  pet: string
-  service: string
-  date: string
-  time: string
-  duration?: string
-  status?: string
-  cost?: string
-  tip?: string
-  rating?: number
-  notes?: string
-  category: "Upcoming" | "Recent"
-}
+import { useKV } from "@github/spark/hooks"
+import { PerformanceData, SEED_GROOMER_PERFORMANCE } from "@/lib/performance-data"
+import { SEED_STAFF_PROFILE_DETAILS, StaffAppointmentSummary, StaffProfileDetail } from "@/lib/seed-data"
 
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
+  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", SEED_GROOMER_PERFORMANCE)
+  const groomerPerformanceData = groomerPerformance ?? SEED_GROOMER_PERFORMANCE
+  const [staffProfiles] = useKV<Record<string, StaffProfileDetail>>(
+    "staff-profile-details",
+    SEED_STAFF_PROFILE_DETAILS
+  )
 
-  const staffData = {
-    "1": {
-      name: "Sarah Johnson",
-      role: "Groomer",
-      email: "sarah.j@pawhub.com",
-      phone: "(555) 123-4567",
-      address: "1234 Bark Lane, Scruffyville, TX 78701",
-      emergencyContact: {
-        name: "John Johnson",
-        relation: "Spouse",
-        phone: "(555) 987-6543"
-      },
-      hireDate: "Mar 15, 2022",
-      status: "Active",
-      hourlyRate: 35,
-      specialties: ["Large Breeds", "Show Cuts", "Hand Stripping"],
-      stats: {
-        totalAppointments: 324,
-        revenue: "$45,280",
-        avgTip: "$28",
-        noShows: 3,
-        lateArrivals: 2
-      },
-      upcomingAppointments: [
-        {
-          id: "1",
-          client: "George moodys",
-          pet: "Trying",
-          service: "Full Groom Package",
-          date: "Jan 28, 2025",
-          time: "9:00 AM",
-          duration: "2h",
-          status: "Confirmed"
-        },
-        {
-          id: "2",
-          client: "Sarah Johnson",
-          pet: "Bella",
-          service: "Bath & Brush",
-          date: "Jan 28, 2025",
-          time: "11:30 AM",
-          duration: "1h",
-          status: "Confirmed"
-        },
-        {
-          id: "3",
-          client: "Michael Chen",
-          pet: "Charlie",
-          service: "Nail Trim",
-          date: "Jan 28, 2025",
-          time: "2:00 PM",
-          duration: "30m",
-          status: "Pending"
-        }
-      ],
-      recentAppointments: [
-        {
-          id: "1",
-          client: "George moodys",
-          pet: "Trying",
-          service: "Full Groom Package",
-          date: "Jan 15, 2025",
-          time: "9:00 AM",
-          cost: "$85",
-          tip: "$45",
-          rating: 5,
-          notes: "Client very happy with the cut!"
-        },
-        {
-          id: "2",
-          client: "Emily Rodriguez",
-          pet: "Rocky",
-          service: "Bath & Brush",
-          date: "Jan 14, 2025",
-          time: "1:30 PM",
-          cost: "$55",
-          tip: "$20",
-          rating: 5,
-          notes: "Rocky was well-behaved today."
-        },
-        {
-          id: "3",
-          client: "David Thompson",
-          pet: "Coco",
-          service: "Luxury Spa Package",
-          date: "Jan 12, 2025",
-          time: "10:00 AM",
-          cost: "$120",
-          tip: "$35",
-          rating: 5,
-          notes: "Perfect spa day!"
-        }
-      ]
-    },
-    "2": {
-      name: "Mike Torres",
-      role: "Groomer",
-      email: "mike.t@pawhub.com",
-      phone: "(555) 234-5678",
-      address: "5678 Paws Street, Scruffyville, TX 78702",
-      emergencyContact: {
-        name: "Maria Torres",
-        relation: "Sister",
-        phone: "(555) 876-5432"
-      },
-      hireDate: "Aug 20, 2022",
-      status: "Active",
-      hourlyRate: 28,
-      specialties: ["Anxious Dogs", "Creative Styling", "Nail Care"],
-      stats: {
-        totalAppointments: 256,
-        revenue: "$38,620",
-        avgTip: "$22",
-        noShows: 5,
-        lateArrivals: 4
-      },
-      upcomingAppointments: [],
-      recentAppointments: []
-    }
-  }
-
-  const staff = staffData[staffId as keyof typeof staffData] || staffData["1"]
+  const staff = staffProfiles?.[staffId ?? ""] ?? SEED_STAFF_PROFILE_DETAILS["1"]
   const [activeTab, setActiveTab] = useState("overview")
   const isMobile = useIsMobile()
-  const [selectedAppointment, setSelectedAppointment] = useState<StaffAppointment | null>(null)
+  const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
 
   return (

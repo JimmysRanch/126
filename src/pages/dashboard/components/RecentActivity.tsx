@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useKV } from "@github/spark/hooks"
 import { recentActivity } from '../data/dashboardMockData'
 import { Calendar, XCircle, CurrencyDollar, Tag, Users } from '@phosphor-icons/react'
 
@@ -19,10 +20,11 @@ const colorMap = {
 }
 
 export function RecentActivity() {
+  const [activity] = useKV<typeof recentActivity>("dashboard-recent-activity", recentActivity)
   const groupedActivities = {
-    today: recentActivity.filter(a => a.category === 'today'),
-    yesterday: recentActivity.filter(a => a.category === 'yesterday'),
-    thisWeek: recentActivity.filter(a => a.category === 'thisWeek'),
+    today: (activity || []).filter(a => a.category === 'today'),
+    yesterday: (activity || []).filter(a => a.category === 'yesterday'),
+    thisWeek: (activity || []).filter(a => a.category === 'thisWeek'),
   }
 
   return (

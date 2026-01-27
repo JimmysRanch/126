@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
+import { useKV } from "@github/spark/hooks"
 import { groomerWeekData } from '../data/dashboardMockData'
 import { useNavigate } from 'react-router-dom'
 
 export function GroomerUtilization() {
   const navigate = useNavigate()
+  const [groomers] = useKV<typeof groomerWeekData>("dashboard-groomer-week-data", groomerWeekData)
   const workdayStart = 8
   const workdayEnd = 18
   const workdayHours = workdayEnd - workdayStart
@@ -16,7 +18,7 @@ export function GroomerUtilization() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {groomerWeekData.map((groomer, index) => (
+        {(groomers || []).map((groomer, index) => (
           <motion.div
             key={groomer.id}
             initial={{ opacity: 0, y: 20 }}
@@ -40,7 +42,7 @@ export function GroomerUtilization() {
           Weekly Schedule
         </div>
         
-        {groomerWeekData.map((groomer, groomerIndex) => (
+        {(groomers || []).map((groomer, groomerIndex) => (
           <div key={groomer.id} className="space-y-1.5">
             <div className="text-xs font-medium">{groomer.name}</div>
             
