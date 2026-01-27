@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
-import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import { StaffPerformanceView, teamPerformanceData } from "@/components/StaffPerformanceView"
 import { StaffPerformanceP8View } from "@/components/StaffPerformanceP8View"
 import { PayrollOverview } from "@/components/PayrollOverview"
 import CurvedMonitor from "@/components/CurvedMonitor"
@@ -367,7 +367,7 @@ export const Staff = () => {
             </TabsContent>
 
             <TabsContent value="performance" className="mt-0">
-              <StaffPerformanceView />
+              <StaffPerformanceView data={teamPerformanceData} scopeLabel="all groomers" />
             </TabsContent>
 
             <TabsContent value="p8" className="mt-0">

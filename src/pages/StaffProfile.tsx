@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useState } from "react"
 import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
-import { StaffPerformanceView } from "@/components/StaffPerformanceView"
+import { StaffPerformanceView, groomerPerformanceData, teamPerformanceData } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 
@@ -266,6 +266,12 @@ export function StaffProfile() {
                 Overview
               </TabsTrigger>
               <TabsTrigger 
+                value="groomer-performance"
+                className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+              >
+                Groomer Performance
+              </TabsTrigger>
+              <TabsTrigger 
                 value="performance"
                 className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
               >
@@ -518,8 +524,12 @@ export function StaffProfile() {
             </div>
           </TabsContent>
 
+          <TabsContent value="groomer-performance" className="mt-0">
+            <StaffPerformanceView data={groomerPerformanceData} scopeLabel="this groomer" />
+          </TabsContent>
+
           <TabsContent value="performance" className="mt-0">
-            <StaffPerformanceView />
+            <StaffPerformanceView data={teamPerformanceData} scopeLabel="all groomers" />
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
