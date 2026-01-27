@@ -196,47 +196,6 @@ export function StaffProfile() {
                   </div>
                 </div>
 
-                <div className="flex justify-center">
-                  <TabsList className="flex flex-wrap justify-center">
-                    <TabsTrigger 
-                      value="overview"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      Overview
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="groomer-performance"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      Groomer Performance
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="payroll"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      Payroll
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="schedule"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      Schedule
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="compensation"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      Compensation
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="history"
-                      className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-                    >
-                      History
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-
                 <div className="flex items-center gap-2 sm:gap-3 sm:justify-end">
                   <Dialog>
                     <DialogTrigger asChild>
@@ -299,6 +258,46 @@ export function StaffProfile() {
                     <PencilSimple size={isMobile ? 18 : 20} />
                   </Button>
                 </div>
+              </div>
+              <div className="flex justify-center">
+                <TabsList className="flex flex-wrap justify-center">
+                  <TabsTrigger 
+                    value="overview"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="groomer-performance"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    Groomer Performance
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="payroll"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    Payroll
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="schedule"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    Schedule
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="compensation"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    Compensation
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="history"
+                    className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
+                  >
+                    History
+                  </TabsTrigger>
+                </TabsList>
               </div>
             </header>
 
