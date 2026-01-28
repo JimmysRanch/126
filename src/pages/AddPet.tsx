@@ -71,7 +71,6 @@ export function AddPet() {
   const [breed, setBreed] = useState('')
   const [mixedBreed, setMixedBreed] = useState('')
   const [color, setColor] = useState('')
-  const [notes, setNotes] = useState('')
   const [temperament, setTemperament] = useState<string[]>([])
   const [breedError, setBreedError] = useState(false)
   const [mixedBreedError, setMixedBreedError] = useState(false)
@@ -119,7 +118,6 @@ export function AddPet() {
       breed,
       mixedBreed,
       color,
-      notes,
       temperament,
       overallLength,
       faceStyle,
@@ -152,13 +150,13 @@ export function AddPet() {
         </div>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="pt-4 pb-3">
             <CardTitle className="flex items-center gap-2">
               <PawPrint size={20} weight="fill" className="text-primary" />
               Pet Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-3 pb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Pet Name *</Label>
@@ -261,28 +259,17 @@ export function AddPet() {
                 </Select>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Special instructions, medical information, allergies, and behavior information"
-                rows={4}
-              />
-            </div>
           </CardContent>
         </Card>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="pt-4 pb-3">
             <CardTitle className="flex items-center gap-2">
               <PawPrint size={20} weight="fill" className="text-primary" />
               Grooming Preferences
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-3 pb-6">
             <div>
               <Label className="text-sm font-medium mb-2 block">Overall length</Label>
               <RadioGroup value={overallLength} onValueChange={setOverallLength}>
