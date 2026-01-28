@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const storagePrefix = 'kv:'
 
@@ -40,10 +40,12 @@ const writeStoredValue = (key: string, value: unknown) => {
 export const useKV = <T,>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] => {
   const [value, setValueState] = useState<T>(() => readStoredValue(key, initialValue))
   const storageKey = useMemo(() => getStorageKey(key), [key])
+  const initialValueRef = useRef(initialValue)
 
   useEffect(() => {
-    setValueState(readStoredValue(key, initialValue))
-  }, [initialValue, key])
+    initialValueRef.current = initialValue
+    setValueState(readStoredValue(key, initialValueRef.current))
+  }, [key, initialValue])
 
   useEffect(() => {
     writeStoredValue(key, value)
@@ -60,20 +62,20 @@ export const useKV = <T,>(key: string, initialValue: T): [T, Dispatch<SetStateAc
       }
 
       if (!event.newValue) {
-        setValueState(initialValue)
+        setValueState(initialValueRef.current)
         return
       }
 
       try {
         setValueState(JSON.parse(event.newValue) as T)
       } catch {
-        setValueState(initialValue)
+        setValueState(initialValueRef.current)
       }
     }
 
     window.addEventListener('storage', handleStorage)
     return () => window.removeEventListener('storage', handleStorage)
-  }, [initialValue, storageKey])
+  }, [storageKey])
 
   const setValue = useCallback<Dispatch<SetStateAction<T>>>(
     (nextValue) => {
