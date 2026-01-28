@@ -173,6 +173,47 @@ const US_STATES = [
   { value: "WY", label: "Wyoming" }
 ]
 
+const DEFAULT_HOURS_OF_OPERATION: HoursOfOperation[] = [
+  { day: 'Monday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+  { day: 'Tuesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+  { day: 'Wednesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+  { day: 'Thursday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+  { day: 'Friday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
+  { day: 'Saturday', isOpen: true, openTime: '10:00', closeTime: '16:00' },
+  { day: 'Sunday', isOpen: false, openTime: '09:00', closeTime: '17:00' }
+]
+
+const DEFAULT_BUSINESS_INFO: BusinessInfo = {
+  companyName: "",
+  businessPhone: "",
+  businessEmail: "",
+  address: "",
+  city: "",
+  state: "TX",
+  zipCode: "",
+  timezone: "America/New_York",
+  website: "",
+  hoursOfOperation: DEFAULT_HOURS_OF_OPERATION
+}
+
+const DEFAULT_BIWEEKLY_SETTINGS: PayPeriodSettings = {
+  type: 'bi-weekly',
+  anchorStartDate: '2024-12-30',
+  anchorEndDate: '2025-01-12',
+  anchorPayDate: '2025-01-17'
+}
+
+const DEFAULT_WEEKLY_SETTINGS: PayPeriodSettings = {
+  type: 'weekly',
+  anchorStartDate: '2024-12-30',
+  anchorEndDate: '2025-01-05',
+  anchorPayDate: '2025-01-10'
+}
+
+const DEFAULT_PAYROLL_SETTINGS = {
+  payPeriod: DEFAULT_BIWEEKLY_SETTINGS
+}
+
 interface HoursOfOperation {
   day: string
   isOpen: boolean
@@ -353,41 +394,9 @@ export function Settings() {
     giantPrice: ""
   })
   
-  const defaultHoursOfOperation: HoursOfOperation[] = [
-    { day: 'Monday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
-    { day: 'Tuesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
-    { day: 'Wednesday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
-    { day: 'Thursday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
-    { day: 'Friday', isOpen: true, openTime: '09:00', closeTime: '17:00' },
-    { day: 'Saturday', isOpen: true, openTime: '10:00', closeTime: '16:00' },
-    { day: 'Sunday', isOpen: false, openTime: '09:00', closeTime: '17:00' }
-  ]
+  const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", DEFAULT_BUSINESS_INFO)
   
-  const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", {
-    companyName: "",
-    businessPhone: "",
-    businessEmail: "",
-    address: "",
-    city: "",
-    state: "TX",
-    zipCode: "",
-    timezone: "America/New_York",
-    website: "",
-    hoursOfOperation: defaultHoursOfOperation
-  })
-  
-  const [businessFormData, setBusinessFormData] = useState<BusinessInfo>({
-    companyName: "",
-    businessPhone: "",
-    businessEmail: "",
-    address: "",
-    city: "",
-    state: "TX",
-    zipCode: "",
-    timezone: "America/New_York",
-    website: "",
-    hoursOfOperation: defaultHoursOfOperation
-  })
+  const [businessFormData, setBusinessFormData] = useState<BusinessInfo>(DEFAULT_BUSINESS_INFO)
   const onboardingSteps = useMemo(() => {
     const businessComplete = Boolean(
       businessInfo?.companyName?.trim() &&
@@ -434,25 +443,12 @@ export function Settings() {
   }, [appointments, businessInfo, clients, mainServicesRaw, staffMembers])
   const completedSteps = onboardingSteps.filter((step) => step.complete).length
   
-  const defaultBiWeeklySettings: PayPeriodSettings = {
-    type: 'bi-weekly',
-    anchorStartDate: '2024-12-30',
-    anchorEndDate: '2025-01-12',
-    anchorPayDate: '2025-01-17'
-  }
+  const [payrollSettings, setPayrollSettings] = useKV<{ payPeriod: PayPeriodSettings }>(
+    "payroll-settings",
+    DEFAULT_PAYROLL_SETTINGS
+  )
   
-  const defaultWeeklySettings: PayPeriodSettings = {
-    type: 'weekly',
-    anchorStartDate: '2024-12-30',
-    anchorEndDate: '2025-01-05',
-    anchorPayDate: '2025-01-10'
-  }
-  
-  const [payrollSettings, setPayrollSettings] = useKV<{ payPeriod: PayPeriodSettings }>("payroll-settings", {
-    payPeriod: defaultBiWeeklySettings
-  })
-  
-  const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(defaultBiWeeklySettings)
+  const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(DEFAULT_BIWEEKLY_SETTINGS)
   
   const getNextFriday = (): Date => {
     const today = startOfDay(new Date())
@@ -489,14 +485,14 @@ export function Settings() {
     if (businessInfo) {
       setBusinessFormData({
         ...businessInfo,
-        hoursOfOperation: businessInfo.hoursOfOperation || defaultHoursOfOperation
+        hoursOfOperation: businessInfo.hoursOfOperation || DEFAULT_HOURS_OF_OPERATION
       })
     }
   }, [businessInfo])
   
   useEffect(() => {
     if (payrollSettings) {
-      setPayrollFormData(payrollSettings.payPeriod || defaultBiWeeklySettings)
+      setPayrollFormData(payrollSettings.payPeriod || DEFAULT_BIWEEKLY_SETTINGS)
     } else {
       const nextFri = getNextFriday()
       const payDate = format(nextFri, 'yyyy-MM-dd')
@@ -1002,7 +998,7 @@ export function Settings() {
   
   const handleHoursChange = (index: number, field: keyof HoursOfOperation, value: string | boolean) => {
     setBusinessFormData((prev) => {
-      const currentHours = prev.hoursOfOperation || defaultHoursOfOperation
+      const currentHours = prev.hoursOfOperation || DEFAULT_HOURS_OF_OPERATION
       const newHours = [...currentHours]
       newHours[index] = { ...newHours[index], [field]: value }
       return { ...prev, hoursOfOperation: newHours }
@@ -1016,9 +1012,9 @@ export function Settings() {
       if (field === 'type') {
         const newType = value as PayPeriodType
         if (newType === 'weekly') {
-          updated.anchorStartDate = defaultWeeklySettings.anchorStartDate
-          updated.anchorEndDate = defaultWeeklySettings.anchorEndDate
-          updated.anchorPayDate = defaultWeeklySettings.anchorPayDate
+          updated.anchorStartDate = DEFAULT_WEEKLY_SETTINGS.anchorStartDate
+          updated.anchorEndDate = DEFAULT_WEEKLY_SETTINGS.anchorEndDate
+          updated.anchorPayDate = DEFAULT_WEEKLY_SETTINGS.anchorPayDate
         } else if (newType === 'bi-weekly') {
           const nextFri = getNextFriday()
           updated.anchorPayDate = format(nextFri, 'yyyy-MM-dd')
@@ -1447,7 +1443,7 @@ export function Settings() {
                   </div>
                   
                   <div className="space-y-3">
-                    {(businessFormData.hoursOfOperation || defaultHoursOfOperation).map((hours, index) => (
+                    {(businessFormData.hoursOfOperation || DEFAULT_HOURS_OF_OPERATION).map((hours, index) => (
                       <div key={hours.day} className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 p-4 rounded-lg bg-secondary/20 border border-border">
                         <div className="w-full md:w-28">
                           <span className="font-medium">{hours.day}</span>
