@@ -21,29 +21,7 @@ export function ClientProfile() {
   // Find the actual client data from the KV store
   const client = clients?.find(c => c.id === clientId)
   
-  // If client not found, show error message
-  if (!client) {
-    return (
-      <div className="min-h-screen bg-background text-foreground p-6">
-        <div className="max-w-[1400px] mx-auto">
-          <Button
-            variant="ghost"
-            className="mb-4"
-            onClick={() => navigate('/clients')}
-          >
-            <ArrowLeft size={24} className="mr-2" />
-            Back to Clients
-          </Button>
-          <div className="text-center py-12">
-            <h1 className="text-2xl font-bold mb-2">Client Not Found</h1>
-            <p className="text-muted-foreground">The client you're looking for doesn't exist.</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const pets = client.pets.map(pet => ({
+  const pets = client ? client.pets.map(pet => ({
     id: pet.id,
     name: pet.name,
     breed: pet.breed,
@@ -55,7 +33,7 @@ export function ClientProfile() {
     sex: "",
     lastAppointment: "",
     nextVisit: ""
-  }))
+  })) : []
 
   const [selectedPet, setSelectedPet] = useState(pets.length > 0 ? pets[0].id : "")
 
@@ -97,8 +75,28 @@ export function ClientProfile() {
       favoriteGroomer: ""
     }
   })
-
-  const currentData = selectedPet ? petData[selectedPet] : null
+  
+  // If client not found, show error message
+  if (!client) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-6">
+        <div className="max-w-[1400px] mx-auto">
+          <Button
+            variant="ghost"
+            className="mb-4"
+            onClick={() => navigate('/clients')}
+          >
+            <ArrowLeft size={24} className="mr-2" />
+            Back to Clients
+          </Button>
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-2">Client Not Found</h1>
+            <p className="text-muted-foreground">The client you're looking for doesn't exist.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
