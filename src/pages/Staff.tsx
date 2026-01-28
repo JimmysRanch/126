@@ -14,7 +14,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
 import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
-import { Staff } from "@/lib/types"
+import { Staff as StaffMember } from "@/lib/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +38,7 @@ export const Staff = () => {
   const [searchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState("list")
   const isMobile = useIsMobile()
-  const [staffMembers] = useKV<Staff[]>("staff", [])
+  const [staffMembers] = useKV<StaffMember[]>("staff", [])
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
   const [teamPerformance] = useKV<PerformanceData>("performance-team", EMPTY_PERFORMANCE_DATA)
   const teamPerformanceData = teamPerformance ?? EMPTY_PERFORMANCE_DATA
