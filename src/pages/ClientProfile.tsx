@@ -28,7 +28,7 @@ export function ClientProfile() {
     status: "Active",
     temperament: [] as string[],
     age: "",
-    weight: `${pet.weight} lbs`,
+    weight: pet.weight ? `${pet.weight} lbs` : "-",
     color: "",
     sex: "",
     lastAppointment: "",

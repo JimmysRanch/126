@@ -67,7 +67,6 @@ interface PetInfo {
   breed: string
   mixedBreed: string
   color: string
-  notes: string
   breedError?: boolean
   mixedBreedError?: boolean
   overallLength: string
@@ -123,7 +122,6 @@ export function AddClient() {
       breed: '',
       mixedBreed: '',
       color: '',
-      notes: '',
       breedError: false,
       mixedBreedError: false,
       overallLength: '',
@@ -145,7 +143,6 @@ export function AddClient() {
       breed: '',
       mixedBreed: '',
       color: '',
-      notes: '',
       breedError: false,
       mixedBreedError: false,
       overallLength: '',
