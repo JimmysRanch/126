@@ -307,13 +307,13 @@ export function AddClient() {
         <h1 className="text-3xl font-bold mb-6">Add New Client</h1>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="py-6">
             <CardTitle className="flex items-center gap-2">
               <User size={20} weight="fill" className="text-primary" />
               Client Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 py-6">
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first-name">First Name *</Label>
@@ -420,7 +420,7 @@ export function AddClient() {
 
         {pets.map((pet, index) => (
           <Card key={pet.id} className="bg-card border-border mb-6">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between py-6">
               <CardTitle className="flex items-center gap-2">
                 <PawPrint size={20} weight="fill" className="text-primary" />
                 Pet Information {pets.length > 1 && `#${index + 1}`}
@@ -437,7 +437,7 @@ export function AddClient() {
                 </Button>
               )}
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 py-6">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
@@ -546,17 +546,6 @@ export function AddClient() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`pet-notes-${pet.id}`}>Notes</Label>
-                <Textarea
-                  id={`pet-notes-${pet.id}`}
-                  value={pet.notes}
-                  onChange={(e) => updatePet(pet.id, 'notes', e.target.value)}
-                  placeholder="Special instructions, medical information, allergies, and behavior information"
-                  rows={4}
-                />
-              </div>
-
               <Separator />
 
               <div className="space-y-4">
@@ -568,7 +557,7 @@ export function AddClient() {
                     value={pet.overallLength} 
                     onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
                   >
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-2">
                       <div className="flex items-center space-x-1.5">
                         <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
                         <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
@@ -605,7 +594,7 @@ export function AddClient() {
                     value={pet.faceStyle} 
                     onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
                   >
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-2">
                       <div className="flex items-center space-x-1.5">
                         <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
                         <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
