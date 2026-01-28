@@ -212,8 +212,8 @@ export function AddPet() {
                     setBreed(value)
                     setBreedError(false)
                   }}
-                  onBlur={() => {
-                    if (!DOG_BREEDS.includes(breed as any)) {
+                  onBlur={(value) => {
+                    if (!DOG_BREEDS.includes(value as any)) {
                       setBreedError(true)
                     }
                   }}
@@ -233,8 +233,8 @@ export function AddPet() {
                     setMixedBreed(value)
                     setMixedBreedError(false)
                   }}
-                  onBlur={() => {
-                    if (mixedBreed && !DOG_BREEDS.includes(mixedBreed as any)) {
+                  onBlur={(value) => {
+                    if (value && !DOG_BREEDS.includes(value as any)) {
                       setMixedBreedError(true)
                     }
                   }}

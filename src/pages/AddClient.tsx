@@ -155,15 +155,15 @@ export function AddClient() {
       groomingNotes: '',
       temperament: []
     }
-    setPets([...pets, newPet])
+    setPets((prevPets) => [...prevPets, newPet])
   }
 
   const removePet = (id: string) => {
-    setPets(pets.filter(pet => pet.id !== id))
+    setPets((prevPets) => prevPets.filter(pet => pet.id !== id))
   }
 
   const updatePet = (id: string, field: keyof PetInfo, value: string | boolean | string[]) => {
-    setPets(pets.map(pet => 
+    setPets((prevPets) => prevPets.map(pet => 
       pet.id === id ? { ...pet, [field]: value } : pet
     ))
   }
@@ -248,7 +248,7 @@ export function AddClient() {
         return false
       }
       if (!pet.breed.trim() || !DOG_BREEDS.includes(pet.breed as any)) {
-        setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
+        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
         toast.error(`Please select a breed from the list for ${pet.name || `pet ${i + 1}`}`)
         return false
       }
@@ -482,11 +482,11 @@ export function AddClient() {
                     value={pet.breed}
                     onChange={(value) => {
                       updatePet(pet.id, 'breed', value)
-                      setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: false } : p))
+                      setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: false } : p))
                     }}
-                    onBlur={() => {
-                      if (!DOG_BREEDS.includes(pet.breed as any)) {
-                        setPets(pets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
+                    onBlur={(value) => {
+                      if (!DOG_BREEDS.includes(value as any)) {
+                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
                       }
                     }}
                     error={pet.breedError}
@@ -503,11 +503,11 @@ export function AddClient() {
                     value={pet.mixedBreed}
                     onChange={(value) => {
                       updatePet(pet.id, 'mixedBreed', value)
-                      setPets(pets.map(p => p.id === pet.id ? { ...p, mixedBreedError: false } : p))
+                      setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: false } : p))
                     }}
-                    onBlur={() => {
-                      if (pet.mixedBreed && !DOG_BREEDS.includes(pet.mixedBreed as any)) {
-                        setPets(pets.map(p => p.id === pet.id ? { ...p, mixedBreedError: true } : p))
+                    onBlur={(value) => {
+                      if (value && !DOG_BREEDS.includes(value as any)) {
+                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: true } : p))
                       }
                     }}
                     error={pet.mixedBreedError}
