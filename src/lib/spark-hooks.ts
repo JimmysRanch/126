@@ -75,11 +75,19 @@ export const useKV = <T,>(key: string, initialValue: T): [T, Dispatch<SetStateAc
     return () => window.removeEventListener('storage', handleStorage)
   }, [initialValue, storageKey])
 
-  const setValue = useCallback<Dispatch<SetStateAction<T>>>((nextValue) => {
-    setValueState((previous) =>
-      typeof nextValue === 'function' ? (nextValue as (prev: T) => T)(previous) : nextValue
-    )
-  }, [])
+  const setValue = useCallback<Dispatch<SetStateAction<T>>>(
+    (nextValue) => {
+      setValueState((previous) => {
+        const resolvedValue =
+          typeof nextValue === 'function'
+            ? (nextValue as (prev: T) => T)(previous)
+            : nextValue
+        writeStoredValue(key, resolvedValue)
+        return resolvedValue
+      })
+    },
+    [key]
+  )
 
   return [value, setValue]
 }
