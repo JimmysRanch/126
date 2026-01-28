@@ -304,13 +304,13 @@ export function AddClient() {
         <h1 className="text-3xl font-bold mb-6">Add New Client</h1>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader className="py-6">
+          <CardHeader className="pt-4 pb-3">
             <CardTitle className="flex items-center gap-2">
               <User size={20} weight="fill" className="text-primary" />
               Client Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 py-6">
+          <CardContent className="space-y-4 pt-3 pb-6">
             <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first-name">First Name *</Label>
@@ -417,7 +417,7 @@ export function AddClient() {
 
         {pets.map((pet, index) => (
           <Card key={pet.id} className="bg-card border-border mb-6">
-            <CardHeader className="flex flex-row items-center justify-between py-6">
+            <CardHeader className="flex flex-row items-center justify-between pt-4 pb-3">
               <CardTitle className="flex items-center gap-2">
                 <PawPrint size={20} weight="fill" className="text-primary" />
                 Pet Information {pets.length > 1 && `#${index + 1}`}
@@ -434,7 +434,7 @@ export function AddClient() {
                 </Button>
               )}
             </CardHeader>
-            <CardContent className="space-y-4 py-6">
+            <CardContent className="space-y-4 pt-3 pb-6">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
