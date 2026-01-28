@@ -46,6 +46,10 @@ export const useKV = <T,>(key: string, initialValue: T): [T, Dispatch<SetStateAc
   }, [initialValue, key])
 
   useEffect(() => {
+    writeStoredValue(key, value)
+  }, [key, value])
+
+  useEffect(() => {
     if (typeof window === 'undefined') {
       return
     }
