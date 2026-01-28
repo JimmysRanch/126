@@ -42,10 +42,15 @@ export const useKV = <T,>(key: string, initialValue: T): [T, Dispatch<SetStateAc
   const storageKey = useMemo(() => getStorageKey(key), [key])
   const initialValueRef = useRef(initialValue)
 
+  // Only update the ref, don't trigger state updates when initialValue changes
   useEffect(() => {
     initialValueRef.current = initialValue
+  }, [initialValue])
+
+  // Only re-read from storage when the key changes
+  useEffect(() => {
     setValueState(readStoredValue(key, initialValueRef.current))
-  }, [key, initialValue])
+  }, [key])
 
   useEffect(() => {
     writeStoredValue(key, value)
