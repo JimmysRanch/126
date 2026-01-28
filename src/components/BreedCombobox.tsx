@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Check, CaretUpDown } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -20,7 +20,7 @@ import { DOG_BREEDS } from "@/lib/breeds"
 interface BreedComboboxProps {
   value: string
   onChange: (value: string) => void
-  onBlur?: () => void
+  onBlur?: (value: string) => void
   id?: string
   error?: boolean
 }
@@ -29,6 +29,7 @@ export function BreedCombobox({ value, onChange, onBlur, id, error }: BreedCombo
   const [open, setOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const [hasInteracted, setHasInteracted] = useState(false)
+  const pendingBlurValue = useRef<string | null>(null)
 
   const filteredBreeds = DOG_BREEDS.filter(breed =>
     breed.toLowerCase().includes(searchValue.toLowerCase())
@@ -41,13 +42,16 @@ export function BreedCombobox({ value, onChange, onBlur, id, error }: BreedCombo
     if (!newOpen) {
       setSearchValue("")
       setHasInteracted(true)
-      onBlur?.()
+      const blurValue = pendingBlurValue.current ?? value
+      pendingBlurValue.current = null
+      onBlur?.(blurValue)
     }
   }
 
   const handleSelect = (currentValue: string) => {
     const selectedBreed = DOG_BREEDS.find(breed => breed === currentValue)
     if (selectedBreed) {
+      pendingBlurValue.current = selectedBreed
       onChange(selectedBreed)
       setOpen(false)
       setSearchValue("")
