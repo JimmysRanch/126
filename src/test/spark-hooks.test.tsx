@@ -115,12 +115,13 @@ describe('useKV Hook', () => {
     )
 
     const initialRenderCount = renderCount
+    expect(initialRenderCount).toBe(1)
 
     // Force a rerender with a new array reference but same content
     rerender({ initial: [] })
 
-    // Should only trigger one additional render for the rerender itself,
-    // not an infinite loop
-    expect(renderCount).toBeLessThan(initialRenderCount + 5)
+    // Should only trigger exactly one additional render for the rerender itself,
+    // not an infinite loop. With the fix, the ref update doesn't trigger state updates.
+    expect(renderCount).toBe(2)
   })
 })
