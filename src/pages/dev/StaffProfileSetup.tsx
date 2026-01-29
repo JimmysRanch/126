@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, UserCircle } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { useKV } from "@github/spark/hooks"
+import { Staff } from "@/lib/types"
 
-interface StaffProfile {
-  email: string
+interface StaffProfileForm {
   firstName: string
   lastName: string
   phone: string
@@ -25,18 +25,64 @@ interface StaffProfile {
   emergencyContactPhone: string
 }
 
+interface StaffAppointmentSummary {
+  id: string
+  client: string
+  pet: string
+  service: string
+  date: string
+  time: string
+  duration?: string
+  status?: string
+  cost?: string
+  tip?: string
+  rating?: number
+  notes?: string
+}
+
+interface StaffProfileDetail {
+  name: string
+  role: string
+  email: string
+  phone: string
+  address: string
+  emergencyContact: {
+    name: string
+    relation: string
+    phone: string
+  }
+  hireDate: string
+  status: "Active" | "On Leave" | "Inactive"
+  hourlyRate: number
+  specialties: string[]
+  stats: {
+    totalAppointments: number
+    revenue: string
+    avgTip: string
+    noShows: number
+    lateArrivals: number
+  }
+  upcomingAppointments: StaffAppointmentSummary[]
+  recentAppointments: StaffAppointmentSummary[]
+}
+
 export function StaffProfileSetup() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
+  const staffIdParam = searchParams.get('staffId') || ''
   
-  const [staffProfiles, setStaffProfiles] = useKV<StaffProfile[]>("staff-onboarding-profiles", [])
+  const [staffProfiles, setStaffProfiles] = useKV<Record<string, StaffProfileDetail>>(
+    "staff-profile-details",
+    {}
+  )
+  const [staffMembers, setStaffMembers] = useKV<Staff[]>("staff", [])
   
-  const [formData, setFormData] = useState({
+  const defaultFormState: StaffProfileForm = useMemo(() => ({
     firstName: '',
     lastName: '',
     phone: '',
-    staffEmail: '',
+    staffEmail: email,
     address: '',
     city: '',
     state: 'TX',
@@ -45,14 +91,67 @@ export function StaffProfileSetup() {
     emergencyContactLastName: '',
     emergencyContactRelation: '',
     emergencyContactPhone: ''
-  })
+  }), [email])
+  const [formData, setFormData] = useState(defaultFormState)
+  const [prefilled, setPrefilled] = useState(false)
+
+  const resolvedStaff = useMemo(
+    () => (staffMembers || []).find((member) => member.id === staffIdParam || member.email === email),
+    [staffMembers, staffIdParam, email]
+  )
+  const resolvedStaffId = resolvedStaff?.id ?? staffIdParam
+  const existingProfile = resolvedStaffId ? staffProfiles?.[resolvedStaffId] : undefined
+  const parsedAddress = useMemo(() => {
+    if (!existingProfile?.address) {
+      return { address: "", city: "", state: "TX", zip: "" }
+    }
+    const [street = "", city = "", stateZip = ""] = existingProfile.address.split(",").map((part) => part.trim())
+    const [state = "TX", zip = ""] = stateZip.split(" ").filter(Boolean)
+    return {
+      address: street,
+      city,
+      state: state || "TX",
+      zip: zip || ""
+    }
+  }, [existingProfile?.address])
+
+  useEffect(() => {
+    if (prefilled) return
+    if (!resolvedStaff && !existingProfile && !email) return
+
+    const nameParts = existingProfile?.name?.split(" ") ?? []
+    const [firstName = "", ...lastNameParts] = nameParts
+    const lastName = lastNameParts.join(" ")
+
+    setFormData({
+      firstName: resolvedStaff?.name?.split(" ")[0] ?? firstName ?? '',
+      lastName: resolvedStaff?.name?.split(" ").slice(1).join(" ") ?? lastName ?? '',
+      phone: resolvedStaff?.phone ?? existingProfile?.phone ?? '',
+      staffEmail: resolvedStaff?.email ?? existingProfile?.email ?? email ?? '',
+      address: parsedAddress.address,
+      city: parsedAddress.city,
+      state: parsedAddress.state,
+      zip: parsedAddress.zip,
+      emergencyContactFirstName: existingProfile?.emergencyContact?.name?.split(" ")[0] ?? '',
+      emergencyContactLastName: existingProfile?.emergencyContact?.name?.split(" ").slice(1).join(" ") ?? '',
+      emergencyContactRelation: existingProfile?.emergencyContact?.relation ?? '',
+      emergencyContactPhone: existingProfile?.emergencyContact?.phone ?? ''
+    })
+    setPrefilled(true)
+  }, [prefilled, resolvedStaff, existingProfile, email, parsedAddress])
   
-  const handleChange = (field: keyof typeof formData, value: string) => {
+  useEffect(() => {
+    if (email && !formData.staffEmail) {
+      setFormData((prev) => ({ ...prev, staffEmail: email }))
+    }
+  }, [email, formData.staffEmail])
+
+  const handleChange = (field: keyof StaffProfileForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
   
   const validateForm = () => {
-    const requiredFields: Array<keyof typeof formData> = [
+    const requiredFields: Array<keyof StaffProfileForm> = [
       'firstName',
       'lastName',
       'phone',
@@ -81,27 +180,82 @@ export function StaffProfileSetup() {
       toast.error("Please fill in all required fields")
       return
     }
-    
-    const newProfile: StaffProfile = {
-      email,
-      ...formData
+
+    const accountEmail = formData.staffEmail.trim()
+    if (!accountEmail) {
+      toast.error("Please enter a valid email address")
+      return
     }
-    
-    setStaffProfiles(current => {
-      const profiles = Array.isArray(current) ? current : []
-      const existingIndex = profiles.findIndex(p => p.email === email)
+
+    const staffId = resolvedStaffId || (crypto.randomUUID?.() ?? Date.now().toString())
+    const hireDate = resolvedStaff?.hireDate ?? existingProfile?.hireDate ?? new Date().toLocaleDateString()
+    const status = resolvedStaff?.status ?? existingProfile?.status ?? "Active"
+    const role = resolvedStaff?.role ?? existingProfile?.role ?? "Groomer"
+    const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim()
+    const address = `${formData.address.trim()}, ${formData.city.trim()}, ${formData.state.trim()} ${formData.zip.trim()}`
+
+    const nextStaff: Staff = {
+      id: staffId,
+      name: fullName,
+      role,
+      email: accountEmail,
+      phone: formData.phone.trim(),
+      status,
+      isGroomer: resolvedStaff?.isGroomer ?? true,
+      specialties: resolvedStaff?.specialties ?? [],
+      hourlyRate: resolvedStaff?.hourlyRate ?? undefined,
+      totalAppointments: resolvedStaff?.totalAppointments ?? 0,
+      hireDate
+    }
+
+    setStaffMembers((current) => {
+      const list = Array.isArray(current) ? current : []
+      const existingIndex = list.findIndex((member) => member.id === staffId || member.email === accountEmail)
       if (existingIndex >= 0) {
-        const updated = [...profiles]
-        updated[existingIndex] = newProfile
+        const updated = [...list]
+        updated[existingIndex] = nextStaff
         return updated
       }
-      return [...profiles, newProfile]
+      return [...list, nextStaff]
     })
-    
+
+    const baseStats = existingProfile?.stats ?? {
+      totalAppointments: resolvedStaff?.totalAppointments ?? 0,
+      revenue: "$0",
+      avgTip: "$0",
+      noShows: 0,
+      lateArrivals: 0
+    }
+
+    const updatedProfile: StaffProfileDetail = {
+      name: fullName,
+      role,
+      email: accountEmail,
+      phone: formData.phone.trim(),
+      address,
+      emergencyContact: {
+        name: `${formData.emergencyContactFirstName.trim()} ${formData.emergencyContactLastName.trim()}`.trim(),
+        relation: formData.emergencyContactRelation.trim(),
+        phone: formData.emergencyContactPhone.trim()
+      },
+      hireDate,
+      status,
+      hourlyRate: existingProfile?.hourlyRate ?? 0,
+      specialties: existingProfile?.specialties ?? nextStaff.specialties ?? [],
+      stats: baseStats,
+      upcomingAppointments: existingProfile?.upcomingAppointments ?? [],
+      recentAppointments: existingProfile?.recentAppointments ?? []
+    }
+
+    setStaffProfiles((current) => ({
+      ...(current || {}),
+      [staffId]: updatedProfile
+    }))
+
     toast.success("Profile saved successfully!")
-    
+
     setTimeout(() => {
-      navigate('/settings?tab=dev-pages')
+      navigate(`/staff/${staffId}`)
     }, 1500)
   }
   
