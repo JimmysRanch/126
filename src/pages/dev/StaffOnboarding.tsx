@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,15 +21,22 @@ export function StaffOnboarding() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
+  const [emailInput, setEmailInput] = useState(email)
   
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
   const [staffMembers, setStaffMembers] = useKV<Staff[]>("staff", [])
 
+  useEffect(() => {
+    if (email) {
+      setEmailInput(email)
+    }
+  }, [email])
+
   const fallbackName = useMemo(() => {
-    if (!email) return "New Staff Member"
-    const localPart = email.split('@')[0] || ""
+    if (!emailInput) return "New Staff Member"
+    const localPart = emailInput.split('@')[0] || ""
     if (!localPart) return "New Staff Member"
     return localPart
       .replace(/[._-]+/g, " ")
@@ -37,7 +44,7 @@ export function StaffOnboarding() {
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ") || "New Staff Member"
-  }, [email])
+  }, [emailInput])
   
   const handleCreateAccount = () => {
     if (!password || !confirmPassword) {
@@ -55,12 +62,14 @@ export function StaffOnboarding() {
       return
     }
 
-    if (!email) {
-      toast.error("Missing staff email. Please use the invitation link.")
+    const accountEmail = emailInput.trim()
+
+    if (!accountEmail) {
+      toast.error("Please enter your email address.")
       return
     }
 
-    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === email)
+    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === accountEmail)
     const staffId = pendingEntry?.id ?? (crypto.randomUUID?.() ?? Date.now().toString())
     const hireDate = new Date().toLocaleDateString()
 
@@ -74,7 +83,7 @@ export function StaffOnboarding() {
         id: staffId,
         name: existing?.name?.trim() ? existing.name : fallbackName,
         role: existing?.role ?? "Groomer",
-        email,
+        email: accountEmail,
         phone: existing?.phone ?? "",
         status: existing?.status ?? "Active",
         isGroomer: existing?.isGroomer ?? true,
@@ -92,9 +101,9 @@ export function StaffOnboarding() {
       return [...list, nextStaff]
     })
 
-    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== email))
+    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== accountEmail))
     
-    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(email)}&staffId=${encodeURIComponent(staffId)}`)
+    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(accountEmail)}&staffId=${encodeURIComponent(staffId)}`)
   }
   
   return (
@@ -133,9 +142,9 @@ export function StaffOnboarding() {
                   <Input
                     id="email"
                     type="email"
-                    value={email}
-                    disabled
-                    className="bg-muted/50"
+                    value={emailInput}
+                    placeholder="you@example.com"
+                    onChange={(e) => setEmailInput(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">
                     This will be your username
