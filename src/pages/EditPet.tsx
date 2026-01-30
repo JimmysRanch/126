@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, PawPrint, PencilSimple, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { useKV } from "@github/spark/hooks"
+import { Client, getWeightCategory } from "@/lib/types"
 
 const DOG_COLORS = [
   'Black',
@@ -40,6 +41,7 @@ const DOG_COLORS = [
 export function EditPet() {
   const navigate = useNavigate()
   const { clientId, petId } = useParams()
+  const [clients, setClients] = useKV<Client[]>("clients", [])
 
   const [temperamentOptionsRaw] = useKV<string[]>("temperament-options", [
     "Friendly",
@@ -63,23 +65,75 @@ export function EditPet() {
     "Loves treats"
   ]
 
-  const [name, setName] = useState("Trying")
-  const [breed, setBreed] = useState("Labrador Retriever")
-  const [weight, setWeight] = useState("65")
-  const [color, setColor] = useState("Yellow")
-  const [sex, setSex] = useState("Male")
-  const [age, setAge] = useState("3 yrs")
-  const [haircut, setHaircut] = useState("Short summer cut")
-  const [shampoo, setShampoo] = useState("Hypoallergenic")
-  const [favoriteGroomer, setFavoriteGroomer] = useState("Sarah J.")
-  const [specialInstructions, setSpecialInstructions] = useState("Prefers gentle handling around ears. Give treats frequently during grooming.")
-  const [temperament, setTemperament] = useState<string[]>(["Friendly", "Energetic", "Loves treats"])
+  const client = useMemo(
+    () => (clients || []).find(item => item.id === clientId),
+    [clients, clientId]
+  )
+  const pet = useMemo(
+    () => client?.pets.find(item => item.id === petId),
+    [client, petId]
+  )
+
+  const [name, setName] = useState("")
+  const [breed, setBreed] = useState("")
+  const [weight, setWeight] = useState("")
+  const [color, setColor] = useState("")
+  const [sex, setSex] = useState("")
+  const [age, setAge] = useState("")
+  const [haircut, setHaircut] = useState("")
+  const [shampoo, setShampoo] = useState("")
+  const [favoriteGroomer, setFavoriteGroomer] = useState("")
+  const [specialInstructions, setSpecialInstructions] = useState("")
+  const [temperament, setTemperament] = useState<string[]>([])
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false)
-  const [overallLength, setOverallLength] = useState("Short & neat")
-  const [faceStyle, setFaceStyle] = useState("Short & neat")
+  const [overallLength, setOverallLength] = useState("")
+  const [faceStyle, setFaceStyle] = useState("")
   const [skipEarTrim, setSkipEarTrim] = useState(false)
   const [skipTailTrim, setSkipTailTrim] = useState(false)
   const [groomingNotes, setGroomingNotes] = useState("")
+
+  useEffect(() => {
+    if (!pet) {
+      return
+    }
+    setName(pet.name ?? "")
+    setBreed(pet.breed ?? "")
+    setWeight(pet.weight ? String(pet.weight) : "")
+    setColor(pet.color ?? "")
+    setSex(pet.gender ?? "")
+    setAge(pet.age ?? pet.birthday ?? "")
+    setHaircut(pet.haircut ?? "")
+    setShampoo(pet.shampoo ?? "")
+    setFavoriteGroomer(pet.favoriteGroomer ?? "")
+    setSpecialInstructions(pet.specialInstructions ?? "")
+    setTemperament(pet.temperament ?? [])
+    setOverallLength(pet.overallLength ?? "")
+    setFaceStyle(pet.faceStyle ?? "")
+    setSkipEarTrim(Boolean(pet.skipEarTrim))
+    setSkipTailTrim(Boolean(pet.skipTailTrim))
+    setGroomingNotes(pet.groomingNotes ?? "")
+  }, [pet])
+
+  if (!client || !pet) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto p-3 sm:p-6">
+          <Button
+            variant="ghost"
+            className="mb-4 hover:bg-secondary transition-colors"
+            onClick={() => navigate(`/clients/${clientId}`)}
+          >
+            <ArrowLeft size={20} className="mr-2" />
+            Back to Client
+          </Button>
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-2">Pet Not Found</h1>
+            <p className="text-muted-foreground">We couldn't find this pet in the client profile.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -95,25 +149,43 @@ export function EditPet() {
       return
     }
 
-    console.log('Updating pet:', {
-      petId,
-      name,
-      breed,
-      weight,
-      color,
-      sex,
-      age,
-      haircut,
-      shampoo,
-      favoriteGroomer,
-      specialInstructions,
-      temperament,
-      overallLength,
-      faceStyle,
-      skipEarTrim,
-      skipTailTrim,
-      groomingNotes
-    })
+    const parsedWeight = Number.parseFloat(weight)
+    if (Number.isNaN(parsedWeight)) {
+      toast.error('Please enter a valid weight')
+      return
+    }
+
+    setClients((current) =>
+      (current || []).map((currentClient) => {
+        if (currentClient.id !== clientId) return currentClient
+        return {
+          ...currentClient,
+          pets: currentClient.pets.map((currentPet) => {
+            if (currentPet.id !== petId) return currentPet
+            return {
+              ...currentPet,
+              name: name.trim(),
+              breed: breed.trim(),
+              weight: parsedWeight,
+              weightCategory: getWeightCategory(parsedWeight),
+              color: color.trim(),
+              gender: sex.trim(),
+              age: age.trim(),
+              haircut: haircut.trim(),
+              shampoo: shampoo.trim(),
+              favoriteGroomer: favoriteGroomer.trim(),
+              specialInstructions: specialInstructions.trim(),
+              temperament,
+              overallLength,
+              faceStyle,
+              skipEarTrim,
+              skipTailTrim,
+              groomingNotes: groomingNotes.trim()
+            }
+          })
+        }
+      })
+    )
 
     toast.success('Pet information updated!')
     navigate(`/clients/${clientId}`)

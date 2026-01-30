@@ -5,6 +5,21 @@ export interface Pet {
   weight: number
   weightCategory: 'small' | 'medium' | 'large' | 'giant'
   ownerId: string
+  birthday?: string
+  gender?: string
+  mixedBreed?: string
+  color?: string
+  age?: string
+  haircut?: string
+  shampoo?: string
+  favoriteGroomer?: string
+  specialInstructions?: string
+  temperament?: string[]
+  overallLength?: string
+  faceStyle?: string
+  skipEarTrim?: boolean
+  skipTailTrim?: boolean
+  groomingNotes?: string
 }
 
 export interface Client {
@@ -13,6 +28,7 @@ export interface Client {
   email: string
   phone: string
   pets: Pet[]
+  createdAt?: string
   firstName?: string
   lastName?: string
   lastVisit?: string

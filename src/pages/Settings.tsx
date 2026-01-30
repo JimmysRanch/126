@@ -1,5 +1,5 @@
-import { useMemo, useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from "@/lib/payroll-utils"
-import { Appointment, Client, MainService, Staff } from "@/lib/types"
+import { MainService } from "@/lib/types"
 import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/useAppearance"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 
@@ -185,7 +185,6 @@ const DEFAULT_HOURS_OF_OPERATION: HoursOfOperation[] = [
 
 const DEFAULT_BUSINESS_INFO: BusinessInfo = {
   companyName: "",
-  logoUrl: "",
   businessPhone: "",
   businessEmail: "",
   address: "",
@@ -224,7 +223,6 @@ interface HoursOfOperation {
 
 interface BusinessInfo {
   companyName: string
-  logoUrl: string
   businessPhone: string
   businessEmail: string
   address: string
@@ -260,10 +258,6 @@ export function Settings() {
   const [editTemperamentValue, setEditTemperamentValue] = useState("")
   
   const [mainServicesRaw, setMainServicesRaw] = useKV<MainService[]>("main-services", DEFAULT_MAIN_SERVICES)
-  const [staffMembers] = useKV<Staff[]>("staff", [])
-  const [clients] = useKV<Client[]>("clients", [])
-  const [appointments] = useKV<Appointment[]>("appointments", [])
-  const [onboardingDismissed, setOnboardingDismissed] = useKV<boolean>("onboarding-dismissed", false)
   const [addOnsRaw, setAddOnsRaw] = useKV<AddOn[]>("service-addons", DEFAULT_ADDONS)
   const [weightRangesRaw, setWeightRangesRaw] = useKV<WeightRange[]>("weight-ranges", DEFAULT_WEIGHT_RANGES)
   
@@ -399,51 +393,6 @@ export function Settings() {
   const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", DEFAULT_BUSINESS_INFO)
   
   const [businessFormData, setBusinessFormData] = useState<BusinessInfo>(DEFAULT_BUSINESS_INFO)
-  const onboardingSteps = useMemo(() => {
-    const businessComplete = Boolean(
-      businessInfo?.companyName?.trim() &&
-      businessInfo?.businessPhone?.trim() &&
-      businessInfo?.businessEmail?.trim()
-    )
-    return [
-      {
-        id: "business",
-        title: "Add your business details",
-        description: "Set your salon name, contact info, address, and timezone.",
-        href: "/settings",
-        complete: businessComplete
-      },
-      {
-        id: "services",
-        title: "Confirm service pricing",
-        description: "Review main services and add-ons so quotes are accurate.",
-        href: "/settings",
-        complete: (mainServicesRaw || []).length > 0
-      },
-      {
-        id: "staff",
-        title: "Invite your staff",
-        description: "Add groomers and front desk team members.",
-        href: "/staff/invite",
-        complete: (staffMembers || []).length > 0
-      },
-      {
-        id: "clients",
-        title: "Add your first clients",
-        description: "Import or create client profiles and their pets.",
-        href: "/clients/new",
-        complete: (clients || []).length > 0
-      },
-      {
-        id: "appointments",
-        title: "Book your first appointment",
-        description: "Schedule a service to populate your calendar.",
-        href: "/appointments/new",
-        complete: (appointments || []).length > 0
-      }
-    ]
-  }, [appointments, businessInfo, clients, mainServicesRaw, staffMembers])
-  const completedSteps = onboardingSteps.filter((step) => step.complete).length
   
   const [payrollSettings, setPayrollSettings] = useKV<{ payPeriod: PayPeriodSettings }>(
     "payroll-settings",
@@ -997,20 +946,6 @@ export function Settings() {
       [field]: value
     }))
   }
-
-  const handleBusinessLogoChange = (file: File | null) => {
-    if (!file) {
-      handleBusinessInfoChange('logoUrl', "")
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : ""
-      handleBusinessInfoChange('logoUrl', result)
-    }
-    reader.readAsDataURL(file)
-  }
   
   const handleHoursChange = (index: number, field: keyof HoursOfOperation, value: string | boolean) => {
     setBusinessFormData((prev) => {
@@ -1076,63 +1011,6 @@ export function Settings() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-6">
       <div className="max-w-[1400px] mx-auto">
-        {!onboardingDismissed && (
-          <div className="bg-card rounded-xl border border-border p-4 mb-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-                  Quick Start Checklist
-                </p>
-                <h2 className="text-lg font-semibold">Get your salon ready in minutes</h2>
-                <p className="text-sm text-muted-foreground">
-                  Knock out the essentials so your team can start booking right away.
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-sm text-muted-foreground">
-                  {completedSteps} of {onboardingSteps.length} completed
-                </div>
-                <button
-                  className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors"
-                  onClick={() => setOnboardingDismissed(true)}
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-4 h-2 w-full rounded-full bg-secondary">
-              <div
-                className="h-2 rounded-full bg-primary transition-all"
-                style={{ width: `${(completedSteps / onboardingSteps.length) * 100}%` }}
-              />
-            </div>
-
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {onboardingSteps.map((step) => (
-                <Link
-                  key={step.id}
-                  to={step.href}
-                  className="group rounded-lg border border-border/60 p-3 transition hover:border-primary/60 hover:bg-primary/5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold">{step.title}</p>
-                      <p className="text-xs text-muted-foreground">{step.description}</p>
-                    </div>
-                    <span
-                      className={`text-[10px] font-semibold uppercase tracking-wider ${
-                        step.complete ? "text-emerald-500" : "text-muted-foreground"
-                      }`}
-                    >
-                      {step.complete ? "Done" : "Next"}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="overflow-x-auto -mx-6 px-6 mb-6 flex justify-center">
             <TabsList className="bg-secondary/50 inline-flex">
@@ -1326,42 +1204,6 @@ export function Settings() {
                       onChange={(e) => handleBusinessInfoChange('companyName', e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">This will appear on all receipts and invoices</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="business-logo" className="text-sm font-medium">
-                      Business Logo
-                    </Label>
-                    <Input
-                      id="business-logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleBusinessLogoChange(e.target.files?.[0] ?? null)}
-                    />
-                    <div className="flex items-center gap-3">
-                      {businessFormData.logoUrl ? (
-                        <img
-                          src={businessFormData.logoUrl}
-                          alt="Business logo preview"
-                          className="h-12 w-12 rounded-full border border-border object-cover"
-                        />
-                      ) : (
-                        <div className="h-12 w-12 rounded-full border border-dashed border-border flex items-center justify-center text-xs text-muted-foreground">
-                          No logo
-                        </div>
-                      )}
-                      {businessFormData.logoUrl ? (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleBusinessInfoChange('logoUrl', "")}
-                        >
-                          Remove
-                        </Button>
-                      ) : null}
-                    </div>
-                    <p className="text-xs text-muted-foreground">Upload a square PNG or JPG for best results</p>
                   </div>
 
                   <div className="space-y-2">

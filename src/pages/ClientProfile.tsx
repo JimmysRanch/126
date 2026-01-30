@@ -11,6 +11,7 @@ import { useState } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { Client } from "@/lib/types"
+import { formatInBusinessTimezone } from "@/lib/date-utils"
 
 export function ClientProfile() {
   const navigate = useNavigate()
@@ -26,11 +27,11 @@ export function ClientProfile() {
     name: pet.name,
     breed: pet.breed,
     status: "Active",
-    temperament: [] as string[],
-    age: "",
+    temperament: pet.temperament ?? ([] as string[]),
+    age: pet.age ?? pet.birthday ?? "",
     weight: pet.weight ? `${pet.weight} lbs` : "-",
-    color: "",
-    sex: "",
+    color: pet.color ?? "",
+    sex: pet.gender ?? "",
     lastAppointment: "",
     nextVisit: ""
   })) : []
@@ -44,7 +45,7 @@ export function ClientProfile() {
     nextDue?: string
   }
 
-  // Create empty data structure for each pet
+  // Create data structure for each pet
   const petData: Record<string, {
     serviceHistory: any[]
     vaccinations: MedicalRecord[]
@@ -59,8 +60,9 @@ export function ClientProfile() {
     favoriteGroomer: string
   }> = {}
   
-  // Initialize empty data for each pet
+  // Initialize data for each pet
   pets.forEach(pet => {
+    const sourcePet = client.pets.find(item => item.id === pet.id)
     petData[pet.id] = {
       serviceHistory: [],
       vaccinations: [],
@@ -68,11 +70,11 @@ export function ClientProfile() {
       allergies: [],
       medications: [],
       notes: "",
-      haircut: "",
-      shampoo: "",
+      haircut: sourcePet?.haircut ?? "",
+      shampoo: sourcePet?.shampoo ?? "",
       addOns: [],
-      specialInstructions: "",
-      favoriteGroomer: ""
+      specialInstructions: sourcePet?.specialInstructions ?? "",
+      favoriteGroomer: sourcePet?.favoriteGroomer ?? ""
     }
   })
   
@@ -117,7 +119,7 @@ export function ClientProfile() {
                   {client.name}
                 </h1>
                 <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                  CLIENT
+                  Client Since {client.createdAt ? formatInBusinessTimezone(client.createdAt, 'M/d/yyyy') : "—"}
                 </p>
               </div>
             </div>
