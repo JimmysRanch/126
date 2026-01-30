@@ -2,21 +2,46 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Phone, Envelope, MapPin, User } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useKV } from "@github/spark/hooks"
+import { Client } from "@/lib/types"
 
 export function ContactInfo() {
   const navigate = useNavigate()
   const { clientId } = useParams()
+  const [clients] = useKV<Client[]>("clients", [])
 
+  const client = (clients || []).find(item => item.id === clientId)
   const contactInfo = {
-    name: "George Moodys",
-    phone: "(555) 123-4567",
-    email: "george.moodys@email.com",
+    name: client?.name ?? "Client",
+    phone: client?.phone ?? "",
+    email: client?.email ?? "",
     address: {
-      street: "123 Main Street",
-      city: "Natalia",
-      state: "Texas",
-      zipCode: "78059"
+      street: client?.address?.street ?? "",
+      city: client?.address?.city ?? "",
+      state: client?.address?.state ?? "",
+      zipCode: client?.address?.zip ?? ""
     }
+  }
+
+  if (!client) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
+        <div className="max-w-[800px] mx-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hover:bg-secondary transition-all duration-200 mb-4"
+            onClick={() => navigate(`/clients/${clientId}`)}
+          >
+            <ArrowLeft size={24} />
+          </Button>
+          <div className="text-center py-12">
+            <h1 className="text-2xl font-bold mb-2">Client Not Found</h1>
+            <p className="text-muted-foreground">The client you're looking for doesn't exist.</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -50,12 +75,13 @@ export function ContactInfo() {
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                   Phone Number
                 </h3>
-                <p className="text-2xl font-bold">{contactInfo.phone}</p>
+                <p className="text-2xl font-bold">{contactInfo.phone || "Not provided"}</p>
                 <div className="flex gap-2 mt-3">
                   <Button
                     size="sm"
                     className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                    onClick={() => window.location.href = `tel:${contactInfo.phone}`}
+                    onClick={() => contactInfo.phone && (window.location.href = `tel:${contactInfo.phone}`)}
+                    disabled={!contactInfo.phone}
                   >
                     <Phone size={16} className="mr-2" />
                     Call
@@ -64,7 +90,8 @@ export function ContactInfo() {
                     size="sm"
                     variant="secondary"
                     className="font-semibold"
-                    onClick={() => window.location.href = `sms:${contactInfo.phone}`}
+                    onClick={() => contactInfo.phone && (window.location.href = `sms:${contactInfo.phone}`)}
+                    disabled={!contactInfo.phone}
                   >
                     Text
                   </Button>
@@ -82,11 +109,12 @@ export function ContactInfo() {
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-1">
                   Email Address
                 </h3>
-                <p className="text-2xl font-bold break-all">{contactInfo.email}</p>
+                <p className="text-2xl font-bold break-all">{contactInfo.email || "Not provided"}</p>
                 <Button
                   size="sm"
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold mt-3"
-                  onClick={() => window.location.href = `mailto:${contactInfo.email}`}
+                  onClick={() => contactInfo.email && (window.location.href = `mailto:${contactInfo.email}`)}
+                  disabled={!contactInfo.email}
                 >
                   <Envelope size={16} className="mr-2" />
                   Send Email
@@ -105,16 +133,24 @@ export function ContactInfo() {
                   Physical Address
                 </h3>
                 <div className="text-lg font-semibold space-y-1">
-                  <p>{contactInfo.address.street}</p>
-                  <p>{contactInfo.address.city}, {contactInfo.address.state} {contactInfo.address.zipCode}</p>
+                  <p>{contactInfo.address.street || "Not provided"}</p>
+                  <p>
+                    {[contactInfo.address.city, contactInfo.address.state, contactInfo.address.zipCode]
+                      .filter(Boolean)
+                      .join(", ") || "Not provided"}
+                  </p>
                 </div>
                 <Button
                   size="sm"
                   className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold mt-3"
                   onClick={() => {
+                    if (!contactInfo.address.street && !contactInfo.address.city && !contactInfo.address.state && !contactInfo.address.zipCode) {
+                      return
+                    }
                     const addressString = `${contactInfo.address.street}, ${contactInfo.address.city}, ${contactInfo.address.state} ${contactInfo.address.zipCode}`
                     window.open(`https://maps.google.com/?q=${encodeURIComponent(addressString)}`, '_blank')
                   }}
+                  disabled={!contactInfo.address.street && !contactInfo.address.city && !contactInfo.address.state && !contactInfo.address.zipCode}
                 >
                   <MapPin size={16} className="mr-2" />
                   Open in Maps
