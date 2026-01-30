@@ -81,6 +81,7 @@ function App() {
             <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
             <Route path="/staff" element={<Staff />} />
             <Route path="/staff/invite" element={<InviteStaff />} />
+            <Route path="/staff/onboarding" element={<StaffOnboarding />} />
             <Route path="/staff/:staffId" element={<StaffProfile />} />
             <Route path="/staff/:staffId/edit" element={<EditStaff />} />
             <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
