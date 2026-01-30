@@ -16,6 +16,7 @@ import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
 import { useKV } from "@github/spark/hooks"
 import { Client, getWeightCategory } from "@/lib/types"
+import { getNowInBusinessTimezone } from "@/lib/date-utils"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -268,7 +269,17 @@ export function AddClient() {
         breed: pet.breed.trim(),
         weight,
         weightCategory: getWeightCategory(weight),
-        ownerId: clientId
+        ownerId: clientId,
+        birthday: pet.birthday.trim(),
+        gender: pet.gender.trim(),
+        mixedBreed: pet.mixedBreed.trim(),
+        color: pet.color.trim(),
+        overallLength: pet.overallLength,
+        faceStyle: pet.faceStyle,
+        skipEarTrim: pet.skipEarTrim,
+        skipTailTrim: pet.skipTailTrim,
+        groomingNotes: pet.groomingNotes.trim(),
+        temperament: pet.temperament
       }
     })
     const newClient: Client = {
@@ -279,6 +290,7 @@ export function AddClient() {
       email: email.trim(),
       phone: phone.trim(),
       pets: formattedPets,
+      createdAt: getNowInBusinessTimezone(),
       address: {
         street: streetAddress.trim(),
         city: city.trim(),
