@@ -28,6 +28,7 @@ export function StaffOnboarding() {
   
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [emailInput, setEmailInput] = useState(email)
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
   const [staffMembers, setStaffMembers] = useKV<Staff[]>("staff", [])
   const [businessInfo] = useKV<BusinessInfo>("business-info", {})
@@ -61,12 +62,13 @@ export function StaffOnboarding() {
       return
     }
 
-    if (!email) {
+    if (!emailInput.trim()) {
       toast.error("Missing staff email. Please use the invitation link.")
       return
     }
 
-    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === email)
+    const normalizedEmail = emailInput.trim()
+    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === normalizedEmail)
     const staffId = pendingEntry?.id ?? (crypto.randomUUID?.() ?? Date.now().toString())
     const hireDate = new Date().toLocaleDateString()
 
@@ -80,7 +82,7 @@ export function StaffOnboarding() {
         id: staffId,
         name: existing?.name?.trim() ? existing.name : fallbackName,
         role: existing?.role ?? "Groomer",
-        email,
+        email: normalizedEmail,
         phone: existing?.phone ?? "",
         status: existing?.status ?? "Active",
         isGroomer: existing?.isGroomer ?? true,
@@ -98,9 +100,9 @@ export function StaffOnboarding() {
       return [...list, nextStaff]
     })
 
-    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== email))
+    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== normalizedEmail))
     
-    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(email)}&staffId=${encodeURIComponent(staffId)}`)
+    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(normalizedEmail)}&staffId=${encodeURIComponent(staffId)}`)
   }
   
   return (
@@ -173,8 +175,8 @@ export function StaffOnboarding() {
               <Input
                 id="email"
                 type="email"
-                value={email}
-                disabled
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
                 className="bg-white/5 border border-white/20 text-white placeholder:text-white/40"
               />
               <p className="text-xs text-white/50">Protect be yeer hers.</p>
