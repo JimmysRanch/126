@@ -60,7 +60,6 @@ interface StaffFormState {
   phone: string
   role: string
   status: "Active" | "On Leave" | "Inactive"
-  hireDate: string
   streetAddress: string
   city: string
   state: string
@@ -119,7 +118,6 @@ export function EditStaff() {
     phone: "",
     role: defaultRole,
     status: defaultStatus,
-    hireDate: hireDateValue,
     streetAddress: "",
     city: "",
     state: "TX",
@@ -147,7 +145,6 @@ export function EditStaff() {
       phone: staffFromList?.phone ?? staffProfileEntry?.phone ?? "",
       role: defaultRole,
       status: defaultStatus,
-      hireDate: hireDateValue,
       streetAddress: parsedAddress.street,
       city: parsedAddress.city,
       state: parsedAddress.state,
@@ -158,7 +155,7 @@ export function EditStaff() {
       emergencyPhone: staffProfileEntry?.emergencyContact?.phone ?? "",
       emergencyRelation: staffProfileEntry?.emergencyContact?.relation ?? ""
     })
-  }, [defaultRole, defaultStatus, hireDateValue, parsedAddress, staffFromList, staffProfileEntry])
+  }, [defaultRole, defaultStatus, parsedAddress, staffFromList, staffProfileEntry])
 
   const handleChange = (field: keyof StaffFormState, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -182,7 +179,7 @@ export function EditStaff() {
     ].filter((part) => part.length > 0)
     const address = addressParts.length > 0 ? addressParts.join(", ") : "—"
     const emergencyName = `${formData.emergencyFirstName.trim()} ${formData.emergencyLastName.trim()}`.trim()
-    const hireDate = formData.hireDate || staffFromList?.hireDate || staffProfileEntry?.hireDate || ""
+    const hireDate = staffFromList?.hireDate || staffProfileEntry?.hireDate || ""
 
     const updatedStaff: Staff = {
       id: staffId,
@@ -329,47 +326,10 @@ export function EditStaff() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="position">Position</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => handleChange("role", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availablePositions.map((position) => (
-                      <SelectItem key={position} value={position}>
-                        {position}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleChange("status", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="On Leave">On Leave</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hiredDate">Hired Date</Label>
-                <Input
-                  id="hiredDate"
-                  type="date"
-                  value={formData.hireDate}
-                  onChange={(event) => handleChange("hireDate", event.target.value)}
-                />
+                <Label>Hired Date</Label>
+                <p className="text-sm text-muted-foreground">
+                  {hireDateValue || "—"}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="streetAddress">Street Address</Label>
@@ -460,6 +420,40 @@ export function EditStaff() {
                   value={formData.zipCode}
                   onChange={(event) => handleChange("zipCode", event.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="position">Position</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(value) => handleChange("role", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availablePositions.map((position) => (
+                      <SelectItem key={position} value={position}>
+                        {position}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => handleChange("status", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="On Leave">On Leave</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2 col-span-1 md:col-span-2">
                 <Label htmlFor="notes">Notes</Label>
