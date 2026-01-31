@@ -13,7 +13,8 @@ import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
-import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { DEFAULT_PERFORMANCE_DATA } from "@/lib/performance-data"
+import { PerformanceData } from "@/lib/performance-types"
 import { Staff as StaffMember } from "@/lib/types"
 import {
   AlertDialog,
@@ -40,8 +41,8 @@ export const Staff = () => {
   const isMobile = useIsMobile()
   const [staffMembers] = useKV<StaffMember[]>("staff", [])
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
-  const [teamPerformance] = useKV<PerformanceData>("performance-team", EMPTY_PERFORMANCE_DATA)
-  const teamPerformanceData = teamPerformance ?? EMPTY_PERFORMANCE_DATA
+  const [teamPerformance] = useKV<PerformanceData>("performance-team", DEFAULT_PERFORMANCE_DATA)
+  const teamPerformanceData = teamPerformance ?? DEFAULT_PERFORMANCE_DATA
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [staffToCancel, setStaffToCancel] = useState<string | null>(null)
 

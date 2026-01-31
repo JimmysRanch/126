@@ -13,7 +13,8 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
-import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { DEFAULT_PERFORMANCE_DATA } from "@/lib/performance-data"
+import { PerformanceData } from "@/lib/performance-types"
 import { Appointment, Staff } from "@/lib/types"
 
 type StaffAppointmentSummary = {
@@ -60,8 +61,8 @@ type StaffProfileDetail = {
 export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
-  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
-  const groomerPerformanceData = groomerPerformance ?? EMPTY_PERFORMANCE_DATA
+  const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", DEFAULT_PERFORMANCE_DATA)
+  const groomerPerformanceData = groomerPerformance ?? DEFAULT_PERFORMANCE_DATA
   const [staffProfiles] = useKV<Record<string, StaffProfileDetail>>(
     "staff-profile-details",
     {}
