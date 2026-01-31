@@ -13,8 +13,9 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
-import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
-import { Appointment, Staff } from "@/lib/types"
+import { EMPTY_PERFORMANCE_DATA, PerformanceData } from "@/lib/performance-types"
+import { buildPerformanceData, isPerformanceDataEmpty } from "@/lib/performance-utils"
+import { Appointment, Client, Staff } from "@/lib/types"
 
 type StaffAppointmentSummary = {
   id: string
@@ -61,13 +62,13 @@ export function StaffProfile() {
   const navigate = useNavigate()
   const { staffId } = useParams()
   const [groomerPerformance] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
-  const groomerPerformanceData = groomerPerformance ?? EMPTY_PERFORMANCE_DATA
   const [staffProfiles] = useKV<Record<string, StaffProfileDetail>>(
     "staff-profile-details",
     {}
   )
   const [staffMembers] = useKV<Staff[]>("staff", [])
   const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [clients] = useKV<Client[]>("clients", [])
   const staffFromList = (staffMembers || []).find((member) => member.id === staffId)
   const fallbackProfile: StaffProfileDetail = {
     name: staffFromList?.name ?? "Staff Member",
@@ -101,6 +102,18 @@ export function StaffProfile() {
   const isMobile = useIsMobile()
   const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
+  const computedPerformance = useMemo(
+    () =>
+      buildPerformanceData({
+        appointments: appointments || [],
+        clients: clients || [],
+        staffId,
+      }),
+    [appointments, clients, staffId]
+  )
+  const groomerPerformanceData = isPerformanceDataEmpty(groomerPerformance)
+    ? computedPerformance
+    : groomerPerformance
   const staffAppointments = useMemo(
     () => (appointments || []).filter((appointment) => appointment.groomerId === staffId),
     [appointments, staffId]
