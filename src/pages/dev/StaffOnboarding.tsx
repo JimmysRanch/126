@@ -123,7 +123,7 @@ export function StaffOnboarding() {
         const g = data[i + 1]
         const b = data[i + 2]
         const a = data[i + 3]
-        if (a > 0 && r < 10 && g < 10 && b < 10) {
+        if (a > 0 && r < 40 && g < 40 && b < 40) {
           data[i + 3] = 0
         }
       }
@@ -155,7 +155,7 @@ export function StaffOnboarding() {
         Back to App
       </Button>
 
-      <div className="w-full max-w-xl md:max-w-3xl relative z-10 max-h-[calc(100vh-3rem)]">
+      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-3rem)]">
         <div className="flex flex-col items-center text-center space-y-4">
           <img
             src={logoSrc}
