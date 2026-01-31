@@ -1,20 +1,25 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Sparkle } from "@phosphor-icons/react"
+import { ArrowLeft } from "@phosphor-icons/react"
 import { toast } from "sonner"
-import accountImage from '@/assets/images/13360FA3-D47D-48D3-A65A-6BB641E09F62.png'
 import { useKV } from "@github/spark/hooks"
 import { Staff } from "@/lib/types"
+import { staffOnboardingBackgroundDataUrl } from '@/assets/staffOnboardingBackground'
+import { scruffyButtsLogoDataUrl } from '@/assets/scruffyButtsLogo'
 
 interface PendingStaff {
   id: string
   email: string
   invitedAt: string
   status: 'pending'
+}
+
+interface BusinessInfo {
+  companyName?: string
+  logoUrl?: string
 }
 
 export function StaffOnboarding() {
@@ -25,8 +30,12 @@ export function StaffOnboarding() {
   
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [emailInput, setEmailInput] = useState(email)
+  const [logoSrc, setLogoSrc] = useState(scruffyButtsLogoDataUrl)
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
   const [staffMembers, setStaffMembers] = useKV<Staff[]>("staff", [])
+  const [businessInfo] = useKV<BusinessInfo>("business-info", {})
+  const companyName = businessInfo?.companyName?.trim() || "your business"
 
   useEffect(() => {
     if (email) {
@@ -62,14 +71,13 @@ export function StaffOnboarding() {
       return
     }
 
-    const accountEmail = emailInput.trim()
-
-    if (!accountEmail) {
-      toast.error("Please enter your email address.")
+    if (!emailInput.trim()) {
+      toast.error("Missing staff email. Please use the invitation link.")
       return
     }
 
-    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === accountEmail)
+    const normalizedEmail = emailInput.trim()
+    const pendingEntry = (pendingStaff || []).find((staff) => staff.email === normalizedEmail)
     const staffId = pendingEntry?.id ?? (crypto.randomUUID?.() ?? Date.now().toString())
     const hireDate = new Date().toLocaleDateString()
 
@@ -101,118 +109,145 @@ export function StaffOnboarding() {
       return [...list, nextStaff]
     })
 
-    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== accountEmail))
+    setPendingStaff((current) => (current || []).filter((staff) => staff.email !== normalizedEmail))
     
-    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(accountEmail)}&staffId=${encodeURIComponent(staffId)}`)
+    navigate(`/dev/staff-profile-setup?email=${encodeURIComponent(normalizedEmail)}&staffId=${encodeURIComponent(staffId)}`)
   }
+
+  useEffect(() => {
+    const image = new Image()
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = image.width
+      canvas.height = image.height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.drawImage(image, 0, 0)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      const data = imageData.data
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i]
+        const g = data[i + 1]
+        const b = data[i + 2]
+        const a = data[i + 3]
+        if (a > 0 && r < 40 && g < 40 && b < 40) {
+          data[i + 3] = 0
+        }
+      }
+      ctx.putImageData(imageData, 0, 0)
+      setLogoSrc(canvas.toDataURL('image/png'))
+    }
+    image.src = scruffyButtsLogoDataUrl
+  }, [])
   
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,oklch(0.35_0.15_195),transparent_50%)] opacity-30"></div>
-      
+    <div
+      className="h-screen text-white flex items-center justify-center px-4 pt-6 pb-24 sm:pt-8 sm:pb-28 relative overflow-hidden bg-[#050824]"
+      style={{
+        backgroundImage: `url(${staffOnboardingBackgroundDataUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="absolute inset-0 bg-[#050824]/40"></div>
+
       <Button
         variant="ghost"
         size="sm"
         onClick={() => navigate('/settings')}
-        className="fixed top-4 right-4 z-50 bg-card/80 backdrop-blur-sm border border-border text-xs"
+        className="fixed top-4 right-4 z-50 bg-white/10 text-white border border-white/20 text-xs hover:bg-white/20"
       >
         <ArrowLeft size={14} className="mr-1" />
         Back to App
       </Button>
-      
-      <div className="w-full max-w-4xl relative z-10">
-        <Card className="w-full overflow-hidden bg-card/90 backdrop-blur-sm border-primary/20 shadow-2xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-8 lg:p-10 order-2 lg:order-1">
-              <div className="text-center lg:text-left mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                  <Sparkle size={32} className="text-primary" weight="duotone" />
-                </div>
-                <h1 className="text-2xl font-bold mb-2">Welcome to Scruffy Butts!</h1>
-                <p className="text-muted-foreground text-sm">
-                  Let's set up your account and get you started
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email Address
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={emailInput}
-                    placeholder="you@example.com"
-                    onChange={(e) => setEmailInput(e.target.value)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    This will be your username
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    Create Password
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleCreateAccount()
-                    }}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password" className="text-sm font-medium">
-                    Confirm Password
-                  </Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Re-enter your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleCreateAccount()
-                    }}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Must be at least 8 characters
-                  </p>
-                </div>
-                
-                <Button
-                  onClick={handleCreateAccount}
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-11 text-base"
-                >
-                  Create Account
-                </Button>
-              </div>
-              
-              <div className="mt-8 pt-6 border-t border-border text-center lg:text-left">
-                <p className="text-xs text-muted-foreground">
-                  By creating an account, you agree to our terms and conditions
-                </p>
-              </div>
+
+      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-10rem)] pb-14">
+        <div className="flex flex-col items-center text-center space-y-3">
+          <img
+            src={logoSrc}
+            alt="Scruffy Butts logo"
+            className="w-40 sm:w-48 md:w-56 h-auto drop-shadow-[0_0_30px_rgba(88,190,255,0.55)]"
+          />
+          <div className="space-y-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">
+              You&apos;ve been invited to join {companyName}
+            </h1>
+            <p className="text-sm md:text-base text-white/70">
+              Create your staff account to get started.
+            </p>
+          </div>
+        </div>
+
+        <div className="relative mt-6 md:mt-8 mb-14 md:mb-16 rounded-2xl border border-[#79d5ff]/40 bg-[linear-gradient(145deg,rgba(16,43,102,0.88),rgba(8,16,43,0.88))] p-5 sm:p-6 md:p-8 shadow-[0_0_45px_rgba(64,159,255,0.45)]">
+          <div className="absolute inset-x-6 -top-2 h-3 rounded-full bg-[#62c9ff] blur-md opacity-70"></div>
+
+          <div className="space-y-5 sm:space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold text-white/90">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                className="bg-white/5 border border-white/20 text-white placeholder:text-white/40"
+              />
+              <p className="text-xs text-white/50">Protect be yeer hers.</p>
             </div>
-            
-            <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center p-8 order-1 lg:order-2 min-h-[280px] lg:min-h-0">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
-                <img 
-                  src={accountImage} 
-                  alt="Welcome puppy mascot" 
-                  className="relative w-64 h-auto object-contain animate-[float_6s_ease-in-out_infinite]"
+
+            <div className="space-y-3">
+              <p className="text-base font-semibold text-white/90">Set your password</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCreateAccount()
+                  }}
+                  className="bg-white/5 border border-white/20 text-white placeholder:text-white/50"
+                />
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="Re-enter your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCreateAccount()
+                  }}
+                  className="bg-white/5 border border-white/20 text-white placeholder:text-white/50"
                 />
               </div>
+              <p className="text-xs text-white/60">Must be at lest 8 characters</p>
             </div>
+
+            <Button
+              onClick={handleCreateAccount}
+              className="w-full h-12 text-base font-semibold text-white bg-[linear-gradient(180deg,#70d5ff,#3e9dff)] hover:bg-[linear-gradient(180deg,#86ddff,#4ea7ff)] shadow-[0_0_18px_rgba(90,191,255,0.8)]"
+            >
+              <span className="flex flex-col leading-tight">
+                <span>Create Account</span>
+                <span className="text-xs font-normal text-white/90">
+                  Takes less than a minute
+                </span>
+              </span>
+            </Button>
+
+            <p className="text-center text-xs text-white/60">
+              By continuing, you agree to the{" "}
+              <span className="underline underline-offset-2">Terms &amp; Privacy Policy</span>
+            </p>
           </div>
-        </Card>
+        </div>
+        <div className="relative mt-2 sm:mt-4 h-8 w-full">
+          <div className="absolute inset-x-12 bottom-0 h-4 rounded-full bg-[#66ccff] blur-2xl opacity-80"></div>
+          <div className="absolute inset-x-20 bottom-0 h-2 rounded-full bg-white/70 blur-lg opacity-70"></div>
+        </div>
       </div>
     </div>
   )
