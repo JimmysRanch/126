@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Plus, PaperPlaneRight, Trash } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -13,9 +13,9 @@ import CurvedMonitor from "@/components/CurvedMonitor"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
-import { DEFAULT_PERFORMANCE_DATA } from "@/lib/performance-data"
-import { PerformanceData } from "@/lib/performance-types"
-import { Staff as StaffMember } from "@/lib/types"
+import { EMPTY_PERFORMANCE_DATA, PerformanceData } from "@/lib/performance-types"
+import { buildPerformanceData, isPerformanceDataEmpty } from "@/lib/performance-utils"
+import { Appointment, Client, Staff as StaffMember } from "@/lib/types"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,8 +41,20 @@ export const Staff = () => {
   const isMobile = useIsMobile()
   const [staffMembers] = useKV<StaffMember[]>("staff", [])
   const [pendingStaff, setPendingStaff] = useKV<PendingStaff[]>('pending-staff', [])
-  const [teamPerformance] = useKV<PerformanceData>("performance-team", DEFAULT_PERFORMANCE_DATA)
-  const teamPerformanceData = teamPerformance ?? DEFAULT_PERFORMANCE_DATA
+  const [teamPerformance] = useKV<PerformanceData>("performance-team", EMPTY_PERFORMANCE_DATA)
+  const [appointments] = useKV<Appointment[]>("appointments", [])
+  const [clients] = useKV<Client[]>("clients", [])
+  const computedTeamPerformance = useMemo(
+    () =>
+      buildPerformanceData({
+        appointments: appointments || [],
+        clients: clients || [],
+      }),
+    [appointments, clients]
+  )
+  const teamPerformanceData = isPerformanceDataEmpty(teamPerformance)
+    ? computedTeamPerformance
+    : teamPerformance
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [staffToCancel, setStaffToCancel] = useState<string | null>(null)
 
@@ -369,7 +381,7 @@ export const Staff = () => {
             </TabsContent>
 
             <TabsContent value="p8" className="mt-0">
-              <StaffPerformanceP8View />
+              <StaffPerformanceP8View data={teamPerformanceData} />
             </TabsContent>
           </Tabs>
         </div>
