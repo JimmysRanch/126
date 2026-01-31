@@ -185,6 +185,7 @@ const DEFAULT_HOURS_OF_OPERATION: HoursOfOperation[] = [
 
 const DEFAULT_BUSINESS_INFO: BusinessInfo = {
   companyName: "",
+  logoUrl: "",
   businessPhone: "",
   businessEmail: "",
   address: "",
@@ -223,6 +224,7 @@ interface HoursOfOperation {
 
 interface BusinessInfo {
   companyName: string
+  logoUrl: string
   businessPhone: string
   businessEmail: string
   address: string
@@ -946,6 +948,20 @@ export function Settings() {
       [field]: value
     }))
   }
+
+  const handleBusinessLogoChange = (file: File | null) => {
+    if (!file) {
+      handleBusinessInfoChange('logoUrl', "")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : ""
+      handleBusinessInfoChange('logoUrl', result)
+    }
+    reader.readAsDataURL(file)
+  }
   
   const handleHoursChange = (index: number, field: keyof HoursOfOperation, value: string | boolean) => {
     setBusinessFormData((prev) => {
@@ -1204,6 +1220,42 @@ export function Settings() {
                       onChange={(e) => handleBusinessInfoChange('companyName', e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">This will appear on all receipts and invoices</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="business-logo" className="text-sm font-medium">
+                      Business Logo
+                    </Label>
+                    <Input
+                      id="business-logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleBusinessLogoChange(e.target.files?.[0] ?? null)}
+                    />
+                    <div className="flex items-center gap-3">
+                      {businessFormData.logoUrl ? (
+                        <img
+                          src={businessFormData.logoUrl}
+                          alt="Business logo preview"
+                          className="h-12 w-12 rounded-full border border-border object-cover"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full border border-dashed border-border flex items-center justify-center text-xs text-muted-foreground">
+                          No logo
+                        </div>
+                      )}
+                      {businessFormData.logoUrl ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleBusinessInfoChange('logoUrl', "")}
+                        >
+                          Remove
+                        </Button>
+                      ) : null}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Upload a square PNG or JPG for best results</p>
                   </div>
 
                   <div className="space-y-2">
