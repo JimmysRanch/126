@@ -16,6 +16,7 @@ import { BreedCombobox } from "@/components/BreedCombobox"
 import { DOG_BREEDS } from "@/lib/breeds"
 import { useKV } from "@github/spark/hooks"
 import { Client, getWeightCategory } from "@/lib/types"
+import { getNowInBusinessTimezone } from "@/lib/date-utils"
 
 const US_STATES = [
   'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 
@@ -232,10 +233,6 @@ export function AddClient() {
         toast.error(`Please enter a name for pet ${i + 1}`)
         return false
       }
-      if (!pet.birthday.trim()) {
-        toast.error(`Please enter a birthday for ${pet.name || `pet ${i + 1}`}`)
-        return false
-      }
       if (!pet.weight.trim()) {
         toast.error(`Please enter a weight for ${pet.name || `pet ${i + 1}`}`)
         return false
@@ -268,7 +265,17 @@ export function AddClient() {
         breed: pet.breed.trim(),
         weight,
         weightCategory: getWeightCategory(weight),
-        ownerId: clientId
+        ownerId: clientId,
+        birthday: pet.birthday.trim(),
+        gender: pet.gender.trim(),
+        mixedBreed: pet.mixedBreed.trim(),
+        color: pet.color.trim(),
+        overallLength: pet.overallLength,
+        faceStyle: pet.faceStyle,
+        skipEarTrim: pet.skipEarTrim,
+        skipTailTrim: pet.skipTailTrim,
+        groomingNotes: pet.groomingNotes.trim(),
+        temperament: pet.temperament
       }
     })
     const newClient: Client = {
@@ -279,6 +286,7 @@ export function AddClient() {
       email: email.trim(),
       phone: phone.trim(),
       pets: formattedPets,
+      createdAt: getNowInBusinessTimezone(),
       address: {
         street: streetAddress.trim(),
         city: city.trim(),
@@ -435,8 +443,8 @@ export function AddClient() {
               )}
             </CardHeader>
             <CardContent className="space-y-4 pt-3 pb-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-4 gap-4">
+                <div className="space-y-2 col-span-1">
                   <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
                   <Input
                     id={`pet-name-${pet.id}`}
@@ -445,7 +453,7 @@ export function AddClient() {
                     placeholder="Charlie"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1">
                   <Label htmlFor={`pet-weight-${pet.id}`}>Weight *</Label>
                   <Input
                     id={`pet-weight-${pet.id}`}
@@ -454,7 +462,7 @@ export function AddClient() {
                     placeholder="55"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-2">
                   <Label htmlFor={`pet-gender-${pet.id}`}>Gender *</Label>
                   <Select 
                     value={pet.gender} 
@@ -533,7 +541,7 @@ export function AddClient() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday *</Label>
+                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
                   <Input
                     id={`pet-birthday-${pet.id}`}
                     type="date"
@@ -554,26 +562,26 @@ export function AddClient() {
                     value={pet.overallLength} 
                     onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
                   >
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-                      <div className="flex items-center space-x-1.5">
+                    <div className="grid grid-cols-4 gap-1">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
                         <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
                           Short & neat
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Medium & neat" id={`${pet.id}-length-medium`} />
                         <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer">
                           Medium & neat
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Long & fluffy" id={`${pet.id}-length-long`} />
                         <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer">
                           Long & fluffy
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Breed standard" id={`${pet.id}-length-breed`} />
                         <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer">
                           Breed standard
@@ -591,26 +599,26 @@ export function AddClient() {
                     value={pet.faceStyle} 
                     onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
                   >
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-2">
-                      <div className="flex items-center space-x-1.5">
+                    <div className="grid grid-cols-4 gap-1">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
                         <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
                           Short & neat
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Round / Teddy" id={`${pet.id}-face-round`} />
                         <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer">
                           Round / Teddy
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Beard / Mustache" id={`${pet.id}-face-beard`} />
                         <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer">
                           Beard / Mustache
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-1.5">
+                      <div className="flex items-center space-x-1">
                         <RadioGroupItem value="Breed Standard" id={`${pet.id}-face-breed`} />
                         <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer">
                           Breed Standard
@@ -618,6 +626,34 @@ export function AddClient() {
                       </div>
                     </div>
                   </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id={`${pet.id}-skip-ear-trim`}
+                        checked={pet.skipEarTrim}
+                        onCheckedChange={(checked) => updatePet(pet.id, 'skipEarTrim', checked as boolean)}
+                      />
+                      <Label htmlFor={`${pet.id}-skip-ear-trim`} className="text-sm font-normal cursor-pointer">
+                        Skip Ear Trim
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id={`${pet.id}-skip-tail-trim`}
+                        checked={pet.skipTailTrim}
+                        onCheckedChange={(checked) => updatePet(pet.id, 'skipTailTrim', checked as boolean)}
+                      />
+                      <Label htmlFor={`${pet.id}-skip-tail-trim`} className="text-sm font-normal cursor-pointer">
+                        Skip Tail Trim
+                      </Label>
+                    </div>
+                  </div>
                 </div>
 
                 <Separator />
@@ -653,35 +689,7 @@ export function AddClient() {
                 <Separator />
 
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div className="flex items-center space-x-1.5">
-                      <Checkbox
-                        id={`${pet.id}-skip-ear-trim`}
-                        checked={pet.skipEarTrim}
-                        onCheckedChange={(checked) => updatePet(pet.id, 'skipEarTrim', checked as boolean)}
-                      />
-                      <Label htmlFor={`${pet.id}-skip-ear-trim`} className="text-sm font-normal cursor-pointer">
-                        Skip Ear Trim
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-1.5">
-                      <Checkbox
-                        id={`${pet.id}-skip-tail-trim`}
-                        checked={pet.skipTailTrim}
-                        onCheckedChange={(checked) => updatePet(pet.id, 'skipTailTrim', checked as boolean)}
-                      />
-                      <Label htmlFor={`${pet.id}-skip-tail-trim`} className="text-sm font-normal cursor-pointer">
-                        Skip Tail Trim
-                      </Label>
-                    </div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <Label htmlFor={`${pet.id}-grooming-notes`} className="text-sm font-medium mb-2 block">Additional notes</Label>
+                  <Label htmlFor={`${pet.id}-grooming-notes`} className="text-sm font-medium mb-2 block">Additional Details</Label>
                   <Textarea
                     id={`${pet.id}-grooming-notes`}
                     value={pet.groomingNotes}

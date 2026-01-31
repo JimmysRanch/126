@@ -174,13 +174,13 @@ export function EditClient() {
         </div>
 
         <Card className="bg-card border-border mb-6">
-          <CardHeader>
+          <CardHeader className="pt-4 pb-3">
             <CardTitle className="flex items-center gap-2">
               <User size={20} weight="fill" className="text-primary" />
               Client Information
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-3 pb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="first-name">First Name *</Label>

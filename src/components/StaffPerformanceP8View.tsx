@@ -1,18 +1,18 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { useKV } from "@github/spark/hooks"
-import { PerformanceData, EMPTY_PERFORMANCE_DATA } from "@/lib/performance-types"
+import { PerformanceData } from "@/lib/performance-types"
 
-export function StaffPerformanceP8View() {
+type StaffPerformanceP8ViewProps = {
+  data: PerformanceData
+}
+
+export function StaffPerformanceP8View({ data }: StaffPerformanceP8ViewProps) {
   const [activeCard, setActiveCard] = useState<
     | { type: "kpi"; index: number }
     | { type: "chart"; index: number }
     | { type: "earnings" | "top" | "bottom" | "matrix" }
     | null
   >(null)
-  const [performanceData] = useKV<PerformanceData>("performance-groomer", EMPTY_PERFORMANCE_DATA)
-  const data = performanceData ?? EMPTY_PERFORMANCE_DATA
-
   const closeActiveCard = () => setActiveCard(null)
   const kpis = data.kpis
   const charts = data.charts
