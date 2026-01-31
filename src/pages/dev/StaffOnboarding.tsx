@@ -135,7 +135,7 @@ export function StaffOnboarding() {
   
   return (
     <div
-      className="h-screen text-white flex items-center justify-center px-4 py-8 sm:p-6 relative overflow-hidden bg-[#050824]"
+      className="h-screen text-white flex items-center justify-center px-4 pt-6 pb-14 sm:pt-8 sm:pb-16 relative overflow-hidden bg-[#050824]"
       style={{
         backgroundImage: `url(${staffOnboardingBackgroundDataUrl})`,
         backgroundSize: 'cover',
@@ -155,7 +155,7 @@ export function StaffOnboarding() {
         Back to App
       </Button>
 
-      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-5rem)] pb-8">
+      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-7rem)] pb-10">
         <div className="flex flex-col items-center text-center space-y-3">
           <img
             src={logoSrc}
@@ -172,7 +172,7 @@ export function StaffOnboarding() {
           </div>
         </div>
 
-        <div className="relative mt-6 md:mt-8 mb-8 md:mb-10 rounded-2xl border border-[#79d5ff]/40 bg-[linear-gradient(145deg,rgba(16,43,102,0.88),rgba(8,16,43,0.88))] p-5 sm:p-6 md:p-8 shadow-[0_0_45px_rgba(64,159,255,0.45)]">
+        <div className="relative mt-6 md:mt-8 mb-10 md:mb-12 rounded-2xl border border-[#79d5ff]/40 bg-[linear-gradient(145deg,rgba(16,43,102,0.88),rgba(8,16,43,0.88))] p-5 sm:p-6 md:p-8 shadow-[0_0_45px_rgba(64,159,255,0.45)]">
           <div className="absolute inset-x-6 -top-2 h-3 rounded-full bg-[#62c9ff] blur-md opacity-70"></div>
 
           <div className="space-y-5 sm:space-y-6">
