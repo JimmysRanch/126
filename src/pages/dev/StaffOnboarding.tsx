@@ -155,7 +155,7 @@ export function StaffOnboarding() {
         Back to App
       </Button>
 
-      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-3rem)]">
+      <div className="w-full max-w-md md:max-w-lg relative z-10 max-h-[calc(100vh-4.5rem)] pb-6">
         <div className="flex flex-col items-center text-center space-y-4">
           <img
             src={logoSrc}
