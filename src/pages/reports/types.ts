@@ -189,6 +189,7 @@ export interface NormalizedAppointment {
   scheduledDurationMinutes: number
   actualDurationMinutes?: number
   services: NormalizedService[]
+  addOns?: { name: string; priceCents: number }[]
   subtotalCents: number
   discountCents: number
   taxCents: number
@@ -208,6 +209,10 @@ export interface NormalizedAppointment {
   reminderSent: boolean
   reminderConfirmed: boolean
   createdAt: string
+  leadTimeDays?: number // Days between booking and appointment
+  onTimeStart?: boolean // Whether the appointment started on time
+  isTaxable?: boolean // Whether the appointment is taxable
+  messageAttributed?: boolean // Whether a marketing message is attributed
 }
 
 export interface NormalizedService {
@@ -230,11 +235,13 @@ export interface NormalizedTransaction {
   taxCents: number
   tipCents: number
   totalCents: number
+  amountCents: number // Alias for totalCents
   refundCents: number
   processingFeeCents: number
   netToBank: number // total - fees - refunds
   paymentMethod: PaymentMethod
-  status: 'pending' | 'completed' | 'refunded'
+  type: 'payment' | 'refund' | 'adjustment'
+  status: 'pending' | 'completed' | 'refunded' | 'settled'
   batchId?: string
   settlementDate?: string
   refundReason?: string
@@ -276,6 +283,8 @@ export interface NormalizedInventoryItem {
   reorderLevel: number
   linkedServiceIds: string[]
   usagePerAppointment?: number
+  currentStock?: number
+  reorderPoint?: number
 }
 
 export interface NormalizedMessage {

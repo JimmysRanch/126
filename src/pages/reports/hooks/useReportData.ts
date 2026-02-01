@@ -285,3 +285,42 @@ export function useReportPreferences() {
     setPreferences,
   }
 }
+
+/**
+ * Hook for user permissions
+ * Provides role-based access control for reports
+ */
+export function useUserPermissions() {
+  // In a real app, this would come from an auth context or API
+  // For now, we'll provide defaults that allow access
+  const [permissions] = useState({
+    canViewPayroll: true,
+    canExportPayroll: true,
+    canViewStaffDetails: true,
+    canViewFinance: true,
+    canManageSchedules: true,
+    role: 'admin' as 'admin' | 'manager' | 'staff',
+  })
+  
+  const hasPermission = (permission: string): boolean => {
+    switch (permission) {
+      case 'view-payroll':
+        return permissions.canViewPayroll
+      case 'export-payroll':
+        return permissions.canExportPayroll
+      case 'view-staff-details':
+        return permissions.canViewStaffDetails
+      case 'view-finance':
+        return permissions.canViewFinance
+      case 'manage-schedules':
+        return permissions.canManageSchedules
+      default:
+        return permissions.role === 'admin'
+    }
+  }
+  
+  return {
+    ...permissions,
+    hasPermission,
+  }
+}

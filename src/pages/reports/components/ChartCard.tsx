@@ -185,6 +185,291 @@ export function SimpleBarChart({
   )
 }
 
+interface SimpleStackedBarChartProps {
+  data: { category: string; data: ChartDataPoint[] }[]
+  height?: number
+  formatValue?: (value: number) => string
+  onClick?: (item: ChartDataPoint, category: string) => void
+}
+
+export function SimpleStackedBarChart({ 
+  data, 
+  height = 200, 
+  formatValue = (v) => v.toLocaleString(),
+  onClick,
+}: SimpleStackedBarChartProps) {
+  // Transform data for stacked bar chart
+  const allLabels = [...new Set(data.flatMap(cat => cat.data.map(d => d.label)))]
+  const chartData = allLabels.map(label => {
+    const item: Record<string, unknown> = { label }
+    data.forEach(cat => {
+      const point = cat.data.find(d => d.label === label)
+      item[cat.category] = point?.value || 0
+    })
+    return item
+  })
+  
+  const config: ChartConfig = {}
+  data.forEach((cat, i) => {
+    config[cat.category] = {
+      label: cat.category,
+      color: CHART_COLORS[i % CHART_COLORS.length],
+    }
+  })
+  
+  return (
+    <ChartContainer config={config} className={`h-[${height}px]`}>
+      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis 
+          dataKey="label" 
+          tickLine={false}
+          axisLine={false}
+          fontSize={10}
+          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+        />
+        <YAxis 
+          tickLine={false}
+          axisLine={false}
+          fontSize={10}
+          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+          tickFormatter={formatValue}
+        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Legend />
+        {data.map((cat, i) => (
+          <Bar 
+            key={cat.category}
+            dataKey={cat.category} 
+            fill={CHART_COLORS[i % CHART_COLORS.length]}
+            stackId="stack"
+            radius={i === data.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+          />
+        ))}
+      </BarChart>
+    </ChartContainer>
+  )
+}
+
+interface SimpleDualLineChartProps {
+  data: ChartDataPoint[]
+  height?: number
+  formatValue?: (value: number) => string
+  line1Label?: string
+  line2Label?: string
+  onClick?: (item: ChartDataPoint) => void
+}
+
+export function SimpleDualLineChart({ 
+  data, 
+  height = 200, 
+  formatValue = (v) => v.toLocaleString(),
+  line1Label = 'Current',
+  line2Label = 'Previous',
+  onClick,
+}: SimpleDualLineChartProps) {
+  const config: ChartConfig = {
+    value: {
+      label: line1Label,
+      color: CHART_COLORS[0],
+    },
+    previousValue: {
+      label: line2Label,
+      color: CHART_COLORS[1],
+    },
+  }
+  
+  return (
+    <ChartContainer config={config} className={`h-[${height}px]`}>
+      <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis 
+          dataKey="label" 
+          tickLine={false}
+          axisLine={false}
+          fontSize={10}
+          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+        />
+        <YAxis 
+          tickLine={false}
+          axisLine={false}
+          fontSize={10}
+          tick={{ fill: 'hsl(var(--muted-foreground))' }}
+          tickFormatter={formatValue}
+        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <Legend />
+        <Line 
+          type="monotone"
+          dataKey="value" 
+          stroke={CHART_COLORS[0]}
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
+          cursor={onClick ? 'pointer' : undefined}
+        />
+        <Line 
+          type="monotone"
+          dataKey="previousValue" 
+          stroke={CHART_COLORS[1]}
+          strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
+          strokeDasharray="5 5"
+        />
+      </LineChart>
+    </ChartContainer>
+  )
+}
+
+interface SimpleFunnelChartProps {
+  data: ChartDataPoint[]
+  height?: number
+  formatValue?: (value: number) => string
+  onClick?: (item: ChartDataPoint) => void
+}
+
+export function SimpleFunnelChart({ 
+  data, 
+  height = 200, 
+  formatValue = (v) => v.toLocaleString(),
+  onClick,
+}: SimpleFunnelChartProps) {
+  const maxValue = Math.max(...data.map(d => d.value), 1)
+  
+  return (
+    <div className="space-y-2" style={{ minHeight: height }}>
+      {data.map((item, index) => {
+        const width = (item.value / maxValue) * 100
+        const conversionRate = index > 0 && data[index - 1].value > 0
+          ? ((item.value / data[index - 1].value) * 100).toFixed(1)
+          : null
+        
+        return (
+          <div 
+            key={item.label}
+            className={cn(
+              "relative",
+              onClick && "cursor-pointer hover:opacity-80"
+            )}
+            onClick={() => onClick?.(item)}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-medium text-muted-foreground min-w-[100px]">
+                {item.label}
+              </span>
+              {conversionRate && (
+                <span className="text-[10px] text-muted-foreground">
+                  ({conversionRate}%)
+                </span>
+              )}
+            </div>
+            <div className="relative h-8 bg-muted rounded overflow-hidden">
+              <div 
+                className="h-full transition-all duration-300"
+                style={{ 
+                  width: `${width}%`,
+                  backgroundColor: CHART_COLORS[index % CHART_COLORS.length]
+                }}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium">
+                {formatValue(item.value)}
+              </span>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+interface SimpleScatterChartProps {
+  data: ChartDataPoint[]
+  height?: number
+  formatXValue?: (value: number) => string
+  formatYValue?: (value: number) => string
+  xLabel?: string
+  yLabel?: string
+  onClick?: (item: ChartDataPoint) => void
+}
+
+export function SimpleScatterChart({ 
+  data, 
+  height = 200, 
+  formatXValue = (v) => v.toFixed(1) + '%',
+  formatYValue = (v) => v.toFixed(1) + '%',
+  xLabel = 'X',
+  yLabel = 'Y',
+  onClick,
+}: SimpleScatterChartProps) {
+  // Transform data for scatter plot - use value as x, previousValue as y
+  const scatterData = data.map(d => ({
+    label: d.label,
+    x: d.value,
+    y: d.previousValue || 0,
+  }))
+  
+  return (
+    <div style={{ height }} className="relative">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="grid gap-2 p-4" style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'auto 1fr',
+          gridTemplateRows: '1fr auto',
+          width: '100%',
+          height: '100%'
+        }}>
+          {/* Y-axis label */}
+          <div className="flex items-center justify-center">
+            <span className="text-[10px] text-muted-foreground -rotate-90 whitespace-nowrap">
+              {yLabel}
+            </span>
+          </div>
+          
+          {/* Plot area */}
+          <div className="relative border-l border-b border-muted">
+            {scatterData.map((point, i) => {
+              const maxX = Math.max(...scatterData.map(p => p.x), 1)
+              const maxY = Math.max(...scatterData.map(p => p.y), 1)
+              const x = (point.x / maxX) * 90 + 5 // 5-95% range
+              const y = 95 - (point.y / maxY) * 90 // Invert Y
+              
+              return (
+                <div
+                  key={point.label}
+                  className={cn(
+                    "absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2",
+                    onClick && "cursor-pointer hover:ring-2 hover:ring-primary"
+                  )}
+                  style={{ 
+                    left: `${x}%`, 
+                    top: `${y}%`,
+                    backgroundColor: CHART_COLORS[i % CHART_COLORS.length]
+                  }}
+                  title={`${point.label}: ${formatXValue(point.x)}, ${formatYValue(point.y)}`}
+                  onClick={() => onClick?.({ 
+                    label: point.label, 
+                    value: point.x, 
+                    previousValue: point.y 
+                  })}
+                />
+              )
+            })}
+          </div>
+          
+          {/* Empty corner */}
+          <div />
+          
+          {/* X-axis label */}
+          <div className="flex items-center justify-center">
+            <span className="text-[10px] text-muted-foreground">{xLabel}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 interface SimpleLineChartProps {
   data: ChartDataPoint[]
   height?: number
@@ -406,6 +691,78 @@ export function SimpleHeatmap({
             </>
           ))}
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ==================== Cohort Retention Grid ====================
+
+interface CohortGridProps {
+  data: { cohort: string; month: number; retention: number }[]
+  height?: number
+  formatValue?: (value: number) => string
+  onClick?: (item: { cohort: string; month: number; retention: number }) => void
+}
+
+export function SimpleCohortGrid({ 
+  data, 
+  height = 200,
+  formatValue = (v) => v.toFixed(1) + '%',
+  onClick,
+}: CohortGridProps) {
+  // Get unique cohorts and months
+  const cohorts = [...new Set(data.map(d => d.cohort))].sort()
+  const months = [...new Set(data.map(d => d.month))].sort((a, b) => a - b)
+  
+  const getColor = (retention: number) => {
+    const intensity = retention / 100
+    const hue = 145 // Green
+    const saturation = 70
+    const lightness = 95 - (intensity * 50)
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`
+  }
+  
+  return (
+    <div className="overflow-x-auto">
+      <div style={{ minHeight: height }}>
+        <table className="w-full text-xs">
+          <thead>
+            <tr>
+              <th className="p-1 text-left text-muted-foreground">Cohort</th>
+              {months.map(month => (
+                <th key={month} className="p-1 text-center text-muted-foreground">
+                  M{month}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {cohorts.slice(-6).map(cohort => (
+              <tr key={cohort}>
+                <td className="p-1 text-muted-foreground">{cohort}</td>
+                {months.map(month => {
+                  const cell = data.find(d => d.cohort === cohort && d.month === month)
+                  const retention = cell?.retention || 0
+                  return (
+                    <td 
+                      key={`${cohort}-${month}`}
+                      className={cn(
+                        'p-1 text-center',
+                        onClick && 'cursor-pointer hover:ring-1 hover:ring-primary'
+                      )}
+                      style={{ backgroundColor: getColor(retention) }}
+                      onClick={() => cell && onClick?.(cell)}
+                      title={`${cohort} Month ${month}: ${formatValue(retention)}`}
+                    >
+                      {retention > 0 ? formatValue(retention) : '-'}
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

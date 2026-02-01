@@ -31,7 +31,7 @@ import {
   calculateTotalCollected,
   calculateKPIWithDelta,
   generateSalesByDayChart,
-  generateSalesByCategoryStackedChart,
+  generateSalesByCategoryStackChart,
   aggregateByDimension,
   getDrillRows,
   measurePerformance,
@@ -135,7 +135,7 @@ export function SalesSummary() {
   const salesByCategoryData = useMemo(() => {
     if (appointments.length === 0) return []
     return measurePerformance('generateSalesByCategory', () =>
-      generateSalesByCategoryStackedChart(appointments)
+      generateSalesByCategoryStackChart(appointments)
     )
   }, [appointments])
 
