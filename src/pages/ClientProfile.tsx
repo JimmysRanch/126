@@ -26,14 +26,19 @@ export function ClientProfile() {
     id: pet.id,
     name: pet.name,
     breed: pet.breed,
+    mixedBreed: pet.mixedBreed ?? "",
     status: "Active",
     temperament: pet.temperament ?? ([] as string[]),
-    age: pet.age ?? pet.birthday ?? "",
-    weight: pet.weight ? `${pet.weight} lbs` : "-",
+    weight: pet.weight ? `${pet.weight} lbs` : "",
     color: pet.color ?? "",
-    sex: pet.gender ?? "",
-    lastAppointment: "",
-    nextVisit: ""
+    gender: pet.gender ?? "",
+    birthday: pet.birthday ?? "",
+    overallLength: pet.overallLength ?? "",
+    faceStyle: pet.faceStyle ?? "",
+    skipEarTrim: pet.skipEarTrim ?? false,
+    skipTailTrim: pet.skipTailTrim ?? false,
+    desiredStylePhoto: pet.desiredStylePhoto ?? "",
+    groomingNotes: pet.groomingNotes ?? ""
   })) : []
 
   const [selectedPet, setSelectedPet] = useState(pets.length > 0 ? pets[0].id : "")
@@ -53,11 +58,6 @@ export function ClientProfile() {
     allergies: string[]
     medications: MedicalRecord[]
     notes: string
-    haircut: string
-    shampoo: string
-    addOns: string[]
-    specialInstructions: string
-    favoriteGroomer: string
   }> = {}
   
   // Initialize data for each pet
@@ -69,12 +69,7 @@ export function ClientProfile() {
       groomingPhotos: [],
       allergies: [],
       medications: [],
-      notes: "",
-      haircut: sourcePet?.haircut ?? "",
-      shampoo: sourcePet?.shampoo ?? "",
-      addOns: [],
-      specialInstructions: sourcePet?.specialInstructions ?? "",
-      favoriteGroomer: sourcePet?.favoriteGroomer ?? ""
+      notes: ""
     }
   })
   
@@ -262,11 +257,6 @@ export function ClientProfile() {
                   key={pet.id} 
                   {...pet} 
                   index={index}
-                  haircut={petData[pet.id]?.haircut || ""}
-                  shampoo={petData[pet.id]?.shampoo || ""}
-                  addOns={petData[pet.id]?.addOns || []}
-                  specialInstructions={petData[pet.id]?.specialInstructions || ""}
-                  favoriteGroomer={petData[pet.id]?.favoriteGroomer || ""}
                 />
               ))}
             </div>
