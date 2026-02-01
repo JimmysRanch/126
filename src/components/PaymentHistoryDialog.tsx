@@ -1,4 +1,4 @@
-import { Receipt, X, Download, PawPrint } from "@phosphor-icons/react"
+import { Receipt, X, PawPrint } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,6 +10,7 @@ import {
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useNavigate } from "react-router-dom"
 
 interface PaymentRecord {
   id: string
@@ -32,6 +33,7 @@ interface PaymentHistoryDialogProps {
 }
 
 export function PaymentHistoryDialog({ clientName, payments }: PaymentHistoryDialogProps) {
+  const navigate = useNavigate()
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -68,8 +70,13 @@ export function PaymentHistoryDialog({ clientName, payments }: PaymentHistoryDia
                       <span className="text-xs text-muted-foreground">{payment.method}</span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Download size={16} />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-8 px-2"
+                    onClick={() => navigate(`/receipts/${payment.id}`)}
+                  >
+                    View Receipt
                   </Button>
                 </div>
 
