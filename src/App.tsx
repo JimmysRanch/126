@@ -32,6 +32,7 @@ import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreak
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
 import { InviteStaff } from '@/pages/InviteStaff'
+import { Receipt } from '@/pages/Receipt'
 import { useEffect, useMemo } from 'react'
 import { RecentActivityPage } from '@/pages/RecentActivityPage'
 import { useAppearance } from '@/hooks/useAppearance'
@@ -86,6 +87,7 @@ function App() {
             <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
             <Route path="/pos" element={<POS />} />
             <Route path="/inventory" element={<Inventory />} />
+            <Route path="/receipts/:receiptId" element={<Receipt />} />
             <Route path="/finances" element={<Finances />} />
             <Route path="/finances/expenses" element={<ExpensesDetail />} />
             <Route path="/finances/all-expenses" element={<AllExpenses />} />

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +16,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 export function POS() {
+  const navigate = useNavigate()
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [inventory] = useKV<InventoryItem[]>("inventory", [])
   const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
@@ -168,6 +170,7 @@ export function POS() {
     toast.success("Transaction completed!")
     setCheckoutDialogOpen(false)
     resetCart()
+    navigate(`/receipts/${newTransaction.id}`)
   }
 
   const resetCart = () => {

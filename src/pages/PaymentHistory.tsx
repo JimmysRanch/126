@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Receipt, Download, PawPrint } from "@phosphor-icons/react"
+import { ArrowLeft, Receipt, PawPrint } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -130,9 +130,13 @@ export function PaymentHistory() {
                     </Badge>
                     <span className="text-[10px] text-muted-foreground">{payment.method}</span>
                   </div>
-                  <Button variant="ghost" size="sm" className="text-[10px] h-6 px-2">
-                    <Download size={12} className="mr-1" />
-                    Download
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-[10px] h-6 px-2"
+                    onClick={() => navigate(`/receipts/${payment.id}`)}
+                  >
+                    View Receipt
                   </Button>
                 </div>
 
