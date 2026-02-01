@@ -720,6 +720,30 @@ export function AddClient() {
                   }}
                 />
                 <p className="text-xs text-muted-foreground">Upload a reference photo for the desired look.</p>
+                {pet.desiredStylePhoto && (
+                  <div className="rounded-lg border border-border bg-muted/30 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-xs font-medium text-foreground">Preview uploaded photo</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => updatePet(pet.id, 'desiredStylePhoto', '')}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="mt-2 overflow-hidden rounded-md border border-border bg-background">
+                      <img
+                        src={pet.desiredStylePhoto}
+                        alt={`${pet.name || 'Pet'} grooming reference`}
+                        className="h-40 w-full object-cover"
+                      />
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground">Image uploaded successfully.</p>
+                  </div>
+                )}
               </div>
 
               <Separator />
