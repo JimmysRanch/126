@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, X, PawPrint, User } from "@phosphor-icons/react"
+import { Plus, X, PawPrint, Scissors, User } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -74,6 +74,7 @@ interface PetInfo {
   faceStyle: string
   skipEarTrim: boolean
   skipTailTrim: boolean
+  desiredStylePhoto: string
   groomingNotes: string
   temperament: string[]
 }
@@ -129,6 +130,7 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
+      desiredStylePhoto: '',
       groomingNotes: '',
       temperament: []
     }
@@ -150,6 +152,7 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
+      desiredStylePhoto: '',
       groomingNotes: '',
       temperament: []
     }
@@ -274,6 +277,7 @@ export function AddClient() {
         faceStyle: pet.faceStyle,
         skipEarTrim: pet.skipEarTrim,
         skipTailTrim: pet.skipTailTrim,
+        desiredStylePhoto: pet.desiredStylePhoto || undefined,
         groomingNotes: pet.groomingNotes.trim(),
         temperament: pet.temperament
       }
@@ -424,241 +428,138 @@ export function AddClient() {
         </Card>
 
         {pets.map((pet, index) => (
-          <Card key={pet.id} className="bg-card border-border mb-6">
-            <CardHeader className="flex flex-row items-center justify-between pt-4 pb-3">
-              <CardTitle className="flex items-center gap-2">
-                <PawPrint size={20} weight="fill" className="text-primary" />
-                Pet Information {pets.length > 1 && `#${index + 1}`}
-              </CardTitle>
-              {pets.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removePet(pet.id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <X size={16} className="mr-1" />
-                  Delete Pet
-                </Button>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-4 pt-3 pb-6">
-              <div className="grid grid-cols-4 gap-4">
-                <div className="space-y-2 col-span-1">
-                  <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
-                  <Input
-                    id={`pet-name-${pet.id}`}
-                    value={pet.name}
-                    onChange={(e) => updatePet(pet.id, 'name', e.target.value)}
-                    placeholder="Charlie"
-                  />
-                </div>
-                <div className="space-y-2 col-span-1">
-                  <Label htmlFor={`pet-weight-${pet.id}`}>Weight *</Label>
-                  <Input
-                    id={`pet-weight-${pet.id}`}
-                    value={pet.weight}
-                    onChange={(e) => updatePet(pet.id, 'weight', e.target.value)}
-                    placeholder="55"
-                  />
-                </div>
-                <div className="space-y-2 col-span-2">
-                  <Label htmlFor={`pet-gender-${pet.id}`}>Gender *</Label>
-                  <Select 
-                    value={pet.gender} 
-                    onValueChange={(value) => updatePet(pet.id, 'gender', value)}
+          <div key={pet.id} className="mb-6 space-y-6">
+            <Card className="bg-card border-border">
+              <CardHeader className="flex flex-row items-center justify-between pt-4 pb-3">
+                <CardTitle className="flex items-center gap-2">
+                  <PawPrint size={20} weight="fill" className="text-primary" />
+                  Pet Information {pets.length > 1 && `#${index + 1}`}
+                </CardTitle>
+                {pets.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removePet(pet.id)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                   >
-                    <SelectTrigger id={`pet-gender-${pet.id}`}>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
-                  <BreedCombobox
-                    id={`pet-breed-${pet.id}`}
-                    value={pet.breed}
-                    onChange={(value) => {
-                      updatePet(pet.id, 'breed', value)
-                      setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: false } : p))
-                    }}
-                    onBlur={(value) => {
-                      if (!DOG_BREEDS.includes(value as any)) {
-                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
-                      }
-                    }}
-                    error={pet.breedError}
-                  />
-                  <p className="text-xs text-muted-foreground">Select a breed from the list</p>
-                  {pet.breedError && (
-                    <p className="text-xs text-destructive">Please select a breed from the list.</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed (if applicable)</Label>
-                  <BreedCombobox
-                    id={`pet-mixed-breed-${pet.id}`}
-                    value={pet.mixedBreed}
-                    onChange={(value) => {
-                      updatePet(pet.id, 'mixedBreed', value)
-                      setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: false } : p))
-                    }}
-                    onBlur={(value) => {
-                      if (value && !DOG_BREEDS.includes(value as any)) {
-                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: true } : p))
-                      }
-                    }}
-                    error={pet.mixedBreedError}
-                  />
-                  <p className="text-xs text-muted-foreground">Select a second breed if mixed</p>
-                  {pet.mixedBreedError && (
-                    <p className="text-xs text-destructive">Please select a breed from the list.</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-color-${pet.id}`}>Color</Label>
-                  <Select 
-                    value={pet.color} 
-                    onValueChange={(value) => updatePet(pet.id, 'color', value)}
-                  >
-                    <SelectTrigger id={`pet-color-${pet.id}`}>
-                      <SelectValue placeholder="Select color" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DOG_COLORS.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
-                  <Input
-                    id={`pet-birthday-${pet.id}`}
-                    type="date"
-                    value={pet.birthday}
-                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h3 className="font-semibold text-sm">Grooming Preferences</h3>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Overall length</Label>
-                  <RadioGroup 
-                    value={pet.overallLength} 
-                    onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
-                  >
-                    <div className="grid grid-cols-4 gap-1">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
-                        <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
-                          Short & neat
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Medium & neat" id={`${pet.id}-length-medium`} />
-                        <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer">
-                          Medium & neat
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Long & fluffy" id={`${pet.id}-length-long`} />
-                        <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer">
-                          Long & fluffy
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Breed standard" id={`${pet.id}-length-breed`} />
-                        <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer">
-                          Breed standard
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Face style</Label>
-                  <RadioGroup 
-                    value={pet.faceStyle} 
-                    onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
-                  >
-                    <div className="grid grid-cols-4 gap-1">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
-                        <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
-                          Short & neat
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Round / Teddy" id={`${pet.id}-face-round`} />
-                        <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer">
-                          Round / Teddy
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Beard / Mustache" id={`${pet.id}-face-beard`} />
-                        <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer">
-                          Beard / Mustache
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="Breed Standard" id={`${pet.id}-face-breed`} />
-                        <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer">
-                          Breed Standard
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Separator />
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div className="flex items-center space-x-1.5">
-                      <Checkbox
-                        id={`${pet.id}-skip-ear-trim`}
-                        checked={pet.skipEarTrim}
-                        onCheckedChange={(checked) => updatePet(pet.id, 'skipEarTrim', checked as boolean)}
-                      />
-                      <Label htmlFor={`${pet.id}-skip-ear-trim`} className="text-sm font-normal cursor-pointer">
-                        Skip Ear Trim
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-1.5">
-                      <Checkbox
-                        id={`${pet.id}-skip-tail-trim`}
-                        checked={pet.skipTailTrim}
-                        onCheckedChange={(checked) => updatePet(pet.id, 'skipTailTrim', checked as boolean)}
-                      />
-                      <Label htmlFor={`${pet.id}-skip-tail-trim`} className="text-sm font-normal cursor-pointer">
-                        Skip Tail Trim
-                      </Label>
-                    </div>
+                    <X size={16} className="mr-1" />
+                    Delete Pet
+                  </Button>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-4 pt-3 pb-6">
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-name-${pet.id}`}>Pet Name *</Label>
+                    <Input
+                      id={`pet-name-${pet.id}`}
+                      value={pet.name}
+                      onChange={(e) => updatePet(pet.id, 'name', e.target.value)}
+                      placeholder="Charlie"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-weight-${pet.id}`}>Weight *</Label>
+                    <Input
+                      id={`pet-weight-${pet.id}`}
+                      value={pet.weight}
+                      onChange={(e) => updatePet(pet.id, 'weight', e.target.value)}
+                      placeholder="55"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-gender-${pet.id}`}>Gender *</Label>
+                    <Select 
+                      value={pet.gender} 
+                      onValueChange={(value) => updatePet(pet.id, 'gender', value)}
+                    >
+                      <SelectTrigger id={`pet-gender-${pet.id}`}>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
-                <Separator />
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
+                    <BreedCombobox
+                      id={`pet-breed-${pet.id}`}
+                      value={pet.breed}
+                      onChange={(value) => {
+                        updatePet(pet.id, 'breed', value)
+                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: false } : p))
+                      }}
+                      onBlur={(value) => {
+                        if (!DOG_BREEDS.includes(value as any)) {
+                          setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, breedError: true } : p))
+                        }
+                      }}
+                      error={pet.breedError}
+                    />
+                    <p className="text-xs text-muted-foreground">Select a breed from the list</p>
+                    {pet.breedError && (
+                      <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-mixed-breed-${pet.id}`}>Mixed Breed (if applicable)</Label>
+                    <BreedCombobox
+                      id={`pet-mixed-breed-${pet.id}`}
+                      value={pet.mixedBreed}
+                      onChange={(value) => {
+                        updatePet(pet.id, 'mixedBreed', value)
+                        setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: false } : p))
+                      }}
+                      onBlur={(value) => {
+                        if (value && !DOG_BREEDS.includes(value as any)) {
+                          setPets((prevPets) => prevPets.map(p => p.id === pet.id ? { ...p, mixedBreedError: true } : p))
+                        }
+                      }}
+                      error={pet.mixedBreedError}
+                    />
+                    <p className="text-xs text-muted-foreground">Select a second breed if mixed</p>
+                    {pet.mixedBreedError && (
+                      <p className="text-xs text-destructive">Please select a breed from the list.</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-color-${pet.id}`}>Color</Label>
+                    <Select 
+                      value={pet.color} 
+                      onValueChange={(value) => updatePet(pet.id, 'color', value)}
+                    >
+                      <SelectTrigger id={`pet-color-${pet.id}`}>
+                        <SelectValue placeholder="Select color" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DOG_COLORS.map((color) => (
+                          <SelectItem key={color} value={color}>
+                            {color}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-                <div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
+                    <Input
+                      id={`pet-birthday-${pet.id}`}
+                      type="date"
+                      value={pet.birthday}
+                      onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                   <Label className="text-sm font-medium mb-2 block">Temperament</Label>
                   <div className="flex flex-wrap gap-2">
                     {temperamentOptions.map((option) => {
@@ -685,23 +586,158 @@ export function AddClient() {
                     })}
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+          <Card className="bg-card border-border">
+            <CardHeader className="pt-4 pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <Scissors size={20} weight="fill" className="text-primary" />
+                Grooming Preferences {pet.name ? `• ${pet.name}` : ''}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-3 pb-6">
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+                <RadioGroup 
+                  value={pet.overallLength} 
+                  onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
+                >
+                  <div className="flex flex-wrap gap-1">
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
+                      <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
+                        Short & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Medium & neat" id={`${pet.id}-length-medium`} />
+                      <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer">
+                        Medium & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Long & fluffy" id={`${pet.id}-length-long`} />
+                      <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer">
+                        Long & fluffy
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Breed standard" id={`${pet.id}-length-breed`} />
+                      <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer">
+                        Breed standard
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
 
-                <Separator />
+              <Separator />
 
-                <div>
-                  <Label htmlFor={`${pet.id}-grooming-notes`} className="text-sm font-medium mb-2 block">Additional Details</Label>
-                  <Textarea
-                    id={`${pet.id}-grooming-notes`}
-                    value={pet.groomingNotes}
-                    onChange={(e) => updatePet(pet.id, 'groomingNotes', e.target.value)}
-                    placeholder="Any special grooming instructions..."
-                    rows={2}
-                    className="text-sm"
-                  />
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Face style</Label>
+                <RadioGroup 
+                  value={pet.faceStyle} 
+                  onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
+                >
+                  <div className="flex flex-wrap gap-1">
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
+                      <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
+                        Short & neat
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Round / Teddy" id={`${pet.id}-face-round`} />
+                      <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer">
+                        Round / Teddy
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Beard / Mustache" id={`${pet.id}-face-beard`} />
+                      <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer">
+                        Beard / Mustache
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-0.5">
+                      <RadioGroupItem value="Breed Standard" id={`${pet.id}-face-breed`} />
+                      <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer">
+                        Breed Standard
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="flex items-center space-x-1.5">
+                    <Checkbox
+                      id={`${pet.id}-skip-ear-trim`}
+                      checked={pet.skipEarTrim}
+                      onCheckedChange={(checked) => updatePet(pet.id, 'skipEarTrim', checked as boolean)}
+                    />
+                    <Label htmlFor={`${pet.id}-skip-ear-trim`} className="text-sm font-normal cursor-pointer">
+                      Skip Ear Trim
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-1.5">
+                    <Checkbox
+                      id={`${pet.id}-skip-tail-trim`}
+                      checked={pet.skipTailTrim}
+                      onCheckedChange={(checked) => updatePet(pet.id, 'skipTailTrim', checked as boolean)}
+                    />
+                    <Label htmlFor={`${pet.id}-skip-tail-trim`} className="text-sm font-normal cursor-pointer">
+                      Skip Tail Trim
+                    </Label>
+                  </div>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${pet.id}-desired-style`} className="text-sm font-medium">What I want</Label>
+                <Input
+                  id={`${pet.id}-desired-style`}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) {
+                      updatePet(pet.id, 'desiredStylePhoto', '')
+                      return
+                    }
+                    const reader = new FileReader()
+                    reader.onload = () => {
+                      updatePet(
+                        pet.id,
+                        'desiredStylePhoto',
+                        typeof reader.result === 'string' ? reader.result : ''
+                      )
+                    }
+                    reader.readAsDataURL(file)
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">Upload a reference photo for the desired look.</p>
+              </div>
+
+              <Separator />
+
+              <div>
+                <Label htmlFor={`${pet.id}-grooming-notes`} className="text-sm font-medium mb-2 block">Additional Details</Label>
+                <Textarea
+                  id={`${pet.id}-grooming-notes`}
+                  value={pet.groomingNotes}
+                  onChange={(e) => updatePet(pet.id, 'groomingNotes', e.target.value)}
+                  placeholder="Any special grooming instructions..."
+                  rows={2}
+                  className="text-sm"
+                />
               </div>
             </CardContent>
           </Card>
+        </div>
         ))}
 
         <div className="mb-6">
