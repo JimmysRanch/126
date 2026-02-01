@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { PawPrint, PencilSimple, Calendar, Scissors, Star } from "@phosphor-icons/react"
+import { PawPrint, PencilSimple, Scissors } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,40 +9,39 @@ interface PetCardProps {
   id: string
   name: string
   breed: string
+  mixedBreed?: string
   status: string
   temperament: string[]
-  lastAppointment?: string
-  nextVisit?: string
-  age?: string
   weight?: string
   color?: string
-  sex?: string
+  gender?: string
+  birthday?: string
+  overallLength?: string
+  faceStyle?: string
+  skipEarTrim?: boolean
+  skipTailTrim?: boolean
+  desiredStylePhoto?: string
+  groomingNotes?: string
   index: number
-  haircut?: string
-  shampoo?: string
-  addOns?: string[]
-  specialInstructions?: string
-  favoriteGroomer?: string
 }
 
 export function PetCard({
   id,
   name,
   breed,
+  mixedBreed,
   status,
   temperament,
-  lastAppointment,
-  nextVisit,
-  age,
   weight,
   color,
-  sex,
-  index,
-  haircut,
-  shampoo,
-  addOns = [],
-  specialInstructions,
-  favoriteGroomer
+  gender,
+  birthday,
+  overallLength,
+  faceStyle,
+  skipEarTrim,
+  skipTailTrim,
+  desiredStylePhoto,
+  groomingNotes
 }: PetCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
   const { clientId } = useParams()
@@ -96,7 +95,9 @@ export function PetCard({
                 <PawPrint size={18} weight="fill" className="text-primary" />
                 {name}
               </h3>
-              <p className="text-sm text-muted-foreground">{breed} • {status}</p>
+              <p className="text-sm text-muted-foreground">
+                {breed}{mixedBreed ? ` / ${mixedBreed}` : ''} • {status}
+              </p>
               {temperament.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {temperament.map((trait) => (
@@ -112,17 +113,17 @@ export function PetCard({
               )}
             </div>
 
-            <div className="grid grid-cols-4 gap-2 mb-3">
-              {age && (
-                <div className="bg-secondary/30 rounded-md p-2 border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Age</p>
-                  <p className="text-sm font-semibold">{age}</p>
-                </div>
-              )}
+            <div className="grid grid-cols-2 gap-2 mb-3">
               {weight && (
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Weight</p>
                   <p className="text-sm font-semibold">{weight}</p>
+                </div>
+              )}
+              {gender && (
+                <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Gender</p>
+                  <p className="text-sm font-semibold">{gender}</p>
                 </div>
               )}
               {color && (
@@ -131,48 +132,12 @@ export function PetCard({
                   <p className="text-sm font-semibold">{color}</p>
                 </div>
               )}
-              {sex && (
+              {birthday && (
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Sex</p>
-                  <p className="text-sm font-semibold">{sex}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Birthday</p>
+                  <p className="text-sm font-semibold">{birthday}</p>
                 </div>
               )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              <div className="bg-secondary/30 rounded-md p-2 border border-border">
-                <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
-                  <Calendar size={12} className="text-primary" />
-                  Last appointment
-                </p>
-                <p className="text-sm text-muted-foreground">{lastAppointment || "—"}</p>
-              </div>
-              <div className="bg-secondary/30 rounded-md p-2 border border-border">
-                <p className="text-xs font-medium mb-0.5 flex items-center gap-1">
-                  <Calendar size={12} className="text-primary" />
-                  Next visit
-                </p>
-                <p className="text-sm font-bold text-foreground">{nextVisit || "—"}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="font-semibold text-xs transition-colors duration-200"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Add Note
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="font-semibold text-xs transition-colors duration-200"
-                onClick={(e) => e.stopPropagation()}
-              >
-                Upload Photo
-              </Button>
             </div>
 
             <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground italic">
@@ -212,34 +177,46 @@ export function PetCard({
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
-                    Preferred Cut
+                    Overall length
                   </p>
-                  <p className="text-sm font-semibold">{haircut || "Not specified"}</p>
+                  <p className="text-sm font-semibold">{overallLength || "Not specified"}</p>
                 </div>
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
-                    Shampoo
+                    Face style
                   </p>
-                  <p className="text-sm font-semibold">{shampoo || "Standard"}</p>
+                  <p className="text-sm font-semibold">{faceStyle || "Not specified"}</p>
                 </div>
               </div>
 
-              {favoriteGroomer && (
+              <div className="bg-secondary/30 rounded-md p-2 border border-border">
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                  Trim preferences
+                </p>
+                <p className="text-sm font-semibold">
+                  {skipEarTrim ? "Skip ear trim" : "Ear trim ok"} • {skipTailTrim ? "Skip tail trim" : "Tail trim ok"}
+                </p>
+              </div>
+
+              {desiredStylePhoto && (
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5 flex items-center gap-1">
-                    <Star size={12} className="text-primary" weight="fill" />
-                    Favorite Groomer
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
+                    Desired style
                   </p>
-                  <p className="text-sm font-semibold">{favoriteGroomer}</p>
+                  <img
+                    src={desiredStylePhoto}
+                    alt={`${name || 'Pet'} grooming reference`}
+                    className="h-24 w-full object-cover rounded"
+                  />
                 </div>
               )}
 
-              {specialInstructions && (
+              {groomingNotes && (
                 <div className="bg-secondary/30 rounded-md p-2 border border-border">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                    Special Instructions
+                    Additional details
                   </p>
-                  <p className="text-xs text-foreground">{specialInstructions}</p>
+                  <p className="text-xs text-foreground">{groomingNotes}</p>
                 </div>
               )}
             </div>
