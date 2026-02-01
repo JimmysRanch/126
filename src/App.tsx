@@ -23,6 +23,8 @@ import { StaffPayrollBreakdown } from '@/pages/StaffPayrollBreakdown'
 import { EditStaff } from '@/pages/EditStaff'
 import { Settings } from '@/pages/Settings'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
+import { ReportsLanding } from '@/pages/reports/ReportsLanding'
+import { ReportPage } from '@/pages/reports/ReportPage'
 import { Appointments } from '@/pages/Appointments'
 import { NewAppointment } from '@/pages/NewAppointment'
 import { EditAppointment } from '@/pages/EditAppointment'
@@ -94,7 +96,22 @@ function App() {
             <Route path="/finances/file-taxes" element={<FileTaxes />} />
             <Route path="/finances/run-payroll" element={<RunPayroll />} />
             <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
-            <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+            <Route path="/reports" element={<ReportsLanding />} />
+            <Route path="/reports/owner-overview" element={<ReportPage reportId="owner-overview" />} />
+            <Route path="/reports/true-profit" element={<ReportPage reportId="true-profit" />} />
+            <Route path="/reports/sales-summary" element={<ReportPage reportId="sales-summary" />} />
+            <Route path="/reports/finance-recon" element={<ReportPage reportId="finance-recon" />} />
+            <Route path="/reports/appointments-capacity" element={<ReportPage reportId="appointments-capacity" />} />
+            <Route path="/reports/no-shows" element={<ReportPage reportId="no-shows" />} />
+            <Route path="/reports/retention" element={<ReportPage reportId="retention" />} />
+            <Route path="/reports/cohorts-ltv" element={<ReportPage reportId="cohorts-ltv" />} />
+            <Route path="/reports/staff-performance" element={<ReportPage reportId="staff-performance" />} />
+            <Route path="/reports/payroll" element={<ReportPage reportId="payroll" />} />
+            <Route path="/reports/service-mix" element={<ReportPage reportId="service-mix" />} />
+            <Route path="/reports/inventory" element={<ReportPage reportId="inventory" />} />
+            <Route path="/reports/marketing-roi" element={<ReportPage reportId="marketing-roi" />} />
+            <Route path="/reports/tips" element={<ReportPage reportId="tips" />} />
+            <Route path="/reports/taxes" element={<ReportPage reportId="taxes" />} />
             <Route path="/recent-activity" element={<RecentActivityPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
