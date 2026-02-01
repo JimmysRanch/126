@@ -602,28 +602,28 @@ export function AddClient() {
                   value={pet.overallLength} 
                   onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
                 >
-                  <div className="grid max-w-sm grid-cols-2 gap-x-1 gap-y-1 sm:grid-cols-2">
-                    <div className="flex items-center space-x-0.5">
+                  <div className="grid grid-cols-4 gap-px">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
-                      <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Short & neat
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Medium & neat" id={`${pet.id}-length-medium`} />
-                      <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-length-medium`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Medium & neat
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Long & fluffy" id={`${pet.id}-length-long`} />
-                      <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-length-long`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Long & fluffy
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Breed standard" id={`${pet.id}-length-breed`} />
-                      <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-length-breed`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Breed standard
                       </Label>
                     </div>
@@ -639,28 +639,28 @@ export function AddClient() {
                   value={pet.faceStyle} 
                   onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
                 >
-                  <div className="grid max-w-sm grid-cols-2 gap-x-1 gap-y-1 sm:grid-cols-2">
-                    <div className="flex items-center space-x-0.5">
+                  <div className="grid grid-cols-4 gap-px">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
-                      <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Short & neat
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Round / Teddy" id={`${pet.id}-face-round`} />
-                      <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-face-round`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Round / Teddy
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Beard / Mustache" id={`${pet.id}-face-beard`} />
-                      <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-face-beard`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Beard / Mustache
                       </Label>
                     </div>
-                    <div className="flex items-center space-x-0.5">
+                    <div className="flex items-center space-x-px whitespace-nowrap">
                       <RadioGroupItem value="Breed Standard" id={`${pet.id}-face-breed`} />
-                      <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer">
+                      <Label htmlFor={`${pet.id}-face-breed`} className="text-sm font-normal cursor-pointer whitespace-nowrap">
                         Breed Standard
                       </Label>
                     </div>
