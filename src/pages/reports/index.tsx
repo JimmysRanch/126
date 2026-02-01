@@ -34,7 +34,7 @@ import { useReportPreferences } from './hooks/useReportData'
 
 // Import report pages
 import { OwnerOverview } from './pages/OwnerOverview'
-import { TrueProfit } from './pages/TrueProfit'
+import { TrueProfitMargin } from './pages/TrueProfitMargin'
 import { SalesSummary } from './pages/SalesSummary'
 import { FinanceReconciliation } from './pages/FinanceReconciliation'
 import { AppointmentsCapacity } from './pages/AppointmentsCapacity'
@@ -45,7 +45,7 @@ import { StaffPerformance } from './pages/StaffPerformance'
 import { PayrollCompensation } from './pages/PayrollCompensation'
 import { ServiceMixPricing } from './pages/ServiceMixPricing'
 import { InventoryUsage } from './pages/InventoryUsage'
-import { MarketingMessaging } from './pages/MarketingMessaging'
+import { MarketingROI } from './pages/MarketingROI'
 import { TipsGratuities } from './pages/TipsGratuities'
 import { TaxesSummary } from './pages/TaxesSummary'
 
@@ -319,7 +319,7 @@ export function Reports() {
     <Routes>
       <Route index element={<ReportsLanding />} />
       <Route path="owner-overview" element={<OwnerOverview />} />
-      <Route path="true-profit" element={<TrueProfit />} />
+      <Route path="true-profit" element={<TrueProfitMargin />} />
       <Route path="sales-summary" element={<SalesSummary />} />
       <Route path="finance-reconciliation" element={<FinanceReconciliation />} />
       <Route path="appointments-capacity" element={<AppointmentsCapacity />} />
@@ -330,7 +330,7 @@ export function Reports() {
       <Route path="payroll-compensation" element={<PayrollCompensation />} />
       <Route path="service-mix-pricing" element={<ServiceMixPricing />} />
       <Route path="inventory-usage" element={<InventoryUsage />} />
-      <Route path="marketing-messaging" element={<MarketingMessaging />} />
+      <Route path="marketing-messaging" element={<MarketingROI />} />
       <Route path="tips-gratuities" element={<TipsGratuities />} />
       <Route path="taxes-summary" element={<TaxesSummary />} />
     </Routes>
