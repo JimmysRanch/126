@@ -19,6 +19,7 @@ export interface Pet {
   faceStyle?: string
   skipEarTrim?: boolean
   skipTailTrim?: boolean
+  desiredStylePhoto?: string
   groomingNotes?: string
 }
 
