@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, PawPrint } from "@phosphor-icons/react"
+import { ArrowLeft, PawPrint, Scissors } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -78,15 +78,12 @@ export function AddPet() {
   const [faceStyle, setFaceStyle] = useState('')
   const [skipEarTrim, setSkipEarTrim] = useState(false)
   const [skipTailTrim, setSkipTailTrim] = useState(false)
+  const [desiredStylePhoto, setDesiredStylePhoto] = useState('')
   const [groomingNotes, setGroomingNotes] = useState('')
 
   const validateForm = () => {
     if (!name.trim()) {
       toast.error('Please enter a pet name')
-      return false
-    }
-    if (!birthday.trim()) {
-      toast.error('Please enter a birthday')
       return false
     }
     if (!weight.trim()) {
@@ -100,6 +97,11 @@ export function AddPet() {
     if (!breed.trim() || !DOG_BREEDS.includes(breed as any)) {
       setBreedError(true)
       toast.error('Please select a breed from the list')
+      return false
+    }
+    if (mixedBreed.trim() && !DOG_BREEDS.includes(mixedBreed as any)) {
+      setMixedBreedError(true)
+      toast.error('Please select a mixed breed from the list')
       return false
     }
     return true
@@ -123,6 +125,7 @@ export function AddPet() {
       faceStyle,
       skipEarTrim,
       skipTailTrim,
+      desiredStylePhoto,
       groomingNotes
     })
     
@@ -137,19 +140,27 @@ export function AddPet() {
   return (
     <div className="min-h-screen bg-background text-foreground p-3 sm:p-6">
       <div className="max-w-[1200px] mx-auto">
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-start gap-4 mb-6">
           <Button
             variant="ghost"
             size="icon"
-            className="hover:bg-secondary transition-all duration-200"
+            className="hover:bg-secondary transition-all duration-200 mt-1"
             onClick={handleCancel}
           >
             <ArrowLeft size={24} />
           </Button>
-          <h1 className="text-2xl sm:text-3xl font-bold">Add New Pet</h1>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/20 flex items-center justify-center">
+              <PawPrint size={24} weight="fill" className="text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">Add New Pet</h1>
+              <p className="text-sm text-muted-foreground">Create a profile for this pet</p>
+            </div>
+          </div>
         </div>
 
-        <Card className="bg-card border-border mb-6">
+        <Card className="bg-card border-border">
           <CardHeader className="pt-4 pb-3">
             <CardTitle className="flex items-center gap-2">
               <PawPrint size={20} weight="fill" className="text-primary" />
@@ -157,7 +168,7 @@ export function AddPet() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-3 pb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Pet Name *</Label>
                 <Input
@@ -188,15 +199,6 @@ export function AddPet() {
                     <SelectItem value="Female">Female</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="birthday">Birthday *</Label>
-                <Input
-                  id="birthday"
-                  type="date"
-                  value={birthday}
-                  onChange={(e) => setBirthday(e.target.value)}
-                />
               </div>
             </div>
 
@@ -259,86 +261,20 @@ export function AddPet() {
                 </Select>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card className="bg-card border-border mb-6">
-          <CardHeader className="pt-4 pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <PawPrint size={20} weight="fill" className="text-primary" />
-              Grooming Preferences
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-3 pb-6">
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Overall length</Label>
-              <RadioGroup value={overallLength} onValueChange={setOverallLength}>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Short & neat" id="length-short" />
-                    <Label htmlFor="length-short" className="text-sm font-normal cursor-pointer">
-                      Short & neat
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Medium & neat" id="length-medium" />
-                    <Label htmlFor="length-medium" className="text-sm font-normal cursor-pointer">
-                      Medium & neat
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Long & fluffy" id="length-long" />
-                    <Label htmlFor="length-long" className="text-sm font-normal cursor-pointer">
-                      Long & fluffy
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Breed standard" id="length-breed" />
-                    <Label htmlFor="length-breed" className="text-sm font-normal cursor-pointer">
-                      Breed standard
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="birthday">Birthday</Label>
+                <Input
+                  id="birthday"
+                  type="date"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value)}
+                />
+              </div>
             </div>
 
-            <Separator />
-
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Face style</Label>
-              <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Short & neat" id="face-short" />
-                    <Label htmlFor="face-short" className="text-sm font-normal cursor-pointer">
-                      Short & neat
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Round / Teddy" id="face-round" />
-                    <Label htmlFor="face-round" className="text-sm font-normal cursor-pointer">
-                      Round / Teddy
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Beard / Mustache" id="face-beard" />
-                    <Label htmlFor="face-beard" className="text-sm font-normal cursor-pointer">
-                      Beard / Mustache
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-1.5">
-                    <RadioGroupItem value="Breed Standard" id="face-breed" />
-                    <Label htmlFor="face-breed" className="text-sm font-normal cursor-pointer">
-                      Breed Standard
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <Separator />
-
-            <div>
+            <div className="space-y-2">
               <Label className="text-sm font-medium mb-2 block">Temperament</Label>
               <div className="flex flex-wrap gap-2">
                 {temperamentOptions.map((option) => {
@@ -364,6 +300,82 @@ export function AddPet() {
                   )
                 })}
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-card border-border mb-6">
+          <CardHeader className="pt-4 pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <Scissors size={20} weight="fill" className="text-primary" />
+              Grooming Preferences {name ? `• ${name}` : ''}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-3 pb-6">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+              <RadioGroup value={overallLength} onValueChange={setOverallLength}>
+                <div className="grid grid-cols-4 gap-px">
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Short & neat" id="length-short" />
+                    <Label htmlFor="length-short" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Short & neat
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Medium & neat" id="length-medium" />
+                    <Label htmlFor="length-medium" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Medium & neat
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Long & fluffy" id="length-long" />
+                    <Label htmlFor="length-long" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Long & fluffy
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Breed standard" id="length-breed" />
+                    <Label htmlFor="length-breed" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Breed standard
+                    </Label>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <Separator />
+
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Face style</Label>
+              <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
+                <div className="grid grid-cols-4 gap-px">
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Short & neat" id="face-short" />
+                    <Label htmlFor="face-short" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Short & neat
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Round / Teddy" id="face-round" />
+                    <Label htmlFor="face-round" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Round / Teddy
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Beard / Mustache" id="face-beard" />
+                    <Label htmlFor="face-beard" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Beard / Mustache
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-px whitespace-nowrap">
+                    <RadioGroupItem value="Breed Standard" id="face-breed" />
+                    <Label htmlFor="face-breed" className="text-sm font-normal cursor-pointer whitespace-nowrap">
+                      Breed Standard
+                    </Label>
+                  </div>
+                </div>
+              </RadioGroup>
             </div>
 
             <Separator />
@@ -394,10 +406,56 @@ export function AddPet() {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="desired-style" className="text-sm font-medium">What I want</Label>
+              <Input
+                id="desired-style"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) {
+                    setDesiredStylePhoto('')
+                    return
+                  }
+                  const reader = new FileReader()
+                  reader.onload = () => {
+                    setDesiredStylePhoto(typeof reader.result === 'string' ? reader.result : '')
+                  }
+                  reader.readAsDataURL(file)
+                }}
+              />
+              <p className="text-xs text-muted-foreground">Upload a reference photo for the desired look.</p>
+              {desiredStylePhoto && (
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-medium text-foreground">Preview uploaded photo</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => setDesiredStylePhoto('')}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                  <div className="mt-2 overflow-hidden rounded-md border border-border bg-background">
+                    <img
+                      src={desiredStylePhoto}
+                      alt={`${name || 'Pet'} grooming reference`}
+                      className="h-40 w-full object-cover"
+                    />
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">Image uploaded successfully.</p>
+                </div>
+              )}
+            </div>
+
             <Separator />
 
             <div>
-              <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Additional notes</Label>
+              <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Additional Details</Label>
               <Textarea
                 id="grooming-notes"
                 value={groomingNotes}
@@ -410,17 +468,17 @@ export function AddPet() {
           </CardContent>
         </Card>
 
-        <div className="flex gap-3 justify-end">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 mt-6 pt-6 border-t border-border">
           <Button
             variant="secondary"
             onClick={handleCancel}
-            className="font-semibold"
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto"
           >
             Save Pet
           </Button>
