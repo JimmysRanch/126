@@ -602,7 +602,7 @@ export function AddClient() {
                   value={pet.overallLength} 
                   onValueChange={(value) => updatePet(pet.id, 'overallLength', value)}
                 >
-                  <div className="flex flex-wrap gap-1">
+                  <div className="grid max-w-sm grid-cols-2 gap-x-1 gap-y-1 sm:grid-cols-2">
                     <div className="flex items-center space-x-0.5">
                       <RadioGroupItem value="Short & neat" id={`${pet.id}-length-short`} />
                       <Label htmlFor={`${pet.id}-length-short`} className="text-sm font-normal cursor-pointer">
@@ -639,7 +639,7 @@ export function AddClient() {
                   value={pet.faceStyle} 
                   onValueChange={(value) => updatePet(pet.id, 'faceStyle', value)}
                 >
-                  <div className="flex flex-wrap gap-1">
+                  <div className="grid max-w-sm grid-cols-2 gap-x-1 gap-y-1 sm:grid-cols-2">
                     <div className="flex items-center space-x-0.5">
                       <RadioGroupItem value="Short & neat" id={`${pet.id}-face-short`} />
                       <Label htmlFor={`${pet.id}-face-short`} className="text-sm font-normal cursor-pointer">
