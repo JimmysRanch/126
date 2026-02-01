@@ -2505,3 +2505,88 @@ export function generateConfirmationLiftChart(messages: any[], appointments: Nor
   return [{ label: 'With Confirmation', value: 85 }, { label: 'Without', value: 65 }]
 }
 export const aggregateCampaignMetrics = getCampaignMetrics
+
+// Alias for tip breakdown with full signature
+export function aggregateTipsBreakdown(
+  appointments: NormalizedAppointment[],
+  _transactions: NormalizedTransaction[],
+  _staff: NormalizedStaff[],
+  groupBy: 'service' | 'staff'
+): AggregatedRow[] {
+  return aggregateTipsByServiceStaff(appointments, groupBy)
+}
+
+// ==================== Tax Functions ====================
+
+export function generateTaxByJurisdictionChart(
+  appointments: NormalizedAppointment[]
+): ChartDataPoint[] {
+  const jurisdictions = new Map<string, number>()
+  
+  appointments
+    .filter(a => a.status === 'completed')
+    .forEach(a => {
+      const jurisdiction = a.taxJurisdiction || 'Default'
+      const existing = jurisdictions.get(jurisdiction) || 0
+      jurisdictions.set(jurisdiction, existing + a.taxCents)
+    })
+  
+  return Array.from(jurisdictions.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([label, value]) => ({ label, value }))
+}
+
+export function generateTaxablePieChart(
+  appointments: NormalizedAppointment[]
+): ChartDataPoint[] {
+  const completed = appointments.filter(a => a.status === 'completed')
+  const taxable = completed.filter(a => a.isTaxable)
+  const nonTaxable = completed.filter(a => !a.isTaxable)
+  
+  return [
+    { label: 'Taxable', value: taxable.reduce((sum, a) => sum + a.netCents, 0) },
+    { label: 'Non-Taxable', value: nonTaxable.reduce((sum, a) => sum + a.netCents, 0) },
+  ]
+}
+
+export function aggregateTaxByJurisdiction(
+  appointments: NormalizedAppointment[]
+): AggregatedRow[] {
+  const jurisdictions = new Map<string, { 
+    base: number
+    tax: number
+    rate: number
+    count: number
+  }>()
+  
+  appointments
+    .filter(a => a.status === 'completed')
+    .forEach(a => {
+      const jurisdiction = a.taxJurisdiction || 'Default'
+      const rate = a.taxRatePercent || 0
+      const key = `${jurisdiction}-${rate}`
+      
+      const existing = jurisdictions.get(key) || { base: 0, tax: 0, rate, count: 0 }
+      existing.base += a.netCents
+      existing.tax += a.taxCents
+      existing.count++
+      jurisdictions.set(key, existing)
+    })
+  
+  return Array.from(jurisdictions.entries()).map(([key, data]) => {
+    const [jurisdiction] = key.split('-')
+    return {
+      id: key,
+      dimension: 'jurisdiction',
+      dimensionValue: jurisdiction,
+      metrics: {
+        taxableBase: data.base,
+        taxRate: data.rate,
+        taxCollected: data.tax,
+        invoices: data.count,
+      },
+      drillKey: `tax:jurisdiction:${key}`,
+    }
+  }).sort((a, b) => b.metrics.taxCollected - a.metrics.taxCollected)
+}
