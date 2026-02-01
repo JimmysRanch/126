@@ -74,6 +74,7 @@ interface PetInfo {
   faceStyle: string
   skipEarTrim: boolean
   skipTailTrim: boolean
+  desiredStylePhoto: string
   groomingNotes: string
   temperament: string[]
 }
@@ -129,6 +130,7 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
+      desiredStylePhoto: '',
       groomingNotes: '',
       temperament: []
     }
@@ -150,6 +152,7 @@ export function AddClient() {
       faceStyle: '',
       skipEarTrim: false,
       skipTailTrim: false,
+      desiredStylePhoto: '',
       groomingNotes: '',
       temperament: []
     }
@@ -274,6 +277,7 @@ export function AddClient() {
         faceStyle: pet.faceStyle,
         skipEarTrim: pet.skipEarTrim,
         skipTailTrim: pet.skipTailTrim,
+        desiredStylePhoto: pet.desiredStylePhoto || undefined,
         groomingNotes: pet.groomingNotes.trim(),
         temperament: pet.temperament
       }
@@ -462,7 +466,7 @@ export function AddClient() {
                     placeholder="55"
                   />
                 </div>
-                <div className="space-y-2 col-span-2">
+                <div className="space-y-2 col-span-1">
                   <Label htmlFor={`pet-gender-${pet.id}`}>Gender *</Label>
                   <Select 
                     value={pet.gender} 
@@ -477,9 +481,18 @@ export function AddClient() {
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2 col-span-1">
+                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
+                  <Input
+                    id={`pet-birthday-${pet.id}`}
+                    type="date"
+                    value={pet.birthday}
+                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor={`pet-breed-${pet.id}`}>Breed *</Label>
                   <BreedCombobox
@@ -540,14 +553,33 @@ export function AddClient() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor={`pet-birthday-${pet.id}`}>Birthday</Label>
-                  <Input
-                    id={`pet-birthday-${pet.id}`}
-                    type="date"
-                    value={pet.birthday}
-                    onChange={(e) => updatePet(pet.id, 'birthday', e.target.value)}
-                  />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium mb-2 block">Temperament</Label>
+                <div className="flex flex-wrap gap-2">
+                  {temperamentOptions.map((option) => {
+                    const isSelected = pet.temperament.includes(option)
+                    return (
+                      <Badge
+                        key={option}
+                        variant={isSelected ? "default" : "outline"}
+                        className={`cursor-pointer transition-colors ${
+                          isSelected 
+                            ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                            : "hover:bg-secondary"
+                        }`}
+                        onClick={() => {
+                          const newTemperament = isSelected
+                            ? pet.temperament.filter(t => t !== option)
+                            : [...pet.temperament, option]
+                          updatePet(pet.id, 'temperament', newTemperament)
+                        }}
+                      >
+                        {option}
+                      </Badge>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -656,34 +688,30 @@ export function AddClient() {
                   </div>
                 </div>
 
-                <Separator />
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Temperament</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {temperamentOptions.map((option) => {
-                      const isSelected = pet.temperament.includes(option)
-                      return (
-                        <Badge
-                          key={option}
-                          variant={isSelected ? "default" : "outline"}
-                          className={`cursor-pointer transition-colors ${
-                            isSelected 
-                              ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                              : "hover:bg-secondary"
-                          }`}
-                          onClick={() => {
-                            const newTemperament = isSelected
-                              ? pet.temperament.filter(t => t !== option)
-                              : [...pet.temperament, option]
-                            updatePet(pet.id, 'temperament', newTemperament)
-                          }}
-                        >
-                          {option}
-                        </Badge>
-                      )
-                    })}
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${pet.id}-desired-style`} className="text-sm font-medium">What I want</Label>
+                  <Input
+                    id={`${pet.id}-desired-style`}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) {
+                        updatePet(pet.id, 'desiredStylePhoto', '')
+                        return
+                      }
+                      const reader = new FileReader()
+                      reader.onload = () => {
+                        updatePet(
+                          pet.id,
+                          'desiredStylePhoto',
+                          typeof reader.result === 'string' ? reader.result : ''
+                        )
+                      }
+                      reader.readAsDataURL(file)
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">Upload a reference photo for the desired look.</p>
                 </div>
 
                 <Separator />
