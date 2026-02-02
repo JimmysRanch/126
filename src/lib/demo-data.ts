@@ -407,7 +407,15 @@ function generateDemoAppointments(
       
       const totalPrice = services.reduce((sum, s) => sum + s.price, 0)
       const [hours, mins] = slot.split(':').map(Number)
-      const endTime = format(setMinutes(setHours(new Date(), hours + 1), mins + 30), 'HH:mm')
+      
+      // Calculate duration based on service type and pet size
+      const baseDuration = mainService.id === 'deluxe-groom' ? 90 : mainService.id === 'trim-up' ? 60 : 45
+      const sizeMod = pet.weightCategory === 'giant' ? 30 : pet.weightCategory === 'large' ? 15 : 0
+      const durationMins = baseDuration + sizeMod + (services.length > 1 ? 15 : 0) // +15 for addons
+      const endMinutes = mins + durationMins
+      const endHour = hours + Math.floor(endMinutes / 60)
+      const endMin = endMinutes % 60
+      const endTime = format(setMinutes(setHours(new Date(), endHour), endMin), 'HH:mm')
       
       // Determine status based on date
       let status: Appointment['status'] = 'scheduled'
@@ -500,7 +508,13 @@ function generateDemoAppointments(
         
         const totalPrice = services.reduce((sum, s) => sum + s.price, 0)
         const [hours, mins] = slot.split(':').map(Number)
-        const endTime = format(setMinutes(setHours(new Date(), hours + 1), mins), 'HH:mm')
+        
+        // Calculate bath duration based on pet size (30-60 mins)
+        const bathDuration = pet.weightCategory === 'giant' ? 60 : pet.weightCategory === 'large' ? 50 : pet.weightCategory === 'medium' ? 40 : 30
+        const endMinutes = mins + bathDuration
+        const endHour = hours + Math.floor(endMinutes / 60)
+        const endMin = endMinutes % 60
+        const endTime = format(setMinutes(setHours(new Date(), endHour), endMin), 'HH:mm')
         
         let status: Appointment['status'] = 'scheduled'
         let tipAmount: number | undefined
