@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { InventoryItem, InventoryValueSnapshot } from "@/lib/types"
+import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry } from "@/lib/types"
 import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
@@ -19,11 +19,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 export function Inventory() {
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
   const [valueHistory, setValueHistory] = useKV<InventoryValueSnapshot[]>("inventory-value-history", [])
+  const [receiveHistory, setReceiveHistory] = useKV<ReceiveHistoryEntry[]>("inventory-receive-history", [])
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const [receivingItem, setReceivingItem] = useState<InventoryItem | null>(null)
   const [activeTab, setActiveTab] = useState<"inventory" | "reports">("inventory")
@@ -215,6 +217,20 @@ export function Inventory() {
 
     const qty = parseInt(receiveFormData.qty)
     const costPerUnit = parseFloat(receiveFormData.costPerUnit)
+    const totalCost = parseFloat(receiveFormData.totalCost)
+
+    const historyEntry: ReceiveHistoryEntry = {
+      id: Date.now().toString(),
+      itemId: receivingItem.id,
+      itemName: receivingItem.name,
+      timestamp: new Date().toISOString(),
+      quantity: qty,
+      totalCost: totalCost,
+      costPerUnit: costPerUnit,
+      action: receiveFormData.action
+    }
+
+    setReceiveHistory((current) => [historyEntry, ...(current || [])])
 
     if (receiveFormData.action === 'receive') {
       setInventory((current) => 
@@ -374,6 +390,10 @@ export function Inventory() {
                 className="pl-10"
               />
             </div>
+            <Button onClick={() => setHistoryDialogOpen(true)} variant="outline" className="w-full sm:w-auto">
+              <Package className="mr-2" />
+              History
+            </Button>
             <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto bg-primary text-primary-foreground">
               <Plus className="mr-2" />
               Add Item
@@ -495,31 +515,26 @@ export function Inventory() {
       </AlertDialog>
 
       <Dialog open={receiveDialogOpen} onOpenChange={setReceiveDialogOpen}>
-        <DialogContent className="max-w-[800px]">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Receive Item</DialogTitle>
+            <DialogTitle>Receive Item</DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="qty" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
-                  QTY
-                </Label>
+                <Label htmlFor="qty">QTY</Label>
                 <Input
                   id="qty"
                   type="number"
                   value={receiveFormData.qty}
                   onChange={(e) => handleReceiveFormChange('qty', e.target.value)}
                   placeholder="5"
-                  className="h-14 text-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="totalCost" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
-                  TOTAL COST <span className="normal-case whitespace-nowrap">(including shipping)</span>
-                </Label>
+                <Label htmlFor="totalCost">Total Cost (incl. shipping)</Label>
                 <Input
                   id="totalCost"
                   type="number"
@@ -527,16 +542,13 @@ export function Inventory() {
                   value={receiveFormData.totalCost}
                   onChange={(e) => handleReceiveFormChange('totalCost', e.target.value)}
                   placeholder="10.00"
-                  className="h-14 text-lg"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="costPerUnit" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
-                  COST PER UNIT <span className="normal-case whitespace-nowrap">(my cost)</span>
-                </Label>
+                <Label htmlFor="costPerUnit">Cost Per Unit (my cost)</Label>
                 <Input
                   id="costPerUnit"
                   type="number"
@@ -544,24 +556,17 @@ export function Inventory() {
                   value={receiveFormData.costPerUnit}
                   onChange={(e) => handleReceiveFormChange('costPerUnit', e.target.value)}
                   placeholder="2"
-                  className="h-14 text-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
-                  CHOOSE ONE
-                </Label>
-                <div className="flex gap-3 h-14">
+                <Label>Choose One</Label>
+                <div className="flex gap-2">
                   <Button
                     type="button"
                     onClick={() => setReceiveFormData({ ...receiveFormData, action: 'receive' })}
                     variant={receiveFormData.action === 'receive' ? 'default' : 'outline'}
-                    className={`flex-1 h-full text-base font-medium ${
-                      receiveFormData.action === 'receive' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-background hover:bg-muted'
-                    }`}
+                    className="flex-1"
                   >
                     Receive
                   </Button>
@@ -569,11 +574,7 @@ export function Inventory() {
                     type="button"
                     onClick={() => setReceiveFormData({ ...receiveFormData, action: 'ordered' })}
                     variant={receiveFormData.action === 'ordered' ? 'default' : 'outline'}
-                    className={`flex-1 h-full text-base font-medium ${
-                      receiveFormData.action === 'ordered' 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'bg-background hover:bg-muted'
-                    }`}
+                    className="flex-1"
                   >
                     Ordered
                   </Button>
@@ -581,19 +582,85 @@ export function Inventory() {
               </div>
             </div>
 
-            <Button 
-              onClick={handleReceiveSubmit}
-              className="w-full h-14 text-base font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Submit
-            </Button>
-
             {receiveFormData.qty && receiveFormData.action === 'receive' && receivingItem && (
-              <p className="text-center text-muted-foreground">
+              <p className="text-sm text-muted-foreground text-center">
                 Received to total stock: <span className="font-bold text-foreground">{parseInt(receiveFormData.qty) + receivingItem.quantity}</span>
               </p>
             )}
           </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReceiveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleReceiveSubmit}>
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Receive History</DialogTitle>
+          </DialogHeader>
+
+          <div className="overflow-y-auto max-h-[60vh]">
+            {!receiveHistory || receiveHistory.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Package size={48} className="mx-auto mb-3 opacity-50" />
+                <p>No receive history yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {receiveHistory.map((entry) => (
+                  <Card key={entry.id} className="p-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="font-semibold text-lg">{entry.itemName}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {new Date(entry.timestamp).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={entry.action === 'receive' ? 'default' : 'outline'}>
+                          {entry.action === 'receive' ? 'Received' : 'Ordered'}
+                        </Badge>
+                        <div className="mt-2 space-y-1 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">QTY:</span>{' '}
+                            <span className="font-semibold">{entry.quantity}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Cost/Unit:</span>{' '}
+                            <span className="font-semibold">${entry.costPerUnit.toFixed(2)}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Total:</span>{' '}
+                            <span className="font-semibold">${entry.totalCost.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHistoryDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

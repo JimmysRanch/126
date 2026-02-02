@@ -148,6 +148,17 @@ export interface InventoryValueSnapshot {
   supplyCount: number
 }
 
+export interface ReceiveHistoryEntry {
+  id: string
+  itemId: string
+  itemName: string
+  timestamp: string
+  quantity: number
+  totalCost: number
+  costPerUnit: number
+  action: 'receive' | 'ordered'
+}
+
 export interface Transaction {
   id: string
   appointmentId?: string
