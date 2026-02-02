@@ -28,6 +28,7 @@ import { NewAppointment } from '@/pages/NewAppointment'
 import { EditAppointment } from '@/pages/EditAppointment'
 import { POS } from '@/pages/POS'
 import { Inventory } from '@/pages/Inventory'
+import { InventoryHistory } from '@/pages/InventoryHistory'
 import { FinancesStaffPayrollBreakdown } from '@/pages/FinancesStaffPayrollBreakdown'
 import { StaffOnboarding } from '@/pages/dev/StaffOnboarding'
 import { StaffProfileSetup } from '@/pages/dev/StaffProfileSetup'
@@ -88,6 +89,7 @@ function App() {
             <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
             <Route path="/pos" element={<POS />} />
             <Route path="/inventory" element={<Inventory />} />
+            <Route path="/inventory/history" element={<InventoryHistory />} />
             <Route path="/receipts/:receiptId" element={<Receipt />} />
             <Route path="/finances" element={<Finances />} />
             <Route path="/finances/expenses" element={<ExpensesDetail />} />
