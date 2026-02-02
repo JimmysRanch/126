@@ -36,6 +36,7 @@ import { Receipt } from '@/pages/Receipt'
 import { useEffect, useMemo } from 'react'
 import { RecentActivityPage } from '@/pages/RecentActivityPage'
 import { useAppearance } from '@/hooks/useAppearance'
+import { Reports } from '@/pages/reports'
 
 function App() {
   const { selectedTheme, selectedUi } = useAppearance()
@@ -96,7 +97,7 @@ function App() {
             <Route path="/finances/file-taxes" element={<FileTaxes />} />
             <Route path="/finances/run-payroll" element={<RunPayroll />} />
             <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
-            <Route path="/reports" element={<PlaceholderPage title="Reports" />} />
+            <Route path="/reports/*" element={<Reports />} />
             <Route path="/recent-activity" element={<RecentActivityPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
