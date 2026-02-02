@@ -1085,6 +1085,7 @@ export function aggregateByDimension(
         noShowRate: calculateNoShowRate(appts),
       },
       drillKey: `${dimension}:${dimensionValue}`,
+      matchingIds: appts.map(a => a.id),
     }
   }).sort((a, b) => b.metrics.netSales - a.metrics.netSales)
 }

@@ -127,6 +127,7 @@ export interface AggregatedRow {
   dimensionValue: string
   metrics: Record<string, number>
   drillKey: string
+  matchingIds?: string[]
 }
 
 // Drill Row (underlying data)
