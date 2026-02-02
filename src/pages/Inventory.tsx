@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { InventoryItem, InventoryValueSnapshot } from "@/lib/types"
-import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar } from "@phosphor-icons/react"
+import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
@@ -23,7 +23,9 @@ export function Inventory() {
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
+  const [receivingItem, setReceivingItem] = useState<InventoryItem | null>(null)
   const [activeTab, setActiveTab] = useState<"inventory" | "reports">("inventory")
   const isMobile = useIsMobile()
 
@@ -31,6 +33,13 @@ export function Inventory() {
     name: "",
     category: "retail" as "retail" | "supply",
     description: ""
+  })
+
+  const [receiveFormData, setReceiveFormData] = useState({
+    qty: "",
+    totalCost: "",
+    costPerUnit: "",
+    action: "" as "" | "receive" | "ordered"
   })
 
   // Calculate and track inventory value snapshots
@@ -157,6 +166,73 @@ export function Inventory() {
     setDeleteDialogOpen(true)
   }
 
+  const handleOpenReceiveDialog = (item: InventoryItem) => {
+    setReceivingItem(item)
+    setReceiveFormData({
+      qty: "",
+      totalCost: "",
+      costPerUnit: "",
+      action: ""
+    })
+    setReceiveDialogOpen(true)
+  }
+
+  const handleReceiveFormChange = (field: 'qty' | 'totalCost' | 'costPerUnit', value: string) => {
+    const numValue = value === "" ? "" : value
+    const newFormData = { ...receiveFormData, [field]: numValue }
+
+    if (numValue === "") {
+      setReceiveFormData(newFormData)
+      return
+    }
+
+    const qty = field === 'qty' ? parseFloat(numValue) : parseFloat(newFormData.qty)
+    const totalCost = field === 'totalCost' ? parseFloat(numValue) : parseFloat(newFormData.totalCost)
+    const costPerUnit = field === 'costPerUnit' ? parseFloat(numValue) : parseFloat(newFormData.costPerUnit)
+
+    if (field === 'qty' && !isNaN(qty) && !isNaN(totalCost)) {
+      newFormData.costPerUnit = (totalCost / qty).toFixed(2)
+    } else if (field === 'qty' && !isNaN(qty) && !isNaN(costPerUnit)) {
+      newFormData.totalCost = (qty * costPerUnit).toFixed(2)
+    } else if (field === 'totalCost' && !isNaN(totalCost) && !isNaN(qty)) {
+      newFormData.costPerUnit = (totalCost / qty).toFixed(2)
+    } else if (field === 'totalCost' && !isNaN(totalCost) && !isNaN(costPerUnit)) {
+      newFormData.qty = (totalCost / costPerUnit).toFixed(0)
+    } else if (field === 'costPerUnit' && !isNaN(costPerUnit) && !isNaN(qty)) {
+      newFormData.totalCost = (qty * costPerUnit).toFixed(2)
+    } else if (field === 'costPerUnit' && !isNaN(costPerUnit) && !isNaN(totalCost)) {
+      newFormData.qty = (totalCost / costPerUnit).toFixed(0)
+    }
+
+    setReceiveFormData(newFormData)
+  }
+
+  const handleReceiveSubmit = () => {
+    if (!receiveFormData.qty || !receiveFormData.totalCost || !receiveFormData.costPerUnit || !receiveFormData.action || !receivingItem) {
+      toast.error("Please fill in all fields")
+      return
+    }
+
+    const qty = parseInt(receiveFormData.qty)
+    const costPerUnit = parseFloat(receiveFormData.costPerUnit)
+
+    if (receiveFormData.action === 'receive') {
+      setInventory((current) => 
+        (current || []).map(item => 
+          item.id === receivingItem.id 
+            ? { ...item, quantity: item.quantity + qty, cost: costPerUnit }
+            : item
+        )
+      )
+      toast.success(`Received ${qty} units of ${receivingItem.name}`)
+    } else if (receiveFormData.action === 'ordered') {
+      toast.success(`Marked ${qty} units of ${receivingItem.name} as ordered`)
+    }
+
+    setReceiveDialogOpen(false)
+    setReceivingItem(null)
+  }
+
   const renderInventoryTable = (items: InventoryItem[], categoryLabel: string) => (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -204,12 +280,18 @@ export function Inventory() {
                   </td>
                 )}
                 <td className="p-3">
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center gap-2">
                     <button
                       onClick={() => handleOpenDialog(item)}
                       className="text-primary hover:opacity-80"
                     >
                       <PencilSimple size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleOpenReceiveDialog(item)}
+                      className="text-primary hover:opacity-80"
+                    >
+                      <DownloadSimple size={18} />
                     </button>
                   </div>
                 </td>
@@ -411,6 +493,109 @@ export function Inventory() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={receiveDialogOpen} onOpenChange={setReceiveDialogOpen}>
+        <DialogContent className="max-w-3xl bg-muted/30">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Receive Product</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="qty" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                  QTY
+                </Label>
+                <Input
+                  id="qty"
+                  type="number"
+                  value={receiveFormData.qty}
+                  onChange={(e) => handleReceiveFormChange('qty', e.target.value)}
+                  placeholder="5"
+                  className="h-14 text-lg"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="totalCost" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                  TOTAL COST <span className="normal-case">(including shipping)</span>
+                </Label>
+                <Input
+                  id="totalCost"
+                  type="number"
+                  step="0.01"
+                  value={receiveFormData.totalCost}
+                  onChange={(e) => handleReceiveFormChange('totalCost', e.target.value)}
+                  placeholder="10.00"
+                  className="h-14 text-lg"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="costPerUnit" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                  COST PER UNIT <span className="normal-case">(my cost)</span>
+                </Label>
+                <Input
+                  id="costPerUnit"
+                  type="number"
+                  step="0.01"
+                  value={receiveFormData.costPerUnit}
+                  onChange={(e) => handleReceiveFormChange('costPerUnit', e.target.value)}
+                  placeholder="2"
+                  className="h-14 text-lg"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                  CHOOSE ONE
+                </Label>
+                <div className="flex gap-3 h-14">
+                  <Button
+                    type="button"
+                    onClick={() => setReceiveFormData({ ...receiveFormData, action: 'receive' })}
+                    variant={receiveFormData.action === 'receive' ? 'default' : 'outline'}
+                    className={`flex-1 h-full text-base font-medium ${
+                      receiveFormData.action === 'receive' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-background hover:bg-muted'
+                    }`}
+                  >
+                    Receive
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setReceiveFormData({ ...receiveFormData, action: 'ordered' })}
+                    variant={receiveFormData.action === 'ordered' ? 'default' : 'outline'}
+                    className={`flex-1 h-full text-base font-medium ${
+                      receiveFormData.action === 'ordered' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-background hover:bg-muted'
+                    }`}
+                  >
+                    Ordered
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              onClick={handleReceiveSubmit}
+              className="w-full h-14 text-base font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Submit
+            </Button>
+
+            {receiveFormData.qty && receiveFormData.action === 'receive' && receivingItem && (
+              <p className="text-center text-muted-foreground">
+                Received to total stock: <span className="font-bold text-foreground">{parseInt(receiveFormData.qty) + receivingItem.quantity}</span>
+              </p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
