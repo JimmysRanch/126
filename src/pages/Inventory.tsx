@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry, InventoryLedgerEntry } from "@/lib/types"
-import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple, Scales } from "@phosphor-icons/react"
+import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
@@ -27,10 +27,8 @@ export function Inventory() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false)
-  const [adjustmentDialogOpen, setAdjustmentDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const [receivingItem, setReceivingItem] = useState<InventoryItem | null>(null)
-  const [adjustingItem, setAdjustingItem] = useState<InventoryItem | null>(null)
   const [activeTab, setActiveTab] = useState<"inventory" | "reports">("inventory")
   const isMobile = useIsMobile()
 
@@ -45,11 +43,6 @@ export function Inventory() {
     totalCost: "",
     costPerUnit: "",
     action: "" as "" | "receive" | "ordered"
-  })
-
-  const [adjustmentFormData, setAdjustmentFormData] = useState({
-    quantity: "",
-    reason: ""
   })
 
   // Calculate and track inventory value snapshots
@@ -241,26 +234,10 @@ export function Inventory() {
     setReceiveHistory((current) => [historyEntry, ...(current || [])])
 
     if (receiveFormData.action === 'receive') {
-      const newQuantity = receivingItem.quantity + qty
-      
-      const ledgerEntry: InventoryLedgerEntry = {
-        id: Date.now().toString(),
-        timestamp: new Date().toISOString(),
-        itemId: receivingItem.id,
-        itemName: receivingItem.name,
-        change: qty,
-        reason: 'Received',
-        reference: `Receipt #${historyEntry.id.slice(-6)}`,
-        user: 'System',
-        resultingQuantity: newQuantity
-      }
-
-      setInventoryLedger((current) => [ledgerEntry, ...(current || [])])
-
       setInventory((current) => 
         (current || []).map(item => 
           item.id === receivingItem.id 
-            ? { ...item, quantity: newQuantity, cost: costPerUnit }
+            ? { ...item, quantity: item.quantity + qty, cost: costPerUnit }
             : item
         )
       )
@@ -271,56 +248,6 @@ export function Inventory() {
 
     setReceiveDialogOpen(false)
     setReceivingItem(null)
-  }
-
-  const handleOpenAdjustmentDialog = (item: InventoryItem) => {
-    setAdjustingItem(item)
-    setAdjustmentFormData({
-      quantity: "",
-      reason: ""
-    })
-    setAdjustmentDialogOpen(true)
-  }
-
-  const handleAdjustmentSubmit = () => {
-    if (!adjustmentFormData.quantity || !adjustmentFormData.reason || !adjustingItem) {
-      toast.error("Please fill in all fields")
-      return
-    }
-
-    const quantityChange = parseInt(adjustmentFormData.quantity)
-    const newQuantity = adjustingItem.quantity + quantityChange
-
-    if (newQuantity < 0) {
-      toast.error("Adjustment would result in negative quantity")
-      return
-    }
-
-    const ledgerEntry: InventoryLedgerEntry = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      itemId: adjustingItem.id,
-      itemName: adjustingItem.name,
-      change: quantityChange,
-      reason: 'Adjustment',
-      reference: adjustmentFormData.reason,
-      user: 'System',
-      resultingQuantity: newQuantity
-    }
-
-    setInventoryLedger((current) => [ledgerEntry, ...(current || [])])
-
-    setInventory((current) => 
-      (current || []).map(item => 
-        item.id === adjustingItem.id 
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    )
-
-    toast.success(`Adjusted ${adjustingItem.name} quantity by ${quantityChange > 0 ? '+' : ''}${quantityChange}`)
-    setAdjustmentDialogOpen(false)
-    setAdjustingItem(null)
   }
 
   const renderInventoryTable = (items: InventoryItem[], categoryLabel: string) => (
@@ -374,23 +301,14 @@ export function Inventory() {
                     <button
                       onClick={() => handleOpenDialog(item)}
                       className="text-primary hover:opacity-80"
-                      title="Edit item"
                     >
                       <PencilSimple size={18} />
                     </button>
                     <button
                       onClick={() => handleOpenReceiveDialog(item)}
                       className="text-primary hover:opacity-80"
-                      title="Receive item"
                     >
                       <DownloadSimple size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleOpenAdjustmentDialog(item)}
-                      className="text-primary hover:opacity-80"
-                      title="Adjust quantity"
-                    >
-                      <Scales size={18} />
                     </button>
                   </div>
                 </td>
@@ -506,79 +424,6 @@ export function Inventory() {
               {renderInventoryTable(supplyItems, 'Supply')}
             </Card>
           </div>
-
-          <Card className="p-4 mt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-bold">Inventory Ledger</h3>
-                <p className="text-sm text-muted-foreground">Complete audit trail of all inventory quantity changes</p>
-              </div>
-              <ChartLine size={32} className="text-primary opacity-50" />
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Date/Time</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Item Name</th>
-                    <th className="text-right p-3 text-sm font-medium text-muted-foreground">Change</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Reason</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">Reference</th>
-                    <th className="text-left p-3 text-sm font-medium text-muted-foreground">User</th>
-                    <th className="text-right p-3 text-sm font-medium text-muted-foreground">On-Hand Qty</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!inventoryLedger || inventoryLedger.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="text-center py-12 text-muted-foreground">
-                        <ChartLine size={48} className="mx-auto mb-3 opacity-50" />
-                        <p>No ledger entries yet</p>
-                        <p className="text-xs mt-1">Entries are automatically created when items are received, sold, or adjusted</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    inventoryLedger.map((entry) => (
-                      <tr key={entry.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                        <td className="p-3 text-sm text-muted-foreground">
-                          {new Date(entry.timestamp).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
-                          })}
-                        </td>
-                        <td className="p-3 font-medium">{entry.itemName}</td>
-                        <td className={`p-3 text-right font-semibold ${
-                          entry.change > 0 ? 'text-green-500' : 'text-destructive'
-                        }`}>
-                          {entry.change > 0 ? '+' : ''}{entry.change}
-                        </td>
-                        <td className="p-3">
-                          <Badge variant={
-                            entry.reason === 'Received' ? 'default' :
-                            entry.reason === 'Sale' ? 'secondary' :
-                            entry.reason === 'Refund' ? 'outline' :
-                            'destructive'
-                          }>
-                            {entry.reason}
-                          </Badge>
-                        </td>
-                        <td className="p-3 text-sm text-muted-foreground">
-                          {entry.reference || '—'}
-                        </td>
-                        <td className="p-3 text-sm">{entry.user}</td>
-                        <td className="p-3 text-right font-medium">{entry.resultingQuantity}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </Card>
         </TabsContent>
       </Tabs>
 
@@ -815,71 +660,6 @@ export function Inventory() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setHistoryDialogOpen(false)}>
               Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={adjustmentDialogOpen} onOpenChange={setAdjustmentDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Adjust Inventory Quantity</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {adjustingItem && (
-              <div className="p-3 bg-muted rounded-lg">
-                <div className="text-sm text-muted-foreground">Item</div>
-                <div className="font-semibold">{adjustingItem.name}</div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  Current quantity: <span className="font-medium text-foreground">{adjustingItem.quantity}</span>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="adjustment-qty">Quantity Change</Label>
-              <Input
-                id="adjustment-qty"
-                type="number"
-                value={adjustmentFormData.quantity}
-                onChange={(e) => setAdjustmentFormData({ ...adjustmentFormData, quantity: e.target.value })}
-                placeholder="Use + for increase, - for decrease (e.g., +5 or -3)"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter a positive number to increase or negative to decrease
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="adjustment-reason">Reason</Label>
-              <Textarea
-                id="adjustment-reason"
-                value={adjustmentFormData.reason}
-                onChange={(e) => setAdjustmentFormData({ ...adjustmentFormData, reason: e.target.value })}
-                placeholder="Damaged goods, inventory count correction, etc."
-                rows={3}
-              />
-            </div>
-
-            {adjustingItem && adjustmentFormData.quantity && (
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <div className="text-sm font-medium">
-                  New quantity will be:{' '}
-                  <span className="text-lg font-bold">
-                    {adjustingItem.quantity + parseInt(adjustmentFormData.quantity || '0')}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAdjustmentDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAdjustmentSubmit}>
-              Submit Adjustment
             </Button>
           </DialogFooter>
         </DialogContent>
