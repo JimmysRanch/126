@@ -159,6 +159,18 @@ export interface ReceiveHistoryEntry {
   action: 'receive' | 'ordered'
 }
 
+export interface InventoryLedgerEntry {
+  id: string
+  timestamp: string
+  itemId: string
+  itemName: string
+  change: number
+  reason: 'Received' | 'Sale' | 'Refund' | 'Adjustment'
+  reference?: string
+  user: string
+  resultingQuantity: number
+}
+
 export interface Transaction {
   id: string
   appointmentId?: string

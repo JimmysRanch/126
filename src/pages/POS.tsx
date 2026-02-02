@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { Appointment, Transaction, TransactionItem, InventoryItem } from "@/lib/types"
+import { Appointment, Transaction, TransactionItem, InventoryItem, InventoryLedgerEntry } from "@/lib/types"
 import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar, PawPrint } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
@@ -18,8 +18,9 @@ import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date
 export function POS() {
   const navigate = useNavigate()
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
-  const [inventory] = useKV<InventoryItem[]>("inventory", [])
+  const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
   const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
+  const [inventoryLedger, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
   const [paymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", [
     { id: "cash", name: "Cash", enabled: true },
     { id: "credit", name: "Credit Card", enabled: true },
@@ -163,7 +164,29 @@ export function POS() {
     cartItems.filter(item => item.type === 'product').forEach(item => {
       const product = (inventory || []).find(p => p.id === item.id)
       if (product) {
-        // Update inventory
+        const newQuantity = product.quantity - item.quantity
+        
+        const ledgerEntry: InventoryLedgerEntry = {
+          id: `${Date.now()}-${item.id}`,
+          timestamp: new Date().toISOString(),
+          itemId: product.id,
+          itemName: product.name,
+          change: -item.quantity,
+          reason: 'Sale',
+          reference: `Invoice #${newTransaction.id.slice(-6)}`,
+          user: 'System',
+          resultingQuantity: newQuantity
+        }
+
+        setInventoryLedger((current) => [ledgerEntry, ...(current || [])])
+        
+        setInventory((current) => 
+          (current || []).map(p => 
+            p.id === item.id 
+              ? { ...p, quantity: newQuantity }
+              : p
+          )
+        )
       }
     })
 
