@@ -150,12 +150,14 @@ export function Inventory() {
         (current || []).map(item => item.id === editingItem.id ? itemData : item)
       )
       toast.success("Item updated successfully")
+      setDialogOpen(false)
     } else {
       setInventory((current) => [...(current || []), itemData])
       toast.success("Item added successfully")
+      setDialogOpen(false)
+      
+      handleOpenReceiveDialog(itemData)
     }
-
-    setDialogOpen(false)
   }
 
   const handleDelete = (id: string) => {
