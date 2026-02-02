@@ -157,12 +157,20 @@ export function InsightsStrip({ insights, onInsightClick, className }: InsightsS
  */
 export function InsightsEmptyState({ className }: { className?: string }) {
   return (
-    <Card className={cn('p-4 bg-muted/50', className)}>
-      <div className="flex items-center gap-3 text-muted-foreground">
-        <CheckCircle size={20} />
+    <Card className={cn(
+      'p-4 border-dashed border-border/60',
+      'bg-gradient-to-br from-muted/30 to-muted/10',
+      className
+    )}>
+      <div className="flex items-center gap-4">
+        <div className="p-2.5 rounded-xl bg-green-500/10 shrink-0">
+          <CheckCircle size={22} weight="fill" className="text-green-500" />
+        </div>
         <div>
-          <p className="text-sm font-medium">No significant insights</p>
-          <p className="text-xs">Everything looks good for this period.</p>
+          <p className="text-sm font-medium text-foreground">All systems operating normally</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            No anomalies or actionable insights detected for this period
+          </p>
         </div>
       </div>
     </Card>
