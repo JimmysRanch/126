@@ -208,36 +208,42 @@ const CATEGORIES = [
 ]
 
 // Category color mapping for visual appeal
-const CATEGORY_COLORS: Record<string, { gradient: string; iconBg: string; border: string }> = {
+const CATEGORY_COLORS: Record<string, { gradient: string; iconBg: string; border: string; accentLine: string }> = {
   overview: { 
     gradient: 'from-violet-500/20 to-purple-500/10',
     iconBg: 'bg-violet-500/20 text-violet-400',
-    border: 'hover:border-violet-500/50'
+    border: 'hover:border-violet-500/50',
+    accentLine: 'from-violet-500 to-purple-500'
   },
   financial: { 
     gradient: 'from-emerald-500/20 to-teal-500/10',
     iconBg: 'bg-emerald-500/20 text-emerald-400',
-    border: 'hover:border-emerald-500/50'
+    border: 'hover:border-emerald-500/50',
+    accentLine: 'from-emerald-500 to-teal-500'
   },
   operations: { 
     gradient: 'from-blue-500/20 to-cyan-500/10',
     iconBg: 'bg-blue-500/20 text-blue-400',
-    border: 'hover:border-blue-500/50'
+    border: 'hover:border-blue-500/50',
+    accentLine: 'from-blue-500 to-cyan-500'
   },
   clients: { 
     gradient: 'from-amber-500/20 to-orange-500/10',
     iconBg: 'bg-amber-500/20 text-amber-400',
-    border: 'hover:border-amber-500/50'
+    border: 'hover:border-amber-500/50',
+    accentLine: 'from-amber-500 to-orange-500'
   },
   staff: { 
     gradient: 'from-pink-500/20 to-rose-500/10',
     iconBg: 'bg-pink-500/20 text-pink-400',
-    border: 'hover:border-pink-500/50'
+    border: 'hover:border-pink-500/50',
+    accentLine: 'from-pink-500 to-rose-500'
   },
   marketing: { 
     gradient: 'from-indigo-500/20 to-purple-500/10',
     iconBg: 'bg-indigo-500/20 text-indigo-400',
-    border: 'hover:border-indigo-500/50'
+    border: 'hover:border-indigo-500/50',
+    accentLine: 'from-indigo-500 to-purple-500'
   },
 }
 
@@ -302,7 +308,7 @@ function ReportsLanding() {
               <div key={group.id} className="relative">
                 {/* Category header with accent line */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={cn('h-8 w-1 rounded-full bg-gradient-to-b', colors.gradient.replace('from-', 'from-').replace('/20', '').replace('/10', ''))} />
+                  <div className={cn('h-8 w-1 rounded-full bg-gradient-to-b', colors.accentLine)} />
                   <h2 className="text-lg font-semibold tracking-tight">{group.name}</h2>
                   <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
                 </div>
@@ -318,6 +324,7 @@ function ReportsLanding() {
                         className={cn(
                           'group cursor-pointer transition-all duration-300 ease-out',
                           'hover:shadow-lg hover:-translate-y-0.5',
+                          'focus-visible:shadow-lg focus-visible:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
                           'border-border/50',
                           colors.border,
                           'overflow-hidden'
@@ -326,10 +333,14 @@ function ReportsLanding() {
                           animationDelay: `${index * 50}ms`,
                         }}
                         onClick={() => navigate(report.path)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`Open ${report.name} report`}
                       >
-                        {/* Subtle gradient overlay on hover */}
+                        {/* Subtle gradient overlay on hover/focus */}
                         <div className={cn(
-                          'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none',
+                          'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 pointer-events-none',
                           colors.gradient
                         )} />
                         
@@ -338,6 +349,7 @@ function ReportsLanding() {
                             <div className={cn(
                               'p-2.5 rounded-xl transition-all duration-300',
                               'group-hover:scale-110 group-hover:shadow-md',
+                              'group-focus-visible:scale-110 group-focus-visible:shadow-md',
                               colors.iconBg
                             )}>
                               <Icon size={20} weight="duotone" />
@@ -381,8 +393,8 @@ function ReportsLanding() {
                           {/* Hover indicator */}
                           <div className={cn(
                             'absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r pointer-events-none',
-                            'opacity-0 group-hover:opacity-100 transition-opacity duration-300',
-                            colors.gradient.replace('/20', '').replace('/10', '')
+                            'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300',
+                            colors.accentLine
                           )} />
                         </CardHeader>
                       </Card>
