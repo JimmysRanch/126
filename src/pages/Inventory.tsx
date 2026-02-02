@@ -30,7 +30,6 @@ export function Inventory() {
   const [formData, setFormData] = useState({
     name: "",
     category: "retail" as "retail" | "supply",
-    sku: "",
     description: ""
   })
 
@@ -83,7 +82,6 @@ export function Inventory() {
   const filteredInventory = (inventory || []).filter(item => {
     const matchesSearch = 
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (item.supplier && item.supplier.toLowerCase().includes(searchQuery.toLowerCase()))
     
     const matchesCategory = activeCategory === "all" || item.category === activeCategory
@@ -101,7 +99,6 @@ export function Inventory() {
       setFormData({
         name: item.name,
         category: item.category,
-        sku: item.sku,
         description: item.description || ""
       })
     } else {
@@ -109,7 +106,6 @@ export function Inventory() {
       setFormData({
         name: "",
         category: "retail",
-        sku: "",
         description: ""
       })
     }
@@ -117,7 +113,7 @@ export function Inventory() {
   }
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.sku) {
+    if (!formData.name) {
       toast.error("Please fill in all required fields")
       return
     }
@@ -126,7 +122,7 @@ export function Inventory() {
       id: editingItem?.id || Date.now().toString(),
       name: formData.name,
       category: formData.category,
-      sku: formData.sku,
+      sku: editingItem?.sku || "",
       quantity: editingItem?.quantity || 0,
       price: editingItem?.price || 0,
       cost: editingItem?.cost || 0,
@@ -167,7 +163,6 @@ export function Inventory() {
         <thead>
           <tr className="border-b border-border">
             <th className="text-left p-3 text-sm font-medium text-muted-foreground">Item</th>
-            <th className="text-left p-3 text-sm font-medium text-muted-foreground">SKU</th>
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
             {categoryLabel === 'Retail' && (
@@ -179,7 +174,7 @@ export function Inventory() {
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan={categoryLabel === 'Retail' ? 6 : 5} className="text-center py-12 text-muted-foreground">
+              <td colSpan={categoryLabel === 'Retail' ? 5 : 4} className="text-center py-12 text-muted-foreground">
                 <Package size={48} className="mx-auto mb-3 opacity-50" />
                 <p>No items found</p>
               </td>
@@ -195,7 +190,6 @@ export function Inventory() {
                     </div>
                   )}
                 </td>
-                <td className="p-3 text-sm">{item.sku}</td>
                 <td className="p-3 text-right">
                   <span className={`font-medium ${
                     item.quantity <= item.reorderLevel ? 'text-destructive' : ''
@@ -292,7 +286,7 @@ export function Inventory() {
             <div className="relative flex-1">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
-                placeholder="Search by name, SKU, or supplier..."
+                placeholder="Search by name or supplier..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -346,16 +340,6 @@ export function Inventory() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Premium Dog Shampoo"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="sku">SKU *</Label>
-              <Input
-                id="sku"
-                value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                placeholder="SUP-001"
               />
             </div>
 
