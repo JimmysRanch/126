@@ -243,13 +243,17 @@ export function Inventory() {
 
     setReceiveHistory((current) => [historyEntry, ...(current || [])])
 
+    let updatedItem: InventoryItem | null = null
+
     if (receiveFormData.action === 'receive') {
       setInventory((current) => 
-        (current || []).map(item => 
-          item.id === receivingItem.id 
-            ? { ...item, quantity: item.quantity + qty, cost: costPerUnit }
-            : item
-        )
+        (current || []).map(item => {
+          if (item.id === receivingItem.id) {
+            updatedItem = { ...item, quantity: item.quantity + qty, cost: costPerUnit }
+            return updatedItem
+          }
+          return item
+        })
       )
       toast.success(`Received ${qty} units of ${receivingItem.name}`)
     } else if (receiveFormData.action === 'ordered') {
@@ -258,6 +262,10 @@ export function Inventory() {
 
     setReceiveDialogOpen(false)
     setReceivingItem(null)
+
+    if (receivingItem.category === 'retail' && updatedItem) {
+      handleOpenRetailPricingDialog(updatedItem)
+    }
   }
 
   const handleOpenRetailPricingDialog = (item: InventoryItem) => {
