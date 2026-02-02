@@ -28,6 +28,7 @@ import { formatPayPeriodType, type PayPeriodType, type PayPeriodSettings } from 
 import { MainService } from "@/lib/types"
 import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/useAppearance"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
+import { isDemoModeEnabled, toggleDemoMode } from "@/lib/demo-data"
 
 interface WeightRange {
   id: string
@@ -238,6 +239,8 @@ export function Settings() {
   const navigate = useNavigate()
   const { selectedTheme, selectedUi, setSelectedTheme, setSelectedUi } = useAppearance()
   const [activeTab, setActiveTab] = useState("business")
+  const [demoModeEnabled, setDemoModeEnabled] = useState(() => isDemoModeEnabled())
+  const [demoModeLoading, setDemoModeLoading] = useState(false)
   const [staffPositionsRaw, setStaffPositionsRaw] = useKV<string[]>("staff-positions", ["Owner", "Groomer", "Front Desk", "Bather"])
   const [newPosition, setNewPosition] = useState("")
   const [editingPosition, setEditingPosition] = useState<string | null>(null)
@@ -1006,6 +1009,26 @@ export function Settings() {
   const handleSavePayrollSettings = () => {
     setPayrollSettings({ payPeriod: payrollFormData })
     toast.success("Payroll settings saved successfully")
+  }
+
+  const handleDemoModeToggle = (enabled: boolean) => {
+    setDemoModeLoading(true)
+    try {
+      toggleDemoMode(enabled)
+      setDemoModeEnabled(enabled)
+      if (enabled) {
+        toast.success("Demo mode enabled! Realistic sample data has been added.")
+      } else {
+        toast.success("Demo mode disabled. All demo data has been removed.")
+      }
+      // Trigger a page reload to refresh all data hooks
+      window.location.reload()
+    } catch (error) {
+      toast.error("Failed to toggle demo mode")
+      console.error(error)
+    } finally {
+      setDemoModeLoading(false)
+    }
   }
 
   return (
@@ -2008,6 +2031,39 @@ export function Settings() {
                     </Label>
                   ))}
                 </RadioGroup>
+              </div>
+            </Card>
+
+            <Card className="p-4 md:p-6 bg-card border-border mt-6">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Demo Mode</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Enable demo mode to populate the app with realistic sample data including staff members, clients, appointments, and transactions. Perfect for exploring features or training.
+                  </p>
+                </div>
+
+                <div className="flex items-start justify-between p-4 rounded-lg border border-border bg-secondary/20">
+                  <div className="space-y-1 flex-1">
+                    <Label className="text-base font-semibold">Enable Demo Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {demoModeEnabled 
+                        ? "Demo data is currently active. Includes 2 groomers, 1 bather, 15 clients with pets, and 2 weeks of appointment history with completed transactions."
+                        : "Toggle on to add sample staff, clients, and appointments spanning one week in the past through one week in the future."}
+                    </p>
+                    {demoModeEnabled && (
+                      <p className="text-xs text-amber-500 mt-2">
+                        ⚠️ Turning off demo mode will permanently remove all demo data.
+                      </p>
+                    )}
+                  </div>
+                  <Switch
+                    checked={demoModeEnabled}
+                    disabled={demoModeLoading}
+                    onCheckedChange={handleDemoModeToggle}
+                    className="data-[state=unchecked]:bg-muted/70 data-[state=unchecked]:border-muted-foreground/40"
+                  />
+                </div>
               </div>
             </Card>
           </TabsContent>
