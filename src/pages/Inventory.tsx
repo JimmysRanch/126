@@ -31,14 +31,7 @@ export function Inventory() {
     name: "",
     category: "retail" as "retail" | "supply",
     sku: "",
-    quantity: "",
-    price: "",
-    cost: "",
-    reorderLevel: "",
-    supplier: "",
-    description: "",
-    staffCompensationType: "fixed" as "fixed" | "percentage",
-    staffCompensationValue: ""
+    description: ""
   })
 
   // Calculate and track inventory value snapshots
@@ -109,14 +102,7 @@ export function Inventory() {
         name: item.name,
         category: item.category,
         sku: item.sku,
-        quantity: item.quantity.toString(),
-        price: item.price.toString(),
-        cost: item.cost.toString(),
-        reorderLevel: item.reorderLevel.toString(),
-        supplier: item.supplier || "",
-        description: item.description || "",
-        staffCompensationType: item.staffCompensationType || "fixed",
-        staffCompensationValue: item.staffCompensationValue ? item.staffCompensationValue.toString() : ""
+        description: item.description || ""
       })
     } else {
       setEditingItem(null)
@@ -124,41 +110,31 @@ export function Inventory() {
         name: "",
         category: "retail",
         sku: "",
-        quantity: "",
-        price: "",
-        cost: "",
-        reorderLevel: "",
-        supplier: "",
-        description: "",
-        staffCompensationType: "fixed",
-        staffCompensationValue: ""
+        description: ""
       })
     }
     setDialogOpen(true)
   }
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.sku || !formData.quantity || !formData.cost) {
+    if (!formData.name || !formData.sku) {
       toast.error("Please fill in all required fields")
       return
     }
-
-    const staffCompensationValue = parseFloat(formData.staffCompensationValue)
-    const includeStaffCompensation = formData.category === 'retail' && !Number.isNaN(staffCompensationValue) && staffCompensationValue > 0
 
     const itemData: InventoryItem = {
       id: editingItem?.id || Date.now().toString(),
       name: formData.name,
       category: formData.category,
       sku: formData.sku,
-      quantity: parseInt(formData.quantity),
-      price: parseFloat(formData.price) || 0,
-      cost: parseFloat(formData.cost),
-      reorderLevel: parseInt(formData.reorderLevel) || 0,
-      supplier: formData.supplier,
+      quantity: editingItem?.quantity || 0,
+      price: editingItem?.price || 0,
+      cost: editingItem?.cost || 0,
+      reorderLevel: editingItem?.reorderLevel || 0,
+      supplier: editingItem?.supplier,
       description: formData.description,
-      staffCompensationType: includeStaffCompensation ? formData.staffCompensationType : undefined,
-      staffCompensationValue: includeStaffCompensation ? staffCompensationValue : undefined
+      staffCompensationType: editingItem?.staffCompensationType,
+      staffCompensationValue: editingItem?.staffCompensationValue
     }
 
     if (editingItem) {
@@ -355,14 +331,14 @@ export function Inventory() {
       </Tabs>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingItem ? 'Edit Item' : 'Add New Item'}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Item Name *</Label>
               <Input
@@ -387,11 +363,7 @@ export function Inventory() {
               <Label htmlFor="category">Category *</Label>
               <Select
                 value={formData.category}
-                onValueChange={(v: any) => setFormData((prev) => ({
-                  ...prev,
-                  category: v,
-                  ...(v === 'supply' ? { staffCompensationValue: "", staffCompensationType: "fixed" } : {})
-                }))}
+                onValueChange={(v: any) => setFormData({ ...formData, category: v })}
               >
                 <SelectTrigger id="category">
                   <SelectValue />
@@ -404,110 +376,6 @@ export function Inventory() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity *</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="0"
-                value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                placeholder="0"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cost">Cost (per unit) *</Label>
-              <Input
-                id="cost"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.cost}
-                onChange={(e) => setFormData({ ...formData, cost: e.target.value })}
-                placeholder="0.00"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="price">
-                Retail Price {formData.category === 'supply' && '(optional)'}
-              </Label>
-              <Input
-                id="price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="0.00"
-              />
-            </div>
-
-            {formData.category === 'retail' && (
-              <div className="col-span-2 space-y-3 rounded-lg border border-dashed border-border p-3">
-                <div>
-                  <Label className="text-sm font-semibold">Staff Compensation (Retail Only)</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Set a fixed payout or a percentage for staff when this item is sold.
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="staff-comp-type">Compensation Type</Label>
-                    <Select
-                      value={formData.staffCompensationType}
-                      onValueChange={(value: "fixed" | "percentage") => setFormData({ ...formData, staffCompensationType: value })}
-                    >
-                      <SelectTrigger id="staff-comp-type">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="fixed">Fixed Amount ($)</SelectItem>
-                        <SelectItem value="percentage">Percentage (%)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="staff-comp-value">
-                      {formData.staffCompensationType === "percentage" ? "Percentage" : "Fixed Amount"}
-                    </Label>
-                    <Input
-                      id="staff-comp-value"
-                      type="number"
-                      min="0"
-                      step={formData.staffCompensationType === "percentage" ? "0.1" : "0.01"}
-                      value={formData.staffCompensationValue}
-                      onChange={(e) => setFormData({ ...formData, staffCompensationValue: e.target.value })}
-                      placeholder={formData.staffCompensationType === "percentage" ? "5" : "2.50"}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="reorder">Reorder Level</Label>
-              <Input
-                id="reorder"
-                type="number"
-                min="0"
-                value={formData.reorderLevel}
-                onChange={(e) => setFormData({ ...formData, reorderLevel: e.target.value })}
-                placeholder="10"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="supplier">Supplier</Label>
-              <Input
-                id="supplier"
-                value={formData.supplier}
-                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                placeholder="Pet Supply Co"
-              />
-            </div>
-
-            <div className="col-span-2 space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
