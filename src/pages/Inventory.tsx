@@ -495,15 +495,15 @@ export function Inventory() {
       </AlertDialog>
 
       <Dialog open={receiveDialogOpen} onOpenChange={setReceiveDialogOpen}>
-        <DialogContent className="max-w-3xl bg-muted/30">
+        <DialogContent className="max-w-[800px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Receive Product</DialogTitle>
+            <DialogTitle className="text-2xl">Receive Item</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="qty" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                <Label htmlFor="qty" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
                   QTY
                 </Label>
                 <Input
@@ -517,8 +517,8 @@ export function Inventory() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="totalCost" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
-                  TOTAL COST <span className="normal-case">(including shipping)</span>
+                <Label htmlFor="totalCost" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
+                  TOTAL COST <span className="normal-case whitespace-nowrap">(including shipping)</span>
                 </Label>
                 <Input
                   id="totalCost"
@@ -534,8 +534,8 @@ export function Inventory() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="costPerUnit" className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
-                  COST PER UNIT <span className="normal-case">(my cost)</span>
+                <Label htmlFor="costPerUnit" className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
+                  COST PER UNIT <span className="normal-case whitespace-nowrap">(my cost)</span>
                 </Label>
                 <Input
                   id="costPerUnit"
@@ -549,7 +549,7 @@ export function Inventory() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm uppercase tracking-wider text-muted-foreground font-medium">
+                <Label className="text-sm uppercase tracking-wider text-muted-foreground font-medium whitespace-nowrap">
                   CHOOSE ONE
                 </Label>
                 <div className="flex gap-3 h-14">
