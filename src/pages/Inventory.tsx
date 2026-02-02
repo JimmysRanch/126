@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry } from "@/lib/types"
-import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple, ClockCounterClockwise } from "@phosphor-icons/react"
+import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple, ClockCounterClockwise, Tag } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useNavigate } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts'
@@ -27,8 +27,10 @@ export function Inventory() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false)
+  const [retailPricingDialogOpen, setRetailPricingDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
   const [receivingItem, setReceivingItem] = useState<InventoryItem | null>(null)
+  const [pricingItem, setPricingItem] = useState<InventoryItem | null>(null)
   const [activeTab, setActiveTab] = useState<"inventory" | "reports">("inventory")
   const isMobile = useIsMobile()
 
@@ -43,6 +45,12 @@ export function Inventory() {
     totalCost: "",
     costPerUnit: "",
     action: "" as "" | "receive" | "ordered"
+  })
+
+  const [retailPricingFormData, setRetailPricingFormData] = useState({
+    retailPrice: "",
+    commissionType: "" as "" | "fixed" | "percentage",
+    commissionAmount: ""
   })
 
   // Calculate and track inventory value snapshots
@@ -252,6 +260,43 @@ export function Inventory() {
     setReceivingItem(null)
   }
 
+  const handleOpenRetailPricingDialog = (item: InventoryItem) => {
+    setPricingItem(item)
+    setRetailPricingFormData({
+      retailPrice: item.price ? item.price.toString() : "",
+      commissionType: item.staffCompensationType || "",
+      commissionAmount: item.staffCompensationValue ? item.staffCompensationValue.toString() : ""
+    })
+    setRetailPricingDialogOpen(true)
+  }
+
+  const handleRetailPricingSubmit = () => {
+    if (!retailPricingFormData.retailPrice || !retailPricingFormData.commissionType || !retailPricingFormData.commissionAmount || !pricingItem) {
+      toast.error("Please fill in all fields")
+      return
+    }
+
+    const retailPrice = parseFloat(retailPricingFormData.retailPrice)
+    const commissionAmount = parseFloat(retailPricingFormData.commissionAmount)
+
+    setInventory((current) =>
+      (current || []).map(item =>
+        item.id === pricingItem.id
+          ? {
+              ...item,
+              price: retailPrice,
+              staffCompensationType: retailPricingFormData.commissionType,
+              staffCompensationValue: commissionAmount
+            }
+          : item
+      )
+    )
+
+    toast.success("Retail pricing updated successfully")
+    setRetailPricingDialogOpen(false)
+    setPricingItem(null)
+  }
+
   const renderInventoryTable = (items: InventoryItem[], categoryLabel: string) => (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -312,6 +357,14 @@ export function Inventory() {
                     >
                       <DownloadSimple size={18} />
                     </button>
+                    {categoryLabel === 'Retail' && (
+                      <button
+                        onClick={() => handleOpenRetailPricingDialog(item)}
+                        className="text-primary hover:opacity-80"
+                      >
+                        <Tag size={18} />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -598,6 +651,91 @@ export function Inventory() {
             </Button>
             <Button onClick={handleReceiveSubmit}>
               Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={retailPricingDialogOpen} onOpenChange={setRetailPricingDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Retail Pricing</DialogTitle>
+          </DialogHeader>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="perItemCost">Per Item (my price)</Label>
+              <Input
+                id="perItemCost"
+                type="text"
+                value={pricingItem ? `$${pricingItem.cost.toFixed(2)}` : ''}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="retailPrice">Retail Price *</Label>
+              <Input
+                id="retailPrice"
+                type="number"
+                step="0.01"
+                value={retailPricingFormData.retailPrice}
+                onChange={(e) => setRetailPricingFormData({ ...retailPricingFormData, retailPrice: e.target.value })}
+                placeholder="0.00"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Commission Type *</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => setRetailPricingFormData({ ...retailPricingFormData, commissionType: 'fixed' })}
+                  variant={retailPricingFormData.commissionType === 'fixed' ? 'default' : 'outline'}
+                  className="flex-1"
+                >
+                  Fixed
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setRetailPricingFormData({ ...retailPricingFormData, commissionType: 'percentage' })}
+                  variant={retailPricingFormData.commissionType === 'percentage' ? 'default' : 'outline'}
+                  className="flex-1"
+                >
+                  Percentage
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="commissionAmount">Commission Amount *</Label>
+              <div className="relative">
+                <Input
+                  id="commissionAmount"
+                  type="number"
+                  step={retailPricingFormData.commissionType === 'percentage' ? '1' : '0.01'}
+                  value={retailPricingFormData.commissionAmount}
+                  onChange={(e) => setRetailPricingFormData({ ...retailPricingFormData, commissionAmount: e.target.value })}
+                  placeholder="0"
+                  className={retailPricingFormData.commissionType === 'percentage' ? 'pr-8' : 'pl-8'}
+                />
+                {retailPricingFormData.commissionType === 'fixed' && (
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                )}
+                {retailPricingFormData.commissionType === 'percentage' && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">%</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRetailPricingDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleRetailPricingSubmit}>
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
