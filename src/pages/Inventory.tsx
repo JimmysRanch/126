@@ -348,7 +348,7 @@ export function Inventory() {
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
             {categoryLabel === 'Retail' && (
-              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
+              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Retail</th>
             )}
             {categoryLabel === 'Retail' && (
               <th className="text-right p-3 text-sm font-medium text-muted-foreground">Commission</th>
