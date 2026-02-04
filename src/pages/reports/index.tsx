@@ -259,6 +259,8 @@ function ReportsLanding() {
               <button
                 key={report.id}
                 onClick={() => navigate(report.path)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
+                aria-label={`Open ${report.name} report`}
                 className={cn(
                   'w-full flex items-center gap-4 p-3 rounded-lg text-left',
                   'hover:bg-muted/50 transition-colors',
@@ -279,7 +281,7 @@ function ReportsLanding() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-xs text-muted-foreground line-clamp-1" title={report.description}>
                     {report.description}
                   </p>
                 </div>
