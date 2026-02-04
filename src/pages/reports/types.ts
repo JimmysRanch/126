@@ -142,6 +142,7 @@ export interface DrillRow {
 export interface Insight {
   id: string
   type: 'no-show-spike' | 'margin-drop' | 'rebook-weakness' | 'staff-standout' | 'inventory-risk' | 'campaign-roi-extreme'
+  category: string
   title: string
   description: string
   metric: string

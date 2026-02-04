@@ -89,6 +89,7 @@ function checkNoShowSpike(context: InsightContext): Insight | null {
     return {
       id: `noshow-spike-${Date.now()}`,
       type: 'no-show-spike',
+      category: 'noshow,cancel,recovery,reminder',
       title: 'No-Show Rate Spiked',
       description: `No-show rate increased by ${delta.toFixed(1)}% compared to the previous period. ${noShowCount} appointments were affected.`,
       metric: 'noShowRate',
@@ -118,6 +119,7 @@ function checkMarginDrop(context: InsightContext): Insight | null {
     return {
       id: `margin-drop-${Date.now()}`,
       type: 'margin-drop',
+      category: 'margin,cost,profit,sales,revenue',
       title: 'Margin Declined',
       description: `Contribution margin dropped ${Math.abs(delta).toFixed(1)} percentage points, representing approximately $${(marginImpact / 100).toFixed(0)} in reduced profitability.`,
       metric: 'contributionMarginPercent',
@@ -144,6 +146,7 @@ function checkRebookWeakness(context: InsightContext): Insight | null {
     return {
       id: `rebook-weakness-${Date.now()}`,
       type: 'rebook-weakness',
+      category: 'retention,rebook,churn,lapsed',
       title: 'Rebooking Rate Dropped',
       description: `7-day rebooking rate decreased by ${Math.abs(delta).toFixed(1)}%. Fewer clients are scheduling their next appointment before leaving.`,
       metric: 'rebook7d',
@@ -191,6 +194,7 @@ function checkStaffStandout(context: InsightContext): Insight | null {
     return {
       id: `staff-standout-${Date.now()}`,
       type: 'staff-standout',
+      category: 'staff,performance,productivity,standout',
       title: 'Top Performer Identified',
       description: `${standout.name} is generating ${percentAbove.toFixed(0)}% more revenue per hour than average.`,
       metric: 'revenuePerHour',
@@ -225,6 +229,7 @@ function checkInventoryRisk(context: InsightContext): Insight | null {
     return {
       id: `inventory-risk-${Date.now()}`,
       type: 'inventory-risk',
+      category: 'inventory,reorder,supply,stock',
       title: 'Low Inventory Alert',
       description: `${lowSupplyItems.length} supply item(s) have less than 7 days of stock remaining: ${lowSupplyItems.slice(0, 3).map(i => i.name).join(', ')}${lowSupplyItems.length > 3 ? '...' : ''}`,
       metric: 'daysOfSupply',
@@ -266,6 +271,7 @@ function checkCampaignROI(context: InsightContext): Insight | null {
       return {
         id: `campaign-roi-low-${Date.now()}`,
         type: 'campaign-roi-extreme',
+        category: 'marketing,campaign,roi,message,confirmation',
         title: 'Campaign Underperforming',
         description: `Campaign "${campaignId}" has an ROI of ${(roi * 100).toFixed(0)}%, significantly below expectations.`,
         metric: 'marketingROI',
@@ -279,6 +285,7 @@ function checkCampaignROI(context: InsightContext): Insight | null {
       return {
         id: `campaign-roi-high-${Date.now()}`,
         type: 'campaign-roi-extreme',
+        category: 'marketing,campaign,roi,message,confirmation',
         title: 'Campaign Excelling',
         description: `Campaign "${campaignId}" is generating ${(roi * 100).toFixed(0)}% ROI, well above average.`,
         metric: 'marketingROI',
