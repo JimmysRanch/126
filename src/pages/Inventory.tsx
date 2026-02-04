@@ -348,10 +348,11 @@ export function Inventory() {
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">In Stock</th>
             <th className="text-right p-3 text-sm font-medium text-muted-foreground">Cost</th>
             {categoryLabel === 'Retail' && (
-              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Retail</th>
-            )}
-            {categoryLabel === 'Retail' && (
-              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Commission</th>
+              <>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Commission</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Retail</th>
+                <th className="text-right p-3 text-sm font-medium text-muted-foreground">Profit</th>
+              </>
             )}
             <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
           </tr>
@@ -359,72 +360,78 @@ export function Inventory() {
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan={categoryLabel === 'Retail' ? 6 : 4} className="text-center py-12 text-muted-foreground">
+              <td colSpan={categoryLabel === 'Retail' ? 7 : 4} className="text-center py-12 text-muted-foreground">
                 <Package size={48} className="mx-auto mb-3 opacity-50" />
                 <p>No items found</p>
               </td>
             </tr>
           ) : (
-            items.map(item => (
-              <tr key={item.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                <td className="p-3">
-                  <div className="font-medium">{item.name}</div>
-                  {item.description && (
-                    <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                      {item.description}
-                    </div>
-                  )}
-                </td>
-                <td className="p-3 text-right">
-                  <span className={`font-medium ${
-                    item.quantity <= item.reorderLevel ? 'text-destructive' : ''
-                  }`}>
-                    {item.quantity}
-                  </span>
-                </td>
-                <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
-                {categoryLabel === 'Retail' && (
-                  <td className="p-3 text-right font-medium">
-                    ${item.price.toFixed(2)}
-                  </td>
-                )}
-                {categoryLabel === 'Retail' && (
-                  <td className="p-3 text-right text-sm">
-                    {item.staffCompensationType && item.staffCompensationValue !== undefined ? (
-                      item.staffCompensationType === 'fixed' 
-                        ? `$${item.staffCompensationValue.toFixed(2)}`
-                        : `${item.staffCompensationValue}%`
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
+            items.map(item => {
+              const profit = categoryLabel === 'Retail' ? item.price - item.cost : 0
+              return (
+                <tr key={item.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                  <td className="p-3">
+                    <div className="font-medium">{item.name}</div>
+                    {item.description && (
+                      <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                        {item.description}
+                      </div>
                     )}
                   </td>
-                )}
-                <td className="p-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => handleOpenDialog(item)}
-                      className="text-primary hover:opacity-80"
-                    >
-                      <PencilSimple size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleOpenReceiveDialog(item)}
-                      className="text-primary hover:opacity-80"
-                    >
-                      <DownloadSimple size={18} />
-                    </button>
-                    {categoryLabel === 'Retail' && (
+                  <td className="p-3 text-right">
+                    <span className={`font-medium ${
+                      item.quantity <= item.reorderLevel ? 'text-destructive' : ''
+                    }`}>
+                      {item.quantity}
+                    </span>
+                  </td>
+                  <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
+                  {categoryLabel === 'Retail' && (
+                    <>
+                      <td className="p-3 text-right text-sm">
+                        {item.staffCompensationType && item.staffCompensationValue !== undefined ? (
+                          item.staffCompensationType === 'fixed' 
+                            ? `$${item.staffCompensationValue.toFixed(2)}`
+                            : `${item.staffCompensationValue}%`
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right font-medium">
+                        ${item.price.toFixed(2)}
+                      </td>
+                      <td className="p-3 text-right font-medium">
+                        ${profit.toFixed(2)}
+                      </td>
+                    </>
+                  )}
+                  <td className="p-3">
+                    <div className="flex items-center justify-center gap-2">
                       <button
-                        onClick={() => handleOpenRetailPricingDialog(item)}
+                        onClick={() => handleOpenDialog(item)}
                         className="text-primary hover:opacity-80"
                       >
-                        <Tag size={18} />
+                        <PencilSimple size={18} />
                       </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))
+                      <button
+                        onClick={() => handleOpenReceiveDialog(item)}
+                        className="text-primary hover:opacity-80"
+                      >
+                        <DownloadSimple size={18} />
+                      </button>
+                      {categoryLabel === 'Retail' && (
+                        <button
+                          onClick={() => handleOpenRetailPricingDialog(item)}
+                          className="text-primary hover:opacity-80"
+                        >
+                          <Tag size={18} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )
+            })
           )}
         </tbody>
       </table>
