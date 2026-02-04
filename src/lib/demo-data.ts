@@ -803,19 +803,20 @@ function generateDashboardData(appointments: Appointment[], transactions: Transa
       day: todayAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
       week: weekAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
       month: monthAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
-      lifetime: lifetimeCompleted + getRandomNumber(200, 500) // Add some historical data
+      // Lifetime includes current appointments plus simulated historical data for demo purposes
+      lifetime: lifetimeCompleted + 350
     },
     bookedPercentageSummary: {
       day: Math.round((todayAppts.length / 12) * 100),
       week: Math.round((weekAppts.length / 60) * 100),
-      month: getRandomNumber(65, 85)
+      month: Math.round((monthAppts.length / (12 * 22)) * 100) // 22 working days in a month
     },
     // Fixed: ClientsCard expects {total, newThisMonth, repeatRate, avgDaysBetween}
     clientsSummary: {
       total: clients.length,
-      newThisMonth: newClientsThisMonth || getRandomNumber(5, 12),
-      repeatRate: repeatRate || getRandomNumber(65, 85),
-      avgDaysBetween: getRandomNumber(25, 35)
+      newThisMonth: newClientsThisMonth,
+      repeatRate: repeatRate,
+      avgDaysBetween: 28 // Standard rebooking interval for pet grooming
     },
     // New: groomer data for workload and avg cards
     groomerData,
