@@ -4,13 +4,11 @@
  */
 
 import { useState } from 'react'
-import { useNavigate, Routes, Route, useLocation } from 'react-router-dom'
+import { useNavigate, Routes, Route } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { 
   ChartLine,
   ChartPie,
@@ -251,177 +249,172 @@ const CATEGORY_COLORS: Record<string, { gradient: string; iconBg: string; border
 function ReportsLanding() {
   const navigate = useNavigate()
   const { preferences, toggleEssentialsOnly, toggleFavorite } = useReportPreferences()
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   
-  // Filter reports based on essentials toggle
-  const displayedReports = preferences.showEssentialsOnly
-    ? REPORTS.filter(r => r.isEssential)
-    : REPORTS
-  
-  // Group by category
-  const groupedReports = CATEGORIES.map(cat => ({
-    ...cat,
-    reports: displayedReports.filter(r => r.category === cat.id),
-  })).filter(g => g.reports.length > 0)
+  // Filter reports based on essentials toggle and selected category
+  const displayedReports = REPORTS.filter(r => {
+    const matchesEssentials = !preferences.showEssentialsOnly || r.isEssential
+    const matchesCategory = !selectedCategory || r.category === selectedCategory
+    return matchesEssentials && matchesCategory
+  })
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-[1600px] mx-auto p-4 md:p-6">
-        {/* Header with gradient accent */}
-        <div className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent rounded-2xl -z-10" />
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
+      <div className="flex-1 flex flex-col px-4 py-3 max-w-[1800px] mx-auto w-full">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between gap-4 mb-3 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5">
+              <ChartLine size={20} weight="duotone" className="text-primary" />
+            </div>
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2.5 rounded-xl bg-primary/10">
-                  <ChartLine size={24} weight="duotone" className="text-primary" />
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Reports & Insights
-                </h1>
-              </div>
-              <p className="text-muted-foreground ml-[52px]">
-                Analyze your business performance with comprehensive reports
-              </p>
+              <h1 className="text-lg font-semibold">Reports & Insights</h1>
+              <p className="text-xs text-muted-foreground">Business analytics at a glance</p>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-muted/50 px-3 py-2 rounded-lg">
-                <Switch
-                  id="essentials-toggle"
-                  checked={preferences.showEssentialsOnly}
-                  onCheckedChange={toggleEssentialsOnly}
-                />
-                <Label htmlFor="essentials-toggle" className="text-sm font-medium">
-                  Essentials Only
-                </Label>
-              </div>
-            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Switch
+              id="essentials-toggle"
+              checked={preferences.showEssentialsOnly}
+              onCheckedChange={toggleEssentialsOnly}
+            />
+            <Label htmlFor="essentials-toggle" className="text-xs font-medium">
+              Essentials
+            </Label>
           </div>
         </div>
         
-        {/* Report Grid */}
-        <div className="space-y-10">
-          {groupedReports.map((group, groupIndex) => {
-            const colors = CATEGORY_COLORS[group.id] || CATEGORY_COLORS.overview
+        {/* Category Filter Pills */}
+        <div className="flex items-center gap-1.5 mb-3 flex-shrink-0 overflow-x-auto pb-1">
+          <Button
+            variant={selectedCategory === null ? "secondary" : "ghost"}
+            size="sm"
+            className="h-7 px-3 text-xs rounded-full flex-shrink-0"
+            onClick={() => setSelectedCategory(null)}
+          >
+            All
+          </Button>
+          {CATEGORIES.map((cat) => {
+            const colors = CATEGORY_COLORS[cat.id]
+            const count = REPORTS.filter(r => r.category === cat.id && (!preferences.showEssentialsOnly || r.isEssential)).length
+            if (count === 0) return null
             
             return (
-              <div key={group.id} className="relative">
-                {/* Category header with accent line */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={cn('h-8 w-1 rounded-full bg-gradient-to-b', colors.accentLine)} />
-                  <h2 className="text-lg font-semibold tracking-tight">{group.name}</h2>
-                  <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {group.reports.map((report, index) => {
-                    const Icon = report.icon
-                    const isFavorite = preferences.favoriteReports.includes(report.id)
-                    
-                    return (
-                      <Card
-                        key={report.id}
-                        className={cn(
-                          'group cursor-pointer transition-all duration-300 ease-out',
-                          'hover:shadow-lg hover:-translate-y-0.5',
-                          'focus-visible:shadow-lg focus-visible:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
-                          'border-border/50',
-                          colors.border,
-                          'overflow-hidden'
-                        )}
-                        style={{ 
-                          animationDelay: `${index * 50}ms`,
-                        }}
-                        onClick={() => navigate(report.path)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={`Open ${report.name} report`}
-                      >
-                        {/* Subtle gradient overlay on hover/focus */}
-                        <div className={cn(
-                          'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300 pointer-events-none',
-                          colors.gradient
-                        )} />
-                        
-                        <CardHeader className="pb-3 relative">
-                          <div className="flex items-start justify-between">
-                            <div className={cn(
-                              'p-2.5 rounded-xl transition-all duration-300',
-                              'group-hover:scale-110 group-hover:shadow-md',
-                              'group-focus-visible:scale-110 group-focus-visible:shadow-md',
-                              colors.iconBg
-                            )}>
-                              <Icon size={20} weight="duotone" />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {report.isEssential && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className="text-[10px] bg-primary/10 text-primary border-0 font-medium"
-                                >
-                                  Essential
-                                </Badge>
-                              )}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 rounded-full hover:bg-background/80"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  toggleFavorite(report.id)
-                                }}
-                              >
-                                <Star
-                                  size={14}
-                                  weight={isFavorite ? 'fill' : 'regular'}
-                                  className={cn(
-                                    'transition-all duration-200',
-                                    isFavorite ? 'text-yellow-500 scale-110' : 'text-muted-foreground'
-                                  )}
-                                />
-                              </Button>
-                            </div>
-                          </div>
-                          <CardTitle className="text-sm font-semibold mt-3 group-hover:text-primary transition-colors">
-                            {report.name}
-                          </CardTitle>
-                          <CardDescription className="text-xs leading-relaxed">
-                            {report.description}
-                          </CardDescription>
-                          
-                          {/* Hover indicator */}
-                          <div className={cn(
-                            'absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r pointer-events-none',
-                            'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300',
-                            colors.accentLine
-                          )} />
-                        </CardHeader>
-                      </Card>
-                    )
-                  })}
-                </div>
-              </div>
+              <Button
+                key={cat.id}
+                variant={selectedCategory === cat.id ? "secondary" : "ghost"}
+                size="sm"
+                className={cn(
+                  "h-7 px-3 text-xs rounded-full flex-shrink-0 gap-1.5",
+                  selectedCategory === cat.id && colors.iconBg
+                )}
+                onClick={() => setSelectedCategory(cat.id)}
+              >
+                {cat.name}
+                <span className="text-[10px] opacity-60">({count})</span>
+              </Button>
             )
           })}
         </div>
         
-        {/* Quick stats footer */}
-        <div className="mt-12 pt-6 border-t border-border/50">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <ChartLine size={16} className="text-primary" />
-              <span><strong className="text-foreground">{REPORTS.length}</strong> reports available</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Star size={16} weight="fill" className="text-yellow-500" />
-              <span><strong className="text-foreground">{REPORTS.filter(r => r.isEssential).length}</strong> essential reports</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users size={16} className="text-amber-400" />
-              <span><strong className="text-foreground">{CATEGORIES.length}</strong> categories</span>
-            </div>
+        {/* Report Grid - fills remaining space */}
+        <div className="flex-1 min-h-0">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-6 gap-2 h-full auto-rows-fr content-start">
+            {displayedReports.map((report) => {
+              const Icon = report.icon
+              const colors = CATEGORY_COLORS[report.category] || CATEGORY_COLORS.overview
+              const isFavorite = preferences.favoriteReports.includes(report.id)
+              
+              return (
+                <Card
+                  key={report.id}
+                  className={cn(
+                    'group cursor-pointer transition-all duration-200 ease-out',
+                    'hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02]',
+                    'focus-visible:shadow-md focus-visible:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+                    'border-border/40 bg-card/50',
+                    colors.border,
+                    'overflow-hidden relative'
+                  )}
+                  onClick={() => navigate(report.path)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Open ${report.name} report`}
+                >
+                  {/* Gradient overlay on hover */}
+                  <div className={cn(
+                    'absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none',
+                    colors.gradient
+                  )} />
+                  
+                  {/* Accent line at top */}
+                  <div className={cn(
+                    'absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r opacity-60 group-hover:opacity-100 transition-opacity',
+                    colors.accentLine
+                  )} />
+                  
+                  <div className="p-2.5 relative flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <div className={cn(
+                        'p-1.5 rounded-lg transition-transform duration-200',
+                        'group-hover:scale-110',
+                        colors.iconBg
+                      )}>
+                        <Icon size={14} weight="duotone" />
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        {report.isEssential && (
+                          <div className="w-2 h-2 rounded-full bg-primary" title="Essential report" />
+                        )}
+                        <button
+                          className="p-0.5 rounded hover:bg-background/60 transition-colors"
+                          aria-label={isFavorite ? `Remove ${report.name} from favorites` : `Add ${report.name} to favorites`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            toggleFavorite(report.id)
+                          }}
+                        >
+                          <Star
+                            size={12}
+                            weight={isFavorite ? 'fill' : 'regular'}
+                            className={cn(
+                              'transition-all duration-200',
+                              isFavorite ? 'text-yellow-500' : 'text-muted-foreground/50'
+                            )}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-xs font-medium leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                      {report.name}
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground mt-auto pt-1 line-clamp-2 leading-tight">
+                      {report.description}
+                    </p>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
+        </div>
+        
+        {/* Compact Stats Footer */}
+        <div className="flex items-center justify-center gap-6 pt-2 text-xs text-muted-foreground flex-shrink-0 border-t border-border/30 mt-2">
+          <span className="flex items-center gap-1">
+            <ChartLine size={12} className="text-primary" />
+            <strong className="text-foreground">{REPORTS.length}</strong> reports
+          </span>
+          <span className="flex items-center gap-1">
+            <Star size={12} weight="fill" className="text-yellow-500" />
+            <strong className="text-foreground">{REPORTS.filter(r => r.isEssential).length}</strong> essential
+          </span>
+          <span className="flex items-center gap-1">
+            <Users size={12} className="text-amber-400" />
+            <strong className="text-foreground">{CATEGORIES.length}</strong> categories
+          </span>
         </div>
       </div>
     </div>
@@ -430,9 +423,6 @@ function ReportsLanding() {
 
 // Main Reports Component with Routing
 export function Reports() {
-  const location = useLocation()
-  const isLanding = location.pathname === '/reports' || location.pathname === '/reports/'
-  
   return (
     <Routes>
       <Route index element={<ReportsLanding />} />
