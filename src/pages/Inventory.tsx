@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
-import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry } from "@/lib/types"
+import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry, InventoryLedgerEntry } from "@/lib/types"
+import { ExpenseRecord } from "@/lib/finance-types"
 import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple, ClockCounterClockwise, Tag } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useNavigate } from 'react-router-dom'
@@ -22,6 +23,8 @@ export function Inventory() {
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
   const [valueHistory, setValueHistory] = useKV<InventoryValueSnapshot[]>("inventory-value-history", [])
   const [receiveHistory, setReceiveHistory] = useKV<ReceiveHistoryEntry[]>("inventory-receive-history", [])
+  const [, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
+  const [, setExpenses] = useKV<ExpenseRecord[]>("expenses", [])
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -246,10 +249,41 @@ export function Inventory() {
     let updatedItem: InventoryItem | null = null
 
     if (receiveFormData.action === 'receive') {
+      const newQuantity = receivingItem.quantity + qty
+      const today = new Date().toISOString().split('T')[0]
+      
+      // Create ledger entry for receiving inventory
+      const ledgerEntry: InventoryLedgerEntry = {
+        id: `${Date.now()}-${receivingItem.id}`,
+        timestamp: new Date().toISOString(),
+        itemId: receivingItem.id,
+        itemName: receivingItem.name,
+        change: qty,
+        reason: 'Received',
+        reference: `Received shipment`,
+        user: 'System',
+        resultingQuantity: newQuantity
+      }
+      
+      setInventoryLedger((current) => [ledgerEntry, ...(current || [])])
+      
+      // Create expense entry for the inventory purchase
+      const expenseEntry: ExpenseRecord = {
+        id: `inv-${Date.now()}-${receivingItem.id}`,
+        category: 'supplies',
+        vendor: receivingItem.supplier || 'Inventory Purchase',
+        date: today,
+        status: 'Paid',
+        amount: totalCost,
+        description: `Received ${qty} units of ${receivingItem.name} @ $${costPerUnit.toFixed(2)} each`
+      }
+      
+      setExpenses((current) => [...(current || []), expenseEntry])
+      
       setInventory((current) => 
         (current || []).map(item => {
           if (item.id === receivingItem.id) {
-            updatedItem = { ...item, quantity: item.quantity + qty, cost: costPerUnit }
+            updatedItem = { ...item, quantity: newQuantity, cost: costPerUnit }
             return updatedItem
           }
           return item
@@ -316,13 +350,16 @@ export function Inventory() {
             {categoryLabel === 'Retail' && (
               <th className="text-right p-3 text-sm font-medium text-muted-foreground">Price</th>
             )}
+            {categoryLabel === 'Retail' && (
+              <th className="text-right p-3 text-sm font-medium text-muted-foreground">Commission</th>
+            )}
             <th className="text-center p-3 text-sm font-medium text-muted-foreground">Actions</th>
           </tr>
         </thead>
         <tbody>
           {items.length === 0 ? (
             <tr>
-              <td colSpan={categoryLabel === 'Retail' ? 5 : 4} className="text-center py-12 text-muted-foreground">
+              <td colSpan={categoryLabel === 'Retail' ? 6 : 4} className="text-center py-12 text-muted-foreground">
                 <Package size={48} className="mx-auto mb-3 opacity-50" />
                 <p>No items found</p>
               </td>
@@ -349,6 +386,17 @@ export function Inventory() {
                 {categoryLabel === 'Retail' && (
                   <td className="p-3 text-right font-medium">
                     ${item.price.toFixed(2)}
+                  </td>
+                )}
+                {categoryLabel === 'Retail' && (
+                  <td className="p-3 text-right text-sm">
+                    {item.staffCompensationType && item.staffCompensationValue !== undefined ? (
+                      item.staffCompensationType === 'fixed' 
+                        ? `$${item.staffCompensationValue.toFixed(2)}`
+                        : `${item.staffCompensationValue}%`
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </td>
                 )}
                 <td className="p-3">
