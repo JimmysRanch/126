@@ -616,7 +616,7 @@ function generateDemoTransactions(appointments: Appointment[]): Transaction[] {
 }
 
 // Generate dashboard summary data
-function generateDashboardData(appointments: Appointment[], transactions: Transaction[], today: Date) {
+function generateDashboardData(appointments: Appointment[], transactions: Transaction[], clients: Client[], today: Date) {
   const todayStr = format(today, 'yyyy-MM-dd')
   const todayAppts = appointments.filter(apt => apt.date === todayStr)
   const todayTxns = transactions.filter(txn => txn.date === todayStr)
@@ -631,6 +631,16 @@ function generateDashboardData(appointments: Appointment[], transactions: Transa
     return txnDate >= weekStart && txnDate <= today
   })
   
+  // Calculate month data
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+  const monthAppts = appointments.filter(apt => {
+    const aptDate = new Date(apt.date)
+    return aptDate >= monthStart && aptDate <= today
+  })
+  
+  // Calculate lifetime appointments (all completed)
+  const lifetimeCompleted = appointments.filter(a => ['completed', 'paid'].includes(a.status)).length
+  
   // Calculate week daily data
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const daily = weekDays.map((day, i) => {
@@ -643,6 +653,118 @@ function generateDashboardData(appointments: Appointment[], transactions: Transa
       amount: dayTxns.reduce((sum, t) => sum + t.total, 0)
     }
   })
+  
+  // Generate groomer data from appointments
+  const groomerAppts = appointments.filter(a => a.date === todayStr)
+  const groomerDataMap = new Map<string, { id: number; name: string; bookedPercentage: number; appointmentCount: number; lastAppointmentEnd: string; schedule: Array<{ start: number; duration: number; client: string }> }>()
+  
+  DEMO_STAFF.filter(s => s.isGroomer).forEach((groomer, index) => {
+    const groomerTodayAppts = groomerAppts.filter(a => a.groomerId === groomer.id)
+    const totalMinutes = 8 * 60 // 8 hours workday
+    const bookedMinutes = groomerTodayAppts.reduce((sum, a) => {
+      const [startH, startM] = a.startTime.split(':').map(Number)
+      const [endH, endM] = a.endTime.split(':').map(Number)
+      return sum + (endH * 60 + endM) - (startH * 60 + startM)
+    }, 0)
+    
+    const schedule = groomerTodayAppts.map(a => {
+      const [startH, startM] = a.startTime.split(':').map(Number)
+      const [endH, endM] = a.endTime.split(':').map(Number)
+      const start = startH + startM / 60
+      const duration = ((endH * 60 + endM) - (startH * 60 + startM)) / 60
+      return { start, duration, client: a.petName }
+    }).sort((a, b) => a.start - b.start)
+    
+    const lastAppt = schedule[schedule.length - 1]
+    const lastEndHour = lastAppt ? lastAppt.start + lastAppt.duration : 17
+    const lastEndH = Math.floor(lastEndHour)
+    const lastEndM = Math.round((lastEndHour - lastEndH) * 60)
+    const period = lastEndH >= 12 ? 'PM' : 'AM'
+    const displayHour = lastEndH > 12 ? lastEndH - 12 : lastEndH
+    
+    groomerDataMap.set(groomer.id, {
+      id: index + 1,
+      name: groomer.name,
+      bookedPercentage: Math.round((bookedMinutes / totalMinutes) * 100),
+      appointmentCount: groomerTodayAppts.length,
+      lastAppointmentEnd: `${displayHour}:${lastEndM.toString().padStart(2, '0')} ${period}`,
+      schedule
+    })
+  })
+  
+  const groomerData = Array.from(groomerDataMap.values())
+  
+  // Generate recent activity from appointments and transactions
+  const recentActivity: Array<{ id: string; type: string; category: string; description: string; client: string; time: string }> = []
+  
+  // Add recent bookings
+  const recentBookings = appointments
+    .filter(a => a.status === 'scheduled')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3)
+  
+  recentBookings.forEach((apt, i) => {
+    const timeAgo = i === 0 ? '5 minutes ago' : i === 1 ? '1 hour ago' : '3 hours ago'
+    recentActivity.push({
+      id: `activity-booking-${apt.id}`,
+      type: 'booking',
+      category: 'today',
+      description: `New appointment booked for ${apt.petName}`,
+      client: apt.clientName,
+      time: timeAgo
+    })
+  })
+  
+  // Add canceled appointments
+  const canceledAppts = appointments
+    .filter(a => a.status === 'cancelled')
+    .slice(0, 2)
+  
+  canceledAppts.forEach((apt, i) => {
+    recentActivity.push({
+      id: `activity-cancel-${apt.id}`,
+      type: 'cancellation',
+      category: i === 0 ? 'today' : 'yesterday',
+      description: `Appointment canceled for ${apt.petName}`,
+      client: apt.clientName,
+      time: i === 0 ? '2 hours ago' : 'Yesterday 4:30 PM'
+    })
+  })
+  
+  // Add a pricing update
+  recentActivity.push({
+    id: 'activity-pricing-1',
+    type: 'pricing',
+    category: 'yesterday',
+    description: 'Service price updated: Full Groom',
+    client: 'System',
+    time: 'Yesterday 10:00 AM'
+  })
+  
+  // Generate expenses data
+  const expensesData = [
+    { category: 'Payroll', amount: getRandomNumber(3500, 4500), color: 'oklch(0.75 0.15 195)' },
+    { category: 'Supplies', amount: getRandomNumber(1200, 2000), color: 'oklch(0.75 0.20 285)' },
+    { category: 'Rent', amount: 2500, color: 'oklch(0.70 0.18 340)' },
+    { category: 'Utilities', amount: getRandomNumber(500, 750), color: 'oklch(0.80 0.15 85)' },
+    { category: 'Marketing', amount: getRandomNumber(400, 900), color: 'oklch(0.65 0.22 25)' }
+  ]
+  
+  // Calculate client metrics
+  const uniqueClients = new Set(appointments.map(a => a.clientId))
+  const newClientsThisMonth = clients.filter(c => {
+    if (!c.createdAt) return false
+    const createdDate = new Date(c.createdAt)
+    return createdDate >= monthStart && createdDate <= today
+  }).length
+  
+  // Calculate repeat rate (clients with more than one appointment)
+  const clientAppointmentCounts = new Map<string, number>()
+  appointments.forEach(a => {
+    clientAppointmentCounts.set(a.clientId, (clientAppointmentCounts.get(a.clientId) || 0) + 1)
+  })
+  const repeatClients = Array.from(clientAppointmentCounts.values()).filter(count => count > 1).length
+  const repeatRate = uniqueClients.size > 0 ? Math.round((repeatClients / uniqueClients.size) * 100) : 0
   
   return {
     appointmentsSummary: {
@@ -676,19 +798,32 @@ function generateDashboardData(appointments: Appointment[], transactions: Transa
       noShows: getRandomNumber(0, 1),
       canceled: todayAppts.filter(a => a.status === 'cancelled').length
     },
+    // Fixed: DogsGroomedCard expects {day, week, month, lifetime}
     dogsGroomedSummary: {
-      count: weekAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
-      previousWeek: getRandomNumber(20, 35)
+      day: todayAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
+      week: weekAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
+      month: monthAppts.filter(a => ['completed', 'paid'].includes(a.status)).length,
+      // Lifetime includes current appointments plus simulated historical data for demo purposes
+      lifetime: lifetimeCompleted + 350
     },
     bookedPercentageSummary: {
       day: Math.round((todayAppts.length / 12) * 100),
       week: Math.round((weekAppts.length / 60) * 100),
-      month: getRandomNumber(65, 85)
+      month: Math.round((monthAppts.length / (12 * 22)) * 100) // 22 working days in a month
     },
+    // Fixed: ClientsCard expects {total, newThisMonth, repeatRate, avgDaysBetween}
     clientsSummary: {
-      count: getRandomNumber(45, 65),
-      previousMonth: getRandomNumber(40, 55)
-    }
+      total: clients.length,
+      newThisMonth: newClientsThisMonth,
+      repeatRate: repeatRate,
+      avgDaysBetween: 28 // Standard rebooking interval for pet grooming
+    },
+    // New: groomer data for workload and avg cards
+    groomerData,
+    // New: recent activity
+    recentActivity,
+    // New: expenses data
+    expensesData
   }
 }
 
@@ -743,7 +878,7 @@ export function enableDemoMode(): void {
   const { clients } = generateDemoClients()
   const appointments = generateDemoAppointments(clients, DEMO_STAFF, startDate, endDate, today)
   const transactions = generateDemoTransactions(appointments)
-  const dashboardData = generateDashboardData(appointments, transactions, today)
+  const dashboardData = generateDashboardData(appointments, transactions, clients, today)
   
   // Store demo data IDs for cleanup
   const demoIds = {
@@ -816,6 +951,9 @@ export function enableDemoMode(): void {
   localStorage.setItem('kv:dashboard-dogs-groomed', JSON.stringify(dashboardData.dogsGroomedSummary))
   localStorage.setItem('kv:dashboard-booked-percentage', JSON.stringify(dashboardData.bookedPercentageSummary))
   localStorage.setItem('kv:dashboard-clients-summary', JSON.stringify(dashboardData.clientsSummary))
+  localStorage.setItem('kv:dashboard-groomer-data', JSON.stringify(dashboardData.groomerData))
+  localStorage.setItem('kv:dashboard-recent-activity', JSON.stringify(dashboardData.recentActivity))
+  localStorage.setItem('kv:dashboard-expenses', JSON.stringify(dashboardData.expensesData))
   
   // Set demo mode flag
   localStorage.setItem(DEMO_MODE_KEY, 'true')
@@ -894,6 +1032,9 @@ export function disableDemoMode(): void {
   localStorage.removeItem('kv:dashboard-dogs-groomed')
   localStorage.removeItem('kv:dashboard-booked-percentage')
   localStorage.removeItem('kv:dashboard-clients-summary')
+  localStorage.removeItem('kv:dashboard-groomer-data')
+  localStorage.removeItem('kv:dashboard-recent-activity')
+  localStorage.removeItem('kv:dashboard-expenses')
   
   // Clear demo mode flag and IDs
   localStorage.removeItem(DEMO_MODE_KEY)

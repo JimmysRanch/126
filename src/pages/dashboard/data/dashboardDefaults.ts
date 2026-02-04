@@ -114,8 +114,10 @@ export const dashboardExpensesData: Array<{
 }> = []
 
 export const dogsGroomedData = {
-  count: 0,
-  previousWeek: 0,
+  day: 0,
+  week: 0,
+  month: 0,
+  lifetime: 0,
 }
 
 export const bookedPercentageData = {
@@ -125,6 +127,8 @@ export const bookedPercentageData = {
 }
 
 export const clientsData = {
-  count: 0,
-  previousMonth: 0,
+  total: 0,
+  newThisMonth: 0,
+  repeatRate: 0,
+  avgDaysBetween: 0,
 }
