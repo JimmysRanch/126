@@ -384,9 +384,9 @@ export function Inventory() {
                     }`}>
                       {item.quantity}
                     </span>
-                    <>
+                  </td>
                   <td className="p-3 text-right text-sm">${item.cost.toFixed(2)}</td>
-                  {categoryLabel === 'Retail' && ( (
+                  {categoryLabel === 'Retail' && (
                     <>
                       <td className="p-3 text-right text-sm">
                         {item.staffCompensationType && item.staffCompensationValue !== undefined ? (
@@ -403,7 +403,7 @@ export function Inventory() {
                       <td className="p-3 text-right font-medium">
                         ${profit.toFixed(2)}
                       </td>
-                    </>p-2">
+                    </>
                   )}
                   <td className="p-3">
                     <div className="flex items-center justify-center gap-2">
@@ -413,12 +413,12 @@ export function Inventory() {
                       >
                         <PencilSimple size={18} />
                       </button>
-                      >
+                      <button
                         onClick={() => handleOpenReceiveDialog(item)}
-                      </button>
-                      {categoryLabel === 'Retail' && (
+                        className="text-primary hover:opacity-80"
+                      >
                         <DownloadSimple size={18} />
-                          onClick={() => handleOpenRetailPricingDialog(item)}
+                      </button>
                       {categoryLabel === 'Retail' && (
                         <button
                           onClick={() => handleOpenRetailPricingDialog(item)}
@@ -432,6 +432,9 @@ export function Inventory() {
                 </tr>
               )
             })
+          )}
+        </tbody>
+      </table>
     </div>
   )
 
