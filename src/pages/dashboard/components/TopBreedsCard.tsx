@@ -121,7 +121,7 @@ export function TopBreedsCard() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            {topBreedsData.reduce((sum, b) => sum + b.count, 0)} appointments
+            {safeBreeds.reduce((sum, b) => sum + b.count, 0)} appointments
           </motion.span>
         </div>
       </div>

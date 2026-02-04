@@ -124,7 +124,7 @@ export function TopServicesCard() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            ${topServicesData.reduce((sum, s) => sum + s.revenue, 0).toLocaleString()}
+            ${safeServices.reduce((sum, s) => sum + s.revenue, 0).toLocaleString()}
           </motion.span>
         </div>
       </div>
