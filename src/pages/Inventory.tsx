@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { InventoryItem, InventoryValueSnapshot, ReceiveHistoryEntry, InventoryLedgerEntry } from "@/lib/types"
+import { ExpenseRecord } from "@/lib/finance-types"
 import { Plus, MagnifyingGlass, PencilSimple, Trash, Package, Warning, TrendUp, ChartLine, CurrencyDollar, DownloadSimple, ClockCounterClockwise, Tag } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useNavigate } from 'react-router-dom'
@@ -23,6 +24,7 @@ export function Inventory() {
   const [valueHistory, setValueHistory] = useKV<InventoryValueSnapshot[]>("inventory-value-history", [])
   const [receiveHistory, setReceiveHistory] = useKV<ReceiveHistoryEntry[]>("inventory-receive-history", [])
   const [, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
+  const [, setExpenses] = useKV<ExpenseRecord[]>("expenses", [])
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState<"all" | "retail" | "supply">("all")
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -248,6 +250,7 @@ export function Inventory() {
 
     if (receiveFormData.action === 'receive') {
       const newQuantity = receivingItem.quantity + qty
+      const today = new Date().toISOString().split('T')[0]
       
       // Create ledger entry for receiving inventory
       const ledgerEntry: InventoryLedgerEntry = {
@@ -263,6 +266,19 @@ export function Inventory() {
       }
       
       setInventoryLedger((current) => [ledgerEntry, ...(current || [])])
+      
+      // Create expense entry for the inventory purchase
+      const expenseEntry: ExpenseRecord = {
+        id: `inv-${Date.now()}-${receivingItem.id}`,
+        category: 'supplies',
+        vendor: receivingItem.supplier || 'Inventory Purchase',
+        date: today,
+        status: 'Paid',
+        amount: totalCost,
+        description: `Received ${qty} units of ${receivingItem.name} @ $${costPerUnit.toFixed(2)} each`
+      }
+      
+      setExpenses((current) => [...(current || []), expenseEntry])
       
       setInventory((current) => 
         (current || []).map(item => {
