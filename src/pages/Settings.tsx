@@ -387,10 +387,7 @@ export function Settings() {
     name: "",
     hasSizePricing: "false",
     price: "",
-    smallPrice: "",
-    mediumPrice: "",
-    largePrice: "",
-    giantPrice: ""
+    pricing: {} as Record<string, string>
   })
   
   const [businessInfo, setBusinessInfo] = useKV<BusinessInfo>("business-info", DEFAULT_BUSINESS_INFO)
@@ -692,25 +689,31 @@ export function Settings() {
   const openAddOnDialog = (addOn?: AddOn) => {
     if (addOn) {
       setEditingAddOn(addOn)
+      // Build pricing object from add-on's existing pricing, keyed by weight range id
+      const pricing: Record<string, string> = {}
+      if (addOn.pricing) {
+        Object.entries(addOn.pricing).forEach(([key, value]) => {
+          pricing[key] = value?.toString() || ""
+        })
+      }
       setAddOnForm({
         name: addOn.name,
         hasSizePricing: addOn.hasSizePricing ? "true" : "false",
         price: addOn.price?.toString() || "",
-        smallPrice: addOn.pricing?.small.toString() || "",
-        mediumPrice: addOn.pricing?.medium.toString() || "",
-        largePrice: addOn.pricing?.large.toString() || "",
-        giantPrice: addOn.pricing?.giant.toString() || ""
+        pricing
       })
     } else {
       setEditingAddOn(null)
+      // Initialize empty pricing for all weight ranges
+      const pricing: Record<string, string> = {}
+      weightRanges.forEach(range => {
+        pricing[range.id] = ""
+      })
       setAddOnForm({
         name: "",
         hasSizePricing: "false",
         price: "",
-        smallPrice: "",
-        mediumPrice: "",
-        largePrice: "",
-        giantPrice: ""
+        pricing
       })
     }
     setAddOnDialogOpen(true)
@@ -770,12 +773,20 @@ export function Settings() {
     const hasSizePricing = addOnForm.hasSizePricing === "true"
     
     if (hasSizePricing) {
-      const smallPrice = parseFloat(addOnForm.smallPrice)
-      const mediumPrice = parseFloat(addOnForm.mediumPrice)
-      const largePrice = parseFloat(addOnForm.largePrice)
-      const giantPrice = parseFloat(addOnForm.giantPrice)
+      // Validate and build pricing object from all weight ranges
+      const pricing: ServicePricing = {}
+      let hasInvalidPrice = false
       
-      if (isNaN(smallPrice) || isNaN(mediumPrice) || isNaN(largePrice) || isNaN(giantPrice)) {
+      weightRanges.forEach(range => {
+        const priceValue = parseFloat(addOnForm.pricing[range.id] || "")
+        if (isNaN(priceValue)) {
+          hasInvalidPrice = true
+        } else {
+          pricing[range.id] = priceValue
+        }
+      })
+      
+      if (hasInvalidPrice) {
         toast.error("All prices must be valid numbers")
         return
       }
@@ -784,12 +795,7 @@ export function Settings() {
         id: editingAddOn?.id || `addon-${Date.now()}`,
         name: addOnForm.name.trim(),
         hasSizePricing: true,
-        pricing: {
-          small: smallPrice,
-          medium: mediumPrice,
-          large: largePrice,
-          giant: giantPrice
-        }
+        pricing
       }
       
       if (editingAddOn) {
@@ -2538,46 +2544,23 @@ export function Settings() {
                 <div className="space-y-3">
                   <Label>Size-Based Pricing</Label>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-small-price" className="text-sm text-muted-foreground">Small (1-25 lbs)</Label>
-                      <Input
-                        id="addon-small-price"
-                        type="number"
-                        placeholder="20"
-                        value={addOnForm.smallPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, smallPrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-medium-price" className="text-sm text-muted-foreground">Medium (26-50 lbs)</Label>
-                      <Input
-                        id="addon-medium-price"
-                        type="number"
-                        placeholder="25"
-                        value={addOnForm.mediumPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, mediumPrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-large-price" className="text-sm text-muted-foreground">Large (51-80 lbs)</Label>
-                      <Input
-                        id="addon-large-price"
-                        type="number"
-                        placeholder="30"
-                        value={addOnForm.largePrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, largePrice: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="addon-giant-price" className="text-sm text-muted-foreground">Giant (81+ lbs)</Label>
-                      <Input
-                        id="addon-giant-price"
-                        type="number"
-                        placeholder="40"
-                        value={addOnForm.giantPrice}
-                        onChange={(e) => setAddOnForm({ ...addOnForm, giantPrice: e.target.value })}
-                      />
-                    </div>
+                    {weightRanges.map((range) => (
+                      <div key={range.id} className="space-y-2">
+                        <Label htmlFor={`addon-${range.id}-price`} className="text-sm text-muted-foreground">
+                          {range.name} ({formatWeightRange(range)})
+                        </Label>
+                        <Input
+                          id={`addon-${range.id}-price`}
+                          type="number"
+                          placeholder="0"
+                          value={addOnForm.pricing[range.id] || ""}
+                          onChange={(e) => setAddOnForm({
+                            ...addOnForm,
+                            pricing: { ...addOnForm.pricing, [range.id]: e.target.value }
+                          })}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
