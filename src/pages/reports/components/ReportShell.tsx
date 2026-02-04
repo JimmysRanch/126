@@ -66,18 +66,18 @@ const DATE_RANGE_OPTIONS: { value: DateRangePreset; label: string }[] = [
   { value: 'last7', label: 'Last 7 Days' },
   { value: 'thisWeek', label: 'This Week' },
   { value: 'last30', label: 'Last 30 Days' },
-  { value: 'last90', label: 'Last 90 Days' },
+  { value: 'last90', label: 'Last 3 Months' },
   { value: 'thisMonth', label: 'This Month' },
   { value: 'lastMonth', label: 'Last Month' },
   { value: 'quarter', label: 'This Quarter' },
-  { value: 'ytd', label: 'Year to Date' },
-  { value: 'custom', label: 'Custom Range' },
+  { value: 'ytd', label: 'This Year So Far' },
+  { value: 'custom', label: 'Pick Dates...' },
 ]
 
 const TIME_BASIS_OPTIONS: { value: TimeBasis; label: string; description: string }[] = [
-  { value: 'service', label: 'Service Date', description: 'When the appointment was scheduled' },
-  { value: 'checkout', label: 'Checkout Date', description: 'When the client checked out' },
-  { value: 'transaction', label: 'Transaction Date', description: 'When payment was settled' },
+  { value: 'service', label: 'When groomed', description: 'The day the pet was groomed' },
+  { value: 'checkout', label: 'When paid', description: 'The day the client paid' },
+  { value: 'transaction', label: 'When settled', description: 'The day money hit your bank' },
 ]
 
 export function ReportShell({
@@ -117,7 +117,7 @@ export function ReportShell({
       {/* Date Range */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Date Range
+          Time Period
         </Label>
         <Select 
           value={filters.dateRange} 
@@ -139,7 +139,7 @@ export function ReportShell({
       {/* Time Basis */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Time Basis
+          Count By Date Of
         </Label>
         <Select 
           value={filters.timeBasis} 
@@ -166,23 +166,28 @@ export function ReportShell({
       {/* Appointment Status */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Appointment Status
+          Show Appointments That Were
         </Label>
         <div className="space-y-1.5">
-          {['completed', 'cancelled', 'no-show', 'scheduled'].map(status => (
-            <div key={status} className="flex items-center gap-2">
+          {[
+            { value: 'completed', label: 'Completed' },
+            { value: 'cancelled', label: 'Cancelled' },
+            { value: 'no-show', label: 'No-shows' },
+            { value: 'scheduled', label: 'Upcoming' },
+          ].map(status => (
+            <div key={status.value} className="flex items-center gap-2">
               <Checkbox 
-                id={`status-${status}`}
-                checked={filters.appointmentStatuses.includes(status as any)}
+                id={`status-${status.value}`}
+                checked={filters.appointmentStatuses.includes(status.value as any)}
                 onCheckedChange={(checked) => {
                   const newStatuses = checked
-                    ? [...filters.appointmentStatuses, status as any]
-                    : filters.appointmentStatuses.filter(s => s !== status)
+                    ? [...filters.appointmentStatuses, status.value as any]
+                    : filters.appointmentStatuses.filter(s => s !== status.value)
                   setFilter('appointmentStatuses', newStatuses)
                 }}
               />
-              <Label htmlFor={`status-${status}`} className="text-sm capitalize">
-                {status.replace('-', ' ')}
+              <Label htmlFor={`status-${status.value}`} className="text-sm">
+                {status.label}
               </Label>
             </div>
           ))}
@@ -195,20 +200,25 @@ export function ReportShell({
           Pet Size
         </Label>
         <div className="grid grid-cols-2 gap-1.5">
-          {['small', 'medium', 'large', 'giant'].map(size => (
-            <div key={size} className="flex items-center gap-2">
+          {[
+            { value: 'small', label: 'Small (under 15 lbs)' },
+            { value: 'medium', label: 'Medium (15-40 lbs)' },
+            { value: 'large', label: 'Large (40-80 lbs)' },
+            { value: 'giant', label: 'Giant (80+ lbs)' },
+          ].map(size => (
+            <div key={size.value} className="flex items-center gap-2">
               <Checkbox 
-                id={`size-${size}`}
-                checked={filters.petSizes.includes(size as any)}
+                id={`size-${size.value}`}
+                checked={filters.petSizes.includes(size.value as any)}
                 onCheckedChange={(checked) => {
                   const newSizes = checked
-                    ? [...filters.petSizes, size as any]
-                    : filters.petSizes.filter(s => s !== size)
+                    ? [...filters.petSizes, size.value as any]
+                    : filters.petSizes.filter(s => s !== size.value)
                   setFilter('petSizes', newSizes)
                 }}
               />
-              <Label htmlFor={`size-${size}`} className="text-sm capitalize">
-                {size}
+              <Label htmlFor={`size-${size.value}`} className="text-sm">
+                {size.label}
               </Label>
             </div>
           ))}
@@ -218,23 +228,27 @@ export function ReportShell({
       {/* Channel */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Booking Channel
+          How They Booked
         </Label>
         <div className="space-y-1.5">
-          {['walk-in', 'phone', 'online'].map(channel => (
-            <div key={channel} className="flex items-center gap-2">
+          {[
+            { value: 'walk-in', label: 'Walk-in' },
+            { value: 'phone', label: 'Phone call' },
+            { value: 'online', label: 'Online booking' },
+          ].map(channel => (
+            <div key={channel.value} className="flex items-center gap-2">
               <Checkbox 
-                id={`channel-${channel}`}
-                checked={filters.channels.includes(channel as any)}
+                id={`channel-${channel.value}`}
+                checked={filters.channels.includes(channel.value as any)}
                 onCheckedChange={(checked) => {
                   const newChannels = checked
-                    ? [...filters.channels, channel as any]
-                    : filters.channels.filter(c => c !== channel)
+                    ? [...filters.channels, channel.value as any]
+                    : filters.channels.filter(c => c !== channel.value)
                   setFilter('channels', newChannels)
                 }}
               />
-              <Label htmlFor={`channel-${channel}`} className="text-sm capitalize">
-                {channel}
+              <Label htmlFor={`channel-${channel.value}`} className="text-sm">
+                {channel.label}
               </Label>
             </div>
           ))}
@@ -247,20 +261,23 @@ export function ReportShell({
           Client Type
         </Label>
         <div className="space-y-1.5">
-          {['new', 'returning'].map(type => (
-            <div key={type} className="flex items-center gap-2">
+          {[
+            { value: 'new', label: 'First-time clients' },
+            { value: 'returning', label: 'Returning clients' },
+          ].map(type => (
+            <div key={type.value} className="flex items-center gap-2">
               <Checkbox 
-                id={`type-${type}`}
-                checked={filters.clientTypes.includes(type as any)}
+                id={`type-${type.value}`}
+                checked={filters.clientTypes.includes(type.value as any)}
                 onCheckedChange={(checked) => {
                   const newTypes = checked
-                    ? [...filters.clientTypes, type as any]
-                    : filters.clientTypes.filter(t => t !== type)
+                    ? [...filters.clientTypes, type.value as any]
+                    : filters.clientTypes.filter(t => t !== type.value)
                   setFilter('clientTypes', newTypes)
                 }}
               />
-              <Label htmlFor={`type-${type}`} className="text-sm capitalize">
-                {type}
+              <Label htmlFor={`type-${type.value}`} className="text-sm">
+                {type.label}
               </Label>
             </div>
           ))}
@@ -270,23 +287,27 @@ export function ReportShell({
       {/* Payment Method */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Payment Method
+          How They Paid
         </Label>
         <div className="space-y-1.5">
-          {['card', 'cash', 'other'].map(method => (
-            <div key={method} className="flex items-center gap-2">
+          {[
+            { value: 'card', label: 'Credit/Debit card' },
+            { value: 'cash', label: 'Cash' },
+            { value: 'other', label: 'Other (check, gift card, etc.)' },
+          ].map(method => (
+            <div key={method.value} className="flex items-center gap-2">
               <Checkbox 
-                id={`method-${method}`}
-                checked={filters.paymentMethods.includes(method as any)}
+                id={`method-${method.value}`}
+                checked={filters.paymentMethods.includes(method.value as any)}
                 onCheckedChange={(checked) => {
                   const newMethods = checked
-                    ? [...filters.paymentMethods, method as any]
-                    : filters.paymentMethods.filter(m => m !== method)
+                    ? [...filters.paymentMethods, method.value as any]
+                    : filters.paymentMethods.filter(m => m !== method.value)
                   setFilter('paymentMethods', newMethods)
                 }}
               />
-              <Label htmlFor={`method-${method}`} className="text-sm capitalize">
-                {method}
+              <Label htmlFor={`method-${method.value}`} className="text-sm">
+                {method.label}
               </Label>
             </div>
           ))}
@@ -298,7 +319,7 @@ export function ReportShell({
       {/* Include/Exclude Toggles */}
       <div className="space-y-2">
         <Label className="text-xs font-semibold uppercase text-muted-foreground">
-          Include in Calculations
+          Include in Totals
         </Label>
         <div className="space-y-1.5">
           {[
@@ -306,7 +327,7 @@ export function ReportShell({
             { key: 'includeRefunds', label: 'Refunds' },
             { key: 'includeTips', label: 'Tips' },
             { key: 'includeTaxes', label: 'Taxes' },
-            { key: 'includeGiftCardRedemptions', label: 'Gift Card Redemptions' },
+            { key: 'includeGiftCardRedemptions', label: 'Gift card payments' },
           ].map(toggle => (
             <div key={toggle.key} className="flex items-center gap-2">
               <Checkbox 
@@ -332,7 +353,7 @@ export function ReportShell({
         onClick={resetFilters}
       >
         <X size={14} className="mr-1" />
-        Clear All Filters
+        Reset All Filters
       </Button>
     </div>
   )
@@ -369,7 +390,7 @@ export function ReportShell({
                   <SheetTrigger asChild>
                     <Button variant="outline" size="sm" className="relative">
                       <FunnelSimple size={14} className="mr-1" />
-                      Filters
+                      Filter
                       {activeFilterCount > 0 && (
                         <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
                           {activeFilterCount}
@@ -379,7 +400,7 @@ export function ReportShell({
                   </SheetTrigger>
                   <SheetContent side="bottom" className="h-[80vh]">
                     <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
+                      <SheetTitle>Filter Your Report</SheetTitle>
                     </SheetHeader>
                     <ScrollArea className="h-full pr-4 mt-4">
                       <FilterContent />
@@ -391,7 +412,7 @@ export function ReportShell({
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="relative">
                       <FunnelSimple size={14} className="mr-1" />
-                      More Filters
+                      Filter
                       {activeFilterCount > 0 && (
                         <Badge className="absolute -top-1.5 -right-1.5 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
                           {activeFilterCount}

@@ -394,7 +394,7 @@ export function OwnerOverview() {
   // Loading state
   if (isLoading) {
     return (
-      <ReportShell title="Owner Overview" description="High-level business health metrics" defaultTimeBasis="checkout">
+      <ReportShell title="Business Snapshot" description="Your business at a glance" defaultTimeBasis="checkout">
         <div className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {Array.from({ length: 10 }).map((_, i) => (
@@ -418,14 +418,14 @@ export function OwnerOverview() {
   // Error state
   if (error) {
     return (
-      <ReportShell title="Owner Overview" description="High-level business health metrics" defaultTimeBasis="checkout">
+      <ReportShell title="Business Snapshot" description="Your business at a glance" defaultTimeBasis="checkout">
         <Alert variant="destructive">
           <Warning className="h-4 w-4" />
-          <AlertDescription>Failed to load report data. Please try again.</AlertDescription>
+          <AlertDescription>Something went wrong loading your report. Let's try again.</AlertDescription>
         </Alert>
         <Button onClick={() => window.location.reload()} className="mt-4">
           <ArrowsClockwise className="mr-2 h-4 w-4" />
-          Retry
+          Try Again
         </Button>
       </ReportShell>
     )
@@ -434,14 +434,14 @@ export function OwnerOverview() {
   // Empty state
   if (appointments.length === 0 && previousAppointments.length === 0) {
     return (
-      <ReportShell title="Owner Overview" description="High-level business health metrics" defaultTimeBasis="checkout" onShowDefinitions={() => setShowDefinitions(true)}>
+      <ReportShell title="Business Snapshot" description="Your business at a glance" defaultTimeBasis="checkout" onShowDefinitions={() => setShowDefinitions(true)}>
         <Card className="p-8 text-center">
           <Info size={48} className="mx-auto text-muted-foreground mb-4" />
-          <h2 className="text-lg font-semibold mb-2">No Data Available</h2>
-          <p className="text-muted-foreground mb-4">There are no appointments for the selected date range and filters.</p>
+          <h2 className="text-lg font-semibold mb-2">No Appointments Yet</h2>
+          <p className="text-muted-foreground mb-4">There are no completed appointments for this time period. Try a different date range or create some appointments!</p>
           <div className="flex justify-center gap-2">
-            <Button variant="outline" onClick={() => setFilters({ ...filters, dateRange: 'last90' })}>Try Last 90 Days</Button>
-            <Button onClick={() => navigate('/appointments/new')}>Create Appointment</Button>
+            <Button variant="outline" onClick={() => setFilters({ ...filters, dateRange: 'last90' })}>Try Last 3 Months</Button>
+            <Button onClick={() => navigate('/appointments/new')}>Book an Appointment</Button>
           </div>
         </Card>
         <DefinitionsModal open={showDefinitions} onClose={() => setShowDefinitions(false)} />
@@ -452,8 +452,8 @@ export function OwnerOverview() {
   return (
     <>
       <ReportShell
-        title="Owner Overview"
-        description="High-level business health metrics"
+        title="Business Snapshot"
+        description="Your business at a glance — the key numbers you need to know"
         defaultTimeBasis="checkout"
         onSaveView={() => setShowSaveView(true)}
         onSchedule={() => setShowSchedule(true)}
@@ -493,44 +493,44 @@ export function OwnerOverview() {
         
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ChartCard title="Revenue Trend" description={`${filters.dateRange} • ${filters.timeBasis} date basis`} ariaLabel="Line chart showing revenue trend">
+          <ChartCard title="How Sales Look Over Time" description={`${filters.dateRange} • counted by ${filters.timeBasis === 'service' ? 'grooming' : filters.timeBasis === 'checkout' ? 'payment' : 'bank'} date`} ariaLabel="Line chart showing revenue trend">
             <SimpleLineChart data={salesTrendData} previousData={compareMode ? previousSalesTrendData : undefined} height={280} formatValue={formatMoney} showArea />
           </ChartCard>
           
-          <ChartCard title="Service Mix" description="Revenue distribution by service category" ariaLabel="Donut chart showing revenue by category">
+          <ChartCard title="Where Your Money Comes From" description="Sales broken down by service type" ariaLabel="Donut chart showing revenue by category">
             <SimplePieChart data={serviceMixData} height={280} formatValue={formatMoney} onClick={handleChartDrill} />
           </ChartCard>
         </div>
         
         {/* Heatmap */}
-        <ChartCard title="Revenue Heatmap" description="Revenue intensity by day and hour" ariaLabel="Heatmap of revenue">
+        <ChartCard title="Your Busiest Times" description="Darker = more revenue. Find your peak hours!" ariaLabel="Heatmap of revenue">
           <SimpleHeatmap data={heatmapData} height={220} formatValue={formatMoney} onClick={handleHeatmapDrill} />
         </ChartCard>
         
         {/* Data Table */}
         <DataTable
-          title="Performance Drivers"
+          title="See What's Driving Your Numbers"
           data={tableData}
           groupByOptions={[
-            { value: 'service', label: 'By Service' },
-            { value: 'staff', label: 'By Staff' },
-            { value: 'channel', label: 'By Channel' },
-            { value: 'clientType', label: 'By Client Type' },
-            { value: 'paymentMethod', label: 'By Payment Method' },
+            { value: 'service', label: 'By Service Type' },
+            { value: 'staff', label: 'By Groomer' },
+            { value: 'channel', label: 'By How They Booked' },
+            { value: 'clientType', label: 'New vs Returning' },
+            { value: 'paymentMethod', label: 'By Payment Type' },
             { value: 'day', label: 'By Day' },
             { value: 'week', label: 'By Week' },
           ]}
           selectedGroupBy={groupBy}
           onGroupByChange={setGroupBy}
           columns={[
-            { id: 'grossSales', label: 'Gross Sales', format: 'money', align: 'right', defaultVisible: true, sortable: true },
-            { id: 'netSales', label: 'Net Sales', format: 'money', align: 'right', defaultVisible: true, sortable: true },
+            { id: 'grossSales', label: 'Total Sales', format: 'money', align: 'right', defaultVisible: true, sortable: true },
+            { id: 'netSales', label: 'Actual Sales', format: 'money', align: 'right', defaultVisible: true, sortable: true },
             { id: 'discounts', label: 'Discounts', format: 'money', align: 'right', sortable: true },
             { id: 'tips', label: 'Tips', format: 'money', align: 'right', sortable: true },
             { id: 'tax', label: 'Tax', format: 'money', align: 'right', sortable: true },
-            { id: 'appointments', label: 'Appts', format: 'number', align: 'right', defaultVisible: true, sortable: true },
-            { id: 'avgTicket', label: 'Avg Ticket', format: 'money', align: 'right', defaultVisible: true, sortable: true },
-            { id: 'noShowRate', label: 'No-Show %', format: 'percent', align: 'right', sortable: true },
+            { id: 'appointments', label: 'Visits', format: 'number', align: 'right', defaultVisible: true, sortable: true },
+            { id: 'avgTicket', label: 'Avg/Visit', format: 'money', align: 'right', defaultVisible: true, sortable: true },
+            { id: 'noShowRate', label: 'No-Shows', format: 'percent', align: 'right', sortable: true },
           ]}
           onRowClick={handleRowDrill}
           onExport={handleExportCSV}

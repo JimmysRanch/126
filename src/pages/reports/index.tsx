@@ -63,8 +63,8 @@ interface ReportDefinition {
 const REPORTS: ReportDefinition[] = [
   {
     id: 'owner-overview',
-    name: 'Owner Overview',
-    description: 'High-level business health dashboard',
+    name: 'Business Snapshot',
+    description: 'See how your business is doing at a glance',
     path: '/reports/owner-overview',
     icon: ChartLine,
     isEssential: true,
@@ -72,8 +72,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'true-profit',
-    name: 'True Profit & Margin',
-    description: 'Contribution margin after all costs',
+    name: 'Real Profit',
+    description: 'Your actual earnings after all expenses',
     path: '/reports/true-profit',
     icon: CurrencyDollar,
     isEssential: true,
@@ -81,8 +81,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'sales-summary',
-    name: 'Sales Summary',
-    description: 'Revenue breakdown and trends',
+    name: 'Sales Overview',
+    description: 'See what you sold and when',
     path: '/reports/sales-summary',
     icon: ChartPie,
     isEssential: false,
@@ -90,8 +90,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'finance-reconciliation',
-    name: 'Finance & Reconciliation',
-    description: 'Payment tracking and bank reconciliation',
+    name: 'Payment Tracking',
+    description: 'Match payments with your bank deposits',
     path: '/reports/finance-reconciliation',
     icon: Receipt,
     isEssential: false,
@@ -99,8 +99,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'appointments-capacity',
-    name: 'Appointments & Capacity',
-    description: 'Booking patterns and utilization',
+    name: 'Schedule & Booking',
+    description: 'How full is your calendar?',
     path: '/reports/appointments-capacity',
     icon: CalendarBlank,
     isEssential: false,
@@ -108,8 +108,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'no-shows-cancellations',
-    name: 'No-Shows & Cancellations',
-    description: 'Lost revenue and recovery analysis',
+    name: 'Missed Appointments',
+    description: 'Track no-shows and cancellations',
     path: '/reports/no-shows-cancellations',
     icon: XCircle,
     isEssential: false,
@@ -117,8 +117,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'retention-rebooking',
-    name: 'Retention & Rebooking',
-    description: 'Client return rates and rebooking patterns',
+    name: 'Returning Clients',
+    description: 'Are your clients coming back?',
     path: '/reports/retention-rebooking',
     icon: ArrowsClockwise,
     isEssential: true,
@@ -126,8 +126,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'client-cohorts-ltv',
-    name: 'Client Cohorts & LTV',
-    description: 'Lifetime value and cohort analysis',
+    name: 'Client Value',
+    description: 'How much each client is worth over time',
     path: '/reports/client-cohorts-ltv',
     icon: Users,
     isEssential: false,
@@ -135,8 +135,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'staff-performance',
-    name: 'Staff Performance',
-    description: 'Groomer productivity and efficiency',
+    name: 'Team Performance',
+    description: 'How well is each groomer doing?',
     path: '/reports/staff-performance',
     icon: UserCircle,
     isEssential: true,
@@ -144,8 +144,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'payroll-compensation',
-    name: 'Payroll / Compensation',
-    description: 'Staff earnings and payroll breakdown',
+    name: 'Team Pay',
+    description: 'What your team earned',
     path: '/reports/payroll-compensation',
     icon: Briefcase,
     isEssential: false,
@@ -153,8 +153,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'service-mix-pricing',
-    name: 'Service Mix & Pricing',
-    description: 'Service performance and pricing analysis',
+    name: 'Services Breakdown',
+    description: 'Which services are most popular?',
     path: '/reports/service-mix-pricing',
     icon: Tag,
     isEssential: false,
@@ -162,8 +162,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'inventory-usage',
-    name: 'Inventory Usage & Reorder',
-    description: 'Supply tracking and forecasting',
+    name: 'Supplies & Stock',
+    description: 'What you have and what you need',
     path: '/reports/inventory-usage',
     icon: Package,
     isEssential: false,
@@ -171,8 +171,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'marketing-messaging',
-    name: 'Marketing & Messaging ROI',
-    description: 'Campaign performance and attribution',
+    name: 'Marketing Results',
+    description: 'Are your messages bringing clients in?',
     path: '/reports/marketing-messaging',
     icon: Megaphone,
     isEssential: false,
@@ -180,8 +180,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'tips-gratuities',
-    name: 'Tips & Gratuities',
-    description: 'Tip tracking and distribution',
+    name: 'Tips',
+    description: 'Tips collected and distributed',
     path: '/reports/tips-gratuities',
     icon: Gift,
     isEssential: false,
@@ -189,8 +189,8 @@ const REPORTS: ReportDefinition[] = [
   },
   {
     id: 'taxes-summary',
-    name: 'Taxes Summary',
-    description: 'Tax collection and jurisdictions',
+    name: 'Tax Summary',
+    description: 'Taxes collected for your records',
     path: '/reports/taxes-summary',
     icon: Percent,
     isEssential: false,
@@ -199,11 +199,11 @@ const REPORTS: ReportDefinition[] = [
 ]
 
 const CATEGORIES = [
-  { id: 'overview', name: 'Overview' },
-  { id: 'financial', name: 'Financial' },
-  { id: 'operations', name: 'Operations' },
+  { id: 'overview', name: 'Quick Look' },
+  { id: 'financial', name: 'Money' },
+  { id: 'operations', name: 'Daily Work' },
   { id: 'clients', name: 'Clients' },
-  { id: 'staff', name: 'Staff' },
+  { id: 'staff', name: 'Team' },
   { id: 'marketing', name: 'Marketing' },
 ]
 
@@ -276,11 +276,11 @@ function ReportsLanding() {
                   <ChartLine size={24} weight="duotone" className="text-primary" />
                 </div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Reports & Insights
+                  Reports
                 </h1>
               </div>
               <p className="text-muted-foreground ml-[52px]">
-                Analyze your business performance with comprehensive reports
+                See how your business is doing. Click any report to dive deeper.
               </p>
             </div>
             
@@ -292,7 +292,7 @@ function ReportsLanding() {
                   onCheckedChange={toggleEssentialsOnly}
                 />
                 <Label htmlFor="essentials-toggle" className="text-sm font-medium">
-                  Essentials Only
+                  Show Key Reports Only
                 </Label>
               </div>
             </div>
@@ -360,7 +360,7 @@ function ReportsLanding() {
                                   variant="secondary" 
                                   className="text-[10px] bg-primary/10 text-primary border-0 font-medium"
                                 >
-                                  Essential
+                                  Key Report
                                 </Badge>
                               )}
                               <Button
@@ -411,11 +411,11 @@ function ReportsLanding() {
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <ChartLine size={16} className="text-primary" />
-              <span><strong className="text-foreground">{REPORTS.length}</strong> reports available</span>
+              <span><strong className="text-foreground">{REPORTS.length}</strong> reports to explore</span>
             </div>
             <div className="flex items-center gap-2">
               <Star size={16} weight="fill" className="text-yellow-500" />
-              <span><strong className="text-foreground">{REPORTS.filter(r => r.isEssential).length}</strong> essential reports</span>
+              <span><strong className="text-foreground">{REPORTS.filter(r => r.isEssential).length}</strong> key reports</span>
             </div>
             <div className="flex items-center gap-2">
               <Users size={16} className="text-amber-400" />

@@ -43,45 +43,45 @@ export function DefinitionsModal({ open, onClose }: DefinitionsModalProps) {
   // Group by category
   const groupedMetrics = useMemo(() => {
     const groups: Record<string, MetricDefinition[]> = {
-      'Revenue': [],
-      'Profit & Margin': [],
+      'Sales & Revenue': [],
+      'Profit & Costs': [],
       'Appointments': [],
-      'Retention': [],
-      'Clients': [],
-      'Staff': [],
-      'Payroll': [],
+      'Client Loyalty': [],
+      'Client Info': [],
+      'Team Performance': [],
+      'Team Pay': [],
       'Tips': [],
       'Taxes': [],
-      'Inventory': [],
+      'Supplies': [],
       'Marketing': [],
-      'Finance': [],
+      'Payments': [],
     }
     
     filteredMetrics.forEach(m => {
       if (['grossSales', 'netSales', 'totalCollected', 'avgTicket', 'discounts', 'refunds'].includes(m.id)) {
-        groups['Revenue'].push(m)
+        groups['Sales & Revenue'].push(m)
       } else if (['contributionMargin', 'contributionMarginPercent', 'grossMarginPercent', 'avgMarginPerAppt', 'estimatedCOGS', 'processingFees', 'directLabor'].includes(m.id)) {
-        groups['Profit & Margin'].push(m)
+        groups['Profit & Costs'].push(m)
       } else if (['appointmentsCompleted', 'appointmentsBooked', 'appointmentsCancelled', 'noShowRate', 'lateCancelRate', 'lostRevenue', 'recoveryRate', 'avgLeadTime', 'utilizationPercent'].includes(m.id)) {
         groups['Appointments'].push(m)
       } else if (['rebook24h', 'rebook7d', 'rebook30d', 'avgDaysToNextVisit', 'return90d'].includes(m.id)) {
-        groups['Retention'].push(m)
+        groups['Client Loyalty'].push(m)
       } else if (['avgLTV12m', 'medianVisits12m', 'newClients', 'retention90d', 'retention180d', 'retention360d'].includes(m.id)) {
-        groups['Clients'].push(m)
+        groups['Client Info'].push(m)
       } else if (['revenuePerHour', 'marginPerHour', 'upsellRate', 'onTimeStartPercent', 'tipsPerHour'].includes(m.id)) {
-        groups['Staff'].push(m)
+        groups['Team Performance'].push(m)
       } else if (['totalPayout', 'commissionTotal', 'hourlyTotal'].includes(m.id)) {
-        groups['Payroll'].push(m)
+        groups['Team Pay'].push(m)
       } else if (['totalTips', 'avgTipPercent', 'tipFeeCost'].includes(m.id)) {
         groups['Tips'].push(m)
       } else if (['taxableSales', 'nonTaxableSales', 'taxesCollected'].includes(m.id)) {
         groups['Taxes'].push(m)
       } else if (['itemsBelowReorder', 'daysOfSupply', 'costUsed', 'costPerAppt'].includes(m.id)) {
-        groups['Inventory'].push(m)
+        groups['Supplies'].push(m)
       } else if (['messagesSent', 'confirmations', 'showUpsAttributed', 'costPerShowUp', 'marketingROI'].includes(m.id)) {
         groups['Marketing'].push(m)
       } else if (['pendingUnpaid', 'netDeposits'].includes(m.id)) {
-        groups['Finance'].push(m)
+        groups['Payments'].push(m)
       }
     })
     
@@ -93,9 +93,9 @@ export function DefinitionsModal({ open, onClose }: DefinitionsModalProps) {
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Metric Definitions</DialogTitle>
+          <DialogTitle>What These Numbers Mean</DialogTitle>
           <DialogDescription>
-            Reference guide for all metrics and calculations used in reports.
+            A simple guide to understanding all the numbers in your reports. Tap any term to learn more.
           </DialogDescription>
         </DialogHeader>
         
