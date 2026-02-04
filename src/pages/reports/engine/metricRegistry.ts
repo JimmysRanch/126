@@ -529,7 +529,7 @@ export const metricRegistry: Record<string, MetricDefinition> = {
   marketingROI: {
     id: 'marketingROI',
     label: 'Marketing Return',
-    definition: 'For every dollar spent on marketing, how much did you make back? Over 100% means you\'re making money!',
+    definition: 'For every dollar spent on marketing, how much profit did you make? 100% = broke even, 200% = doubled your money.',
     formula: '(Attributed Revenue - Marketing Cost) / Marketing Cost',
     timeBasisSensitivity: true,
     format: 'percent',

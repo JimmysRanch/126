@@ -201,10 +201,10 @@ export function ReportShell({
         </Label>
         <div className="grid grid-cols-2 gap-1.5">
           {[
-            { value: 'small', label: 'Small (under 15 lbs)' },
-            { value: 'medium', label: 'Medium (15-40 lbs)' },
-            { value: 'large', label: 'Large (40-80 lbs)' },
-            { value: 'giant', label: 'Giant (80+ lbs)' },
+            { value: 'small', label: 'Small (under 15 lb)' },
+            { value: 'medium', label: 'Medium (15-40 lb)' },
+            { value: 'large', label: 'Large (40-80 lb)' },
+            { value: 'giant', label: 'Giant (80+ lb)' },
           ].map(size => (
             <div key={size.value} className="flex items-center gap-2">
               <Checkbox 

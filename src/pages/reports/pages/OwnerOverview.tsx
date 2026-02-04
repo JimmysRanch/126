@@ -493,7 +493,7 @@ export function OwnerOverview() {
         
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ChartCard title="How Sales Look Over Time" description={`${filters.dateRange} • counted by ${filters.timeBasis === 'service' ? 'grooming' : filters.timeBasis === 'checkout' ? 'payment' : 'bank'} date`} ariaLabel="Line chart showing revenue trend">
+          <ChartCard title="How Sales Look Over Time" description={`${filters.dateRange} • by ${filters.timeBasis === 'service' ? 'grooming date' : filters.timeBasis === 'checkout' ? 'payment date' : 'bank deposit date'}`} ariaLabel="Line chart showing revenue trend">
             <SimpleLineChart data={salesTrendData} previousData={compareMode ? previousSalesTrendData : undefined} height={280} formatValue={formatMoney} showArea />
           </ChartCard>
           
