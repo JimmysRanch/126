@@ -432,7 +432,7 @@ export function Inventory() {
                 </tr>
               )
             })
-          )}
+          }
         </tbody>
       </table>
     </div>
