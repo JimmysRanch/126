@@ -40,7 +40,8 @@ export function AppointmentsByBreed() {
 
       appointments.filter(a => a.status === 'completed').forEach(appt => {
         total++
-        const breed = appt.petName ? 'Mixed Breed' : 'Unknown' // Breed info would come from pet data
+        // Group by weight class since breed info isn't available in NormalizedAppointment
+        const breed = appt.petWeightCategory || 'Unknown'
         
         if (!byBreed[breed]) {
           byBreed[breed] = { count: 0, revenue: 0, avgDuration: 0, pets: new Set() }
@@ -72,7 +73,7 @@ export function AppointmentsByBreed() {
       const previousTotal = calculateAppointmentsCompleted(previousAppointments)
       
       const uniqueBreeds = breedData.length
-      const topBreed = breedData.sort((a, b) => b.count - a.count)[0]
+      const topBreed = [...breedData].sort((a, b) => b.count - a.count)[0]
 
       return [
         { metricId: 'totalAppointments', value: calculateKPIWithDelta(currentTotal, previousTotal, 'number') },

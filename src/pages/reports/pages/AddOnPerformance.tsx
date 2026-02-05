@@ -88,8 +88,15 @@ export function AddOnPerformance() {
     return measurePerformance('calculateAddOnKPIs', () => {
       const currentTotalRevenue = addOnData.addOns.reduce((sum, a) => sum + a.revenue, 0)
       const totalCount = addOnData.addOns.reduce((sum, a) => sum + a.count, 0)
-      const appointmentsWithAddOns = addOnData.addOns.reduce((sum, a) => sum + a.appointmentCount, 0)
-      const attachRate = addOnData.totalAppointments > 0 ? (appointmentsWithAddOns / addOnData.totalAppointments) * 100 : 0
+      
+      // Calculate unique appointments with add-ons using a Set to avoid double-counting
+      const appointmentsWithAddOns = new Set<string>()
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (appt.addOns && appt.addOns.length > 0) {
+          appointmentsWithAddOns.add(appt.id)
+        }
+      })
+      const attachRate = addOnData.totalAppointments > 0 ? (appointmentsWithAddOns.size / addOnData.totalAppointments) * 100 : 0
 
       return [
         { metricId: 'addOnRevenue', value: calculateKPIWithDelta(currentTotalRevenue, previousAddOnRevenue, 'money') },
@@ -98,7 +105,7 @@ export function AddOnPerformance() {
         { metricId: 'uniqueAddOns', value: calculateKPIWithDelta(addOnData.addOns.length, 0, 'number') },
       ]
     })
-  }, [addOnData, previousAddOnRevenue])
+  }, [addOnData, previousAddOnRevenue, appointments])
 
   // Table data
   const tableData = useMemo(() => {

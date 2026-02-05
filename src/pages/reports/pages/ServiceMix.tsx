@@ -90,7 +90,7 @@ export function ServiceMix() {
           'money'
         ) },
         { metricId: 'topServiceShare', value: calculateKPIWithDelta(
-          serviceData.sort((a, b) => b.revenue - a.revenue)[0]?.share || 0,
+          [...serviceData].sort((a, b) => b.revenue - a.revenue)[0]?.share || 0,
           0,
           'percent'
         ) },

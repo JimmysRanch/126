@@ -86,7 +86,7 @@ export function TopClients() {
       const currentAvgSpend = currentClientCount > 0 ? Math.round(currentTotalSpend / currentClientCount) : 0
       const previousAvgSpend = previousClientCount > 0 ? Math.round(previousTotalSpend / previousClientCount) : 0
       
-      const topClient = clientData.sort((a, b) => b.lifetimeSpend - a.lifetimeSpend)[0]
+      const topClient = [...clientData].sort((a, b) => b.lifetimeSpend - a.lifetimeSpend)[0]
 
       return [
         { metricId: 'totalClients', value: calculateKPIWithDelta(currentClientCount, previousClientCount, 'number') },
