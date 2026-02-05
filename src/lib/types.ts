@@ -78,6 +78,7 @@ export interface Appointment {
   clientName: string
   petId: string
   petName: string
+  petBreed?: string
   petWeight: number
   petWeightCategory: 'small' | 'medium' | 'large' | 'giant'
   groomerId: string
