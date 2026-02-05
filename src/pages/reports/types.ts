@@ -180,6 +180,8 @@ export interface NormalizedAppointment {
   clientName: string
   petId: string
   petName: string
+  petBreed?: string
+  petWeight?: number
   petWeightCategory: PetSize
   groomerId: string
   groomerName: string
@@ -190,6 +192,7 @@ export interface NormalizedAppointment {
   endTime: string
   scheduledDurationMinutes: number
   actualDurationMinutes?: number
+  durationMinutes?: number
   services: NormalizedService[]
   addOns?: { name: string; priceCents: number }[]
   subtotalCents: number
