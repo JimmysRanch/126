@@ -8,18 +8,9 @@ import { ExpensesCard } from './dashboard/components/ExpensesCard'
 import { DogsGroomedCard } from './dashboard/components/DogsGroomedCard'
 import { BookedPercentageCard } from './dashboard/components/BookedPercentageCard'
 import { ClientsCard } from './dashboard/components/ClientsCard'
-import { 
-  appointmentData, 
-  capacityData, 
-  revenueData, 
-  issuesData,
-  dogsGroomedData,
-  bookedPercentageData,
-  clientsData
-} from './dashboard/data/dashboardDefaults'
 import { calculateAppointmentProgress } from './dashboard/utils/dashboardCalculations'
 import { CheckCircle, XCircle, Clock, Warning } from '@phosphor-icons/react'
-import { useKV } from "@github/spark/hooks"
+import { useDashboardData } from './dashboard/hooks/useDashboardData'
 
 function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value: number; delay?: number; prefix?: string; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -50,20 +41,26 @@ function AnimatedNumber({ value, delay = 0, prefix = '', suffix = '' }: { value:
 }
 
 export function Dashboard() {
-  const [appointmentsSummary] = useKV<typeof appointmentData>("dashboard-appointments-summary", appointmentData)
-  const [capacitySummary] = useKV<typeof capacityData>("dashboard-capacity", capacityData)
-  const [revenueSummary] = useKV<typeof revenueData>("dashboard-revenue-data", revenueData)
-  const [issuesSummary] = useKV<typeof issuesData>("dashboard-issues", issuesData)
-  const [dogsGroomedSummary] = useKV<typeof dogsGroomedData>("dashboard-dogs-groomed", dogsGroomedData)
-  const [bookedSummary] = useKV<typeof bookedPercentageData>("dashboard-booked-percentage", bookedPercentageData)
-  const [clientsSummary] = useKV<typeof clientsData>("dashboard-clients-summary", clientsData)
-  const appointmentStats = appointmentsSummary || appointmentData
-  const capacityStats = capacitySummary || capacityData
-  const revenueStats = revenueSummary || revenueData
-  const issuesStats = issuesSummary || issuesData
-  const dogsGroomedStats = dogsGroomedSummary || dogsGroomedData
-  const bookedStats = bookedSummary || bookedPercentageData
-  const clientsStats = clientsSummary || clientsData
+  const {
+    appointmentsSummary,
+    capacitySummary,
+    revenueSummary,
+    issuesSummary,
+    dogsGroomedSummary,
+    bookedPercentageSummary,
+    clientsSummary,
+    groomerData,
+    recentActivity,
+    expensesData,
+  } = useDashboardData()
+  
+  const appointmentStats = appointmentsSummary
+  const capacityStats = capacitySummary
+  const revenueStats = revenueSummary
+  const issuesStats = issuesSummary
+  const dogsGroomedStats = dogsGroomedSummary
+  const bookedStats = bookedPercentageSummary
+  const clientsStats = clientsSummary
   const progress = calculateAppointmentProgress(appointmentStats)
   return (
     <div className="h-[calc(100vh-57px)] overflow-hidden bg-background p-3">
@@ -222,7 +219,7 @@ export function Dashboard() {
               <h2 className="text-sm font-semibold">Recent Activity</h2>
             </div>
             <div className="overflow-y-auto px-3 pb-3 scrollbar-thin flex-1 min-h-0">
-              <RecentActivity />
+              <RecentActivity data={recentActivity} />
             </div>
           </Link>
 
@@ -232,7 +229,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Today's Schedule</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <GroomersWorkloadCard />
+              <GroomersWorkloadCard data={groomerData} />
             </div>
           </div>
 
@@ -242,7 +239,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Lifetime Metrics</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <GroomerAvgCard />
+              <GroomerAvgCard data={groomerData} />
             </div>
           </div>
         </div>
@@ -254,7 +251,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <ExpensesCard />
+              <ExpensesCard data={expensesData} />
             </div>
           </div>
 
