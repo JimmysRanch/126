@@ -1,6 +1,4 @@
 import { format, addDays, addWeeks, startOfDay, differenceInDays, parseISO } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
-import { getBusinessTimezone } from './date-utils'
 
 export type PayPeriodType = 'weekly' | 'bi-weekly' | 'semi-monthly' | 'monthly'
 
@@ -61,7 +59,6 @@ export function getPayPeriodSettings(): PayPeriodSettings {
 
 export function calculateNextPayPeriod(fromDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
   const settings = getPayPeriodSettings()
-  const timezone = getBusinessTimezone()
   
   const from = startOfDay(parseISO(fromDate))
   const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
@@ -259,6 +256,246 @@ export function formatPayPeriodType(type: PayPeriodType): string {
     case 'bi-weekly': return 'Bi-Weekly'
     case 'semi-monthly': return 'Semi-Monthly'
     case 'monthly': return 'Monthly'
+  }
+}
+
+export function getPreviousPayPeriod(forDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+  const settings = getPayPeriodSettings()
+  const current = startOfDay(parseISO(forDate))
+  const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
+
+  switch (settings.type) {
+    case 'weekly': {
+      const daysSinceAnchor = differenceInDays(current, anchorStart)
+      const weeksPassed = Math.floor(daysSinceAnchor / 7)
+      const periodStart = addWeeks(anchorStart, weeksPassed - 1)
+      const periodEnd = addDays(periodStart, 6)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(periodEnd, anchorPayDiff)
+      
+      return {
+        startDate: format(periodStart, 'yyyy-MM-dd'),
+        endDate: format(periodEnd, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'bi-weekly': {
+      const daysSinceAnchor = differenceInDays(current, anchorStart)
+      const biweeksPassed = Math.floor(daysSinceAnchor / 14)
+      const periodStart = addWeeks(anchorStart, (biweeksPassed - 1) * 2)
+      const periodEnd = addDays(periodStart, 13)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(periodEnd, anchorPayDiff)
+      
+      return {
+        startDate: format(periodStart, 'yyyy-MM-dd'),
+        endDate: format(periodEnd, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'semi-monthly': {
+      const currentDate = parseISO(forDate)
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth()
+      const day = currentDate.getDate()
+      
+      let startDate: Date
+      let endDate: Date
+      
+      if (day <= 15) {
+        // Current is 1-15, previous is 16-end of last month
+        const prevMonth = month === 0 ? 11 : month - 1
+        const prevYear = month === 0 ? year - 1 : year
+        startDate = new Date(prevYear, prevMonth, 16)
+        endDate = new Date(year, month, 0) // Last day of previous month
+      } else {
+        // Current is 16-end, previous is 1-15 of same month
+        startDate = new Date(year, month, 1)
+        endDate = new Date(year, month, 15)
+      }
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(endDate, anchorPayDiff)
+      
+      return {
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'monthly': {
+      const currentDate = parseISO(forDate)
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth()
+      
+      const prevMonth = month === 0 ? 11 : month - 1
+      const prevYear = month === 0 ? year - 1 : year
+      
+      const startDate = new Date(prevYear, prevMonth, 1)
+      const endDate = new Date(prevYear, prevMonth + 1, 0)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(endDate, anchorPayDiff)
+      
+      return {
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    default:
+      return {
+        startDate: forDate,
+        endDate: forDate,
+        payDate: forDate
+      }
+  }
+}
+
+export function getUpcomingPayPeriod(periodsAhead: number, forDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+  const settings = getPayPeriodSettings()
+  const current = startOfDay(parseISO(forDate))
+  const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
+
+  switch (settings.type) {
+    case 'weekly': {
+      const daysSinceAnchor = differenceInDays(current, anchorStart)
+      const weeksPassed = Math.floor(daysSinceAnchor / 7)
+      const periodStart = addWeeks(anchorStart, weeksPassed + periodsAhead)
+      const periodEnd = addDays(periodStart, 6)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(periodEnd, anchorPayDiff)
+      
+      return {
+        startDate: format(periodStart, 'yyyy-MM-dd'),
+        endDate: format(periodEnd, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'bi-weekly': {
+      const daysSinceAnchor = differenceInDays(current, anchorStart)
+      const biweeksPassed = Math.floor(daysSinceAnchor / 14)
+      const periodStart = addWeeks(anchorStart, (biweeksPassed + periodsAhead) * 2)
+      const periodEnd = addDays(periodStart, 13)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(periodEnd, anchorPayDiff)
+      
+      return {
+        startDate: format(periodStart, 'yyyy-MM-dd'),
+        endDate: format(periodEnd, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'semi-monthly': {
+      const currentDate = parseISO(forDate)
+      let year = currentDate.getFullYear()
+      let month = currentDate.getMonth()
+      const day = currentDate.getDate()
+      let isFirstHalf = day <= 15
+      
+      // Move ahead by the specified periods
+      for (let i = 0; i < periodsAhead; i++) {
+        if (isFirstHalf) {
+          isFirstHalf = false
+        } else {
+          isFirstHalf = true
+          month++
+          if (month > 11) {
+            month = 0
+            year++
+          }
+        }
+      }
+      
+      let startDate: Date
+      let endDate: Date
+      
+      if (isFirstHalf) {
+        startDate = new Date(year, month, 1)
+        endDate = new Date(year, month, 15)
+      } else {
+        startDate = new Date(year, month, 16)
+        const nextMonth = month === 11 ? 0 : month + 1
+        const nextYear = month === 11 ? year + 1 : year
+        endDate = new Date(nextYear, nextMonth, 0)
+      }
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(endDate, anchorPayDiff)
+      
+      return {
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    case 'monthly': {
+      const currentDate = parseISO(forDate)
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth()
+      
+      const targetMonth = month + periodsAhead
+      const targetYear = year + Math.floor(targetMonth / 12)
+      const actualMonth = targetMonth % 12
+      
+      const startDate = new Date(targetYear, actualMonth, 1)
+      const endDate = new Date(targetYear, actualMonth + 1, 0)
+      
+      const anchorPayDiff = differenceInDays(parseISO(settings.anchorPayDate), parseISO(settings.anchorEndDate))
+      const payDate = addDays(endDate, anchorPayDiff)
+      
+      return {
+        startDate: format(startDate, 'yyyy-MM-dd'),
+        endDate: format(endDate, 'yyyy-MM-dd'),
+        payDate: format(payDate, 'yyyy-MM-dd')
+      }
+    }
+    
+    default:
+      return {
+        startDate: forDate,
+        endDate: forDate,
+        payDate: forDate
+      }
+  }
+}
+
+export function formatPayPeriodRange(period: PayPeriod): string {
+  const start = parseISO(period.startDate)
+  const end = parseISO(period.endDate)
+  
+  const startMonth = format(start, 'MMM')
+  const endMonth = format(end, 'MMM')
+  const startDay = format(start, 'd')
+  const endDay = format(end, 'd')
+  
+  if (startMonth === endMonth) {
+    return `${startMonth} ${startDay} - ${endDay}`
+  }
+  return `${startMonth} ${startDay} - ${endMonth} ${endDay}`
+}
+
+export function getPayPeriodScheduleDescription(type: PayPeriodType): string {
+  switch (type) {
+    case 'weekly':
+      return 'Weekly pay schedule (every week)'
+    case 'bi-weekly':
+      return 'Bi-weekly pay schedule (every 2 weeks)'
+    case 'semi-monthly':
+      return 'Semi-monthly pay schedule (1st-15th and 16th-End of month)'
+    case 'monthly':
+      return 'Monthly pay schedule (1st-End of month)'
   }
 }
 

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Download, CalendarBlank, Clock, Check, Info } from "@phosphor-icons/react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -9,6 +9,15 @@ import { useKV } from "@github/spark/hooks"
 import { Appointment, Transaction } from "@/lib/types"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { 
+  getCurrentPayPeriod, 
+  getPreviousPayPeriod, 
+  getUpcomingPayPeriod, 
+  formatPayPeriodRange, 
+  getPayPeriodSettings,
+  getPayPeriodScheduleDescription,
+  type PayPeriodSettings
+} from "@/lib/payroll-utils"
 
 interface PayrollData {
   staffId: string
@@ -45,8 +54,33 @@ export function PayrollOverview() {
   const isMobile = useIsMobile()
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [transactions] = useKV<Transaction[]>("transactions", [])
+  // Used as dependency to trigger recalculation when settings change
+  const [payrollSettingsKV] = useKV<{ payPeriod: PayPeriodSettings }>("payroll-settings", null)
   
   const isFinancesTab = location.pathname.startsWith('/finances')
+
+  // Calculate pay periods based on user settings
+  // We use payrollSettingsKV as a dependency to re-trigger calculation when settings change
+  const payPeriods = useMemo(() => {
+    const settings = getPayPeriodSettings()
+    const currentPeriod = getCurrentPayPeriod()
+    const previousPeriod = getPreviousPayPeriod()
+    const nextPeriod = getUpcomingPayPeriod(1)
+    const upcomingPeriod = getUpcomingPayPeriod(2)
+    
+    return {
+      settings,
+      current: currentPeriod,
+      previous: previousPeriod,
+      next: nextPeriod,
+      upcoming: upcomingPeriod,
+      currentDisplay: formatPayPeriodRange(currentPeriod),
+      previousDisplay: formatPayPeriodRange(previousPeriod),
+      nextDisplay: formatPayPeriodRange(nextPeriod),
+      upcomingDisplay: formatPayPeriodRange(upcomingPeriod),
+      scheduleDescription: getPayPeriodScheduleDescription(settings.type)
+    }
+  }, [payrollSettingsKV])
 
   const transactionMap = new Map(
     (transactions || [])
@@ -139,7 +173,7 @@ export function PayrollOverview() {
                     <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
                     <CalendarBlank size={12} className="text-muted-foreground" />
                   </div>
-                  <p className="text-lg md:text-xl font-bold mt-0.5">Jan 16 - 31</p>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">{payPeriods.currentDisplay}</p>
                 </div>
               </div>
             </Card>
@@ -150,22 +184,22 @@ export function PayrollOverview() {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="p-2 bg-primary/10 border border-primary/30 rounded-md">
                   <p className="font-semibold text-primary">Current</p>
-                  <p className="text-muted-foreground">Jan 16 - Jan 31</p>
+                  <p className="text-muted-foreground">{payPeriods.currentDisplay}</p>
                 </div>
                 <div className="p-2 bg-muted rounded-md">
                   <p className="font-semibold">Previous</p>
-                  <p className="text-muted-foreground">Jan 1 - Jan 15</p>
+                  <p className="text-muted-foreground">{payPeriods.previousDisplay}</p>
                 </div>
                 <div className="p-2 bg-muted rounded-md">
                   <p className="font-semibold">Next</p>
-                  <p className="text-muted-foreground">Feb 1 - Feb 15</p>
+                  <p className="text-muted-foreground">{payPeriods.nextDisplay}</p>
                 </div>
                 <div className="p-2 bg-muted rounded-md opacity-60">
                   <p className="font-semibold">Upcoming</p>
-                  <p className="text-muted-foreground">Feb 16 - Feb 28</p>
+                  <p className="text-muted-foreground">{payPeriods.upcomingDisplay}</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">Semi-monthly pay schedule (1st-15th and 16th-End of month)</p>
+              <p className="text-xs text-muted-foreground">{payPeriods.scheduleDescription}</p>
             </div>
           </PopoverContent>
         </Popover>
