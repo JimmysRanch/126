@@ -71,8 +71,8 @@ const REPORTS: ReportDefinition[] = [
 
 const CATEGORIES = [
   { id: 'overview', name: 'Overview', description: 'High-level business insights' },
-  { id: 'financial', name: 'Financial', description: 'Revenue, profit, and expenses' },
   { id: 'operations', name: 'Operations', description: 'Appointments, services, and inventory' },
+  { id: 'financial', name: 'Financial', description: 'Revenue, profit, and expenses' },
   { id: 'clients', name: 'Clients', description: 'Customer retention and value' },
   { id: 'staff', name: 'Staff', description: 'Team performance and payroll' },
   { id: 'marketing', name: 'Marketing', description: 'Campaign effectiveness and ROI' },
