@@ -78,3 +78,15 @@ export function formatInBusinessTimezone(dateString: string, formatString: strin
   const zonedDate = toZonedTime(date, timezone)
   return format(zonedDate, formatString)
 }
+
+/**
+ * Format a date string from yyyy-mm-dd to mm-dd-yyyy display format
+ * This is the standard display format for the application
+ */
+export function formatDateForDisplay(dateString: string): string {
+  if (!dateString) return ''
+  const timezone = getBusinessTimezone()
+  const date = parseISO(dateString)
+  const zonedDate = toZonedTime(date, timezone)
+  return format(zonedDate, 'MM-dd-yyyy')
+}

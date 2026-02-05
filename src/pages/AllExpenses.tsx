@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, MagnifyingGlass, FunnelSimple, Download, Plus } from '@phosphor-icons/react'
 import { useKV } from "@github/spark/hooks"
 import { ExpenseRecord } from "@/lib/finance-types"
+import { formatDateForDisplay } from "@/lib/date-utils"
 
 export function AllExpenses() {
   const navigate = useNavigate()
@@ -110,14 +111,14 @@ export function AllExpenses() {
                 <tbody className="divide-y">
                   {filteredExpenses.map((expense) => (
                     <tr key={expense.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="p-3 text-sm text-muted-foreground whitespace-nowrap">{expense.date}</td>
+                      <td className="p-3 text-sm text-muted-foreground whitespace-nowrap">{formatDateForDisplay(expense.date)}</td>
                       <td className="p-3 text-sm font-semibold">{expense.vendor}</td>
                       <td className="p-3">
-                        <span className="text-xs px-2 py-1 rounded-md bg-muted/50 text-muted-foreground font-semibold">
+                        <span className="text-sm font-semibold">
                           {expense.category}
                         </span>
                       </td>
-                      <td className="p-3 text-sm text-muted-foreground">{expense.description}</td>
+                      <td className="p-3 text-sm">{expense.description}</td>
                       <td className="p-3 text-center">
                         <span className={`text-xs px-2.5 py-1 rounded-md font-bold ${
                           expense.status === 'Paid' 

@@ -17,6 +17,7 @@ import { AddExpense } from '@/pages/AddExpense'
 import { RecordPayment } from '@/pages/RecordPayment'
 import { FileTaxes } from '@/pages/FileTaxes'
 import { RunPayroll } from '@/pages/RunPayroll'
+import { UpcomingBills } from '@/pages/UpcomingBills'
 import { Staff } from '@/pages/Staff'
 import { StaffProfile } from '@/pages/StaffProfile'
 import { StaffPayrollBreakdown } from '@/pages/StaffPayrollBreakdown'
@@ -96,6 +97,7 @@ function App() {
             <Route path="/finances/all-expenses" element={<AllExpenses />} />
             <Route path="/finances/add-expense" element={<AddExpense />} />
             <Route path="/finances/record-payment" element={<RecordPayment />} />
+            <Route path="/finances/upcoming-bills" element={<UpcomingBills />} />
             <Route path="/finances/file-taxes" element={<FileTaxes />} />
             <Route path="/finances/run-payroll" element={<RunPayroll />} />
             <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />

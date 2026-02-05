@@ -1,18 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Faders, FunnelSimple, CaretRight, CaretDown, Warning, Plus, TrendUp, TrendDown } from '@phosphor-icons/react'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { CaretRight, Warning, Plus, TrendUp, TrendDown } from '@phosphor-icons/react'
 import { useKV } from "@github/spark/hooks"
 import { ExpenseRecord } from "@/lib/finance-types"
+import { formatDateForDisplay } from "@/lib/date-utils"
 
 export function ExpensesDetail() {
   const navigate = useNavigate()
-  const [timeRange, setTimeRange] = useState('last-6-months')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const isMobile = useIsMobile()
   const [expenses] = useKV<ExpenseRecord[]>("expenses", [])
 
   const expenseData = useMemo(() => {
@@ -340,7 +336,7 @@ export function ExpensesDetail() {
                           {expense.category}
                         </span>
                         <span className="text-sm font-bold truncate group-hover:text-primary transition-colors">{expense.vendor}</span>
-                        <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{expense.date}</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap font-semibold tabular-nums">{formatDateForDisplay(expense.date)}</span>
                         <span className={`text-xs px-2.5 py-1 rounded-md whitespace-nowrap font-bold shadow-lg ${
                           expense.status === 'Paid' 
                             ? 'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-emerald-500/90' 
