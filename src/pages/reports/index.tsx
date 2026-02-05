@@ -84,16 +84,16 @@ function ReportButton({ report, navigate }: { report: ReportDefinition; navigate
   return (
     <Button
       variant="ghost"
-      className="w-full justify-between h-auto py-0.5 px-2 hover:bg-primary/10 group"
+      className="w-full justify-between h-auto py-2 px-3 hover:bg-primary/10 group"
       onClick={() => navigate(report.path)}
     >
-      <div className="flex items-center gap-1.5">
-        <div className="p-0.5 rounded bg-primary/10 text-primary">
-          <Icon size={12} weight="duotone" />
+      <div className="flex items-center gap-2.5">
+        <div className="p-1.5 rounded bg-primary/10 text-primary">
+          <Icon size={18} weight="duotone" />
         </div>
-        <span className="text-xs font-medium text-foreground">{report.name}</span>
+        <span className="text-sm font-medium text-foreground">{report.name}</span>
       </div>
-      <CaretRight size={12} className="text-muted-foreground group-hover:text-primary transition-colors" />
+      <CaretRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
     </Button>
   )
 }
@@ -108,11 +108,11 @@ function CategoryCard({ category, reports, navigate }: {
   
   return (
     <Card className="border-border h-fit">
-      <div className="px-2.5 py-1.5 border-b border-border">
-        <h2 className="text-sm font-semibold text-foreground">{category.name}</h2>
-        <p className="text-[11px] text-muted-foreground mt-0">{category.description}</p>
+      <div className="px-4 py-3 border-b border-border">
+        <h2 className="text-base font-semibold text-foreground">{category.name}</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">{category.description}</p>
       </div>
-      <div className="p-1 space-y-0">
+      <div className="p-2 space-y-1">
         {reports.map(report => (
           <ReportButton key={report.id} report={report} navigate={navigate} />
         ))}
@@ -139,12 +139,12 @@ function ReportsLanding() {
   return (
     <div className="h-full bg-background text-foreground p-2 md:p-3 overflow-hidden">
       <div className="max-w-[1400px] mx-auto h-full flex flex-col">
-        <div className="mb-2 flex-shrink-0">
-          <h1 className="text-lg font-bold text-foreground">Reports</h1>
-          <p className="text-[11px] text-muted-foreground mt-0">View business insights and analytics</p>
+        <div className="mb-3 flex-shrink-0">
+          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
+          <p className="text-sm text-muted-foreground mt-1">View business insights and analytics</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2 items-start flex-1 min-h-0">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 items-start flex-1 min-h-0">
+          <div className="space-y-3">
             {column1.map(({ category, reports }) => (
               <CategoryCard 
                 key={category.id} 
@@ -154,7 +154,7 @@ function ReportsLanding() {
               />
             ))}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {column2.map(({ category, reports }) => (
               <CategoryCard 
                 key={category.id} 
@@ -164,7 +164,7 @@ function ReportsLanding() {
               />
             ))}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {column3.map(({ category, reports }) => (
               <CategoryCard 
                 key={category.id} 
