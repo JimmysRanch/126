@@ -268,7 +268,7 @@ export function StaffHubDashboard() {
           fees: s.additionalFees,
           appointments: s.appointments,
           avgFee: s.avgFee,
-          feeRate: s.appointments > 0 ? (s.additionalFees / s.appointments / 100) * 100 : 0,
+          feeRate: s.appointments > 0 ? (s.additionalFees / s.appointments) : 0,
         },
       }))
   }, [staffPerformanceData])

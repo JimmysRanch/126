@@ -13,7 +13,6 @@ import {
   Info, 
   ArrowsClockwise, 
   Users, 
-  ArrowsClockwise as Retention, 
   TrendUp,
   Megaphone,
   Star
@@ -372,7 +371,7 @@ export function ClientInsightsDashboard() {
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="retention" className="flex items-center gap-2">
-              <Retention size={16} weight="duotone" />
+              <ArrowsClockwise size={16} weight="duotone" />
               <span className="hidden sm:inline">Retention</span>
             </TabsTrigger>
             <TabsTrigger value="top-clients" className="flex items-center gap-2">
