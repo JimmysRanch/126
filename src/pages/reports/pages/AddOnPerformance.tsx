@@ -16,59 +16,89 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function AddOnPerformance() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, services, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate add-on metrics
   const addOnData = useMemo(() => {
-    const addOns: Record<string, { revenue: number; count: number; appointments: Set<string> }> = {}
-    let totalAppointments = 0
+    return measurePerformance('aggregateAddOnPerformance', () => {
+      const addOns: Record<string, { revenue: number; count: number; appointments: Set<string> }> = {}
+      let totalAppointments = 0
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      totalAppointments++
-      
-      appt.services?.forEach((svc: any) => {
-        if (svc.isAddOn) {
-          if (!addOns[svc.name]) {
-            addOns[svc.name] = { revenue: 0, count: 0, appointments: new Set() }
-          }
-          addOns[svc.name].revenue += svc.priceCents || 0
-          addOns[svc.name].count += 1
-          addOns[svc.name].appointments.add(appt.id)
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        totalAppointments++
+        
+        // Check for add-ons in the services array
+        if (appt.addOns && appt.addOns.length > 0) {
+          appt.addOns.forEach((addOn) => {
+            if (!addOns[addOn.name]) {
+              addOns[addOn.name] = { revenue: 0, count: 0, appointments: new Set() }
+            }
+            addOns[addOn.name].revenue += addOn.priceCents
+            addOns[addOn.name].count += 1
+            addOns[addOn.name].appointments.add(appt.id)
+          })
         }
       })
-    })
 
-    return {
-      addOns: Object.entries(addOns).map(([name, data]) => ({
-        name,
-        revenue: data.revenue,
-        count: data.count,
-        appointmentCount: data.appointments.size,
-        attachRate: totalAppointments > 0 ? (data.appointments.size / totalAppointments) * 100 : 0,
-      })),
-      totalAppointments,
-    }
+      return {
+        addOns: Object.entries(addOns).map(([name, data]) => ({
+          name,
+          revenue: data.revenue,
+          count: data.count,
+          appointmentCount: data.appointments.size,
+          attachRate: totalAppointments > 0 ? (data.appointments.size / totalAppointments) * 100 : 0,
+        })),
+        totalAppointments,
+      }
+    })
   }, [appointments])
 
-  // KPIs
-  const kpis = useMemo(() => {
-    const totalRevenue = addOnData.addOns.reduce((sum, a) => sum + a.revenue, 0)
-    const totalCount = addOnData.addOns.reduce((sum, a) => sum + a.count, 0)
-    const appointmentsWithAddOns = new Set(addOnData.addOns.flatMap(a => a.appointmentCount)).size
-    const attachRate = addOnData.totalAppointments > 0 ? (appointmentsWithAddOns / addOnData.totalAppointments) * 100 : 0
+  // Calculate previous period add-on revenue
+  const previousAddOnRevenue = useMemo(() => {
+    return measurePerformance('calculatePreviousAddOnRevenue', () => {
+      let total = 0
+      previousAppointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (appt.addOns && appt.addOns.length > 0) {
+          appt.addOns.forEach((addOn) => {
+            total += addOn.priceCents
+          })
+        }
+      })
+      return total
+    })
+  }, [previousAppointments])
 
-    return [
-      { metricId: 'addOnRevenue', value: { current: totalRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'addOnCount', value: { current: totalCount, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'attachRate', value: { current: attachRate, delta: 0, deltaPercent: 0, format: 'percent' as const } },
-      { metricId: 'uniqueAddOns', value: { current: addOnData.addOns.length, delta: 0, deltaPercent: 0, format: 'number' as const } },
-    ]
-  }, [addOnData])
+  // KPIs with period comparison
+  const kpis = useMemo(() => {
+    if (appointments.length === 0) return []
+
+    return measurePerformance('calculateAddOnKPIs', () => {
+      const currentTotalRevenue = addOnData.addOns.reduce((sum, a) => sum + a.revenue, 0)
+      const totalCount = addOnData.addOns.reduce((sum, a) => sum + a.count, 0)
+      const appointmentsWithAddOns = addOnData.addOns.reduce((sum, a) => sum + a.appointmentCount, 0)
+      const attachRate = addOnData.totalAppointments > 0 ? (appointmentsWithAddOns / addOnData.totalAppointments) * 100 : 0
+
+      return [
+        { metricId: 'addOnRevenue', value: calculateKPIWithDelta(currentTotalRevenue, previousAddOnRevenue, 'money') },
+        { metricId: 'addOnCount', value: calculateKPIWithDelta(totalCount, 0, 'number') },
+        { metricId: 'attachRate', value: calculateKPIWithDelta(attachRate, 0, 'percent') },
+        { metricId: 'uniqueAddOns', value: calculateKPIWithDelta(addOnData.addOns.length, 0, 'number') },
+      ]
+    })
+  }, [addOnData, previousAddOnRevenue])
 
   // Table data
   const tableData = useMemo(() => {

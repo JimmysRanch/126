@@ -15,80 +15,91 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
-
-function getWeightClass(weightLbs: number | undefined): string {
-  if (!weightLbs) return 'Unknown'
-  if (weightLbs <= 20) return 'Small'
-  if (weightLbs <= 50) return 'Medium'
-  if (weightLbs <= 80) return 'Large'
-  return 'XLarge'
-}
+import { 
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function PetList() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, clients, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Build pet roster
   const petData = useMemo(() => {
-    const pets: Record<string, { 
-      name: string
-      breed: string
-      weight: number | undefined
-      weightClass: string
-      clientId: string
-      clientName: string
-      visits: number
-      lastVisit: string
-      totalSpend: number
-    }> = {}
+    return measurePerformance('buildPetRoster', () => {
+      const pets: Record<string, { 
+        name: string
+        weightClass: string
+        clientId: string
+        clientName: string
+        visits: number
+        lastVisit: string
+        totalSpend: number
+      }> = {}
 
-    appointments.forEach(appt => {
-      const petId = appt.petId || `${appt.clientId}-${appt.petName || 'pet'}`
-      const client = clients.find(c => c.id === appt.clientId)
-      
-      if (!pets[petId]) {
-        pets[petId] = {
-          name: appt.petName || 'Unknown',
-          breed: appt.petBreed || 'Unknown',
-          weight: appt.petWeight,
-          weightClass: getWeightClass(appt.petWeight),
-          clientId: appt.clientId || '',
-          clientName: client?.name || 'Unknown',
-          visits: 0,
-          lastVisit: appt.serviceDate,
-          totalSpend: 0,
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        const petId = appt.petId
+        
+        if (!pets[petId]) {
+          pets[petId] = {
+            name: appt.petName,
+            weightClass: appt.petWeightCategory,
+            clientId: appt.clientId,
+            clientName: appt.clientName,
+            visits: 0,
+            lastVisit: appt.serviceDate,
+            totalSpend: 0,
+          }
         }
-      }
-      
-      pets[petId].visits += 1
-      pets[petId].totalSpend += appt.netCents || 0
-      if (appt.serviceDate > pets[petId].lastVisit) {
-        pets[petId].lastVisit = appt.serviceDate
-      }
+        
+        pets[petId].visits += 1
+        pets[petId].totalSpend += appt.netCents
+        if (appt.serviceDate > pets[petId].lastVisit) {
+          pets[petId].lastVisit = appt.serviceDate
+        }
+      })
+
+      return Object.entries(pets).map(([petId, data]) => ({
+        petId,
+        ...data,
+        avgTicket: data.visits > 0 ? Math.round(data.totalSpend / data.visits) : 0,
+      }))
     })
+  }, [appointments])
 
-    return Object.entries(pets).map(([petId, data]) => ({
-      petId,
-      ...data,
-      avgTicket: data.visits > 0 ? Math.round(data.totalSpend / data.visits) : 0,
-    }))
-  }, [appointments, clients])
+  // Calculate previous period pets
+  const previousPetCount = useMemo(() => {
+    const pets = new Set<string>()
+    previousAppointments.filter(a => a.status === 'completed').forEach(appt => {
+      pets.add(appt.petId)
+    })
+    return pets.size
+  }, [previousAppointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    const totalPets = petData.length
-    const totalVisits = petData.reduce((sum, p) => sum + p.visits, 0)
-    const totalSpend = petData.reduce((sum, p) => sum + p.totalSpend, 0)
-    const uniqueBreeds = new Set(petData.map(p => p.breed)).size
+    if (appointments.length === 0) return []
 
-    return [
-      { metricId: 'totalPets', value: { current: totalPets, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'totalVisits', value: { current: totalVisits, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'totalSpend', value: { current: totalSpend, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'uniqueBreeds', value: { current: uniqueBreeds, delta: 0, deltaPercent: 0, format: 'number' as const } },
-    ]
-  }, [petData])
+    return measurePerformance('calculatePetListKPIs', () => {
+      const totalPets = petData.length
+      const totalVisits = petData.reduce((sum, p) => sum + p.visits, 0)
+      const totalSpend = petData.reduce((sum, p) => sum + p.totalSpend, 0)
+      const uniqueWeightClasses = new Set(petData.map(p => p.weightClass)).size
+
+      return [
+        { metricId: 'totalPets', value: calculateKPIWithDelta(totalPets, previousPetCount, 'number') },
+        { metricId: 'totalVisits', value: calculateKPIWithDelta(totalVisits, 0, 'number') },
+        { metricId: 'totalSpend', value: calculateKPIWithDelta(totalSpend, 0, 'money') },
+        { metricId: 'uniqueWeightClasses', value: calculateKPIWithDelta(uniqueWeightClasses, 0, 'number') },
+      ]
+    })
+  }, [petData, previousPetCount])
 
   // Table data
   const tableData = useMemo(() => {
@@ -98,7 +109,6 @@ export function PetList() {
         dimensionValue: p.name,
         drillKey: `pet:${p.petId}`,
         metrics: {
-          breed: p.breed,
           weightClass: p.weightClass,
           clientName: p.clientName,
           visits: p.visits,
@@ -146,7 +156,6 @@ export function PetList() {
           title="Pet Roster"
           data={tableData}
           columns={[
-            { id: 'breed', label: 'Breed', format: 'text', align: 'left', defaultVisible: true, sortable: true },
             { id: 'weightClass', label: 'Size', format: 'text', align: 'left', defaultVisible: true, sortable: true },
             { id: 'clientName', label: 'Owner', format: 'text', align: 'left', defaultVisible: true, sortable: true },
             { id: 'visits', label: 'Visits', format: 'number', align: 'right', defaultVisible: true, sortable: true },
