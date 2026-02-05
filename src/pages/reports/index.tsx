@@ -78,28 +78,28 @@ const CATEGORIES = [
   { id: 'marketing', name: 'Marketing', description: 'Campaign effectiveness and ROI' },
 ]
 
-// Report card component
-function ReportCard({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
+// Report button component
+function ReportButton({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
   const Icon = report.icon
   return (
-    <Card className="p-3 border-border hover:border-primary/50 transition-colors cursor-pointer group" onClick={() => navigate(report.path)}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-start gap-2 flex-1 min-w-0">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">
-            <Icon size={16} weight="duotone" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-foreground truncate">{report.name}</h3>
-          </div>
+    <Button
+      variant="ghost"
+      className="w-full justify-between h-auto py-3 px-4 hover:bg-primary/10 group"
+      onClick={() => navigate(report.path)}
+    >
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-primary/10 text-primary">
+          <Icon size={18} weight="duotone" />
         </div>
-        <CaretRight size={16} className="shrink-0 text-muted-foreground group-hover:text-primary transition-colors mt-1" />
+        <span className="text-sm font-medium text-foreground">{report.name}</span>
       </div>
-    </Card>
+      <CaretRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
+    </Button>
   )
 }
 
-// Category section component
-function CategorySection({ category, reports, navigate }: { 
+// Category card component
+function CategoryCard({ category, reports, navigate }: { 
   category: { id: string; name: string; description: string }
   reports: ReportDefinition[]
   navigate: (path: string) => void 
@@ -107,17 +107,17 @@ function CategorySection({ category, reports, navigate }: {
   if (reports.length === 0) return null
   
   return (
-    <div className="space-y-2">
-      <div>
-        <h2 className="text-sm font-semibold text-foreground">{category.name}</h2>
-        <p className="text-xs text-muted-foreground">{category.description}</p>
+    <Card className="border-border">
+      <div className="p-6 border-b border-border">
+        <h2 className="text-lg font-semibold text-foreground">{category.name}</h2>
+        <p className="text-sm text-muted-foreground mt-1">{category.description}</p>
       </div>
-      <div className="grid grid-cols-1 gap-2">
+      <div className="p-3 space-y-1">
         {reports.map(report => (
-          <ReportCard key={report.id} report={report} navigate={navigate} />
+          <ReportButton key={report.id} report={report} navigate={navigate} />
         ))}
       </div>
-    </div>
+    </Card>
   )
 }
 
@@ -133,10 +133,14 @@ function ReportsLanding() {
   
   return (
     <div className="min-h-screen bg-background text-foreground p-3 md:p-6">
-      <div className="max-w-[1600px] mx-auto space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="max-w-[1200px] mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
+          <p className="text-sm text-muted-foreground mt-1">View business insights and analytics</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {groupedReports.map(({ category, reports }) => (
-            <CategorySection 
+            <CategoryCard 
               key={category.id} 
               category={category} 
               reports={reports} 
