@@ -131,6 +131,11 @@ function ReportsLanding() {
     reports: REPORTS.filter(r => r.category === cat.id),
   }))
   
+  // Organize cards into columns to eliminate dead space
+  const column1 = groupedReports.filter(g => ['overview', 'operations', 'marketing'].includes(g.category.id))
+  const column2 = groupedReports.filter(g => ['financial'].includes(g.category.id))
+  const column3 = groupedReports.filter(g => ['clients', 'staff'].includes(g.category.id))
+  
   return (
     <div className="min-h-screen bg-background text-foreground p-3 md:p-4">
       <div className="max-w-[1400px] mx-auto">
@@ -139,14 +144,36 @@ function ReportsLanding() {
           <p className="text-xs text-muted-foreground mt-0.5">View business insights and analytics</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
-          {groupedReports.map(({ category, reports }) => (
-            <CategoryCard 
-              key={category.id} 
-              category={category} 
-              reports={reports} 
-              navigate={navigate} 
-            />
-          ))}
+          <div className="space-y-2.5">
+            {column1.map(({ category, reports }) => (
+              <CategoryCard 
+                key={category.id} 
+                category={category} 
+                reports={reports} 
+                navigate={navigate} 
+              />
+            ))}
+          </div>
+          <div className="space-y-2.5">
+            {column2.map(({ category, reports }) => (
+              <CategoryCard 
+                key={category.id} 
+                category={category} 
+                reports={reports} 
+                navigate={navigate} 
+              />
+            ))}
+          </div>
+          <div className="space-y-2.5">
+            {column3.map(({ category, reports }) => (
+              <CategoryCard 
+                key={category.id} 
+                category={category} 
+                reports={reports} 
+                navigate={navigate} 
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
