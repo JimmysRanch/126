@@ -10,6 +10,25 @@ import type { Appointment, Client, Staff, Transaction } from '@/lib/types'
 import type { ExpenseRecord } from '@/lib/finance-types'
 import { getTodayInBusinessTimezone } from '@/lib/date-utils'
 
+// =====================================================
+// Business Constants
+// =====================================================
+
+/** Number of appointment slots per groomer per day (standard grooming business assumption) */
+const SLOTS_PER_GROOMER_PER_DAY = 6
+
+/** Minimum total daily capacity slots (used when no groomers are registered) */
+const MIN_DAILY_CAPACITY_SLOTS = 12
+
+/** Standard workday hours for utilization calculations */
+const WORKDAY_HOURS = 8
+
+/** Default rebooking interval in days (industry standard for pet grooming) */
+const DEFAULT_REBOOKING_DAYS = 28
+
+/** Commission rate for revenue calculations */
+const COMMISSION_RATE = 0.45
+
 // Category color mapping for expenses
 const EXPENSE_CATEGORY_COLORS: Record<string, string> = {
   supplies: 'oklch(0.75 0.20 285)',
@@ -55,8 +74,7 @@ export function useDashboardData() {
     const appts = appointments || []
     const todayAppts = appts.filter(a => a.date === today && a.status !== 'cancelled')
     const groomers = (staff || []).filter(s => s.isGroomer && s.status === 'Active')
-    const slotsPerGroomer = 6 // Assuming 6 appointment slots per groomer per day
-    const totalSlots = Math.max(groomers.length * slotsPerGroomer, 12) // Min 12 slots
+    const totalSlots = Math.max(groomers.length * SLOTS_PER_GROOMER_PER_DAY, MIN_DAILY_CAPACITY_SLOTS)
     const bookedPercentage = totalSlots > 0 ? Math.round((todayAppts.length / totalSlots) * 100) : 0
     
     return {
@@ -83,8 +101,7 @@ export function useDashboardData() {
       todayTips = todayCompletedAppts.reduce((sum, a) => sum + (a.tipAmount || 0), 0)
     }
     
-    const commissionRate = 0.45
-    const todayCommission = Math.round(todayTotal * commissionRate)
+    const todayCommission = Math.round(todayTotal * COMMISSION_RATE)
     const todayProfit = todayTotal - todayCommission
     
     // Calculate weekly data
@@ -179,8 +196,7 @@ export function useDashboardData() {
   const bookedPercentageSummary = useMemo(() => {
     const appts = appointments || []
     const groomers = (staff || []).filter(s => s.isGroomer && s.status === 'Active')
-    const slotsPerGroomer = 6
-    const dailySlots = Math.max(groomers.length * slotsPerGroomer, 12)
+    const dailySlots = Math.max(groomers.length * SLOTS_PER_GROOMER_PER_DAY, MIN_DAILY_CAPACITY_SLOTS)
     
     const weekStart = startOfWeek(todayDate, { weekStartsOn: 1 })
     const monthStart = startOfMonth(todayDate)
@@ -260,7 +276,7 @@ export function useDashboardData() {
       }
     })
     
-    const avgDaysBetween = pairCount > 0 ? Math.round(totalDaysBetween / pairCount) : 28 // Default 28 days
+    const avgDaysBetween = pairCount > 0 ? Math.round(totalDaysBetween / pairCount) : DEFAULT_REBOOKING_DAYS
     
     return {
       total: clientList.length,
@@ -277,10 +293,10 @@ export function useDashboardData() {
     const groomers = staffList.filter(s => s.isGroomer && s.status === 'Active')
     
     const todayAppts = appts.filter(a => a.date === today && a.status !== 'cancelled')
+    const totalMinutes = WORKDAY_HOURS * 60
     
     return groomers.map((groomer, index) => {
       const groomerAppts = todayAppts.filter(a => a.groomerId === groomer.id)
-      const totalMinutes = 8 * 60 // 8 hours workday
       
       // Calculate booked minutes
       let bookedMinutes = 0
