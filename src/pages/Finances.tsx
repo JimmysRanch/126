@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, TrendDown, PawPrint } from '@phosphor-icons/react'
+import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, PawPrint, CaretRight } from '@phosphor-icons/react'
 import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { PayrollOverview } from '@/components/PayrollOverview'
 import { useKV } from "@github/spark/hooks"
 import { ExpenseRecord, PaymentDetail } from "@/lib/finance-types"
+import { formatDateForDisplay } from "@/lib/date-utils"
 
 export function Finances() {
   const navigate = useNavigate()
@@ -305,40 +306,61 @@ export function Finances() {
                 </div>
                 <div className="p-2.5 flex-1 min-h-0">
                   <div className="relative h-full min-h-[160px]">
-                    <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8">
+                    <div className="absolute inset-0 flex items-end justify-between gap-2 pb-8 pr-16">
                       {monthlyExpenses.length === 0 ? (
                         <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
                           No expense history yet
                         </div>
                       ) : (
-                        monthlyExpenses.map((data, i) => {
-                          const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
-                          const height = maxExpense > 0 ? (data.amount / maxExpense) * 100 : 0
-                          return (
-                            <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
-                              <div className="relative w-full" style={{ height: `${height}%`, minHeight: '20px' }}>
+                        <>
+                          {/* Placeholder bars for months before real data to avoid single wide bar */}
+                          {monthlyExpenses.length < 6 && Array.from({ length: Math.min(3, 6 - monthlyExpenses.length) }).map((_, i) => (
+                            <div key={`placeholder-${i}`} className="flex-1 flex flex-col items-center gap-2 opacity-30">
+                              <div className="relative w-full" style={{ height: '25%', minHeight: '20px' }}>
                                 <div 
-                                  className="absolute bottom-0 w-full rounded-t-lg transition-all hover:brightness-110 cursor-pointer"
+                                  className="absolute bottom-0 w-full rounded-t-lg"
                                   style={{ 
                                     height: '100%',
-                                    backgroundColor: 'oklch(0.70 0.20 195)',
-                                    boxShadow: '0 0 15px oklch(0.70 0.20 195 / 0.3)'
+                                    backgroundColor: 'oklch(0.70 0.20 195 / 0.3)',
+                                    border: '1px dashed oklch(0.70 0.20 195 / 0.5)'
                                   }}
                                 />
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <span className="text-xs font-bold text-foreground whitespace-nowrap">${data.amount}</span>
-                                </div>
                               </div>
-                              <span className="text-xs font-medium text-muted-foreground">{data.month}</span>
+                              <span className="text-xs font-medium text-muted-foreground/50">--</span>
                             </div>
-                          )
-                        })
+                          ))}
+                          {monthlyExpenses.map((data, i) => {
+                            const maxExpense = Math.max(...monthlyExpenses.map(m => m.amount))
+                            const height = maxExpense > 0 ? (data.amount / maxExpense) * 100 : 0
+                            return (
+                              <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                                <div className="relative w-full" style={{ height: `${height}%`, minHeight: '20px' }}>
+                                  <div 
+                                    className="absolute bottom-0 w-full rounded-t-lg transition-all hover:brightness-110 cursor-pointer"
+                                    style={{ 
+                                      height: '100%',
+                                      backgroundColor: 'oklch(0.70 0.20 195)',
+                                      boxShadow: '0 0 15px oklch(0.70 0.20 195 / 0.3)',
+                                      maxWidth: monthlyExpenses.length === 1 ? '80px' : undefined,
+                                      marginLeft: monthlyExpenses.length === 1 ? 'auto' : undefined,
+                                      marginRight: monthlyExpenses.length === 1 ? 'auto' : undefined
+                                    }}
+                                  />
+                                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs font-bold text-foreground whitespace-nowrap">${data.amount}</span>
+                                  </div>
+                                </div>
+                                <span className="text-xs font-medium text-muted-foreground">{data.month}</span>
+                              </div>
+                            )
+                          })}
+                        </>
                       )}
                     </div>
                     
-                    <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: '45%' }}>
+                    <div className="absolute inset-x-0 flex items-center pointer-events-none" style={{ bottom: '45%', right: '0' }}>
                       <div className="w-full border-t-2 border-dashed border-primary opacity-60" />
-                      <div className="absolute right-0 flex items-center gap-2">
+                      <div className="absolute -right-2 translate-x-full flex items-center gap-2 bg-background pl-2">
                         <div className="w-2 h-2 rounded-full bg-primary" />
                         <span className="text-xs font-medium text-primary whitespace-nowrap">Avg</span>
                       </div>
@@ -364,6 +386,15 @@ export function Finances() {
                     <h3 className="text-sm font-bold">Upcoming Bills</h3>
                     <p className="text-xs text-muted-foreground">Next 30 Days</p>
                   </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="gap-1 text-xs h-7 px-2 hover:bg-primary/10 hover:text-primary transition-all"
+                    onClick={() => navigate('/finances/upcoming-bills')}
+                  >
+                    View All
+                    <CaretRight size={12} weight="bold" />
+                  </Button>
                 </div>
                 <div className="p-2.5 flex-1 min-h-0 overflow-auto">
                   <div className="space-y-1">
@@ -376,17 +407,39 @@ export function Finances() {
                     {pendingBills.length === 0 ? (
                       <div className="text-sm text-muted-foreground px-2 py-3">No upcoming bills yet.</div>
                     ) : (
-                      pendingBills.map((bill) => (
-                        <div key={bill.id} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
-                          <span className="text-sm font-medium truncate">{bill.vendor}</span>
-                          <span className="text-sm text-center flex items-center justify-center gap-1">
-                            Pending
-                            <Circle size={8} className="text-yellow-500" weight="fill" />
-                          </span>
-                          <span className="text-sm font-bold text-right">${bill.amount.toFixed(2)}</span>
-                          <span className="text-sm font-bold text-right">${bill.amount.toFixed(2)}</span>
-                        </div>
-                      ))
+                      pendingBills.map((bill) => {
+                        const dueDate = new Date(bill.date + "T00:00:00")
+                        const today = new Date()
+                        today.setHours(0, 0, 0, 0)
+                        const diffTime = dueDate.getTime() - today.getTime()
+                        const daysUntilDue = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        const isOverdue = daysUntilDue < 0
+                        const isDueSoon = daysUntilDue <= 3 && daysUntilDue >= 0
+                        const dueInText = isOverdue 
+                          ? `${Math.abs(daysUntilDue)} days ago` 
+                          : daysUntilDue === 0 
+                            ? 'Today' 
+                            : daysUntilDue === 1 
+                              ? '1 day' 
+                              : `${daysUntilDue} days`
+                        return (
+                          <div key={bill.id} className="grid grid-cols-4 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
+                            <span className="text-sm font-medium truncate">{bill.vendor}</span>
+                            <span className="text-sm text-center flex items-center justify-center gap-1">
+                              {dueInText}
+                              {(isOverdue || isDueSoon) && <Circle size={8} className={isOverdue ? "text-red-500" : "text-yellow-500"} weight="fill" />}
+                            </span>
+                            <span className="text-sm font-bold text-right">${bill.amount.toFixed(2)}</span>
+                            <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ml-auto ${
+                              bill.status === 'Paid' 
+                                ? 'bg-green-500/30 text-green-400' 
+                                : 'bg-yellow-500/30 text-yellow-300'
+                            }`}>
+                              {bill.status}
+                            </span>
+                          </div>
+                        )
+                      })
                     )}
                   </div>
                 </div>
@@ -499,7 +552,7 @@ export function Finances() {
                         <div key={expense.id} className="grid grid-cols-5 gap-2 p-2 hover:bg-muted/50 transition-colors cursor-pointer rounded">
                         <span className="text-sm truncate">{expense.category}</span>
                         <span className="text-sm truncate">{expense.vendor}</span>
-                        <span className="text-sm">{expense.date}</span>
+                        <span className="text-sm">{formatDateForDisplay(expense.date)}</span>
                         <span className={`text-xs px-2 py-1 rounded-full w-fit font-medium ${
                           expense.status === 'Paid' 
                             ? 'bg-green-500/30 text-green-400' 

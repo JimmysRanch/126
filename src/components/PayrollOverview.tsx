@@ -1,13 +1,23 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useState } from "react"
-import { Download, CalendarBlank, Clock, Check, X } from "@phosphor-icons/react"
+import { useState, useMemo } from "react"
+import { Download, CalendarBlank, Clock, Check, Info } from "@phosphor-icons/react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Transaction } from "@/lib/types"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { 
+  getCurrentPayPeriod, 
+  getPreviousPayPeriod, 
+  getUpcomingPayPeriod, 
+  formatPayPeriodRange, 
+  getPayPeriodSettings,
+  getPayPeriodScheduleDescription,
+  type PayPeriodSettings
+} from "@/lib/payroll-utils"
 
 interface PayrollData {
   staffId: string
@@ -44,8 +54,33 @@ export function PayrollOverview() {
   const isMobile = useIsMobile()
   const [appointments] = useKV<Appointment[]>("appointments", [])
   const [transactions] = useKV<Transaction[]>("transactions", [])
+  // Used as dependency to trigger recalculation when settings change
+  const [payrollSettingsKV] = useKV<{ payPeriod: PayPeriodSettings }>("payroll-settings", null)
   
   const isFinancesTab = location.pathname.startsWith('/finances')
+
+  // Calculate pay periods based on user settings
+  // We use payrollSettingsKV as a dependency to re-trigger calculation when settings change
+  const payPeriods = useMemo(() => {
+    const settings = getPayPeriodSettings()
+    const currentPeriod = getCurrentPayPeriod()
+    const previousPeriod = getPreviousPayPeriod()
+    const nextPeriod = getUpcomingPayPeriod(1)
+    const upcomingPeriod = getUpcomingPayPeriod(2)
+    
+    return {
+      settings,
+      current: currentPeriod,
+      previous: previousPeriod,
+      next: nextPeriod,
+      upcoming: upcomingPeriod,
+      currentDisplay: formatPayPeriodRange(currentPeriod),
+      previousDisplay: formatPayPeriodRange(previousPeriod),
+      nextDisplay: formatPayPeriodRange(nextPeriod),
+      upcomingDisplay: formatPayPeriodRange(upcomingPeriod),
+      scheduleDescription: getPayPeriodScheduleDescription(settings.type)
+    }
+  }, [payrollSettingsKV])
 
   const transactionMap = new Map(
     (transactions || [])
@@ -129,22 +164,66 @@ export function PayrollOverview() {
   return (
     <div className="space-y-3">
       <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-3`}>
-        <Card className="p-2 md:p-2.5 border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
-              <p className="text-lg md:text-xl font-bold mt-0.5">Jan 16 - 31</p>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Card className="p-2 md:p-2.5 border-border cursor-pointer hover:border-primary/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">CURRENT PERIOD</p>
+                    <CalendarBlank size={12} className="text-muted-foreground" />
+                  </div>
+                  <p className="text-lg md:text-xl font-bold mt-0.5">{payPeriods.currentDisplay}</p>
+                </div>
+              </div>
+            </Card>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-4" align="start">
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm">Payroll Periods</h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2 bg-primary/10 border border-primary/30 rounded-md">
+                  <p className="font-semibold text-primary">Current</p>
+                  <p className="text-muted-foreground">{payPeriods.currentDisplay}</p>
+                </div>
+                <div className="p-2 bg-muted rounded-md">
+                  <p className="font-semibold">Previous</p>
+                  <p className="text-muted-foreground">{payPeriods.previousDisplay}</p>
+                </div>
+                <div className="p-2 bg-muted rounded-md">
+                  <p className="font-semibold">Next</p>
+                  <p className="text-muted-foreground">{payPeriods.nextDisplay}</p>
+                </div>
+                <div className="p-2 bg-muted rounded-md opacity-60">
+                  <p className="font-semibold">Upcoming</p>
+                  <p className="text-muted-foreground">{payPeriods.upcomingDisplay}</p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">{payPeriods.scheduleDescription}</p>
             </div>
-          </div>
-        </Card>
-        <Card className="p-2 md:p-2.5 border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">GROSS PAY</p>
-              <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodGross.toLocaleString()}</p>
-            </div>
-          </div>
-        </Card>
+          </PopoverContent>
+        </Popover>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">GROSS PAY</p>
+                      <Info size={10} className="text-muted-foreground" />
+                    </div>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodGross.toLocaleString()}</p>
+                    <p className="text-[9px] text-muted-foreground">Total before deductions</p>
+                  </div>
+                </div>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Total earnings before taxes and other deductions are applied</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <Card className="p-2 md:p-2.5 border-border">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
@@ -153,48 +232,53 @@ export function PayrollOverview() {
             </div>
           </div>
         </Card>
-        <Card className="p-2 md:p-2.5 border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NET PAY</p>
-              <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodTotal.toLocaleString()}</p>
-            </div>
-          </div>
-        </Card>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Card className="p-2 md:p-2.5 border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">NET PAY</p>
+                      <Info size={10} className="text-muted-foreground" />
+                    </div>
+                    <p className="text-lg md:text-xl font-bold mt-0.5">${currentPeriodTotal.toLocaleString()}</p>
+                    <p className="text-[9px] text-muted-foreground">Take-home amount</p>
+                  </div>
+                </div>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Final amount paid to employees after all deductions</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         <Button 
-          className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'w-full' : ''}`}
+          variant="outline"
+          className={`font-semibold ${isMobile ? 'flex-1' : ''}`}
+          onClick={() => setActiveView("history")}
+        >
+          <Clock size={18} className="mr-2" />
+          History
+        </Button>
+        <Button 
+          className={`bg-primary text-primary-foreground hover:bg-primary/90 font-semibold ${isMobile ? 'flex-1' : ''}`}
         >
           <Download size={18} className="mr-2" />
           Export Report
         </Button>
       </div>
 
-      <Tabs value={activeView} onValueChange={setActiveView} className="w-full">
-        <div className="flex justify-center mb-3">
-          <TabsList className={`bg-secondary/50 ${isMobile ? 'grid grid-cols-2 w-full' : ''}`}>
-            <TabsTrigger 
-              value="current" 
-              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-            >
-              Current Period
-            </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
-              className={`data-[state=active]:bg-primary data-[state=active]:text-primary-foreground ${isMobile ? 'text-xs' : ''}`}
-            >
-              History
-            </TabsTrigger>
-          </TabsList>
-        </div>
-
-        <TabsContent value="current" className="mt-0 space-y-2">
-          {payrollData.length === 0 ? (
-            <Card className="p-4 text-center text-muted-foreground">No payroll activity yet.</Card>
-          ) : (
-            payrollData.map((payroll) => (
+      <div className="space-y-2">
+        {activeView === "current" ? (
+          <>
+            {payrollData.length === 0 ? (
+              <Card className="p-4 text-center text-muted-foreground">No payroll activity yet.</Card>
+            ) : (
+              payrollData.map((payroll) => (
               <Card
                 key={payroll.staffId}
                 className="p-3 bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-200 cursor-pointer"
@@ -335,16 +419,22 @@ export function PayrollOverview() {
               </Card>
             ))
           )}
-        </TabsContent>
-
-        <TabsContent value="history" className="mt-0">
+          </>
+        ) : (
           <Card className="p-8 sm:p-12 bg-card border-border text-center">
             <p className="text-sm sm:text-base text-muted-foreground">
               Historical payroll records will appear here.
             </p>
+            <Button 
+              variant="outline"
+              className="mt-4"
+              onClick={() => setActiveView("current")}
+            >
+              Back to Current Period
+            </Button>
           </Card>
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
     </div>
   )
 }
