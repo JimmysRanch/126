@@ -1,6 +1,6 @@
 /**
  * Reports Module - Main Entry Point
- * Card-based layout organized by category
+ * Streamlined dashboard layout with grouped reports for better UX
  */
 
 import { useNavigate, Routes, Route } from 'react-router-dom'
@@ -19,11 +19,21 @@ import {
   Package,
   Percent,
   CaretRight,
+  Dog,
+  Wallet,
+  Star,
 } from '@phosphor-icons/react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
-// Import report pages
+// Import comprehensive dashboard pages (new grouped views)
+import { PetAnalyticsDashboard } from './pages/PetAnalyticsDashboard'
+import { ClientInsightsDashboard } from './pages/ClientInsightsDashboard'
+import { StaffHubDashboard } from './pages/StaffHubDashboard'
+import { FinancialHubDashboard } from './pages/FinancialHubDashboard'
+
+// Import core standalone report pages
 import { OwnerOverview } from './pages/OwnerOverview'
 import { TrueProfitMargin } from './pages/TrueProfitMargin'
 import { SalesSummary } from './pages/SalesSummary'
@@ -37,7 +47,7 @@ import { PayrollCompensation } from './pages/PayrollCompensation'
 import { ServiceMixPricing } from './pages/ServiceMixPricing'
 import { TaxesSummary } from './pages/TaxesSummary'
 
-// New report pages
+// Import individual report pages (still accessible via routes)
 import { TipFeeCost } from './pages/TipFeeCost'
 import { MonthlyRevenue } from './pages/MonthlyRevenue'
 import { AddOnPerformance } from './pages/AddOnPerformance'
@@ -68,172 +78,183 @@ import { PetList } from './pages/PetList'
 import { GroomerProductivity } from './pages/GroomerProductivity'
 import { AppointmentDurationAnalysis } from './pages/AppointmentDurationAnalysis'
 
-// Report definitions
-interface ReportDefinition {
+// Dashboard definitions - primary entry points
+interface DashboardDefinition {
   id: string
   name: string
+  description: string
   path: string
   icon: typeof ChartLine
-  category: 'overview' | 'financial' | 'operations' | 'clients' | 'staff' | 'marketing'
+  badge?: string
+  includedReports: string[]
 }
 
-const REPORTS: ReportDefinition[] = [
-  // Overview
-  { id: 'owner-overview', name: 'Owner Overview', path: '/reports/owner-overview', icon: ChartLine, category: 'overview' },
-  
-  // Financial
-  { id: 'true-profit', name: 'True Profit & Margin', path: '/reports/true-profit', icon: CurrencyDollar, category: 'financial' },
-  { id: 'sales-summary', name: 'Sales Summary', path: '/reports/sales-summary', icon: ChartPie, category: 'financial' },
-  { id: 'finance-reconciliation', name: 'Finance & Reconciliation', path: '/reports/finance-reconciliation', icon: Receipt, category: 'financial' },
-  { id: 'taxes-summary', name: 'Taxes Summary', path: '/reports/taxes-summary', icon: Percent, category: 'financial' },
-  { id: 'tip-fee-cost', name: 'Tip Fee Cost', path: '/reports/tip-fee-cost', icon: CurrencyDollar, category: 'financial' },
-  { id: 'monthly-revenue', name: 'Monthly Revenue', path: '/reports/monthly-revenue', icon: ChartLine, category: 'financial' },
-  { id: 'payment-type-revenue', name: 'Payment Type Revenue', path: '/reports/payment-type-revenue', icon: CurrencyDollar, category: 'financial' },
-  { id: 'revenue-by-weight-class', name: 'Revenue by Weight Class', path: '/reports/revenue-by-weight-class', icon: ChartPie, category: 'financial' },
-  { id: 'revenue-per-grooming-hour', name: 'Revenue per Grooming Hour', path: '/reports/revenue-per-grooming-hour', icon: ChartLine, category: 'financial' },
-  { id: 'profit-margin-by-weight-class', name: 'Profit Margin by Weight Class', path: '/reports/profit-margin-by-weight-class', icon: Percent, category: 'financial' },
-  { id: 'revenue-by-breed', name: 'Revenue by Breed', path: '/reports/revenue-by-breed', icon: ChartPie, category: 'financial' },
-  { id: 'revenue-trend', name: 'Revenue Trend', path: '/reports/revenue-trend', icon: ChartLine, category: 'financial' },
-  { id: 'discount-impact', name: 'Discount Impact', path: '/reports/discount-impact', icon: Percent, category: 'financial' },
-  
-  // Operations
-  { id: 'appointments-capacity', name: 'Appointments & Capacity', path: '/reports/appointments-capacity', icon: CalendarBlank, category: 'operations' },
-  { id: 'no-shows-cancellations', name: 'No-Shows & Cancellations', path: '/reports/no-shows-cancellations', icon: XCircle, category: 'operations' },
-  { id: 'service-mix-pricing', name: 'Service Mix & Pricing', path: '/reports/service-mix-pricing', icon: Tag, category: 'operations' },
-  { id: 'add-on-performance', name: 'Add-On Performance', path: '/reports/add-on-performance', icon: Tag, category: 'operations' },
-  { id: 'retail-product-performance', name: 'Retail Product Performance', path: '/reports/retail-product-performance', icon: Package, category: 'operations' },
-  { id: 'breed-weight-class-overview', name: 'Breed + Weight Class Overview', path: '/reports/breed-weight-class-overview', icon: ChartPie, category: 'operations' },
-  { id: 'service-mix', name: 'Service Mix', path: '/reports/service-mix', icon: ChartPie, category: 'operations' },
-  { id: 'appointment-duration-analysis', name: 'Appointment Duration Analysis', path: '/reports/appointment-duration-analysis', icon: CalendarBlank, category: 'operations' },
-  
-  // Clients
-  { id: 'retention-rebooking', name: 'Retention & Rebooking', path: '/reports/retention-rebooking', icon: ArrowsClockwise, category: 'clients' },
-  { id: 'client-cohorts-ltv', name: 'Client Cohorts & LTV', path: '/reports/client-cohorts-ltv', icon: Users, category: 'clients' },
-  { id: 'client-retention', name: 'Client Retention', path: '/reports/client-retention', icon: ArrowsClockwise, category: 'clients' },
-  { id: 'new-vs-returning-customers', name: 'New vs Returning Customers', path: '/reports/new-vs-returning-customers', icon: Users, category: 'clients' },
-  { id: 'appointments-by-weight-class', name: 'Appointments by Weight Class', path: '/reports/appointments-by-weight-class', icon: ChartPie, category: 'clients' },
-  { id: 'appointments-by-breed', name: 'Appointments by Breed', path: '/reports/appointments-by-breed', icon: ChartPie, category: 'clients' },
-  { id: 'services-by-weight-class', name: 'Services by Weight Class', path: '/reports/services-by-weight-class', icon: ChartPie, category: 'clients' },
-  { id: 'services-by-breed', name: 'Services by Breed', path: '/reports/services-by-breed', icon: ChartPie, category: 'clients' },
-  { id: 'appointment-frequency-retention', name: 'Appointment Frequency & Retention', path: '/reports/appointment-frequency-retention', icon: ArrowsClockwise, category: 'clients' },
-  { id: 'breed-loyalty-lifetime-value', name: 'Breed Loyalty & Lifetime Value', path: '/reports/breed-loyalty-lifetime-value', icon: Users, category: 'clients' },
-  { id: 'referral-sources', name: 'Referral Sources', path: '/reports/referral-sources', icon: Users, category: 'clients' },
-  { id: 'top-clients', name: 'Top Clients', path: '/reports/top-clients', icon: Users, category: 'clients' },
-  { id: 'pet-breed-count', name: 'Pet Breed Count', path: '/reports/pet-breed-count', icon: ChartPie, category: 'clients' },
-  { id: 'pet-list', name: 'Pet List', path: '/reports/pet-list', icon: Users, category: 'clients' },
-  
-  // Staff
-  { id: 'staff-performance', name: 'Staff Performance', path: '/reports/staff-performance', icon: UserCircle, category: 'staff' },
-  { id: 'payroll-compensation', name: 'Payroll / Compensation', path: '/reports/payroll-compensation', icon: Briefcase, category: 'staff' },
-  { id: 'groomers-discounts', name: 'Groomers Discounts', path: '/reports/groomers-discounts', icon: Percent, category: 'staff' },
-  { id: 'groomers-additional-fees', name: 'Groomers Additional Fees', path: '/reports/groomers-additional-fees', icon: CurrencyDollar, category: 'staff' },
-  { id: 'groomer-productivity', name: 'Groomer Productivity', path: '/reports/groomer-productivity', icon: UserCircle, category: 'staff' },
+const DASHBOARDS: DashboardDefinition[] = [
+  { 
+    id: 'owner-overview', 
+    name: 'Owner Overview', 
+    description: 'High-level business health metrics and KPIs',
+    path: '/reports/owner-overview', 
+    icon: ChartLine,
+    includedReports: []
+  },
+  { 
+    id: 'financial-hub', 
+    name: 'Financial Hub', 
+    description: 'Revenue trends, payment analytics, profit margins & discounts',
+    path: '/reports/financial-hub', 
+    icon: Wallet,
+    badge: '4 reports',
+    includedReports: ['monthly-revenue', 'payment-type-revenue', 'profit-margin-by-weight-class', 'discount-impact', 'tip-fee-cost', 'revenue-trend']
+  },
+  { 
+    id: 'client-insights', 
+    name: 'Client Insights', 
+    description: 'Retention, loyalty, top clients & referral analytics',
+    path: '/reports/client-insights', 
+    icon: Users,
+    badge: '7 reports',
+    includedReports: ['client-retention', 'new-vs-returning', 'top-clients', 'referral-sources', 'client-cohorts-ltv', 'appointment-frequency-retention', 'breed-loyalty']
+  },
+  { 
+    id: 'pet-analytics', 
+    name: 'Pet Analytics', 
+    description: 'Breed & weight class insights for revenue and appointments',
+    path: '/reports/pet-analytics', 
+    icon: Dog,
+    badge: '6 reports',
+    includedReports: ['revenue-by-breed', 'revenue-by-weight-class', 'appointments-by-breed', 'appointments-by-weight-class', 'services-by-breed', 'services-by-weight-class']
+  },
+  { 
+    id: 'staff-hub', 
+    name: 'Staff Hub', 
+    description: 'Team performance, productivity, discounts & fees',
+    path: '/reports/staff-hub', 
+    icon: UserCircle,
+    badge: '4 reports',
+    includedReports: ['staff-performance', 'groomer-productivity', 'groomers-discounts', 'groomers-additional-fees']
+  },
 ]
 
-const CATEGORIES = [
-  { id: 'overview', name: 'Overview', description: 'High-level business insights' },
-  { id: 'financial', name: 'Financial', description: 'Revenue, profit, and expenses' },
-  { id: 'operations', name: 'Operations', description: 'Appointments, services, and inventory' },
-  { id: 'clients', name: 'Clients', description: 'Customer retention and value' },
-  { id: 'staff', name: 'Staff', description: 'Team performance and payroll' },
+// Additional standalone reports
+const ADDITIONAL_REPORTS = [
+  { id: 'sales-summary', name: 'Sales Summary', path: '/reports/sales-summary', icon: ChartPie, description: 'Comprehensive revenue breakdown' },
+  { id: 'true-profit', name: 'True Profit & Margin', path: '/reports/true-profit', icon: CurrencyDollar, description: 'Detailed profitability analysis' },
+  { id: 'finance-reconciliation', name: 'Finance & Reconciliation', path: '/reports/finance-reconciliation', icon: Receipt, description: 'Financial reconciliation tools' },
+  { id: 'taxes-summary', name: 'Taxes Summary', path: '/reports/taxes-summary', icon: Percent, description: 'Tax collection and summary' },
+  { id: 'appointments-capacity', name: 'Appointments & Capacity', path: '/reports/appointments-capacity', icon: CalendarBlank, description: 'Booking and capacity analysis' },
+  { id: 'no-shows-cancellations', name: 'No-Shows & Cancellations', path: '/reports/no-shows-cancellations', icon: XCircle, description: 'Track missed appointments' },
+  { id: 'service-mix-pricing', name: 'Service Mix & Pricing', path: '/reports/service-mix-pricing', icon: Tag, description: 'Service performance analysis' },
+  { id: 'add-on-performance', name: 'Add-On Performance', path: '/reports/add-on-performance', icon: Tag, description: 'Add-on service tracking' },
+  { id: 'retail-product-performance', name: 'Retail Products', path: '/reports/retail-product-performance', icon: Package, description: 'Product sales analysis' },
+  { id: 'payroll-compensation', name: 'Payroll / Compensation', path: '/reports/payroll-compensation', icon: Briefcase, description: 'Staff compensation details' },
+  { id: 'retention-rebooking', name: 'Retention & Rebooking', path: '/reports/retention-rebooking', icon: ArrowsClockwise, description: 'Customer rebooking analysis' },
 ]
 
-// Report button component
-function ReportButton({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
-  const Icon = report.icon
-  return (
-    <Button
-      variant="ghost"
-      className="w-full justify-between h-auto py-2 px-3 hover:bg-primary/10 group"
-      onClick={() => navigate(report.path)}
-    >
-      <div className="flex items-center gap-2.5">
-        <div className="p-1.5 rounded bg-primary/10 text-primary">
-          <Icon size={18} weight="duotone" />
-        </div>
-        <span className="text-sm font-medium text-foreground">{report.name}</span>
-      </div>
-      <CaretRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
-    </Button>
-  )
-}
-
-// Category card component
-function CategoryCard({ category, reports, navigate }: { 
-  category: { id: string; name: string; description: string }
-  reports: ReportDefinition[]
+// Dashboard card component
+function DashboardCard({ dashboard, navigate }: { 
+  dashboard: DashboardDefinition
   navigate: (path: string) => void 
 }) {
-  if (reports.length === 0) return null
-  
+  const Icon = dashboard.icon
   return (
-    <Card className="border-border h-fit">
-      <div className="px-4 py-3 border-b border-border">
-        <h2 className="text-base font-semibold text-foreground">{category.name}</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">{category.description}</p>
-      </div>
-      <div className="p-2 space-y-1">
-        {reports.map(report => (
-          <ReportButton key={report.id} report={report} navigate={navigate} />
-        ))}
+    <Card 
+      className="p-4 cursor-pointer hover:shadow-md hover:border-primary/30 transition-all group"
+      onClick={() => navigate(dashboard.path)}
+    >
+      <div className="flex items-start gap-3">
+        <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+          <Icon size={24} weight="duotone" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-foreground">{dashboard.name}</h3>
+            {dashboard.badge && (
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                {dashboard.badge}
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground line-clamp-2">{dashboard.description}</p>
+        </div>
+        <CaretRight size={20} className="text-muted-foreground group-hover:text-primary transition-colors mt-1" />
       </div>
     </Card>
   )
 }
 
-// Reports Landing Page - Card-based layout
+// Quick link button for additional reports
+function QuickReportLink({ report, navigate }: { 
+  report: typeof ADDITIONAL_REPORTS[0]
+  navigate: (path: string) => void 
+}) {
+  const Icon = report.icon
+  return (
+    <Button
+      variant="ghost"
+      className="w-full justify-start h-auto py-2 px-3 hover:bg-muted group"
+      onClick={() => navigate(report.path)}
+    >
+      <div className="flex items-center gap-2.5">
+        <div className="p-1.5 rounded bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+          <Icon size={16} weight="duotone" />
+        </div>
+        <div className="text-left">
+          <span className="text-sm font-medium text-foreground block">{report.name}</span>
+          <span className="text-xs text-muted-foreground">{report.description}</span>
+        </div>
+      </div>
+    </Button>
+  )
+}
+
+// Reports Landing Page - Streamlined dashboard-first layout
 function ReportsLanding() {
   const navigate = useNavigate()
   
-  // Group reports by category
-  const groupedReports = CATEGORIES.map(cat => ({
-    category: cat,
-    reports: REPORTS.filter(r => r.category === cat.id),
-  }))
-  
-  // Organize cards into columns to eliminate dead space
-  const column1 = groupedReports.filter(g => ['overview', 'operations'].includes(g.category.id))
-  const column2 = groupedReports.filter(g => ['financial'].includes(g.category.id))
-  const column3 = groupedReports.filter(g => ['clients', 'staff'].includes(g.category.id))
-  
   return (
-    <div className="h-full bg-background text-foreground p-2 md:p-3 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto h-full flex flex-col">
-        <div className="mb-3 flex-shrink-0">
+    <div className="h-full bg-background text-foreground p-4 md:p-6 overflow-auto">
+      <div className="max-w-[1200px] mx-auto">
+        {/* Header */}
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">Reports</h1>
-          <p className="text-sm text-muted-foreground mt-1">View business insights and analytics</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Comprehensive business analytics organized by topic. Click a dashboard to explore.
+          </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 items-start flex-1 min-h-0">
-          <div className="space-y-3">
-            {column1.map(({ category, reports }) => (
-              <CategoryCard 
-                key={category.id} 
-                category={category} 
-                reports={reports} 
+        
+        {/* Main Dashboards Grid */}
+        <div className="mb-8">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            Quick Dashboards
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {DASHBOARDS.map(dashboard => (
+              <DashboardCard 
+                key={dashboard.id} 
+                dashboard={dashboard} 
                 navigate={navigate} 
               />
             ))}
           </div>
-          <div className="space-y-3">
-            {column2.map(({ category, reports }) => (
-              <CategoryCard 
-                key={category.id} 
-                category={category} 
-                reports={reports} 
-                navigate={navigate} 
-              />
-            ))}
-          </div>
-          <div className="space-y-3">
-            {column3.map(({ category, reports }) => (
-              <CategoryCard 
-                key={category.id} 
-                category={category} 
-                reports={reports} 
-                navigate={navigate} 
-              />
-            ))}
-          </div>
+        </div>
+        
+        {/* Additional Reports */}
+        <div>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            Additional Reports
+          </h2>
+          <Card className="p-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+              {ADDITIONAL_REPORTS.map(report => (
+                <QuickReportLink 
+                  key={report.id} 
+                  report={report} 
+                  navigate={navigate} 
+                />
+              ))}
+            </div>
+          </Card>
         </div>
       </div>
     </div>
@@ -245,6 +266,14 @@ export function Reports() {
   return (
     <Routes>
       <Route index element={<ReportsLanding />} />
+      
+      {/* New Grouped Dashboards */}
+      <Route path="financial-hub" element={<FinancialHubDashboard />} />
+      <Route path="client-insights" element={<ClientInsightsDashboard />} />
+      <Route path="pet-analytics" element={<PetAnalyticsDashboard />} />
+      <Route path="staff-hub" element={<StaffHubDashboard />} />
+      
+      {/* Core Standalone Reports */}
       <Route path="owner-overview" element={<OwnerOverview />} />
       <Route path="true-profit" element={<TrueProfitMargin />} />
       <Route path="sales-summary" element={<SalesSummary />} />
@@ -258,7 +287,7 @@ export function Reports() {
       <Route path="service-mix-pricing" element={<ServiceMixPricing />} />
       <Route path="taxes-summary" element={<TaxesSummary />} />
       
-      {/* New Financial Reports */}
+      {/* Financial Reports */}
       <Route path="tip-fee-cost" element={<TipFeeCost />} />
       <Route path="monthly-revenue" element={<MonthlyRevenue />} />
       <Route path="payment-type-revenue" element={<PaymentTypeRevenue />} />
@@ -269,14 +298,14 @@ export function Reports() {
       <Route path="revenue-trend" element={<RevenueTrend />} />
       <Route path="discount-impact" element={<DiscountImpact />} />
       
-      {/* New Operations Reports */}
+      {/* Operations Reports */}
       <Route path="add-on-performance" element={<AddOnPerformance />} />
       <Route path="retail-product-performance" element={<RetailProductPerformance />} />
       <Route path="breed-weight-class-overview" element={<BreedWeightClassOverview />} />
       <Route path="service-mix" element={<ServiceMix />} />
       <Route path="appointment-duration-analysis" element={<AppointmentDurationAnalysis />} />
       
-      {/* New Client Reports */}
+      {/* Client Reports */}
       <Route path="client-retention" element={<ClientRetention />} />
       <Route path="new-vs-returning-customers" element={<NewVsReturningCustomers />} />
       <Route path="appointments-by-weight-class" element={<AppointmentsByWeightClass />} />
@@ -290,7 +319,7 @@ export function Reports() {
       <Route path="pet-breed-count" element={<PetBreedCount />} />
       <Route path="pet-list" element={<PetList />} />
       
-      {/* New Staff Reports */}
+      {/* Staff Reports */}
       <Route path="groomers-discounts" element={<GroomersDiscounts />} />
       <Route path="groomers-additional-fees" element={<GroomersAdditionalFees />} />
       <Route path="groomer-productivity" element={<GroomerProductivity />} />
@@ -298,4 +327,4 @@ export function Reports() {
   )
 }
 
-export { REPORTS, CATEGORIES }
+export { DASHBOARDS, ADDITIONAL_REPORTS }
