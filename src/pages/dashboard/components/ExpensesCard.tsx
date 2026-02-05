@@ -1,13 +1,18 @@
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
-import { useKV } from "@github/spark/hooks"
-import { dashboardExpensesData } from '../data/dashboardDefaults'
 
-export function ExpensesCard() {
-  const [expenses] = useKV<typeof dashboardExpensesData>("dashboard-expenses", dashboardExpensesData)
+interface ExpensesCardProps {
+  data: Array<{
+    category: string
+    amount: number
+    color: string
+  }>
+}
+
+export function ExpensesCard({ data }: ExpensesCardProps) {
   const sortedExpenses = useMemo(
-    () => [...(expenses || [])].sort((a, b) => b.amount - a.amount),
-    [expenses]
+    () => [...(data || [])].sort((a, b) => b.amount - a.amount),
+    [data]
   )
   const [animatedValues, setAnimatedValues] = useState(sortedExpenses.map(() => 0))
   

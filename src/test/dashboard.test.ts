@@ -571,35 +571,26 @@ describe('Dashboard Calculations', () => {
   })
 })
 
-describe('Dashboard KV Key Validation', () => {
-  const expectedKvKeys = [
-    'dashboard-appointments-summary',
-    'dashboard-capacity',
-    'dashboard-revenue-data',
-    'dashboard-issues',
-    'dashboard-dogs-groomed',
-    'dashboard-booked-percentage',
-    'dashboard-clients-summary',
-    'dashboard-groomer-data',
-    'dashboard-recent-activity',
-    'dashboard-expenses',
+describe('Dashboard Data Source KV Keys', () => {
+  // Dashboard now computes metrics from actual source data instead of pre-computed dashboard-specific keys
+  const sourceKvKeys = [
+    'appointments',
+    'clients',
+    'staff',
+    'expenses',
+    'transactions',
   ]
 
-  it('should list all required KV keys', () => {
-    expect(expectedKvKeys).toContain('dashboard-appointments-summary')
-    expect(expectedKvKeys).toContain('dashboard-capacity')
-    expect(expectedKvKeys).toContain('dashboard-revenue-data')
-    expect(expectedKvKeys).toContain('dashboard-issues')
-    expect(expectedKvKeys).toContain('dashboard-dogs-groomed')
-    expect(expectedKvKeys).toContain('dashboard-booked-percentage')
-    expect(expectedKvKeys).toContain('dashboard-clients-summary')
-    expect(expectedKvKeys).toContain('dashboard-groomer-data')
-    expect(expectedKvKeys).toContain('dashboard-recent-activity')
-    expect(expectedKvKeys).toContain('dashboard-expenses')
+  it('should list all source KV keys used by dashboard', () => {
+    expect(sourceKvKeys).toContain('appointments')
+    expect(sourceKvKeys).toContain('clients')
+    expect(sourceKvKeys).toContain('staff')
+    expect(sourceKvKeys).toContain('expenses')
+    expect(sourceKvKeys).toContain('transactions')
   })
 
-  it('should have 10 total dashboard KV keys', () => {
-    expect(expectedKvKeys).toHaveLength(10)
+  it('should have 5 source KV keys for dashboard computation', () => {
+    expect(sourceKvKeys).toHaveLength(5)
   })
 })
 
