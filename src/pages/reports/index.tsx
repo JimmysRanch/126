@@ -107,7 +107,7 @@ function CategoryCard({ category, reports, navigate }: {
   if (reports.length === 0) return null
   
   return (
-    <Card className="border-border">
+    <Card className="border-border h-fit">
       <div className="px-3 py-2 border-b border-border">
         <h2 className="text-base font-semibold text-foreground">{category.name}</h2>
         <p className="text-xs text-muted-foreground mt-0.5">{category.description}</p>
@@ -138,7 +138,7 @@ function ReportsLanding() {
           <h1 className="text-xl font-bold text-foreground">Reports</h1>
           <p className="text-xs text-muted-foreground mt-0.5">View business insights and analytics</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
           {groupedReports.map(({ category, reports }) => (
             <CategoryCard 
               key={category.id} 
