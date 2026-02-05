@@ -1,6 +1,6 @@
 /**
  * Reports Module - Main Entry Point
- * Clean two-column layout with categories as section headers
+ * Card-based layout organized by category
  */
 
 import { useNavigate, Routes, Route } from 'react-router-dom'
@@ -22,7 +22,8 @@ import {
   Percent,
   CaretRight,
 } from '@phosphor-icons/react'
-import { cn } from '@/lib/utils'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 // Import report pages
 import { OwnerOverview } from './pages/OwnerOverview'
@@ -69,58 +70,58 @@ const REPORTS: ReportDefinition[] = [
 ]
 
 const CATEGORIES = [
-  { id: 'overview', name: 'Overview' },
-  { id: 'financial', name: 'Financial' },
-  { id: 'operations', name: 'Operations' },
-  { id: 'clients', name: 'Clients' },
-  { id: 'staff', name: 'Staff' },
-  { id: 'marketing', name: 'Marketing' },
+  { id: 'overview', name: 'Overview', description: 'High-level business insights' },
+  { id: 'financial', name: 'Financial', description: 'Revenue, profit, and expenses' },
+  { id: 'operations', name: 'Operations', description: 'Appointments, services, and inventory' },
+  { id: 'clients', name: 'Clients', description: 'Customer retention and value' },
+  { id: 'staff', name: 'Staff', description: 'Team performance and payroll' },
+  { id: 'marketing', name: 'Marketing', description: 'Campaign effectiveness and ROI' },
 ]
 
-// Report link component
-function ReportLink({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
+// Report card component
+function ReportCard({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
   const Icon = report.icon
   return (
-    <button
-      onClick={() => navigate(report.path)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
-      aria-label={`Open ${report.name} report`}
-      className={cn(
-        'w-full flex items-center gap-2 py-1.5 px-2 rounded text-left text-sm',
-        'hover:bg-muted/50 transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
-      )}
-    >
-      <Icon size={16} className="shrink-0 text-muted-foreground" />
-      <span className="text-foreground truncate">{report.name}</span>
-      <CaretRight size={12} className="shrink-0 text-muted-foreground ml-auto" />
-    </button>
+    <Card className="p-3 border-border hover:border-primary/50 transition-colors cursor-pointer group" onClick={() => navigate(report.path)}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-2 flex-1 min-w-0">
+          <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5">
+            <Icon size={16} weight="duotone" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-foreground truncate">{report.name}</h3>
+          </div>
+        </div>
+        <CaretRight size={16} className="shrink-0 text-muted-foreground group-hover:text-primary transition-colors mt-1" />
+      </div>
+    </Card>
   )
 }
 
 // Category section component
 function CategorySection({ category, reports, navigate }: { 
-  category: { id: string; name: string }
+  category: { id: string; name: string; description: string }
   reports: ReportDefinition[]
   navigate: (path: string) => void 
 }) {
   if (reports.length === 0) return null
   
   return (
-    <div className="mb-4">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 px-2">
-        {category.name}
-      </h3>
+    <div className="space-y-2">
       <div>
+        <h2 className="text-sm font-semibold text-foreground">{category.name}</h2>
+        <p className="text-xs text-muted-foreground">{category.description}</p>
+      </div>
+      <div className="grid grid-cols-1 gap-2">
         {reports.map(report => (
-          <ReportLink key={report.id} report={report} navigate={navigate} />
+          <ReportCard key={report.id} report={report} navigate={navigate} />
         ))}
       </div>
     </div>
   )
 }
 
-// Reports Landing Page - Two-column layout with categories
+// Reports Landing Page - Card-based layout
 function ReportsLanding() {
   const navigate = useNavigate()
   
@@ -130,43 +131,18 @@ function ReportsLanding() {
     reports: REPORTS.filter(r => r.category === cat.id),
   }))
   
-  // Split categories into two columns for balanced layout
-  const leftColumn = groupedReports.slice(0, 3)  // Overview, Financial, Operations
-  const rightColumn = groupedReports.slice(3)    // Clients, Staff, Marketing
-  
   return (
-    <div className="bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-4">
-        {/* Simple Header */}
-        <div className="mb-4">
-          <h1 className="text-lg font-semibold text-foreground">Reports</h1>
-        </div>
-        
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          {/* Left Column */}
-          <div>
-            {leftColumn.map(({ category, reports }) => (
-              <CategorySection 
-                key={category.id} 
-                category={category} 
-                reports={reports} 
-                navigate={navigate} 
-              />
-            ))}
-          </div>
-          
-          {/* Right Column */}
-          <div>
-            {rightColumn.map(({ category, reports }) => (
-              <CategorySection 
-                key={category.id} 
-                category={category} 
-                reports={reports} 
-                navigate={navigate} 
-              />
-            ))}
-          </div>
+    <div className="min-h-screen bg-background text-foreground p-3 md:p-6">
+      <div className="max-w-[1600px] mx-auto space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {groupedReports.map(({ category, reports }) => (
+            <CategorySection 
+              key={category.id} 
+              category={category} 
+              reports={reports} 
+              navigate={navigate} 
+            />
+          ))}
         </div>
       </div>
     </div>
