@@ -84,16 +84,16 @@ function ReportButton({ report, navigate }: { report: ReportDefinition; navigate
   return (
     <Button
       variant="ghost"
-      className="w-full justify-between h-auto py-3 px-4 hover:bg-primary/10 group"
+      className="w-full justify-between h-auto py-1.5 px-3 hover:bg-primary/10 group"
       onClick={() => navigate(report.path)}
     >
-      <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-primary/10 text-primary">
-          <Icon size={18} weight="duotone" />
+      <div className="flex items-center gap-2">
+        <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+          <Icon size={16} weight="duotone" />
         </div>
         <span className="text-sm font-medium text-foreground">{report.name}</span>
       </div>
-      <CaretRight size={18} className="text-muted-foreground group-hover:text-primary transition-colors" />
+      <CaretRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
     </Button>
   )
 }
@@ -108,11 +108,11 @@ function CategoryCard({ category, reports, navigate }: {
   
   return (
     <Card className="border-border">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-lg font-semibold text-foreground">{category.name}</h2>
-        <p className="text-sm text-muted-foreground mt-1">{category.description}</p>
+      <div className="px-4 py-3 border-b border-border">
+        <h2 className="text-base font-semibold text-foreground">{category.name}</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">{category.description}</p>
       </div>
-      <div className="p-3 space-y-1">
+      <div className="p-2 space-y-0.5">
         {reports.map(report => (
           <ReportButton key={report.id} report={report} navigate={navigate} />
         ))}
@@ -132,13 +132,13 @@ function ReportsLanding() {
   }))
   
   return (
-    <div className="min-h-screen bg-background text-foreground p-3 md:p-6">
-      <div className="max-w-[1200px] mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
-          <p className="text-sm text-muted-foreground mt-1">View business insights and analytics</p>
+    <div className="min-h-screen bg-background text-foreground p-3 md:p-4">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="mb-3">
+          <h1 className="text-xl font-bold text-foreground">Reports</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">View business insights and analytics</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
           {groupedReports.map(({ category, reports }) => (
             <CategoryCard 
               key={category.id} 
