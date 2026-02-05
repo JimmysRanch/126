@@ -192,7 +192,7 @@ export interface NormalizedAppointment {
   endTime: string
   scheduledDurationMinutes: number
   actualDurationMinutes?: number
-  durationMinutes?: number
+  durationMinutes?: number // Alias for scheduledDurationMinutes, used by some reports for compatibility
   services: NormalizedService[]
   addOns?: { name: string; priceCents: number }[]
   subtotalCents: number
