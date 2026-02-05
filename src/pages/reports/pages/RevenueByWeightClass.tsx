@@ -16,64 +16,79 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
-
-const WEIGHT_CLASSES = ['Small (0-20 lbs)', 'Medium (21-50 lbs)', 'Large (51-80 lbs)', 'XLarge (81+ lbs)']
-
-function getWeightClass(weightLbs: number | undefined): string {
-  if (!weightLbs) return 'Unknown'
-  if (weightLbs <= 20) return 'Small (0-20 lbs)'
-  if (weightLbs <= 50) return 'Medium (21-50 lbs)'
-  if (weightLbs <= 80) return 'Large (51-80 lbs)'
-  return 'XLarge (81+ lbs)'
-}
+import { 
+  calculateNetSales, 
+  calculateTotalTips,
+  calculateAppointmentsCompleted,
+  calculateAverageTicket,
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function RevenueByWeightClass() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate metrics by weight class
   const weightClassData = useMemo(() => {
-    const byClass: Record<string, { revenue: number; tips: number; count: number }> = {}
+    return measurePerformance('aggregateRevenueByWeightClass', () => {
+      const byClass: Record<string, { revenue: number; tips: number; count: number }> = {}
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      const weightClass = getWeightClass(appt.petWeight)
-      
-      if (!byClass[weightClass]) {
-        byClass[weightClass] = { revenue: 0, tips: 0, count: 0 }
-      }
-      byClass[weightClass].revenue += appt.netCents || 0
-      byClass[weightClass].tips += appt.tipCents || 0
-      byClass[weightClass].count += 1
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        const weightClass = appt.petWeightCategory || 'Unknown'
+        
+        if (!byClass[weightClass]) {
+          byClass[weightClass] = { revenue: 0, tips: 0, count: 0 }
+        }
+        byClass[weightClass].revenue += appt.netCents
+        byClass[weightClass].tips += appt.tipCents
+        byClass[weightClass].count += 1
+      })
+
+      const total = Object.values(byClass).reduce((sum, c) => sum + c.revenue, 0)
+
+      return Object.entries(byClass).map(([weightClass, data]) => ({
+        weightClass,
+        revenue: data.revenue,
+        tips: data.tips,
+        count: data.count,
+        share: total > 0 ? (data.revenue / total) * 100 : 0,
+        avgTicket: data.count > 0 ? Math.round(data.revenue / data.count) : 0,
+      }))
     })
-
-    const total = Object.values(byClass).reduce((sum, c) => sum + c.revenue, 0)
-
-    return Object.entries(byClass).map(([weightClass, data]) => ({
-      weightClass,
-      revenue: data.revenue,
-      tips: data.tips,
-      count: data.count,
-      share: total > 0 ? (data.revenue / total) * 100 : 0,
-      avgTicket: data.count > 0 ? Math.round(data.revenue / data.count) : 0,
-    }))
   }, [appointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    const totalRevenue = weightClassData.reduce((sum, w) => sum + w.revenue, 0)
-    const totalTips = weightClassData.reduce((sum, w) => sum + w.tips, 0)
-    const totalCount = weightClassData.reduce((sum, w) => sum + w.count, 0)
-    const avgTicket = totalCount > 0 ? Math.round(totalRevenue / totalCount) : 0
+    if (appointments.length === 0) return []
 
-    return [
-      { metricId: 'totalRevenue', value: { current: totalRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'totalTips', value: { current: totalTips, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'totalAppointments', value: { current: totalCount, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'avgTicket', value: { current: avgTicket, delta: 0, deltaPercent: 0, format: 'money' as const } },
-    ]
-  }, [weightClassData])
+    return measurePerformance('calculateRevenueByWeightClassKPIs', () => {
+      const currentRevenue = calculateNetSales(appointments)
+      const previousRevenue = calculateNetSales(previousAppointments)
+      
+      const currentTips = calculateTotalTips(appointments)
+      const previousTips = calculateTotalTips(previousAppointments)
+      
+      const currentApptsCompleted = calculateAppointmentsCompleted(appointments)
+      const previousApptsCompleted = calculateAppointmentsCompleted(previousAppointments)
+      
+      const currentAvgTicket = calculateAverageTicket(appointments)
+      const previousAvgTicket = calculateAverageTicket(previousAppointments)
+
+      return [
+        { metricId: 'totalRevenue', value: calculateKPIWithDelta(currentRevenue, previousRevenue, 'money') },
+        { metricId: 'totalTips', value: calculateKPIWithDelta(currentTips, previousTips, 'money') },
+        { metricId: 'totalAppointments', value: calculateKPIWithDelta(currentApptsCompleted, previousApptsCompleted, 'number') },
+        { metricId: 'avgTicket', value: calculateKPIWithDelta(currentAvgTicket, previousAvgTicket, 'money') },
+      ]
+    })
+  }, [appointments, previousAppointments])
 
   // Table data
   const tableData = useMemo(() => {

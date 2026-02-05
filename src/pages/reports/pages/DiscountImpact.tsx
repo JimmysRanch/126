@@ -11,71 +11,97 @@ import { Button } from '@/components/ui/button'
 import { Info, ArrowsClockwise } from '@phosphor-icons/react'
 import { ReportShell } from '../components/ReportShell'
 import { KPIDeck } from '../components/KPICard'
-import { ChartCard, SimpleBarChart, SimplePieChart } from '../components/ChartCard'
+import { ChartCard, SimplePieChart } from '../components/ChartCard'
 import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { calculateTotalDiscounts, calculateKPIWithDelta, measurePerformance } from '../engine/analyticsEngine'
 
 export function DiscountImpact() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate discount metrics
   const discountData = useMemo(() => {
-    const byType: Record<string, { count: number; amount: number; grossBefore: number }> = {}
-    let totalAppointments = 0
-    let appointmentsWithDiscount = 0
-    let totalDiscounts = 0
-    let totalGross = 0
+    return measurePerformance('aggregateDiscountData', () => {
+      const byType: Record<string, { count: number; amount: number; grossBefore: number }> = {}
+      let totalAppointments = 0
+      let appointmentsWithDiscount = 0
+      let totalDiscounts = 0
+      let totalGross = 0
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      totalAppointments++
-      totalGross += appt.grossCents || appt.netCents || 0
-      
-      const discount = appt.discountCents || 0
-      if (discount > 0) {
-        appointmentsWithDiscount++
-        totalDiscounts += discount
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        totalAppointments++
+        totalGross += appt.subtotalCents
         
-        const discountType = appt.discountReason || 'Other'
-        if (!byType[discountType]) {
-          byType[discountType] = { count: 0, amount: 0, grossBefore: 0 }
+        if (appt.discountCents > 0) {
+          appointmentsWithDiscount++
+          totalDiscounts += appt.discountCents
+          
+          // Group by discount reason if available, otherwise "General"
+          const discountType = 'General Discount'
+          if (!byType[discountType]) {
+            byType[discountType] = { count: 0, amount: 0, grossBefore: 0 }
+          }
+          byType[discountType].count += 1
+          byType[discountType].amount += appt.discountCents
+          byType[discountType].grossBefore += appt.subtotalCents
         }
-        byType[discountType].count += 1
-        byType[discountType].amount += discount
-        byType[discountType].grossBefore += appt.grossCents || appt.netCents || 0
+      })
+
+      return {
+        totalDiscounts,
+        totalGross,
+        appointmentsWithDiscount,
+        totalAppointments,
+        discountRate: totalAppointments > 0 ? (appointmentsWithDiscount / totalAppointments) * 100 : 0,
+        avgDiscount: appointmentsWithDiscount > 0 ? Math.round(totalDiscounts / appointmentsWithDiscount) : 0,
+        byType: Object.entries(byType).map(([type, data]) => ({
+          type,
+          count: data.count,
+          amount: data.amount,
+          avgDiscount: data.count > 0 ? Math.round(data.amount / data.count) : 0,
+          share: totalDiscounts > 0 ? (data.amount / totalDiscounts) * 100 : 0,
+        })),
       }
     })
-
-    return {
-      totalDiscounts,
-      totalGross,
-      appointmentsWithDiscount,
-      totalAppointments,
-      discountRate: totalAppointments > 0 ? (appointmentsWithDiscount / totalAppointments) * 100 : 0,
-      avgDiscount: appointmentsWithDiscount > 0 ? Math.round(totalDiscounts / appointmentsWithDiscount) : 0,
-      byType: Object.entries(byType).map(([type, data]) => ({
-        type,
-        count: data.count,
-        amount: data.amount,
-        avgDiscount: data.count > 0 ? Math.round(data.amount / data.count) : 0,
-        share: totalDiscounts > 0 ? (data.amount / totalDiscounts) * 100 : 0,
-      })),
-    }
   }, [appointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    return [
-      { metricId: 'totalDiscounts', value: { current: discountData.totalDiscounts, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'discountRate', value: { current: discountData.discountRate, delta: 0, deltaPercent: 0, format: 'percent' as const } },
-      { metricId: 'avgDiscount', value: { current: discountData.avgDiscount, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'withDiscounts', value: { current: discountData.appointmentsWithDiscount, delta: 0, deltaPercent: 0, format: 'number' as const } },
-    ]
-  }, [discountData])
+    if (appointments.length === 0) return []
+
+    return measurePerformance('calculateDiscountKPIs', () => {
+      const currentDiscounts = calculateTotalDiscounts(appointments)
+      const previousDiscounts = calculateTotalDiscounts(previousAppointments)
+      
+      const currentCompleted = appointments.filter(a => a.status === 'completed')
+      const previousCompleted = previousAppointments.filter(a => a.status === 'completed')
+      
+      const currentWithDiscount = currentCompleted.filter(a => a.discountCents > 0).length
+      const previousWithDiscount = previousCompleted.filter(a => a.discountCents > 0).length
+      
+      const currentDiscountRate = currentCompleted.length > 0 ? (currentWithDiscount / currentCompleted.length) * 100 : 0
+      const previousDiscountRate = previousCompleted.length > 0 ? (previousWithDiscount / previousCompleted.length) * 100 : 0
+      
+      const currentAvgDiscount = currentWithDiscount > 0 ? Math.round(currentDiscounts / currentWithDiscount) : 0
+      const previousAvgDiscount = previousWithDiscount > 0 ? Math.round(previousDiscounts / previousWithDiscount) : 0
+
+      return [
+        { metricId: 'totalDiscounts', value: calculateKPIWithDelta(currentDiscounts, previousDiscounts, 'money') },
+        { metricId: 'discountRate', value: calculateKPIWithDelta(currentDiscountRate, previousDiscountRate, 'percent') },
+        { metricId: 'avgDiscount', value: calculateKPIWithDelta(currentAvgDiscount, previousAvgDiscount, 'money') },
+        { metricId: 'appointmentsWithDiscount', value: calculateKPIWithDelta(currentWithDiscount, previousWithDiscount, 'number') },
+      ]
+    })
+  }, [appointments, previousAppointments])
 
   // Table data
   const tableData = useMemo(() => {

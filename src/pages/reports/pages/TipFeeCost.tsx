@@ -15,58 +15,85 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { calculateTotalTips, calculateKPIWithDelta, measurePerformance } from '../engine/analyticsEngine'
+
+const TIP_FEE_RATE = 0.029 // 2.9% typical processing fee
 
 export function TipFeeCost() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, transactions, staff, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    transactions, 
+    staff, 
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
-  // Calculate KPIs
+  // Calculate KPIs with period comparison
   const kpis = useMemo(() => {
     if (appointments.length === 0) return []
 
-    const totalTips = appointments.reduce((sum, a) => sum + (a.tipCents || 0), 0)
-    const tipFeeRate = 0.029 // 2.9% typical processing fee
-    const tipFees = Math.round(totalTips * tipFeeRate)
-    const netToStaff = totalTips - tipFees
+    return measurePerformance('calculateTipFeeCostKPIs', () => {
+      const currentTotalTips = calculateTotalTips(appointments)
+      const previousTotalTips = calculateTotalTips(previousAppointments)
+      
+      const currentTipFees = Math.round(currentTotalTips * TIP_FEE_RATE)
+      const previousTipFees = Math.round(previousTotalTips * TIP_FEE_RATE)
+      
+      const currentNetToStaff = currentTotalTips - currentTipFees
+      const previousNetToStaff = previousTotalTips - previousTipFees
+      
+      const completedAppts = appointments.filter(a => a.status === 'completed').length
+      const previousCompletedAppts = previousAppointments.filter(a => a.status === 'completed').length
+      const currentAvgTip = completedAppts > 0 ? Math.round(currentTotalTips / completedAppts) : 0
+      const previousAvgTip = previousCompletedAppts > 0 ? Math.round(previousTotalTips / previousCompletedAppts) : 0
 
-    return [
-      { metricId: 'totalTips', value: { current: totalTips, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'tipFees', value: { current: tipFees, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'netToStaff', value: { current: netToStaff, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'feeRate', value: { current: tipFeeRate * 100, delta: 0, deltaPercent: 0, format: 'percent' as const } },
-    ]
-  }, [appointments])
+      return [
+        { metricId: 'totalTips', value: calculateKPIWithDelta(currentTotalTips, previousTotalTips, 'money') },
+        { metricId: 'tipFees', value: calculateKPIWithDelta(currentTipFees, previousTipFees, 'money') },
+        { metricId: 'netToStaff', value: calculateKPIWithDelta(currentNetToStaff, previousNetToStaff, 'money') },
+        { metricId: 'avgTipPerAppt', value: calculateKPIWithDelta(currentAvgTip, previousAvgTip, 'money') },
+      ]
+    })
+  }, [appointments, previousAppointments])
 
   // Table data by staff
   const tableData = useMemo(() => {
-    const staffTips: Record<string, { tips: number; appointments: number }> = {}
+    return measurePerformance('aggregateTipsByStaff', () => {
+      const staffTips: Record<string, { tips: number; appointments: number }> = {}
+      
+      // Only count completed appointments
+      const completedAppointments = appointments.filter(a => a.status === 'completed')
 
-    appointments.forEach(appt => {
-      const staffId = appt.groomerId || 'unassigned'
-      const staffName = staff.find(s => s.id === staffId)?.name || 'Unassigned'
-      if (!staffTips[staffName]) {
-        staffTips[staffName] = { tips: 0, appointments: 0 }
-      }
-      staffTips[staffName].tips += appt.tipCents || 0
-      staffTips[staffName].appointments += 1
-    })
+      completedAppointments.forEach(appt => {
+        const staffName = appt.groomerName || 'Unassigned'
+        if (!staffTips[staffName]) {
+          staffTips[staffName] = { tips: 0, appointments: 0 }
+        }
+        staffTips[staffName].tips += appt.tipCents
+        staffTips[staffName].appointments += 1
+      })
 
-    return Object.entries(staffTips).map(([name, data]) => {
-      const tipFee = Math.round(data.tips * 0.029)
-      return {
-        dimensionValue: name,
-        drillKey: `staff:${name}`,
-        metrics: {
-          tips: data.tips,
-          tipFee,
-          netToStaff: data.tips - tipFee,
-          appointments: data.appointments,
-          avgTip: data.appointments > 0 ? Math.round(data.tips / data.appointments) : 0,
-        },
-      }
+      return Object.entries(staffTips)
+        .map(([name, data]) => {
+          const tipFee = Math.round(data.tips * TIP_FEE_RATE)
+          return {
+            dimensionValue: name,
+            drillKey: `staff:${name}`,
+            metrics: {
+              tips: data.tips,
+              tipFee,
+              netToStaff: data.tips - tipFee,
+              appointments: data.appointments,
+              avgTip: data.appointments > 0 ? Math.round(data.tips / data.appointments) : 0,
+            },
+          }
+        })
+        .sort((a, b) => b.metrics.tips - a.metrics.tips)
     })
-  }, [appointments, staff])
+  }, [appointments])
 
   if (isLoading) {
     return (

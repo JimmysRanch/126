@@ -11,61 +11,82 @@ import { Button } from '@/components/ui/button'
 import { Info, ArrowsClockwise } from '@phosphor-icons/react'
 import { ReportShell } from '../components/ReportShell'
 import { KPIDeck } from '../components/KPICard'
-import { ChartCard, SimpleLineChart, SimpleBarChart } from '../components/ChartCard'
+import { ChartCard, SimpleLineChart } from '../components/ChartCard'
 import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateNetSales, 
+  calculateTotalTips,
+  calculateAppointmentsCompleted,
+  calculateAverageTicket,
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function MonthlyRevenue() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate monthly data
   const monthlyData = useMemo(() => {
-    const byMonth: Record<string, { revenue: number; appointments: number; tips: number }> = {}
+    return measurePerformance('aggregateMonthlyRevenue', () => {
+      const byMonth: Record<string, { revenue: number; appointments: number; tips: number }> = {}
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      const date = new Date(appt.serviceDate)
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      
-      if (!byMonth[monthKey]) {
-        byMonth[monthKey] = { revenue: 0, appointments: 0, tips: 0 }
-      }
-      byMonth[monthKey].revenue += appt.netCents || 0
-      byMonth[monthKey].appointments += 1
-      byMonth[monthKey].tips += appt.tipCents || 0
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        const monthKey = appt.serviceDate.substring(0, 7) // YYYY-MM format
+        
+        if (!byMonth[monthKey]) {
+          byMonth[monthKey] = { revenue: 0, appointments: 0, tips: 0 }
+        }
+        byMonth[monthKey].revenue += appt.netCents
+        byMonth[monthKey].appointments += 1
+        byMonth[monthKey].tips += appt.tipCents
+      })
+
+      return Object.entries(byMonth)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([month, data]) => ({
+          label: month,
+          value: data.revenue,
+          appointments: data.appointments,
+          tips: data.tips,
+        }))
     })
-
-    return Object.entries(byMonth)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, data]) => ({
-        label: month,
-        value: data.revenue,
-        appointments: data.appointments,
-        tips: data.tips,
-      }))
   }, [appointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    if (monthlyData.length === 0) return []
+    if (appointments.length === 0) return []
 
-    const totalRevenue = monthlyData.reduce((sum, m) => sum + m.value, 0)
-    const avgMonthly = monthlyData.length > 0 ? Math.round(totalRevenue / monthlyData.length) : 0
-    const currentMonth = monthlyData[monthlyData.length - 1]?.value || 0
-    const previousMonth = monthlyData[monthlyData.length - 2]?.value || 0
-    const growth = previousMonth > 0 ? ((currentMonth - previousMonth) / previousMonth) * 100 : 0
+    return measurePerformance('calculateMonthlyRevenueKPIs', () => {
+      const currentRevenue = calculateNetSales(appointments)
+      const previousRevenue = calculateNetSales(previousAppointments)
+      
+      const currentTips = calculateTotalTips(appointments)
+      const previousTips = calculateTotalTips(previousAppointments)
+      
+      const currentApptsCompleted = calculateAppointmentsCompleted(appointments)
+      const previousApptsCompleted = calculateAppointmentsCompleted(previousAppointments)
+      
+      const currentAvgTicket = calculateAverageTicket(appointments)
+      const previousAvgTicket = calculateAverageTicket(previousAppointments)
 
-    return [
-      { metricId: 'totalRevenue', value: { current: totalRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'avgMonthly', value: { current: avgMonthly, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'currentMonth', value: { current: currentMonth, delta: currentMonth - previousMonth, deltaPercent: growth, format: 'money' as const } },
-      { metricId: 'monthCount', value: { current: monthlyData.length, delta: 0, deltaPercent: 0, format: 'number' as const } },
-    ]
-  }, [monthlyData])
+      return [
+        { metricId: 'totalRevenue', value: calculateKPIWithDelta(currentRevenue, previousRevenue, 'money') },
+        { metricId: 'totalTips', value: calculateKPIWithDelta(currentTips, previousTips, 'money') },
+        { metricId: 'appointments', value: calculateKPIWithDelta(currentApptsCompleted, previousApptsCompleted, 'number') },
+        { metricId: 'avgTicket', value: calculateKPIWithDelta(currentAvgTicket, previousAvgTicket, 'money') },
+      ]
+    })
+  }, [appointments, previousAppointments])
 
   // Table data
   const tableData = useMemo(() => {
