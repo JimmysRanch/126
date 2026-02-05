@@ -11,87 +11,114 @@ import { Button } from '@/components/ui/button'
 import { Info, ArrowsClockwise } from '@phosphor-icons/react'
 import { ReportShell } from '../components/ReportShell'
 import { KPIDeck } from '../components/KPICard'
-import { ChartCard, SimpleLineChart, SimpleBarChart } from '../components/ChartCard'
 import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateRebook7d,
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function ClientRetention() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, clients, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    clients, 
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate retention metrics
   const retentionData = useMemo(() => {
-    const clientVisits: Record<string, { visits: number[]; totalSpend: number }> = {}
-    
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      const clientId = appt.clientId
-      if (!clientId) return
+    return measurePerformance('calculateClientRetention', () => {
+      const clientVisits: Record<string, { visits: number[]; totalSpend: number }> = {}
       
-      if (!clientVisits[clientId]) {
-        clientVisits[clientId] = { visits: [], totalSpend: 0 }
-      }
-      clientVisits[clientId].visits.push(new Date(appt.serviceDate).getTime())
-      clientVisits[clientId].totalSpend += appt.netCents || 0
-    })
-
-    // Calculate visit intervals and retention
-    let totalClients = 0
-    let returningClients = 0
-    let avgVisitsPerClient = 0
-    let avgDaysBetweenVisits = 0
-    let intervalCount = 0
-
-    Object.values(clientVisits).forEach(client => {
-      totalClients++
-      if (client.visits.length > 1) {
-        returningClients++
-        const sorted = client.visits.sort((a, b) => a - b)
-        for (let i = 1; i < sorted.length; i++) {
-          const days = (sorted[i] - sorted[i - 1]) / (1000 * 60 * 60 * 24)
-          avgDaysBetweenVisits += days
-          intervalCount++
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (!clientVisits[appt.clientId]) {
+          clientVisits[appt.clientId] = { visits: [], totalSpend: 0 }
         }
-      }
-      avgVisitsPerClient += client.visits.length
-    })
+        clientVisits[appt.clientId].visits.push(new Date(appt.serviceDate).getTime())
+        clientVisits[appt.clientId].totalSpend += appt.netCents
+      })
 
-    avgVisitsPerClient = totalClients > 0 ? avgVisitsPerClient / totalClients : 0
-    avgDaysBetweenVisits = intervalCount > 0 ? avgDaysBetweenVisits / intervalCount : 0
-    const retentionRate = totalClients > 0 ? (returningClients / totalClients) * 100 : 0
+      // Calculate visit intervals and retention
+      let totalClients = 0
+      let returningClients = 0
+      let avgVisitsPerClient = 0
+      let avgDaysBetweenVisits = 0
+      let intervalCount = 0
 
-    return {
-      totalClients,
-      returningClients,
-      newClients: totalClients - returningClients,
-      retentionRate,
-      avgVisitsPerClient,
-      avgDaysBetweenVisits,
-      clientDetails: Object.entries(clientVisits).map(([clientId, data]) => {
-        const client = clients.find(c => c.id === clientId)
-        return {
-          clientId,
-          clientName: client?.name || 'Unknown',
-          visits: data.visits.length,
-          totalSpend: data.totalSpend,
-          avgSpend: data.visits.length > 0 ? Math.round(data.totalSpend / data.visits.length) : 0,
+      Object.values(clientVisits).forEach(client => {
+        totalClients++
+        if (client.visits.length > 1) {
+          returningClients++
+          const sorted = client.visits.sort((a, b) => a - b)
+          for (let i = 1; i < sorted.length; i++) {
+            const days = (sorted[i] - sorted[i - 1]) / (1000 * 60 * 60 * 24)
+            avgDaysBetweenVisits += days
+            intervalCount++
+          }
         }
-      }),
-    }
-  }, [appointments, clients])
+        avgVisitsPerClient += client.visits.length
+      })
 
-  // KPIs
+      avgVisitsPerClient = totalClients > 0 ? avgVisitsPerClient / totalClients : 0
+      avgDaysBetweenVisits = intervalCount > 0 ? avgDaysBetweenVisits / intervalCount : 0
+      const retentionRate = totalClients > 0 ? (returningClients / totalClients) * 100 : 0
+
+      return {
+        totalClients,
+        returningClients,
+        newClients: totalClients - returningClients,
+        retentionRate,
+        avgVisitsPerClient,
+        avgDaysBetweenVisits,
+        clientDetails: Object.entries(clientVisits).map(([clientId, data]) => {
+          const appt = appointments.find(a => a.clientId === clientId)
+          return {
+            clientId,
+            clientName: appt?.clientName || 'Unknown',
+            visits: data.visits.length,
+            totalSpend: data.totalSpend,
+            avgSpend: data.visits.length > 0 ? Math.round(data.totalSpend / data.visits.length) : 0,
+          }
+        }),
+      }
+    })
+  }, [appointments])
+
+  // Calculate previous period metrics for comparison
+  const previousRetentionData = useMemo(() => {
+    return measurePerformance('calculatePreviousRetention', () => {
+      const clientVisits: Record<string, number> = {}
+      previousAppointments.filter(a => a.status === 'completed').forEach(appt => {
+        clientVisits[appt.clientId] = (clientVisits[appt.clientId] || 0) + 1
+      })
+      const totalClients = Object.keys(clientVisits).length
+      const returningClients = Object.values(clientVisits).filter(v => v > 1).length
+      return {
+        retentionRate: totalClients > 0 ? (returningClients / totalClients) * 100 : 0,
+        returningClients,
+        totalClients,
+      }
+    })
+  }, [previousAppointments])
+
+  // KPIs with period comparison
   const kpis = useMemo(() => {
+    if (appointments.length === 0) return []
+    
     return [
-      { metricId: 'retentionRate', value: { current: retentionData.retentionRate, delta: 0, deltaPercent: 0, format: 'percent' as const } },
-      { metricId: 'returningClients', value: { current: retentionData.returningClients, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'avgVisits', value: { current: Math.round(retentionData.avgVisitsPerClient * 10) / 10, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'avgDaysBetween', value: { current: Math.round(retentionData.avgDaysBetweenVisits), delta: 0, deltaPercent: 0, format: 'number' as const } },
+      { metricId: 'retentionRate', value: calculateKPIWithDelta(retentionData.retentionRate, previousRetentionData.retentionRate, 'percent') },
+      { metricId: 'returningClients', value: calculateKPIWithDelta(retentionData.returningClients, previousRetentionData.returningClients, 'number') },
+      { metricId: 'avgVisits', value: calculateKPIWithDelta(Math.round(retentionData.avgVisitsPerClient * 10) / 10, 0, 'number') },
+      { metricId: 'avgDaysBetween', value: calculateKPIWithDelta(Math.round(retentionData.avgDaysBetweenVisits), 0, 'days') },
     ]
-  }, [retentionData])
+  }, [retentionData, previousRetentionData])
 
   // Table data
   const tableData = useMemo(() => {

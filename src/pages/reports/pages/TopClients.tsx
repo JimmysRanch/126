@@ -15,64 +15,87 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateNetSales,
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function TopClients() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, clients, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate client metrics
   const clientData = useMemo(() => {
-    const byClient: Record<string, { spend: number; visits: number; tips: number; firstVisit: string; lastVisit: string }> = {}
+    return measurePerformance('aggregateTopClients', () => {
+      const byClient: Record<string, { spend: number; visits: number; tips: number; firstVisit: string; lastVisit: string; clientName: string }> = {}
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      const clientId = appt.clientId
-      if (!clientId) return
-      
-      if (!byClient[clientId]) {
-        byClient[clientId] = { spend: 0, visits: 0, tips: 0, firstVisit: appt.serviceDate, lastVisit: appt.serviceDate }
-      }
-      byClient[clientId].spend += appt.netCents || 0
-      byClient[clientId].visits += 1
-      byClient[clientId].tips += appt.tipCents || 0
-      
-      if (appt.serviceDate < byClient[clientId].firstVisit) {
-        byClient[clientId].firstVisit = appt.serviceDate
-      }
-      if (appt.serviceDate > byClient[clientId].lastVisit) {
-        byClient[clientId].lastVisit = appt.serviceDate
-      }
-    })
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (!byClient[appt.clientId]) {
+          byClient[appt.clientId] = { 
+            spend: 0, 
+            visits: 0, 
+            tips: 0, 
+            firstVisit: appt.serviceDate, 
+            lastVisit: appt.serviceDate,
+            clientName: appt.clientName,
+          }
+        }
+        byClient[appt.clientId].spend += appt.netCents
+        byClient[appt.clientId].visits += 1
+        byClient[appt.clientId].tips += appt.tipCents
+        
+        if (appt.serviceDate < byClient[appt.clientId].firstVisit) {
+          byClient[appt.clientId].firstVisit = appt.serviceDate
+        }
+        if (appt.serviceDate > byClient[appt.clientId].lastVisit) {
+          byClient[appt.clientId].lastVisit = appt.serviceDate
+        }
+      })
 
-    return Object.entries(byClient).map(([clientId, data]) => {
-      const client = clients.find(c => c.id === clientId)
-      return {
+      return Object.entries(byClient).map(([clientId, data]) => ({
         clientId,
-        clientName: client?.name || 'Unknown',
+        clientName: data.clientName || 'Unknown',
         lifetimeSpend: data.spend,
         visits: data.visits,
         tips: data.tips,
         avgTicket: data.visits > 0 ? Math.round(data.spend / data.visits) : 0,
         firstVisit: data.firstVisit,
         lastVisit: data.lastVisit,
-      }
+      }))
     })
-  }, [appointments, clients])
+  }, [appointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    const totalSpend = clientData.reduce((sum, c) => sum + c.lifetimeSpend, 0)
-    const topClient = clientData.sort((a, b) => b.lifetimeSpend - a.lifetimeSpend)[0]
-    const avgSpend = clientData.length > 0 ? Math.round(totalSpend / clientData.length) : 0
+    if (appointments.length === 0) return []
 
-    return [
-      { metricId: 'totalClients', value: { current: clientData.length, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'totalSpend', value: { current: totalSpend, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'avgSpend', value: { current: avgSpend, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'topClientSpend', value: { current: topClient?.lifetimeSpend || 0, delta: 0, deltaPercent: 0, format: 'money' as const } },
-    ]
-  }, [clientData])
+    return measurePerformance('calculateTopClientsKPIs', () => {
+      const currentTotalSpend = calculateNetSales(appointments)
+      const previousTotalSpend = calculateNetSales(previousAppointments)
+      
+      const currentClientCount = new Set(appointments.filter(a => a.status === 'completed').map(a => a.clientId)).size
+      const previousClientCount = new Set(previousAppointments.filter(a => a.status === 'completed').map(a => a.clientId)).size
+      
+      const currentAvgSpend = currentClientCount > 0 ? Math.round(currentTotalSpend / currentClientCount) : 0
+      const previousAvgSpend = previousClientCount > 0 ? Math.round(previousTotalSpend / previousClientCount) : 0
+      
+      const topClient = clientData.sort((a, b) => b.lifetimeSpend - a.lifetimeSpend)[0]
+
+      return [
+        { metricId: 'totalClients', value: calculateKPIWithDelta(currentClientCount, previousClientCount, 'number') },
+        { metricId: 'totalSpend', value: calculateKPIWithDelta(currentTotalSpend, previousTotalSpend, 'money') },
+        { metricId: 'avgSpend', value: calculateKPIWithDelta(currentAvgSpend, previousAvgSpend, 'money') },
+        { metricId: 'topClientSpend', value: calculateKPIWithDelta(topClient?.lifetimeSpend || 0, 0, 'money') },
+      ]
+    })
+  }, [appointments, previousAppointments, clientData])
 
   // Table data - top clients
   const tableData = useMemo(() => {

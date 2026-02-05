@@ -11,60 +11,92 @@ import { Button } from '@/components/ui/button'
 import { Info, ArrowsClockwise } from '@phosphor-icons/react'
 import { ReportShell } from '../components/ReportShell'
 import { KPIDeck } from '../components/KPICard'
-import { ChartCard, SimplePieChart, SimpleBarChart } from '../components/ChartCard'
+import { ChartCard, SimplePieChart } from '../components/ChartCard'
 import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function ServiceMix() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate service mix
   const serviceData = useMemo(() => {
-    const services: Record<string, { revenue: number; count: number; isAddOn: boolean }> = {}
-    
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
+    return measurePerformance('aggregateServiceMix', () => {
+      const services: Record<string, { revenue: number; count: number; category: string }> = {}
       
-      appt.services?.forEach((svc: any) => {
-        const name = svc.name || 'Unknown'
-        if (!services[name]) {
-          services[name] = { revenue: 0, count: 0, isAddOn: svc.isAddOn || false }
-        }
-        services[name].revenue += svc.priceCents || 0
-        services[name].count += 1
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        appt.services.forEach((svc) => {
+          const name = svc.name || 'Unknown'
+          if (!services[name]) {
+            services[name] = { revenue: 0, count: 0, category: svc.category || 'Service' }
+          }
+          services[name].revenue += svc.priceCents
+          services[name].count += 1
+        })
       })
+
+      const total = Object.values(services).reduce((sum, s) => sum + s.revenue, 0)
+
+      return Object.entries(services).map(([name, data]) => ({
+        name,
+        revenue: data.revenue,
+        count: data.count,
+        category: data.category,
+        share: total > 0 ? (data.revenue / total) * 100 : 0,
+        avgPrice: data.count > 0 ? Math.round(data.revenue / data.count) : 0,
+      }))
     })
-
-    const total = Object.values(services).reduce((sum, s) => sum + s.revenue, 0)
-
-    return Object.entries(services).map(([name, data]) => ({
-      name,
-      revenue: data.revenue,
-      count: data.count,
-      isAddOn: data.isAddOn,
-      share: total > 0 ? (data.revenue / total) * 100 : 0,
-      avgPrice: data.count > 0 ? Math.round(data.revenue / data.count) : 0,
-    }))
   }, [appointments])
 
-  // KPIs
-  const kpis = useMemo(() => {
-    const totalRevenue = serviceData.reduce((sum, s) => sum + s.revenue, 0)
-    const coreRevenue = serviceData.filter(s => !s.isAddOn).reduce((sum, s) => sum + s.revenue, 0)
-    const addOnRevenue = serviceData.filter(s => s.isAddOn).reduce((sum, s) => sum + s.revenue, 0)
-    const uniqueServices = serviceData.length
+  // Calculate previous period service revenue for comparison
+  const previousServiceRevenue = useMemo(() => {
+    return measurePerformance('calculatePreviousServiceRevenue', () => {
+      let total = 0
+      previousAppointments.filter(a => a.status === 'completed').forEach(appt => {
+        appt.services.forEach((svc) => {
+          total += svc.priceCents
+        })
+      })
+      return total
+    })
+  }, [previousAppointments])
 
-    return [
-      { metricId: 'totalRevenue', value: { current: totalRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'coreRevenue', value: { current: coreRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'addOnRevenue', value: { current: addOnRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'uniqueServices', value: { current: uniqueServices, delta: 0, deltaPercent: 0, format: 'number' as const } },
-    ]
-  }, [serviceData])
+  // KPIs with period comparison
+  const kpis = useMemo(() => {
+    if (appointments.length === 0) return []
+
+    return measurePerformance('calculateServiceMixKPIs', () => {
+      const currentTotalRevenue = serviceData.reduce((sum, s) => sum + s.revenue, 0)
+      const uniqueServices = serviceData.length
+
+      return [
+        { metricId: 'totalRevenue', value: calculateKPIWithDelta(currentTotalRevenue, previousServiceRevenue, 'money') },
+        { metricId: 'uniqueServices', value: calculateKPIWithDelta(uniqueServices, 0, 'number') },
+        { metricId: 'avgServicePrice', value: calculateKPIWithDelta(
+          serviceData.length > 0 ? Math.round(currentTotalRevenue / serviceData.reduce((sum, s) => sum + s.count, 0)) : 0,
+          0,
+          'money'
+        ) },
+        { metricId: 'topServiceShare', value: calculateKPIWithDelta(
+          serviceData.sort((a, b) => b.revenue - a.revenue)[0]?.share || 0,
+          0,
+          'percent'
+        ) },
+      ]
+    })
+  }, [serviceData, previousServiceRevenue])
 
   // Table data
   const tableData = useMemo(() => {

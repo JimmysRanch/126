@@ -11,83 +11,115 @@ import { Button } from '@/components/ui/button'
 import { Info, ArrowsClockwise } from '@phosphor-icons/react'
 import { ReportShell } from '../components/ReportShell'
 import { KPIDeck } from '../components/KPICard'
-import { ChartCard, SimplePieChart, SimpleBarChart } from '../components/ChartCard'
+import { ChartCard, SimplePieChart } from '../components/ChartCard'
 import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateKPIWithDelta, 
+  measurePerformance,
+  getDateRange,
+} from '../engine/analyticsEngine'
 
 export function NewVsReturningCustomers() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, clients, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate new vs returning metrics
   const customerData = useMemo(() => {
-    const clientStats: Record<string, { visits: number; revenue: number; firstVisit: string }> = {}
-    
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      const clientId = appt.clientId
-      if (!clientId) return
+    return measurePerformance('calculateNewVsReturning', () => {
+      const clientStats: Record<string, { visits: number; revenue: number; firstVisit: string; clientName: string }> = {}
       
-      if (!clientStats[clientId]) {
-        clientStats[clientId] = { visits: 0, revenue: 0, firstVisit: appt.serviceDate }
-      }
-      clientStats[clientId].visits += 1
-      clientStats[clientId].revenue += appt.netCents || 0
-      if (appt.serviceDate < clientStats[clientId].firstVisit) {
-        clientStats[clientId].firstVisit = appt.serviceDate
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (!clientStats[appt.clientId]) {
+          clientStats[appt.clientId] = { visits: 0, revenue: 0, firstVisit: appt.serviceDate, clientName: appt.clientName }
+        }
+        clientStats[appt.clientId].visits += 1
+        clientStats[appt.clientId].revenue += appt.netCents
+        if (appt.serviceDate < clientStats[appt.clientId].firstVisit) {
+          clientStats[appt.clientId].firstVisit = appt.serviceDate
+        }
+      })
+
+      // Determine if client is new (first visit in period) or returning
+      const { start } = getDateRange(filters)
+      let newCount = 0, returningCount = 0
+      let newRevenue = 0, returningRevenue = 0
+
+      Object.values(clientStats).forEach(stats => {
+        const firstVisitDate = new Date(stats.firstVisit)
+        if (firstVisitDate >= start) {
+          newCount++
+          newRevenue += stats.revenue
+        } else {
+          returningCount++
+          returningRevenue += stats.revenue
+        }
+      })
+
+      return {
+        newCount,
+        returningCount,
+        newRevenue,
+        returningRevenue,
+        totalClients: newCount + returningCount,
+        newPercentage: (newCount + returningCount) > 0 ? (newCount / (newCount + returningCount)) * 100 : 0,
       }
     })
-
-    // Determine if client is new (first visit in period) or returning
-    const { start } = getDateRange(filters)
-    let newCount = 0, returningCount = 0
-    let newRevenue = 0, returningRevenue = 0
-
-    Object.values(clientStats).forEach(stats => {
-      const firstVisitDate = new Date(stats.firstVisit)
-      if (firstVisitDate >= start) {
-        newCount++
-        newRevenue += stats.revenue
-      } else {
-        returningCount++
-        returningRevenue += stats.revenue
-      }
-    })
-
-    return {
-      newCount,
-      returningCount,
-      newRevenue,
-      returningRevenue,
-      totalClients: newCount + returningCount,
-      newPercentage: (newCount + returningCount) > 0 ? (newCount / (newCount + returningCount)) * 100 : 0,
-    }
-
-    function getDateRange(filters: any) {
-      const now = new Date()
-      let start = new Date()
-      switch (filters.dateRange) {
-        case 'last7': start.setDate(now.getDate() - 7); break
-        case 'last30': start.setDate(now.getDate() - 30); break
-        case 'last90': start.setDate(now.getDate() - 90); break
-        default: start.setDate(now.getDate() - 30)
-      }
-      return { start, end: now }
-    }
   }, [appointments, filters])
 
-  // KPIs
+  // Calculate previous period data for comparison
+  const previousCustomerData = useMemo(() => {
+    return measurePerformance('calculatePreviousNewVsReturning', () => {
+      const clientStats: Record<string, { visits: number; revenue: number; firstVisit: string }> = {}
+      
+      previousAppointments.filter(a => a.status === 'completed').forEach(appt => {
+        if (!clientStats[appt.clientId]) {
+          clientStats[appt.clientId] = { visits: 0, revenue: 0, firstVisit: appt.serviceDate }
+        }
+        clientStats[appt.clientId].visits += 1
+        clientStats[appt.clientId].revenue += appt.netCents
+        if (appt.serviceDate < clientStats[appt.clientId].firstVisit) {
+          clientStats[appt.clientId].firstVisit = appt.serviceDate
+        }
+      })
+
+      let newCount = 0, returningCount = 0
+      let newRevenue = 0, returningRevenue = 0
+
+      // Use a similar logic but for previous period data
+      Object.values(clientStats).forEach(stats => {
+        if (stats.visits === 1) {
+          newCount++
+          newRevenue += stats.revenue
+        } else {
+          returningCount++
+          returningRevenue += stats.revenue
+        }
+      })
+
+      return { newCount, returningCount, newRevenue, returningRevenue }
+    })
+  }, [previousAppointments])
+
+  // KPIs with period comparison
   const kpis = useMemo(() => {
+    if (appointments.length === 0) return []
+
     return [
-      { metricId: 'newCustomers', value: { current: customerData.newCount, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'returningCustomers', value: { current: customerData.returningCount, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'newRevenue', value: { current: customerData.newRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
-      { metricId: 'returningRevenue', value: { current: customerData.returningRevenue, delta: 0, deltaPercent: 0, format: 'money' as const } },
+      { metricId: 'newCustomers', value: calculateKPIWithDelta(customerData.newCount, previousCustomerData.newCount, 'number') },
+      { metricId: 'returningCustomers', value: calculateKPIWithDelta(customerData.returningCount, previousCustomerData.returningCount, 'number') },
+      { metricId: 'newRevenue', value: calculateKPIWithDelta(customerData.newRevenue, previousCustomerData.newRevenue, 'money') },
+      { metricId: 'returningRevenue', value: calculateKPIWithDelta(customerData.returningRevenue, previousCustomerData.returningRevenue, 'money') },
     ]
-  }, [customerData])
+  }, [customerData, previousCustomerData])
 
   // Chart data
   const pieData = useMemo(() => {

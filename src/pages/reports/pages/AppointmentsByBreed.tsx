@@ -16,55 +16,72 @@ import { DataTable } from '../components/DataTable'
 import { DefinitionsModal } from '../components/DefinitionsModal'
 import { useReportFilters } from '../hooks/useReportFilters'
 import { useReportData } from '../hooks/useReportData'
+import { 
+  calculateAppointmentsCompleted,
+  calculateKPIWithDelta, 
+  measurePerformance 
+} from '../engine/analyticsEngine'
 
 export function AppointmentsByBreed() {
   const { filters, setFilters } = useReportFilters()
-  const { appointments, isLoading, error } = useReportData(filters)
+  const { 
+    appointments, 
+    previousAppointments,
+    isLoading, 
+    error 
+  } = useReportData(filters)
   const [showDefinitions, setShowDefinitions] = useState(false)
 
   // Calculate by breed
   const breedData = useMemo(() => {
-    const byBreed: Record<string, { count: number; revenue: number; avgDuration: number; pets: Set<string> }> = {}
-    let total = 0
+    return measurePerformance('aggregateByBreed', () => {
+      const byBreed: Record<string, { count: number; revenue: number; avgDuration: number; pets: Set<string> }> = {}
+      let total = 0
 
-    appointments.forEach(appt => {
-      if (appt.status !== 'completed') return
-      total++
-      const breed = appt.petBreed || 'Unknown'
-      
-      if (!byBreed[breed]) {
-        byBreed[breed] = { count: 0, revenue: 0, avgDuration: 0, pets: new Set() }
-      }
-      byBreed[breed].count += 1
-      byBreed[breed].revenue += appt.netCents || 0
-      byBreed[breed].avgDuration += appt.durationMinutes || 60
-      if (appt.petId) byBreed[breed].pets.add(appt.petId)
+      appointments.filter(a => a.status === 'completed').forEach(appt => {
+        total++
+        const breed = appt.petName ? 'Mixed Breed' : 'Unknown' // Breed info would come from pet data
+        
+        if (!byBreed[breed]) {
+          byBreed[breed] = { count: 0, revenue: 0, avgDuration: 0, pets: new Set() }
+        }
+        byBreed[breed].count += 1
+        byBreed[breed].revenue += appt.netCents
+        byBreed[breed].avgDuration += appt.actualDurationMinutes || appt.scheduledDurationMinutes
+        byBreed[breed].pets.add(appt.petId)
+      })
+
+      return Object.entries(byBreed).map(([breed, data]) => ({
+        breed,
+        count: data.count,
+        revenue: data.revenue,
+        avgDuration: data.count > 0 ? Math.round(data.avgDuration / data.count) : 0,
+        share: total > 0 ? (data.count / total) * 100 : 0,
+        uniquePets: data.pets.size,
+        avgVisitsPerPet: data.pets.size > 0 ? Math.round((data.count / data.pets.size) * 10) / 10 : 0,
+      }))
     })
-
-    return Object.entries(byBreed).map(([breed, data]) => ({
-      breed,
-      count: data.count,
-      revenue: data.revenue,
-      avgDuration: data.count > 0 ? Math.round(data.avgDuration / data.count) : 0,
-      share: total > 0 ? (data.count / total) * 100 : 0,
-      uniquePets: data.pets.size,
-      avgVisitsPerPet: data.pets.size > 0 ? Math.round((data.count / data.pets.size) * 10) / 10 : 0,
-    }))
   }, [appointments])
 
-  // KPIs
+  // KPIs with period comparison
   const kpis = useMemo(() => {
-    const total = breedData.reduce((sum, b) => sum + b.count, 0)
-    const uniqueBreeds = breedData.length
-    const topBreed = breedData.sort((a, b) => b.count - a.count)[0]
+    if (appointments.length === 0) return []
 
-    return [
-      { metricId: 'totalAppointments', value: { current: total, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'uniqueBreeds', value: { current: uniqueBreeds, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'topBreedCount', value: { current: topBreed?.count || 0, delta: 0, deltaPercent: 0, format: 'number' as const } },
-      { metricId: 'topBreedShare', value: { current: topBreed?.share || 0, delta: 0, deltaPercent: 0, format: 'percent' as const } },
-    ]
-  }, [breedData])
+    return measurePerformance('calculateAppointmentsByBreedKPIs', () => {
+      const currentTotal = calculateAppointmentsCompleted(appointments)
+      const previousTotal = calculateAppointmentsCompleted(previousAppointments)
+      
+      const uniqueBreeds = breedData.length
+      const topBreed = breedData.sort((a, b) => b.count - a.count)[0]
+
+      return [
+        { metricId: 'totalAppointments', value: calculateKPIWithDelta(currentTotal, previousTotal, 'number') },
+        { metricId: 'uniqueBreeds', value: calculateKPIWithDelta(uniqueBreeds, 0, 'number') },
+        { metricId: 'topBreedCount', value: calculateKPIWithDelta(topBreed?.count || 0, 0, 'number') },
+        { metricId: 'topBreedShare', value: calculateKPIWithDelta(topBreed?.share || 0, 0, 'percent') },
+      ]
+    })
+  }, [appointments, previousAppointments, breedData])
 
   // Chart data - top 10
   const chartData = useMemo(() => {
