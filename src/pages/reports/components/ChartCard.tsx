@@ -640,7 +640,8 @@ export function SimpleHeatmap({
   height = 200,
   formatValue = (v) => v.toLocaleString(),
   onClick,
-}: HeatmapProps) {
+  colorScheme = 'blue',
+}: HeatmapProps & { colorScheme?: 'blue' | 'red' | 'green' }) {
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const hours = Array.from({ length: 11 }, (_, i) => i + 8) // 8 AM to 6 PM
   
@@ -648,49 +649,47 @@ export function SimpleHeatmap({
   
   const getColor = (value: number) => {
     const intensity = value / maxValue
-    const hue = 200 // Blue
+    const hue = colorScheme === 'red' ? 0 : colorScheme === 'green' ? 145 : 200
     const saturation = 70
     const lightness = 95 - (intensity * 50)
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`
   }
   
   return (
-    <div className="overflow-x-auto">
-      <div className="min-w-[400px]" style={{ height }}>
-        <div className="grid gap-0.5" style={{ gridTemplateColumns: `40px repeat(${hours.length}, 1fr)` }}>
-          {/* Header row */}
-          <div className="text-xs text-muted-foreground"></div>
-          {hours.map(hour => (
-            <div key={hour} className="text-[10px] text-muted-foreground text-center">
-              {hour}:00
+    <div style={{ height }} className="w-full">
+      <div className="grid gap-0.5 h-full" style={{ gridTemplateColumns: `32px repeat(${hours.length}, 1fr)`, gridTemplateRows: `auto repeat(${weekdays.length}, 1fr)` }}>
+        {/* Header row */}
+        <div className="text-xs text-muted-foreground"></div>
+        {hours.map(hour => (
+          <div key={hour} className="text-[9px] text-muted-foreground text-center truncate">
+            {hour}
+          </div>
+        ))}
+        
+        {/* Data rows */}
+        {weekdays.map(weekday => (
+          <>
+            <div key={`${weekday}-label`} className="text-[9px] text-muted-foreground flex items-center">
+              {weekday}
             </div>
-          ))}
-          
-          {/* Data rows */}
-          {weekdays.map(weekday => (
-            <>
-              <div key={`${weekday}-label`} className="text-[10px] text-muted-foreground flex items-center">
-                {weekday}
-              </div>
-              {hours.map(hour => {
-                const cell = data.find(d => d.weekday === weekday && d.hour === hour)
-                const value = cell?.value || 0
-                return (
-                  <div
-                    key={`${weekday}-${hour}`}
-                    className={cn(
-                      'aspect-square rounded-sm transition-colors',
-                      onClick && 'cursor-pointer hover:ring-1 hover:ring-primary'
-                    )}
-                    style={{ backgroundColor: getColor(value) }}
-                    onClick={() => cell && onClick?.(cell)}
-                    title={`${weekday} ${hour}:00 - ${formatValue(value)}`}
-                  />
-                )
-              })}
-            </>
-          ))}
-        </div>
+            {hours.map(hour => {
+              const cell = data.find(d => d.weekday === weekday && d.hour === hour)
+              const value = cell?.value || 0
+              return (
+                <div
+                  key={`${weekday}-${hour}`}
+                  className={cn(
+                    'rounded-sm transition-colors min-h-[16px]',
+                    onClick && 'cursor-pointer hover:ring-1 hover:ring-primary'
+                  )}
+                  style={{ backgroundColor: getColor(value) }}
+                  onClick={() => cell && onClick?.(cell)}
+                  title={`${weekday} ${hour}:00 - ${formatValue(value)}`}
+                />
+              )
+            })}
+          </>
+        ))}
       </div>
     </div>
   )
