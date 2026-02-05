@@ -130,7 +130,29 @@ const CHART_COLORS = [
   'hsl(var(--chart-3))',
   'hsl(var(--chart-4))',
   'hsl(var(--chart-5))',
+  'hsl(var(--chart-6, 0 0% 50%))',
+  'hsl(var(--chart-7, 0 0% 60%))',
+  'hsl(var(--chart-8, 0 0% 70%))',
 ]
+
+// Fallback vibrant colors in case CSS variables are not available
+const FALLBACK_COLORS = [
+  '#22d3ee', // Cyan
+  '#ec4899', // Pink
+  '#4ade80', // Green
+  '#f97316', // Orange
+  '#a855f7', // Purple
+  '#eab308', // Yellow
+  '#ef4444', // Red
+  '#3b82f6', // Blue
+]
+
+// Get chart color with fallback
+function getChartColor(index: number): string {
+  const cssColor = CHART_COLORS[index % CHART_COLORS.length]
+  // Return CSS var with fallback
+  return cssColor || FALLBACK_COLORS[index % FALLBACK_COLORS.length]
+}
 
 interface SimpleBarChartProps {
   data: ChartDataPoint[]

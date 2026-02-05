@@ -110,7 +110,7 @@ export function ServiceMix() {
           timesSold: s.count,
           share: s.share,
           avgPrice: s.avgPrice,
-          type: s.isAddOn ? 'Add-On' : 'Core',
+          type: s.category === 'Add-On' ? 'Add-On' : 'Core',
         },
       }))
   }, [serviceData])
