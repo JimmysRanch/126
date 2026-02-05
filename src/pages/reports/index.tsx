@@ -1,9 +1,8 @@
 /**
  * Reports Module - Main Entry Point
- * Clean, simple landing page for easy report navigation
+ * Clean two-column layout with categories as section headers
  */
 
-import { useState } from 'react'
 import { useNavigate, Routes, Route } from 'react-router-dom'
 import { 
   ChartLine,
@@ -46,149 +45,27 @@ import { TaxesSummary } from './pages/TaxesSummary'
 interface ReportDefinition {
   id: string
   name: string
-  description: string
   path: string
   icon: typeof ChartLine
-  isEssential: boolean
   category: 'overview' | 'financial' | 'operations' | 'clients' | 'staff' | 'marketing'
 }
 
 const REPORTS: ReportDefinition[] = [
-  {
-    id: 'owner-overview',
-    name: 'Owner Overview',
-    description: 'High-level business health dashboard',
-    path: '/reports/owner-overview',
-    icon: ChartLine,
-    isEssential: true,
-    category: 'overview',
-  },
-  {
-    id: 'true-profit',
-    name: 'True Profit & Margin',
-    description: 'Contribution margin after all costs',
-    path: '/reports/true-profit',
-    icon: CurrencyDollar,
-    isEssential: true,
-    category: 'financial',
-  },
-  {
-    id: 'sales-summary',
-    name: 'Sales Summary',
-    description: 'Revenue breakdown and trends',
-    path: '/reports/sales-summary',
-    icon: ChartPie,
-    isEssential: false,
-    category: 'financial',
-  },
-  {
-    id: 'finance-reconciliation',
-    name: 'Finance & Reconciliation',
-    description: 'Payment tracking and bank reconciliation',
-    path: '/reports/finance-reconciliation',
-    icon: Receipt,
-    isEssential: false,
-    category: 'financial',
-  },
-  {
-    id: 'appointments-capacity',
-    name: 'Appointments & Capacity',
-    description: 'Booking patterns and utilization',
-    path: '/reports/appointments-capacity',
-    icon: CalendarBlank,
-    isEssential: false,
-    category: 'operations',
-  },
-  {
-    id: 'no-shows-cancellations',
-    name: 'No-Shows & Cancellations',
-    description: 'Lost revenue and recovery analysis',
-    path: '/reports/no-shows-cancellations',
-    icon: XCircle,
-    isEssential: false,
-    category: 'operations',
-  },
-  {
-    id: 'retention-rebooking',
-    name: 'Retention & Rebooking',
-    description: 'Client return rates and rebooking patterns',
-    path: '/reports/retention-rebooking',
-    icon: ArrowsClockwise,
-    isEssential: true,
-    category: 'clients',
-  },
-  {
-    id: 'client-cohorts-ltv',
-    name: 'Client Cohorts & LTV',
-    description: 'Lifetime value and cohort analysis',
-    path: '/reports/client-cohorts-ltv',
-    icon: Users,
-    isEssential: false,
-    category: 'clients',
-  },
-  {
-    id: 'staff-performance',
-    name: 'Staff Performance',
-    description: 'Groomer productivity and efficiency',
-    path: '/reports/staff-performance',
-    icon: UserCircle,
-    isEssential: true,
-    category: 'staff',
-  },
-  {
-    id: 'payroll-compensation',
-    name: 'Payroll / Compensation',
-    description: 'Staff earnings and payroll breakdown',
-    path: '/reports/payroll-compensation',
-    icon: Briefcase,
-    isEssential: false,
-    category: 'staff',
-  },
-  {
-    id: 'service-mix-pricing',
-    name: 'Service Mix & Pricing',
-    description: 'Service performance and pricing analysis',
-    path: '/reports/service-mix-pricing',
-    icon: Tag,
-    isEssential: false,
-    category: 'operations',
-  },
-  {
-    id: 'inventory-usage',
-    name: 'Inventory Usage & Reorder',
-    description: 'Supply tracking and forecasting',
-    path: '/reports/inventory-usage',
-    icon: Package,
-    isEssential: false,
-    category: 'operations',
-  },
-  {
-    id: 'marketing-messaging',
-    name: 'Marketing & Messaging ROI',
-    description: 'Campaign performance and attribution',
-    path: '/reports/marketing-messaging',
-    icon: Megaphone,
-    isEssential: false,
-    category: 'marketing',
-  },
-  {
-    id: 'tips-gratuities',
-    name: 'Tips & Gratuities',
-    description: 'Tip tracking and distribution',
-    path: '/reports/tips-gratuities',
-    icon: Gift,
-    isEssential: false,
-    category: 'financial',
-  },
-  {
-    id: 'taxes-summary',
-    name: 'Taxes Summary',
-    description: 'Tax collection and jurisdictions',
-    path: '/reports/taxes-summary',
-    icon: Percent,
-    isEssential: false,
-    category: 'financial',
-  },
+  { id: 'owner-overview', name: 'Owner Overview', path: '/reports/owner-overview', icon: ChartLine, category: 'overview' },
+  { id: 'true-profit', name: 'True Profit & Margin', path: '/reports/true-profit', icon: CurrencyDollar, category: 'financial' },
+  { id: 'sales-summary', name: 'Sales Summary', path: '/reports/sales-summary', icon: ChartPie, category: 'financial' },
+  { id: 'finance-reconciliation', name: 'Finance & Reconciliation', path: '/reports/finance-reconciliation', icon: Receipt, category: 'financial' },
+  { id: 'tips-gratuities', name: 'Tips & Gratuities', path: '/reports/tips-gratuities', icon: Gift, category: 'financial' },
+  { id: 'taxes-summary', name: 'Taxes Summary', path: '/reports/taxes-summary', icon: Percent, category: 'financial' },
+  { id: 'appointments-capacity', name: 'Appointments & Capacity', path: '/reports/appointments-capacity', icon: CalendarBlank, category: 'operations' },
+  { id: 'no-shows-cancellations', name: 'No-Shows & Cancellations', path: '/reports/no-shows-cancellations', icon: XCircle, category: 'operations' },
+  { id: 'service-mix-pricing', name: 'Service Mix & Pricing', path: '/reports/service-mix-pricing', icon: Tag, category: 'operations' },
+  { id: 'inventory-usage', name: 'Inventory Usage & Reorder', path: '/reports/inventory-usage', icon: Package, category: 'operations' },
+  { id: 'retention-rebooking', name: 'Retention & Rebooking', path: '/reports/retention-rebooking', icon: ArrowsClockwise, category: 'clients' },
+  { id: 'client-cohorts-ltv', name: 'Client Cohorts & LTV', path: '/reports/client-cohorts-ltv', icon: Users, category: 'clients' },
+  { id: 'staff-performance', name: 'Staff Performance', path: '/reports/staff-performance', icon: UserCircle, category: 'staff' },
+  { id: 'payroll-compensation', name: 'Payroll / Compensation', path: '/reports/payroll-compensation', icon: Briefcase, category: 'staff' },
+  { id: 'marketing-messaging', name: 'Marketing & Messaging ROI', path: '/reports/marketing-messaging', icon: Megaphone, category: 'marketing' },
 ]
 
 const CATEGORIES = [
@@ -200,103 +77,97 @@ const CATEGORIES = [
   { id: 'marketing', name: 'Marketing' },
 ]
 
-// Reports Landing Page - Clean, Simple Design
-function ReportsLanding() {
-  const navigate = useNavigate()
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  
-  // Filter reports based on selected category
-  const displayedReports = selectedCategory
-    ? REPORTS.filter(r => r.category === selectedCategory)
-    : REPORTS
+// Report link component
+function ReportLink({ report, navigate }: { report: ReportDefinition; navigate: (path: string) => void }) {
+  const Icon = report.icon
+  return (
+    <button
+      onClick={() => navigate(report.path)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
+      aria-label={`Open ${report.name} report`}
+      className={cn(
+        'w-full flex items-center gap-2 py-1.5 px-2 rounded text-left text-sm',
+        'hover:bg-muted/50 transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
+      )}
+    >
+      <Icon size={16} className="shrink-0 text-muted-foreground" />
+      <span className="text-foreground truncate">{report.name}</span>
+      <CaretRight size={12} className="shrink-0 text-muted-foreground ml-auto" />
+    </button>
+  )
+}
+
+// Category section component
+function CategorySection({ category, reports, navigate }: { 
+  category: { id: string; name: string }
+  reports: ReportDefinition[]
+  navigate: (path: string) => void 
+}) {
+  if (reports.length === 0) return null
   
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 py-6 md:py-8">
+    <div className="mb-4">
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 px-2">
+        {category.name}
+      </h3>
+      <div>
+        {reports.map(report => (
+          <ReportLink key={report.id} report={report} navigate={navigate} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Reports Landing Page - Two-column layout with categories
+function ReportsLanding() {
+  const navigate = useNavigate()
+  
+  // Group reports by category
+  const groupedReports = CATEGORIES.map(cat => ({
+    category: cat,
+    reports: REPORTS.filter(r => r.category === cat.id),
+  }))
+  
+  // Split categories into two columns for balanced layout
+  const leftColumn = groupedReports.slice(0, 3)  // Overview, Financial, Operations
+  const rightColumn = groupedReports.slice(3)    // Clients, Staff, Marketing
+  
+  return (
+    <div className="bg-background">
+      <div className="max-w-4xl mx-auto px-4 py-4">
         {/* Simple Header */}
-        <div className="mb-6">
-          <h1 className="text-xl font-semibold text-foreground">Reports</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            View business performance and analytics
-          </p>
+        <div className="mb-4">
+          <h1 className="text-lg font-semibold text-foreground">Reports</h1>
         </div>
         
-        {/* Category Filter Pills */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={cn(
-              'px-3 py-1.5 text-sm rounded-full transition-colors',
-              selectedCategory === null
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            )}
-          >
-            All
-          </button>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={cn(
-                'px-3 py-1.5 text-sm rounded-full transition-colors',
-                selectedCategory === cat.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-        
-        {/* Clean Report List */}
-        <div className="space-y-1">
-          {displayedReports.map((report) => {
-            const Icon = report.icon
-            
-            return (
-              <button
-                key={report.id}
-                onClick={() => navigate(report.path)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(report.path) }}
-                aria-label={`Open ${report.name} report`}
-                className={cn(
-                  'w-full flex items-center gap-4 p-3 rounded-lg text-left',
-                  'hover:bg-muted/50 transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary'
-                )}
-              >
-                <div className="shrink-0 w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                  <Icon size={20} className="text-muted-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-foreground">
-                      {report.name}
-                    </span>
-                    {report.isEssential && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-medium rounded bg-primary/10 text-primary">
-                        Essential
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-1" title={report.description}>
-                    {report.description}
-                  </p>
-                </div>
-                <CaretRight size={16} className="shrink-0 text-muted-foreground" />
-              </button>
-            )
-          })}
-        </div>
-        
-        {/* Empty state when filtering */}
-        {displayedReports.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            No reports in this category
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+          {/* Left Column */}
+          <div>
+            {leftColumn.map(({ category, reports }) => (
+              <CategorySection 
+                key={category.id} 
+                category={category} 
+                reports={reports} 
+                navigate={navigate} 
+              />
+            ))}
           </div>
-        )}
+          
+          {/* Right Column */}
+          <div>
+            {rightColumn.map(({ category, reports }) => (
+              <CategorySection 
+                key={category.id} 
+                category={category} 
+                reports={reports} 
+                navigate={navigate} 
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
