@@ -10,6 +10,7 @@ import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffPerformanceP8View } from "@/components/StaffPerformanceP8View"
 import { PayrollOverview } from "@/components/PayrollOverview"
 import CurvedMonitor from "@/components/CurvedMonitor"
+import { D2Dashboard } from "@/pages/staff/d2/D2Dashboard"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from '@github/spark/hooks'
 import { toast } from 'sonner'
@@ -60,7 +61,7 @@ export const Staff = () => {
 
   useEffect(() => {
     const tab = searchParams.get('tab')
-    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p8'].includes(tab)) {
+    if (tab && ['list', 'schedule', 'payroll', 'performance', 'p8', 'd2'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [searchParams])
@@ -163,6 +164,17 @@ export const Staff = () => {
                   }`}
                 >
                   P8
+                </Button>
+                <Button
+                  onClick={() => setActiveTab("d2")}
+                  variant={activeTab === "d2" ? "default" : "secondary"}
+                  className={`rounded-full ${isMobile ? 'w-full' : 'px-6'} font-medium transition-all duration-200 ${
+                    activeTab === "d2"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-secondary/50 hover:bg-secondary"
+                  }`}
+                >
+                  D2
                 </Button>
               </div>
 
@@ -382,6 +394,10 @@ export const Staff = () => {
 
             <TabsContent value="p8" className="mt-0">
               <StaffPerformanceP8View data={teamPerformanceData} />
+            </TabsContent>
+
+            <TabsContent value="d2" className="mt-0">
+              <D2Dashboard />
             </TabsContent>
           </Tabs>
         </div>
