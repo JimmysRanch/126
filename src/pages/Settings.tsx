@@ -29,6 +29,7 @@ import { MainService } from "@/lib/types"
 import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/useAppearance"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 import { isDemoModeEnabled, toggleDemoMode } from "@/lib/demo-data"
+import { getTodayDateInBusinessTimezone } from "@/lib/date-utils"
 
 interface WeightRange {
   id: string
@@ -402,7 +403,7 @@ export function Settings() {
   const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(DEFAULT_BIWEEKLY_SETTINGS)
   
   const getNextFriday = (): Date => {
-    const today = startOfDay(new Date())
+    const today = startOfDay(getTodayDateInBusinessTimezone())
     const friday = nextFriday(today)
     return friday
   }

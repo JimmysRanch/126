@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getTodayInBusinessTimezone, getNowInBusinessTimezone, getBusinessTimezone } from '../lib/date-utils'
+import { getTodayInBusinessTimezone, getNowInBusinessTimezone, getBusinessTimezone, dateToBusinessDateString, getTodayDateInBusinessTimezone, isSameDayInBusinessTimezone } from '../lib/date-utils'
 
 describe('Date Utilities - Timezone Handling', () => {
   beforeEach(() => {
@@ -95,6 +95,62 @@ describe('Date Utilities - Timezone Handling', () => {
       expect(month).toBeLessThanOrEqual(12)
       expect(day).toBeGreaterThanOrEqual(1)
       expect(day).toBeLessThanOrEqual(31)
+    })
+  })
+
+  describe('dateToBusinessDateString', () => {
+    it('should convert Date object to YYYY-MM-DD format', () => {
+      const testDate = new Date(2026, 1, 6, 12, 0, 0) // Feb 6, 2026 at noon
+      const result = dateToBusinessDateString(testDate)
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    })
+
+    it('should use business timezone for conversion', () => {
+      const settings = { timezone: 'America/New_York' }
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
+      
+      const testDate = new Date(2026, 1, 6, 23, 59, 0) // Late night
+      const result = dateToBusinessDateString(testDate)
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    })
+  })
+
+  describe('getTodayDateInBusinessTimezone', () => {
+    it('should return a valid Date object', () => {
+      const result = getTodayDateInBusinessTimezone()
+      expect(result).toBeInstanceOf(Date)
+      expect(result.getTime()).not.toBeNaN()
+    })
+
+    it('should use business timezone', () => {
+      const settings = { timezone: 'America/Chicago' }
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
+      
+      const result = getTodayDateInBusinessTimezone()
+      expect(result).toBeInstanceOf(Date)
+    })
+  })
+
+  describe('isSameDayInBusinessTimezone', () => {
+    it('should return true for same day dates', () => {
+      const date1 = new Date(2026, 1, 6, 9, 0, 0)
+      const date2 = new Date(2026, 1, 6, 18, 0, 0)
+      expect(isSameDayInBusinessTimezone(date1, date2)).toBe(true)
+    })
+
+    it('should return false for different day dates', () => {
+      const date1 = new Date(2026, 1, 6, 12, 0, 0)
+      const date2 = new Date(2026, 1, 7, 12, 0, 0)
+      expect(isSameDayInBusinessTimezone(date1, date2)).toBe(false)
+    })
+
+    it('should use business timezone for comparison', () => {
+      const settings = { timezone: 'America/Los_Angeles' }
+      localStorage.setItem('kv:business-info', JSON.stringify(settings))
+      
+      const date1 = new Date(2026, 1, 6, 12, 0, 0)
+      const date2 = new Date(2026, 1, 6, 20, 0, 0)
+      expect(isSameDayInBusinessTimezone(date1, date2)).toBe(true)
     })
   })
 })

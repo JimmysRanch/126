@@ -8,6 +8,7 @@ import { Appointment } from "@/lib/types"
 import { Calendar, CaretLeft, CaretRight, PawPrint } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, addWeeks, subWeeks, addMonths, subMonths, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay } from "date-fns"
+import { getTodayDateInBusinessTimezone, isSameDayInBusinessTimezone } from "@/lib/date-utils"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -17,7 +18,7 @@ interface CalendarViewProps {
 
 export function CalendarView({ statusFilter }: CalendarViewProps) {
   const [appointments] = useKV<Appointment[]>("appointments", [])
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentDate, setCurrentDate] = useState(() => getTodayDateInBusinessTimezone())
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>('week')
@@ -125,7 +126,7 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
               <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
                 <CaretLeft />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(getTodayDateInBusinessTimezone())}>
                 Today
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
@@ -147,7 +148,8 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
             {getMonthDays().map((day, idx) => {
               const dayAppointments = getAppointmentsForDay(day)
               const isCurrentMonth = day.getMonth() === currentDate.getMonth()
-              const isToday = isSameDay(day, new Date())
+              const todayDate = getTodayDateInBusinessTimezone()
+              const isToday = isSameDayInBusinessTimezone(day, todayDate)
               
               return (
                 <div
@@ -191,16 +193,20 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
             <div className={viewMode === 'week' ? 'min-w-[800px]' : ''}>
               <div className={`grid gap-2 mb-2 ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
                 <div className="text-xs font-medium text-muted-foreground p-2">Time</div>
-                {weekDays.map((day, i) => (
-                  <div key={i} className="text-center p-2">
-                    <div className="text-xs font-medium text-muted-foreground">
-                      {format(day, 'EEE')}
+                {weekDays.map((day, i) => {
+                  const businessToday = getTodayDateInBusinessTimezone()
+                  const dayIsToday = isSameDayInBusinessTimezone(day, businessToday)
+                  return (
+                    <div key={i} className="text-center p-2">
+                      <div className="text-xs font-medium text-muted-foreground">
+                        {format(day, 'EEE')}
+                      </div>
+                      <div className={`text-lg font-bold ${dayIsToday ? 'text-primary' : ''}`}>
+                        {format(day, 'd')}
+                      </div>
                     </div>
-                    <div className={`text-lg font-bold ${isSameDay(day, new Date()) ? 'text-primary' : ''}`}>
-                      {format(day, 'd')}
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="border border-border rounded-lg overflow-hidden">
@@ -211,11 +217,13 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const slotAppointments = getAppointmentsForSlot(day, slot)
+                      const businessTodayForSlot = getTodayDateInBusinessTimezone()
+                      const slotDayIsToday = isSameDayInBusinessTimezone(day, businessTodayForSlot)
                       return (
                         <div
                           key={dayIdx}
                           className={`p-1 min-h-[60px] ${viewMode === 'week' && dayIdx !== 6 ? 'border-r border-border' : ''} ${
-                            isSameDay(day, new Date()) ? 'bg-primary/5' : ''
+                            slotDayIsToday ? 'bg-primary/5' : ''
                           }`}
                         >
                           {slotAppointments.map(apt => (

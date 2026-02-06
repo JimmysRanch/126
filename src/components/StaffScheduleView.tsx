@@ -21,6 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { dateToBusinessDateString, getTodayDateInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 
 interface TimeOffRequest {
   id: string
@@ -196,7 +197,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
 
   const getAvailabilityForDate = (sId: string, date: Date): WorkBlock[] => {
     const schedule = getStaffSchedule(sId)
-    const dateStr = date.toISOString().split('T')[0]
+    const dateStr = dateToBusinessDateString(date)
     
     const approvedTimeOff = (timeOffRequests || []).filter(req => 
       req.staffId === sId &&
@@ -237,7 +238,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
       reason: newRequest.reason,
       type: newRequest.type,
       status: 'Pending',
-      requestedAt: new Date().toISOString(),
+      requestedAt: getNowInBusinessTimezone(),
       notes: newRequest.notes
     }
 
@@ -245,7 +246,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
     setIsRequestDialogOpen(false)
     setShowSubmissionMessage(true)
     setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
-    setRequestCalendarMonth(new Date())
+    setRequestCalendarMonth(getTodayDateInBusinessTimezone())
   }
 
   const handleApproveRequest = (requestId: string) => {
@@ -450,10 +451,11 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                       <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
                     ))}
                     {requestMonthDates.map((date, i) => {
-                      const dateStr = date.toISOString().split('T')[0]
+                      const dateStr = dateToBusinessDateString(date)
                       const isSelected = newRequest.dates.includes(dateStr)
                       const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
-                      const isPast = date < new Date(new Date().setHours(0, 0, 0, 0))
+                      const businessToday = getTodayDateInBusinessTimezone()
+                      const isPast = dateStr < dateToBusinessDateString(businessToday)
                       
                       return (
                         <Button
@@ -525,7 +527,7 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                   onClick={() => {
                     setIsRequestDialogOpen(false)
                     setNewRequest({ dates: [], reason: '', type: 'Sick', notes: '' })
-                    setRequestCalendarMonth(new Date())
+                    setRequestCalendarMonth(getTodayDateInBusinessTimezone())
                   }}
                 >
                   Cancel
@@ -643,10 +645,11 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
             {displayStaff[0] && monthDates.map((date, index) => {
               const staff = displayStaff[0]
               const blocks = getAvailabilityForDate(staff.id, date)
-              const isToday = date.toDateString() === new Date().toDateString()
+              const businessTodayCheck = getTodayDateInBusinessTimezone()
+              const isToday = dateToBusinessDateString(date) === dateToBusinessDateString(businessTodayCheck)
               const isCurrentMonth = date.getMonth() === currentMonth
               const hasApprovedTimeOff = (timeOffRequests || []).some(req => {
-                const dateStr = date.toISOString().split('T')[0]
+                const dateStr = dateToBusinessDateString(date)
                 return req.staffId === staff.id &&
                   req.status === 'Approved' &&
                   dateStr >= req.startDate &&

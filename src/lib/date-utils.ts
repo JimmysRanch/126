@@ -90,3 +90,34 @@ export function formatDateForDisplay(dateString: string): string {
   const zonedDate = toZonedTime(date, timezone)
   return format(zonedDate, 'MM-dd-yyyy')
 }
+
+/**
+ * Convert a JavaScript Date object to YYYY-MM-DD string in business timezone
+ * Use this instead of date.toISOString().split('T')[0] to avoid timezone bugs
+ */
+export function dateToBusinessDateString(date: Date): string {
+  const timezone = getBusinessTimezone()
+  const zonedDate = toZonedTime(date, timezone)
+  return format(zonedDate, 'yyyy-MM-dd')
+}
+
+/**
+ * Get the current Date object adjusted to represent the start of today in business timezone
+ * This is useful when you need a Date object for "today" that respects business timezone
+ */
+export function getTodayDateInBusinessTimezone(): Date {
+  const timezone = getBusinessTimezone()
+  const now = new Date()
+  return toZonedTime(now, timezone)
+}
+
+/**
+ * Check if two dates are the same day in business timezone
+ * Use this instead of comparing with new Date() which may have timezone issues
+ */
+export function isSameDayInBusinessTimezone(date1: Date, date2: Date): boolean {
+  const timezone = getBusinessTimezone()
+  const zonedDate1 = toZonedTime(date1, timezone)
+  const zonedDate2 = toZonedTime(date2, timezone)
+  return format(zonedDate1, 'yyyy-MM-dd') === format(zonedDate2, 'yyyy-MM-dd')
+}

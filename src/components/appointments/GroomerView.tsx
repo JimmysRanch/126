@@ -8,6 +8,7 @@ import { Appointment, Staff } from "@/lib/types"
 import { User, PawPrint, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+import { dateToBusinessDateString, getTodayDateInBusinessTimezone } from "@/lib/date-utils"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -20,7 +21,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
   const [staffMembers] = useKV<Staff[]>("staff", [])
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentDate, setCurrentDate] = useState(() => getTodayDateInBusinessTimezone())
   const [viewMode, setViewMode] = useState<ViewMode>('day')
 
   const groomersFromStaff = (staffMembers || [])
@@ -70,7 +71,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
         
         const aptDate = new Date(apt.date + 'T00:00:00')
         if (viewMode === 'day') {
-          const dateStr = currentDate.toISOString().split('T')[0]
+          const dateStr = dateToBusinessDateString(currentDate)
           return apt.date === dateStr
         }
         return isWithinInterval(aptDate, { start, end })
@@ -149,7 +150,7 @@ export function GroomerView({ statusFilter }: GroomerViewProps) {
               <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
                 <CaretLeft />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(getTodayDateInBusinessTimezone())}>
                 Today
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>
