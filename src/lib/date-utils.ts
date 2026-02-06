@@ -121,3 +121,37 @@ export function isSameDayInBusinessTimezone(date1: Date, date2: Date): boolean {
   const zonedDate2 = toZonedTime(date2, timezone)
   return format(zonedDate1, 'yyyy-MM-dd') === format(zonedDate2, 'yyyy-MM-dd')
 }
+
+/**
+ * Parse a date string (YYYY-MM-DD) as a local date, not UTC.
+ * 
+ * CRITICAL: Do NOT use `new Date('2026-02-06')` as it parses as UTC midnight,
+ * which becomes the PREVIOUS DAY in US timezones!
+ * 
+ * Example of the bug:
+ *   new Date('2026-02-06') in EST = Feb 5, 2026 at 7 PM (wrong!)
+ * 
+ * This function correctly parses as local midnight:
+ *   parseDateStringAsLocal('2026-02-06') in EST = Feb 6, 2026 at 12 AM (correct!)
+ */
+export function parseDateStringAsLocal(dateString: string): Date {
+  if (!dateString) return new Date()
+  // parseISO treats YYYY-MM-DD as local time, not UTC
+  return parseISO(dateString)
+}
+
+/**
+ * Format a date string (YYYY-MM-DD) for display without timezone conversion issues.
+ * 
+ * CRITICAL: Do NOT use `format(new Date(dateString), 'MMM d, yyyy')` as it will
+ * show the WRONG date in US timezones due to UTC parsing!
+ * 
+ * @param dateString - Date in YYYY-MM-DD format
+ * @param formatStr - date-fns format string (default: 'MMM d, yyyy')
+ */
+export function formatDateString(dateString: string, formatStr: string = 'MMM d, yyyy'): string {
+  if (!dateString) return ''
+  // parseISO treats YYYY-MM-DD as local time, avoiding the UTC conversion bug
+  const date = parseISO(dateString)
+  return format(date, formatStr)
+}

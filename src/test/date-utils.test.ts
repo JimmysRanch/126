@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { getTodayInBusinessTimezone, getNowInBusinessTimezone, getBusinessTimezone, dateToBusinessDateString, getTodayDateInBusinessTimezone, isSameDayInBusinessTimezone } from '../lib/date-utils'
+import { getTodayInBusinessTimezone, getNowInBusinessTimezone, getBusinessTimezone, dateToBusinessDateString, getTodayDateInBusinessTimezone, isSameDayInBusinessTimezone, parseDateStringAsLocal, formatDateString } from '../lib/date-utils'
 
 describe('Date Utilities - Timezone Handling', () => {
   beforeEach(() => {
@@ -151,6 +151,45 @@ describe('Date Utilities - Timezone Handling', () => {
       const date1 = new Date(2026, 1, 6, 12, 0, 0)
       const date2 = new Date(2026, 1, 6, 20, 0, 0)
       expect(isSameDayInBusinessTimezone(date1, date2)).toBe(true)
+    })
+  })
+
+  describe('parseDateStringAsLocal', () => {
+    it('should parse YYYY-MM-DD as local date, not UTC', () => {
+      const dateStr = '2026-02-06'
+      const parsed = parseDateStringAsLocal(dateStr)
+      
+      // The date should be Feb 6 regardless of timezone
+      // Using getDate() to get local date
+      expect(parsed.getDate()).toBe(6)
+      expect(parsed.getMonth()).toBe(1) // 0-indexed, so 1 = February
+      expect(parsed.getFullYear()).toBe(2026)
+    })
+
+    it('should return valid date for empty string fallback', () => {
+      const parsed = parseDateStringAsLocal('')
+      expect(parsed).toBeInstanceOf(Date)
+      expect(parsed.getTime()).not.toBeNaN()
+    })
+  })
+
+  describe('formatDateString', () => {
+    it('should format date string correctly without UTC conversion bug', () => {
+      const dateStr = '2026-02-06'
+      const formatted = formatDateString(dateStr)
+      
+      // Should be Feb 6, not Feb 5 (which would happen with UTC bug)
+      expect(formatted).toBe('Feb 6, 2026')
+    })
+
+    it('should support custom format strings', () => {
+      const dateStr = '2026-02-06'
+      const formatted = formatDateString(dateStr, 'yyyy-MM-dd')
+      expect(formatted).toBe('2026-02-06')
+    })
+
+    it('should return empty string for empty input', () => {
+      expect(formatDateString('')).toBe('')
     })
   })
 })
