@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Transaction } from "@/lib/types"
+import { parseDateStringAsLocal } from "@/lib/date-utils"
 
 interface AppointmentDetail {
   id: string
@@ -35,7 +36,7 @@ interface AppointmentDetail {
 }
 
 const formatDateLabel = (dateString: string) => {
-  const date = new Date(dateString)
+  const date = parseDateStringAsLocal(dateString)
   if (Number.isNaN(date.getTime())) return dateString
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
 }
@@ -50,7 +51,7 @@ const normalizeTipMethod = (method?: string, paymentMethod?: string): "Cash" | "
 const getPayPeriodLabel = (staffAppointments: Appointment[]) => {
   if (staffAppointments.length === 0) return "No completed appointments"
   const sortedDates = staffAppointments
-    .map((apt) => new Date(apt.date))
+    .map((apt) => parseDateStringAsLocal(apt.date))
     .filter((date) => !Number.isNaN(date.getTime()))
     .sort((a, b) => a.getTime() - b.getTime())
   if (sortedDates.length === 0) return "No completed appointments"

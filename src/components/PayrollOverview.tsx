@@ -18,6 +18,7 @@ import {
   getPayPeriodScheduleDescription,
   type PayPeriodSettings
 } from "@/lib/payroll-utils"
+import { parseDateStringAsLocal } from "@/lib/date-utils"
 
 interface PayrollData {
   staffId: string
@@ -38,7 +39,7 @@ interface PayrollData {
 const getPayPeriodLabel = (staffAppointments: Appointment[]) => {
   if (staffAppointments.length === 0) return "No completed appointments"
   const sortedDates = staffAppointments
-    .map((apt) => new Date(apt.date))
+    .map((apt) => parseDateStringAsLocal(apt.date))
     .filter((date) => !Number.isNaN(date.getTime()))
     .sort((a, b) => a.getTime() - b.getTime())
   if (sortedDates.length === 0) return "No completed appointments"

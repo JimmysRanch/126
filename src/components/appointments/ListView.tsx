@@ -10,6 +10,7 @@ import { Appointment } from "@/lib/types"
 import { MagnifyingGlass, PawPrint, User, CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog"
 import { format, addDays, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addWeeks, addMonths, subWeeks, subMonths } from "date-fns"
+import { dateToBusinessDateString, getTodayDateInBusinessTimezone } from "@/lib/date-utils"
 
 type ViewMode = 'day' | 'week' | 'month'
 
@@ -23,7 +24,7 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
   const [localStatusFilter, setLocalStatusFilter] = useState("all")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
   const [detailsOpen, setDetailsOpen] = useState(false)
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const [currentDate, setCurrentDate] = useState(() => getTodayDateInBusinessTimezone())
   const [viewMode, setViewMode] = useState<ViewMode>('day')
   
   const statusFilter = externalStatusFilter || localStatusFilter
@@ -86,7 +87,7 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
 
       const aptDate = new Date(apt.date + 'T00:00:00')
       const matchesDate = viewMode === 'day' 
-        ? apt.date === currentDate.toISOString().split('T')[0]
+        ? apt.date === dateToBusinessDateString(currentDate)
         : isWithinInterval(aptDate, { start, end })
 
       return matchesSearch && matchesStatus && matchesDate
@@ -140,7 +141,7 @@ export function ListView({ statusFilter: externalStatusFilter }: ListViewProps) 
               <Button variant="outline" size="sm" onClick={() => navigateDate('prev')}>
                 <CaretLeft />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+              <Button variant="outline" size="sm" onClick={() => setCurrentDate(getTodayDateInBusinessTimezone())}>
                 Today
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigateDate('next')}>

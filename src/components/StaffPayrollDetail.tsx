@@ -5,6 +5,7 @@ import { Download, CalendarBlank, TrendUp } from "@phosphor-icons/react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Transaction } from "@/lib/types"
+import { parseDateStringAsLocal } from "@/lib/date-utils"
 
 interface PayPeriod {
   period: string
@@ -47,7 +48,7 @@ const getPeriodRange = (appointments: Appointment[]) => {
     }
   }
   const sortedDates = appointments
-    .map((apt) => new Date(apt.date))
+    .map((apt) => parseDateStringAsLocal(apt.date))
     .filter((date) => !Number.isNaN(date.getTime()))
     .sort((a, b) => a.getTime() - b.getTime())
   if (sortedDates.length === 0) {

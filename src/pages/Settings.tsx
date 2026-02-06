@@ -29,6 +29,7 @@ import { MainService } from "@/lib/types"
 import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/useAppearance"
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 import { isDemoModeEnabled, toggleDemoMode } from "@/lib/demo-data"
+import { getTodayDateInBusinessTimezone, parseDateStringAsLocal, formatDateString } from "@/lib/date-utils"
 
 interface WeightRange {
   id: string
@@ -402,7 +403,7 @@ export function Settings() {
   const [payrollFormData, setPayrollFormData] = useState<PayPeriodSettings>(DEFAULT_BIWEEKLY_SETTINGS)
   
   const getNextFriday = (): Date => {
-    const today = startOfDay(new Date())
+    const today = startOfDay(getTodayDateInBusinessTimezone())
     const friday = nextFriday(today)
     return friday
   }
@@ -987,7 +988,7 @@ export function Settings() {
       }
       
       if (field === 'anchorPayDate' && updated.type === 'bi-weekly') {
-        const payDate = new Date(value)
+        const payDate = parseDateStringAsLocal(value)
         if (!isNaN(payDate.getTime())) {
           const periodEnd = addDays(payDate, -5)
           const periodStart = addDays(periodEnd, -13)
@@ -998,7 +999,7 @@ export function Settings() {
       }
 
       if (field === 'anchorPayDate' && updated.type === 'weekly') {
-        const payDate = new Date(value)
+        const payDate = parseDateStringAsLocal(value)
         if (!isNaN(payDate.getTime())) {
           const periodEnd = addDays(payDate, -5)
           const periodStart = addDays(periodEnd, -6)
@@ -1515,7 +1516,7 @@ export function Settings() {
 
                         <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
                           <p className="text-sm text-blue-400">
-                            <strong>How it works:</strong> If you select {payrollFormData.anchorPayDate && format(new Date(payrollFormData.anchorPayDate), 'MMM d, yyyy')}, your staff will be paid every Friday starting from that date. The pay period will cover the week ending the Sunday before payday.
+                            <strong>How it works:</strong> If you select {payrollFormData.anchorPayDate && formatDateString(payrollFormData.anchorPayDate)}, your staff will be paid every Friday starting from that date. The pay period will cover the week ending the Sunday before payday.
                           </p>
                         </div>
                       </div>
@@ -1570,7 +1571,7 @@ export function Settings() {
 
                         <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
                           <p className="text-sm text-blue-400">
-                            <strong>How it works:</strong> If you select {payrollFormData.anchorPayDate && format(new Date(payrollFormData.anchorPayDate), 'MMM d, yyyy')}, your staff will be paid every other Friday starting from that date. The pay period will cover the 2 weeks ending the Sunday before payday.
+                            <strong>How it works:</strong> If you select {payrollFormData.anchorPayDate && formatDateString(payrollFormData.anchorPayDate)}, your staff will be paid every other Friday starting from that date. The pay period will cover the 2 weeks ending the Sunday before payday.
                           </p>
                         </div>
                       </div>

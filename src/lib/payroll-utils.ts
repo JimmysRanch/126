@@ -1,4 +1,5 @@
 import { format, addDays, addWeeks, startOfDay, differenceInDays, parseISO } from 'date-fns'
+import { getTodayInBusinessTimezone } from './date-utils'
 
 export type PayPeriodType = 'weekly' | 'bi-weekly' | 'semi-monthly' | 'monthly'
 
@@ -57,10 +58,11 @@ export function getPayPeriodSettings(): PayPeriodSettings {
   return DEFAULT_BIWEEKLY_SETTINGS
 }
 
-export function calculateNextPayPeriod(fromDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+export function calculateNextPayPeriod(fromDate?: string): PayPeriod {
+  const effectiveDate = fromDate ?? getTodayInBusinessTimezone()
   const settings = getPayPeriodSettings()
   
-  const from = startOfDay(parseISO(fromDate))
+  const from = startOfDay(parseISO(effectiveDate))
   const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
   
   switch (settings.type) {
@@ -155,10 +157,11 @@ export function calculateNextPayPeriod(fromDate: string = new Date().toISOString
   }
 }
 
-export function getCurrentPayPeriod(forDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+export function getCurrentPayPeriod(forDate?: string): PayPeriod {
+  const effectiveDate = forDate ?? getTodayInBusinessTimezone()
   const settings = getPayPeriodSettings()
   
-  const current = startOfDay(parseISO(forDate))
+  const current = startOfDay(parseISO(effectiveDate))
   const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
   
   switch (settings.type) {
@@ -259,9 +262,10 @@ export function formatPayPeriodType(type: PayPeriodType): string {
   }
 }
 
-export function getPreviousPayPeriod(forDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+export function getPreviousPayPeriod(forDate?: string): PayPeriod {
+  const effectiveDate = forDate ?? getTodayInBusinessTimezone()
   const settings = getPayPeriodSettings()
-  const current = startOfDay(parseISO(forDate))
+  const current = startOfDay(parseISO(effectiveDate))
   const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
 
   switch (settings.type) {
@@ -358,9 +362,10 @@ export function getPreviousPayPeriod(forDate: string = new Date().toISOString().
   }
 }
 
-export function getUpcomingPayPeriod(periodsAhead: number, forDate: string = new Date().toISOString().split('T')[0]): PayPeriod {
+export function getUpcomingPayPeriod(periodsAhead: number, forDate?: string): PayPeriod {
+  const effectiveDate = forDate ?? getTodayInBusinessTimezone()
   const settings = getPayPeriodSettings()
-  const current = startOfDay(parseISO(forDate))
+  const current = startOfDay(parseISO(effectiveDate))
   const anchorStart = startOfDay(parseISO(settings.anchorStartDate))
 
   switch (settings.type) {
