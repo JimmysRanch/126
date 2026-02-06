@@ -450,34 +450,37 @@ export function StaffScheduleView({ staffId, isOwner = true, allowEditing = true
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => (
                       <div key={i} className="text-center text-xs font-semibold text-muted-foreground">{day}</div>
                     ))}
-                    {requestMonthDates.map((date, i) => {
-                      const dateStr = dateToBusinessDateString(date)
-                      const isSelected = newRequest.dates.includes(dateStr)
-                      const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
-                      const businessToday = getTodayDateInBusinessTimezone()
-                      const isPast = dateStr < dateToBusinessDateString(businessToday)
-                      
-                      return (
-                        <Button
-                          key={i}
-                          type="button"
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          className={`h-8 p-0 ${!isCurrentMonth ? 'opacity-30' : ''} ${isPast ? 'opacity-50' : ''}`}
-                          disabled={isPast}
-                          onClick={() => {
-                            setNewRequest(prev => ({
-                              ...prev,
-                              dates: isSelected 
-                                ? prev.dates.filter(d => d !== dateStr)
-                                : [...prev.dates, dateStr]
-                            }))
-                          }}
-                        >
-                          {date.getDate()}
-                        </Button>
-                      )
-                    })}
+                    {(() => {
+                      const businessTodayForCalendar = getTodayDateInBusinessTimezone()
+                      const businessTodayStr = dateToBusinessDateString(businessTodayForCalendar)
+                      return requestMonthDates.map((date, i) => {
+                        const dateStr = dateToBusinessDateString(date)
+                        const isSelected = newRequest.dates.includes(dateStr)
+                        const isCurrentMonth = date.getMonth() === requestCalendarMonth.getMonth()
+                        const isPast = dateStr < businessTodayStr
+                        
+                        return (
+                          <Button
+                            key={i}
+                            type="button"
+                            variant={isSelected ? "default" : "outline"}
+                            size="sm"
+                            className={`h-8 p-0 ${!isCurrentMonth ? 'opacity-30' : ''} ${isPast ? 'opacity-50' : ''}`}
+                            disabled={isPast}
+                            onClick={() => {
+                              setNewRequest(prev => ({
+                                ...prev,
+                                dates: isSelected 
+                                  ? prev.dates.filter(d => d !== dateStr)
+                                  : [...prev.dates, dateStr]
+                              }))
+                            }}
+                          >
+                            {date.getDate()}
+                          </Button>
+                        )
+                      })
+                    })()}
                   </div>
                   {newRequest.dates.length > 0 && (
                     <div className="text-sm text-muted-foreground">

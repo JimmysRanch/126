@@ -193,60 +193,64 @@ export function CalendarView({ statusFilter }: CalendarViewProps) {
             <div className={viewMode === 'week' ? 'min-w-[800px]' : ''}>
               <div className={`grid gap-2 mb-2 ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'}`}>
                 <div className="text-xs font-medium text-muted-foreground p-2">Time</div>
-                {weekDays.map((day, i) => {
-                  const businessToday = getTodayDateInBusinessTimezone()
-                  const dayIsToday = isSameDayInBusinessTimezone(day, businessToday)
-                  return (
-                    <div key={i} className="text-center p-2">
-                      <div className="text-xs font-medium text-muted-foreground">
-                        {format(day, 'EEE')}
+                {(() => {
+                  const businessTodayRef = getTodayDateInBusinessTimezone()
+                  return weekDays.map((day, i) => {
+                    const dayIsToday = isSameDayInBusinessTimezone(day, businessTodayRef)
+                    return (
+                      <div key={i} className="text-center p-2">
+                        <div className="text-xs font-medium text-muted-foreground">
+                          {format(day, 'EEE')}
+                        </div>
+                        <div className={`text-lg font-bold ${dayIsToday ? 'text-primary' : ''}`}>
+                          {format(day, 'd')}
+                        </div>
                       </div>
-                      <div className={`text-lg font-bold ${dayIsToday ? 'text-primary' : ''}`}>
-                        {format(day, 'd')}
-                      </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                })()}
               </div>
 
               <div className="border border-border rounded-lg overflow-hidden">
-                {timeSlots.map((slot, slotIdx) => (
-                  <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
-                    <div className="text-xs text-muted-foreground p-2 border-r border-border w-[70px]">
-                      {slot}
+                {(() => {
+                  const businessTodayForGrid = getTodayDateInBusinessTimezone()
+                  return timeSlots.map((slot, slotIdx) => (
+                    <div key={slot} className={`grid ${viewMode === 'week' ? 'grid-cols-[auto_repeat(7,1fr)]' : 'grid-cols-[auto_1fr]'} ${slotIdx !== timeSlots.length - 1 ? 'border-b border-border' : ''}`}>
+                      <div className="text-xs text-muted-foreground p-2 border-r border-border w-[70px]">
+                        {slot}
+                      </div>
+                      {weekDays.map((day, dayIdx) => {
+                        const slotAppointments = getAppointmentsForSlot(day, slot)
+                        const slotDayIsToday = isSameDayInBusinessTimezone(day, businessTodayForGrid)
+                        return (
+                          <div
+                            key={dayIdx}
+                            className={`p-1 min-h-[60px] ${viewMode === 'week' && dayIdx !== 6 ? 'border-r border-border' : ''} ${
+                              slotDayIsToday ? 'bg-primary/5' : ''
+                            }`}
+                          >
+                            {slotAppointments.map(apt => (
+                              <button
+                                key={apt.id}
+                                onClick={() => {
+                                  setSelectedAppointment(apt)
+                                  setDetailsOpen(true)
+                                }}
+                                className={`w-full text-left p-2 rounded text-xs mb-1 hover:opacity-80 transition-opacity ${getStatusColor(apt.status)}`}
+                              >
+                                <div className="font-medium truncate flex items-center gap-1">
+                                  <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
+                                  {apt.petName}
+                                </div>
+                                <div className="truncate opacity-80">{apt.groomerName}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )
+                      })}
                     </div>
-                    {weekDays.map((day, dayIdx) => {
-                      const slotAppointments = getAppointmentsForSlot(day, slot)
-                      const businessTodayForSlot = getTodayDateInBusinessTimezone()
-                      const slotDayIsToday = isSameDayInBusinessTimezone(day, businessTodayForSlot)
-                      return (
-                        <div
-                          key={dayIdx}
-                          className={`p-1 min-h-[60px] ${viewMode === 'week' && dayIdx !== 6 ? 'border-r border-border' : ''} ${
-                            slotDayIsToday ? 'bg-primary/5' : ''
-                          }`}
-                        >
-                          {slotAppointments.map(apt => (
-                            <button
-                              key={apt.id}
-                              onClick={() => {
-                                setSelectedAppointment(apt)
-                                setDetailsOpen(true)
-                              }}
-                              className={`w-full text-left p-2 rounded text-xs mb-1 hover:opacity-80 transition-opacity ${getStatusColor(apt.status)}`}
-                            >
-                              <div className="font-medium truncate flex items-center gap-1">
-                                <PawPrint size={12} weight="fill" className="text-primary shrink-0" />
-                                {apt.petName}
-                              </div>
-                              <div className="truncate opacity-80">{apt.groomerName}</div>
-                            </button>
-                          ))}
-                        </div>
-                      )
-                    })}
-                  </div>
-                ))}
+                  ))
+                })()}
               </div>
             </div>
           </div>
