@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Appointment } from "@/lib/types"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
@@ -17,7 +17,8 @@ interface AppointmentDetailsDialogProps {
 }
 
 export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: AppointmentDetailsDialogProps) {
-  const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
+  // Only setAppointments is needed for updating status; appointments array is unused
+  const [, setAppointments] = useKV<Appointment[]>("appointments", [])
   const navigate = useNavigate()
 
   const handleStatusChange = (newStatus: Appointment['status']) => {
@@ -42,172 +43,184 @@ export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: Ap
     }
   }
 
+  // Group services: main service first, then add-ons indented below
+  const mainService = appointment.services.find(s => s.type === 'main')
+  const addOns = appointment.services.filter(s => s.type === 'addon')
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <PawPrint size={24} className="text-primary" />
             Appointment Details
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-2xl font-bold flex items-center gap-2">
-                <PawPrint size={24} weight="fill" className="text-primary shrink-0" />
-                {appointment.petName}
-              </h3>
-              <p className="text-muted-foreground">{appointment.clientName}</p>
-            </div>
-            <Badge className={getStatusColor(appointment.status)}>
-              {appointment.status}
-            </Badge>
-          </div>
-
-          <Separator />
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Date & Time</div>
-              <div className="flex items-center gap-2">
-                <Clock size={16} />
-                <span className="font-medium">
-                  {format(new Date(appointment.date + 'T00:00:00'), 'MMM d, yyyy')} at {appointment.startTime}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Groomer</div>
-              <div className="flex items-center gap-2">
-                <User size={16} />
-                <span className="font-medium">{appointment.groomerName}</span>
-                {appointment.groomerRequested && (
-                  <Badge variant="outline" className="text-xs">Requested</Badge>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Pet Weight</div>
-              <div className="font-medium">{appointment.petWeight} lbs ({appointment.petWeightCategory})</div>
-            </div>
-
-            <div className="space-y-1">
-              <div className="text-sm text-muted-foreground">Total Price</div>
-              <div className="flex items-center gap-2">
-                <CurrencyDollar size={16} />
-                <span className="font-bold text-primary text-xl">${appointment.totalPrice.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          <div>
-            <h4 className="font-semibold mb-3">Services</h4>
-            <div className="space-y-2">
-              {appointment.services.map((service, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div>
-                    <div className="font-medium">{service.serviceName}</div>
-                    <Badge variant="secondary" className="text-xs mt-1">
-                      {service.type}
-                    </Badge>
-                  </div>
-                  <div className="font-semibold">${service.price.toFixed(2)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {appointment.notes && (
-            <>
-              <Separator />
+        <ScrollArea className="flex-1 pr-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold mb-2">Notes</h4>
-                <p className="text-sm text-muted-foreground">{appointment.notes}</p>
+                <h3 className="text-2xl font-bold flex items-center gap-2">
+                  <PawPrint size={24} weight="fill" className="text-primary shrink-0" />
+                  {appointment.petName}
+                </h3>
+                <p className="text-muted-foreground">{appointment.clientName}</p>
               </div>
-            </>
-          )}
-
-          <Separator />
-
-          <div>
-            <h4 className="font-semibold mb-3">Update Appointment Status</h4>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant={appointment.status === 'scheduled' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('scheduled')}
-                className={`justify-center ${appointment.status === 'scheduled' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                Scheduled
-              </Button>
-              <Button
-                variant={appointment.status === 'checked-in' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('checked-in')}
-                className={`justify-center ${appointment.status === 'checked-in' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                Checked In
-              </Button>
-              <Button
-                variant={appointment.status === 'in-progress' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('in-progress')}
-                className={`justify-center ${appointment.status === 'in-progress' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                In Progress
-              </Button>
-              <Button
-                variant={appointment.status === 'completed' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('completed')}
-                className={`justify-center ${appointment.status === 'completed' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                Complete
-              </Button>
-              <Button
-                variant={appointment.status === 'notified' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('notified')}
-                className={`justify-center ${appointment.status === 'notified' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                Notified
-              </Button>
-              <Button
-                variant={appointment.status === 'paid' ? 'default' : 'outline'}
-                onClick={() => handleStatusChange('paid')}
-                className={`justify-center ${appointment.status === 'paid' ? 'bg-primary text-primary-foreground' : ''}`}
-              >
-                Paid
-              </Button>
+              <Badge className={getStatusColor(appointment.status)}>
+                {appointment.status}
+              </Badge>
             </div>
-          </div>
 
-          <Separator />
+            <Separator />
 
-          <div className="flex gap-2 flex-wrap">
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                onOpenChange(false)
-                navigate(`/appointments/${appointment.id}/edit`)
-              }}
-              className="flex-1"
-            >
-              <PencilSimple className="mr-2" />
-              Edit
-            </Button>
-            {appointment.status !== 'cancelled' && appointment.status !== 'paid' && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <div className="text-sm text-muted-foreground">Date & Time</div>
+                <div className="flex items-center gap-2">
+                  <Clock size={16} />
+                  <span className="font-medium">
+                    {format(new Date(appointment.date + 'T00:00:00'), 'MMM d, yyyy')} at {appointment.startTime}
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-sm text-muted-foreground">Groomer</div>
+                <div className="flex items-center gap-2">
+                  <User size={16} />
+                  <span className="font-medium">{appointment.groomerName}</span>
+                  {appointment.groomerRequested && (
+                    <Badge variant="outline" className="text-xs">Requested</Badge>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-sm text-muted-foreground">Pet Weight</div>
+                <div className="font-medium">{appointment.petWeight} lbs ({appointment.petWeightCategory})</div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="text-sm text-muted-foreground">Total Price</div>
+                <div className="flex items-center gap-2">
+                  <CurrencyDollar size={16} />
+                  <span className="font-bold text-primary text-xl">${appointment.totalPrice.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <h4 className="font-semibold mb-3">Services</h4>
+              <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+                {/* Main service */}
+                {mainService && (
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium">{mainService.serviceName}</div>
+                    <div className="font-semibold">${mainService.price.toFixed(2)}</div>
+                  </div>
+                )}
+                {/* Add-ons indented */}
+                {addOns.map((addon, idx) => (
+                  <div key={idx} className="flex items-center justify-between pl-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <span>+</span>
+                      <span>{addon.serviceName}</span>
+                    </div>
+                    <div className="font-medium">${addon.price.toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {appointment.notes && (
+              <>
+                <Separator />
+                <div>
+                  <h4 className="font-semibold mb-2">Notes</h4>
+                  <p className="text-sm text-muted-foreground">{appointment.notes}</p>
+                </div>
+              </>
+            )}
+
+            <Separator />
+
+            <div>
+              <h4 className="font-semibold mb-3">Update Appointment Status</h4>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant={appointment.status === 'scheduled' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('scheduled')}
+                  className={`justify-center ${appointment.status === 'scheduled' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  Scheduled
+                </Button>
+                <Button
+                  variant={appointment.status === 'checked-in' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('checked-in')}
+                  className={`justify-center ${appointment.status === 'checked-in' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  Checked In
+                </Button>
+                <Button
+                  variant={appointment.status === 'in-progress' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('in-progress')}
+                  className={`justify-center ${appointment.status === 'in-progress' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  In Progress
+                </Button>
+                <Button
+                  variant={appointment.status === 'completed' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('completed')}
+                  className={`justify-center ${appointment.status === 'completed' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  Complete
+                </Button>
+                <Button
+                  variant={appointment.status === 'notified' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('notified')}
+                  className={`justify-center ${appointment.status === 'notified' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  Notified
+                </Button>
+                <Button
+                  variant={appointment.status === 'paid' ? 'default' : 'outline'}
+                  onClick={() => handleStatusChange('paid')}
+                  className={`justify-center ${appointment.status === 'paid' ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  Paid
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex gap-2 flex-wrap">
               <Button 
-                variant="destructive" 
-                onClick={() => handleStatusChange('cancelled')}
+                variant="outline" 
+                onClick={() => {
+                  onOpenChange(false)
+                  navigate(`/appointments/${appointment.id}/edit`)
+                }}
                 className="flex-1"
               >
-                Cancel
+                <PencilSimple className="mr-2" />
+                Edit
               </Button>
-            )}
+              {appointment.status !== 'cancelled' && appointment.status !== 'paid' && (
+                <Button 
+                  variant="destructive" 
+                  onClick={() => handleStatusChange('cancelled')}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   )

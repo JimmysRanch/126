@@ -7,10 +7,10 @@ import { ServiceHistoryCard } from "@/components/ServiceHistoryCard"
 import { MedicalInfoCard } from "@/components/MedicalInfoCard"
 import { PhotoGalleryCard } from "@/components/PhotoGalleryCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
-import { Client } from "@/lib/types"
+import { Client, Appointment } from "@/lib/types"
 import { formatInBusinessTimezone } from "@/lib/date-utils"
 
 export function ClientProfile() {
@@ -18,6 +18,7 @@ export function ClientProfile() {
   const { clientId } = useParams()
   const isMobile = useIsMobile()
   const [clients] = useKV<Client[]>("clients", [])
+  const [appointments] = useKV<Appointment[]>("appointments", [])
   
   // Find the actual client data from the KV store
   const client = clients?.find(c => c.id === clientId)
@@ -50,28 +51,62 @@ export function ClientProfile() {
     nextDue?: string
   }
 
-  // Create data structure for each pet
-  const petData: Record<string, {
-    serviceHistory: any[]
-    vaccinations: MedicalRecord[]
-    groomingPhotos: any[]
-    allergies: string[]
-    medications: MedicalRecord[]
-    notes: string
-  }> = {}
-  
-  // Initialize data for each pet
-  pets.forEach(pet => {
-    const sourcePet = client.pets.find(item => item.id === pet.id)
-    petData[pet.id] = {
-      serviceHistory: [],
-      vaccinations: [],
-      groomingPhotos: [],
-      allergies: [],
-      medications: [],
-      notes: ""
-    }
-  })
+  // Create service history from actual appointments for each pet
+  const petData = useMemo(() => {
+    const data: Record<string, {
+      serviceHistory: Array<{
+        name: string
+        date: string
+        groomer: string
+        duration?: string
+        startTime?: string
+        cost: string
+        services: string[]
+        notes?: string
+      }>
+      vaccinations: MedicalRecord[]
+      groomingPhotos: any[]
+      allergies: string[]
+      medications: MedicalRecord[]
+      notes: string
+    }> = {}
+    
+    pets.forEach(pet => {
+      // Get all completed appointments for this pet
+      const petAppointments = (appointments || [])
+        .filter(apt => apt.petId === pet.id && apt.clientId === clientId && 
+          ['completed', 'paid', 'notified'].includes(apt.status))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      
+      // Transform appointments into service history format
+      const serviceHistory = petAppointments.map(apt => {
+        const mainService = apt.services.find(s => s.type === 'main')
+        const addOns = apt.services.filter(s => s.type === 'addon')
+        const allServiceNames = apt.services.map(s => s.serviceName)
+        
+        return {
+          name: mainService?.serviceName || 'Grooming',
+          date: formatInBusinessTimezone(apt.date, 'M/d/yyyy'),
+          groomer: apt.groomerName,
+          startTime: apt.startTime,
+          cost: `$${apt.totalPrice.toFixed(2)}`,
+          services: allServiceNames,
+          notes: apt.notes
+        }
+      })
+      
+      data[pet.id] = {
+        serviceHistory,
+        vaccinations: [],
+        groomingPhotos: [],
+        allergies: [],
+        medications: [],
+        notes: ""
+      }
+    })
+    
+    return data
+  }, [pets, appointments, clientId])
   
   // If client not found, show error message
   if (!client) {

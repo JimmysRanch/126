@@ -286,7 +286,7 @@ export function useDashboardData() {
     }
   }, [clients, appointments, todayDate])
 
-  // Compute groomer data for workload and average cards
+  // Compute groomer data for workload (today's data)
   const groomerData = useMemo(() => {
     const appts = appointments || []
     const staffList = staff || []
@@ -339,6 +339,48 @@ export function useDashboardData() {
       }
     })
   }, [appointments, staff, today])
+
+  // Compute groomer lifetime average metrics
+  const groomerLifetimeData = useMemo(() => {
+    const appts = appointments || []
+    const staffList = staff || []
+    const groomers = staffList.filter(s => s.isGroomer && s.status === 'Active')
+    const completedStatuses = ['completed', 'paid', 'notified']
+    
+    return groomers.map((groomer, index) => {
+      // Get all completed appointments for this groomer
+      const groomerAppts = appts.filter(a => 
+        a.groomerId === groomer.id && completedStatuses.includes(a.status)
+      )
+      
+      // Get unique days worked
+      const uniqueDays = new Set(groomerAppts.map(a => a.date))
+      const daysWorked = uniqueDays.size
+      
+      // Calculate total revenue
+      const totalRevenue = groomerAppts.reduce((sum, a) => sum + a.totalPrice, 0)
+      
+      // Calculate averages - only if there are completed appointments
+      // If no appointments, show 0 to avoid misleading metrics
+      const avgDogsPerDay = daysWorked > 0 
+        ? Math.round((groomerAppts.length / daysWorked) * 10) / 10 
+        : 0
+      const avgRevenuePerDay = daysWorked > 0 
+        ? Math.round(totalRevenue / daysWorked) 
+        : 0
+      
+      return {
+        id: index + 1,
+        groomerId: groomer.id,
+        name: groomer.name,
+        totalAppointments: groomerAppts.length,
+        totalRevenue,
+        daysWorked,
+        avgDogsPerDay,
+        avgRevenuePerDay
+      }
+    })
+  }, [appointments, staff])
 
   // Compute recent activity from appointments
   const recentActivity = useMemo(() => {
@@ -492,6 +534,7 @@ export function useDashboardData() {
     bookedPercentageSummary,
     clientsSummary,
     groomerData,
+    groomerLifetimeData,
     recentActivity,
     expensesData,
   }
