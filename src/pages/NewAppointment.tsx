@@ -275,6 +275,26 @@ export function NewAppointment() {
     }
   }, [appointmentDate, appointmentTime, hoursOfOperation])
 
+  // Auto-fill grooming preferences when a pet is selected
+  useEffect(() => {
+    if (selectedPetsData.length === 1) {
+      const pet = selectedPetsData[0]
+      // Auto-fill from pet's saved preferences
+      if (pet.overallLength) setOverallLength(pet.overallLength)
+      if (pet.faceStyle) setFaceStyle(pet.faceStyle)
+      if (pet.skipEarTrim !== undefined) setSkipEarTrim(pet.skipEarTrim)
+      if (pet.skipTailTrim !== undefined) setSkipTailTrim(pet.skipTailTrim)
+      if (pet.groomingNotes) setGroomingNotes(pet.groomingNotes)
+    } else if (selectedPetsData.length === 0) {
+      // Reset to defaults when no pet is selected
+      setOverallLength("")
+      setFaceStyle("")
+      setSkipEarTrim(false)
+      setSkipTailTrim(false)
+      setGroomingNotes("")
+    }
+  }, [selectedPetsData])
+
   return (
     <div className="min-h-screen bg-background p-3 sm:p-6">
       <div className="mb-4">

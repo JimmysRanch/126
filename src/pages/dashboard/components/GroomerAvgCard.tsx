@@ -1,22 +1,22 @@
 import { motion } from 'framer-motion'
 
-type GroomerDataItem = {
+type GroomerLifetimeDataItem = {
   id: number
+  groomerId: string
   name: string
-  bookedPercentage: number
-  appointmentCount: number
-  lastAppointmentEnd: string
-  schedule: Array<{ start: number; duration: number; client: string }>
+  totalAppointments: number
+  totalRevenue: number
+  daysWorked: number
+  avgDogsPerDay: number
+  avgRevenuePerDay: number
 }
 
 interface GroomerAvgItemProps {
-  groomer: GroomerDataItem
+  groomer: GroomerLifetimeDataItem
   delay: number
-  dogsPerDay: number
-  revenuePerDay: number
 }
 
-function GroomerAvgItem({ groomer, delay, dogsPerDay, revenuePerDay }: GroomerAvgItemProps) {
+function GroomerAvgItem({ groomer, delay }: GroomerAvgItemProps) {
   const getBarColor = (groomerId: number) => {
     if (groomerId === 1) return 'bg-pink-500'
     if (groomerId === 2) return 'bg-blue-500'
@@ -36,11 +36,11 @@ function GroomerAvgItem({ groomer, delay, dogsPerDay, revenuePerDay }: GroomerAv
       </div>
       <div className="flex items-center gap-1.5 text-[11px] flex-shrink-0">
         <div className="text-right">
-          <div className="font-bold">{dogsPerDay}</div>
+          <div className="font-bold">{groomer.avgDogsPerDay}</div>
           <div className="text-[9px] text-muted-foreground">dogs/day</div>
         </div>
         <div className="text-right">
-          <div className="font-bold text-primary">${revenuePerDay}</div>
+          <div className="font-bold text-primary">${groomer.avgRevenuePerDay}</div>
           <div className="text-[9px] text-muted-foreground">revenue/day</div>
         </div>
       </div>
@@ -49,26 +49,19 @@ function GroomerAvgItem({ groomer, delay, dogsPerDay, revenuePerDay }: GroomerAv
 }
 
 interface GroomerAvgCardProps {
-  data: GroomerDataItem[]
+  data: GroomerLifetimeDataItem[]
 }
 
 export function GroomerAvgCard({ data }: GroomerAvgCardProps) {
   const groomers = data || []
-  const groomerStats = groomers.map(groomer => ({
-    ...groomer,
-    dogsPerDay: groomer.appointmentCount,
-    revenuePerDay: Math.round(groomer.appointmentCount * 85 * (groomer.bookedPercentage / 100))
-  }))
 
   return (
     <div className="space-y-1.5 h-full flex flex-col justify-center">
-      {groomerStats.slice(0, 3).map((groomer, index) => (
+      {groomers.slice(0, 3).map((groomer, index) => (
         <GroomerAvgItem
           key={groomer.id}
           groomer={groomer}
           delay={index * 0.1}
-          dogsPerDay={groomer.dogsPerDay}
-          revenuePerDay={groomer.revenuePerDay}
         />
       ))}
     </div>

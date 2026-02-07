@@ -50,6 +50,7 @@ export function Dashboard() {
     bookedPercentageSummary,
     clientsSummary,
     groomerData,
+    groomerLifetimeData,
     recentActivity,
     expensesData,
   } = useDashboardData()
@@ -239,7 +240,7 @@ export function Dashboard() {
               <p className="text-[10px] text-muted-foreground">Lifetime Metrics</p>
             </div>
             <div className="flex-1 min-h-0 overflow-hidden">
-              <GroomerAvgCard data={groomerData} />
+              <GroomerAvgCard data={groomerLifetimeData} />
             </div>
           </div>
         </div>

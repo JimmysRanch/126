@@ -11,6 +11,7 @@ import { StaffScheduleView } from "@/components/StaffScheduleView"
 import { StaffPayrollDetail } from "@/components/StaffPayrollDetail"
 import { StaffPerformanceView } from "@/components/StaffPerformanceView"
 import { StaffCompensation } from "@/components/StaffCompensation"
+import { AppointmentDetailsDialog } from "@/components/appointments/AppointmentDetailsDialog"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useKV } from "@github/spark/hooks"
 import { EMPTY_PERFORMANCE_DATA, PerformanceData } from "@/lib/performance-types"
@@ -100,7 +101,7 @@ export function StaffProfile() {
   const staff = staffProfileEntry ?? (staffFromList ? fallbackProfile : null)
   const [activeTab, setActiveTab] = useState("overview")
   const isMobile = useIsMobile()
-  const [selectedAppointment, setSelectedAppointment] = useState<(StaffAppointmentSummary & { category: "Upcoming" | "Recent" }) | null>(null)
+  const [selectedFullAppointment, setSelectedFullAppointment] = useState<Appointment | null>(null)
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false)
   const computedPerformance = useMemo(
     () =>
@@ -142,7 +143,9 @@ export function StaffProfile() {
     cost: `$${appointment.totalPrice.toFixed(2)}`,
     notes: appointment.notes
   })
-  const upcomingAppointments = useMemo(() => {
+  
+  // Store full appointments for upcoming and recent
+  const upcomingFullAppointments = useMemo(() => {
     const today = new Date().setHours(0, 0, 0, 0)
     return staffAppointments
       .filter((appointment) => {
@@ -151,9 +154,9 @@ export function StaffProfile() {
       })
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(0, 5)
-      .map(mapAppointment)
   }, [staffAppointments])
-  const recentAppointments = useMemo(() => {
+  
+  const recentFullAppointments = useMemo(() => {
     const today = new Date().setHours(0, 0, 0, 0)
     return staffAppointments
       .filter((appointment) => {
@@ -162,8 +165,15 @@ export function StaffProfile() {
       })
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 5)
-      .map(mapAppointment)
   }, [staffAppointments])
+  
+  const upcomingAppointments = useMemo(() => 
+    upcomingFullAppointments.map(mapAppointment)
+  , [upcomingFullAppointments])
+  
+  const recentAppointments = useMemo(() => 
+    recentFullAppointments.map(mapAppointment)
+  , [recentFullAppointments])
 
   const formatStatusLabel = (status?: string) => {
     if (!status) return "Scheduled"
@@ -378,20 +388,20 @@ export function StaffProfile() {
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
                   {upcomingAppointments.length > 0 ? (
-                    upcomingAppointments.map((apt) => (
+                    upcomingAppointments.map((apt, index) => (
                       <Card
                         key={apt.id}
                         className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         role="button"
                         tabIndex={0}
                         onClick={() => {
-                          setSelectedAppointment({ ...apt, category: "Upcoming" })
+                          setSelectedFullAppointment(upcomingFullAppointments[index])
                           setAppointmentDialogOpen(true)
                         }}
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault()
-                            setSelectedAppointment({ ...apt, category: "Upcoming" })
+                            setSelectedFullAppointment(upcomingFullAppointments[index])
                             setAppointmentDialogOpen(true)
                           }
                         }}
@@ -467,20 +477,20 @@ export function StaffProfile() {
                 </h3>
                 <div className="space-y-2 sm:space-y-3">
                   {recentAppointments.length > 0 ? (
-                    recentAppointments.map((apt) => (
+                    recentAppointments.map((apt, index) => (
                       <Card
                         key={apt.id}
                         className="p-3 sm:p-4 bg-card border-border cursor-pointer hover:bg-muted/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         role="button"
                         tabIndex={0}
                         onClick={() => {
-                          setSelectedAppointment({ ...apt, category: "Recent" })
+                          setSelectedFullAppointment(recentFullAppointments[index])
                           setAppointmentDialogOpen(true)
                         }}
                         onKeyDown={(event) => {
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault()
-                            setSelectedAppointment({ ...apt, category: "Recent" })
+                            setSelectedFullAppointment(recentFullAppointments[index])
                             setAppointmentDialogOpen(true)
                           }
                         }}
@@ -601,93 +611,18 @@ export function StaffProfile() {
         </Tabs>
       </div>
 
-      <Dialog
-        open={appointmentDialogOpen}
-        onOpenChange={(open) => {
-          setAppointmentDialogOpen(open)
-          if (!open) {
-            setSelectedAppointment(null)
-          }
-        }}
-      >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Appointment Details</DialogTitle>
-          </DialogHeader>
-          {selectedAppointment && (
-            <div className="space-y-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold">{selectedAppointment.client}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedAppointment.pet} • {selectedAppointment.service}
-                  </p>
-                </div>
-                <Badge variant="secondary" className="text-xs uppercase tracking-wider">
-                  {selectedAppointment.category}
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Date</p>
-                  <p className="font-medium">{selectedAppointment.date}</p>
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">Time</p>
-                  <p className="font-medium">{selectedAppointment.time}</p>
-                </div>
-                {selectedAppointment.duration && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Duration</p>
-                    <p className="font-medium">{selectedAppointment.duration}</p>
-                  </div>
-                )}
-                {selectedAppointment.status && (
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-muted-foreground">Status</p>
-                    <Badge
-                      variant="secondary"
-                      className={`text-xs ${getStatusBadgeClasses(selectedAppointment.status)}`}
-                    >
-                      {formatStatusLabel(selectedAppointment.status)}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-
-              {(selectedAppointment.cost || selectedAppointment.tip || selectedAppointment.rating) && (
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  {selectedAppointment.cost && (
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Cost</p>
-                      <p className="font-medium">{selectedAppointment.cost}</p>
-                    </div>
-                  )}
-                  {selectedAppointment.tip && (
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Tip</p>
-                      <p className="font-medium">{selectedAppointment.tip}</p>
-                    </div>
-                  )}
-                  {selectedAppointment.rating && (
-                    <div>
-                      <p className="text-xs uppercase tracking-wider text-muted-foreground">Rating</p>
-                      <p className="font-medium">{selectedAppointment.rating} ⭐</p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {selectedAppointment.notes && (
-                <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
-                  “{selectedAppointment.notes}”
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {selectedFullAppointment && (
+        <AppointmentDetailsDialog
+          appointment={selectedFullAppointment}
+          open={appointmentDialogOpen}
+          onOpenChange={(open) => {
+            setAppointmentDialogOpen(open)
+            if (!open) {
+              setSelectedFullAppointment(null)
+            }
+          }}
+        />
+      )}
     </div>
   )
 }

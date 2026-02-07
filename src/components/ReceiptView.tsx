@@ -154,14 +154,15 @@ export function ReceiptView({ transaction, appointment, payments, taxAmount = 0 
         <div className="text-lg font-bold tracking-wide">
           {businessInfo.companyName || DEFAULT_BUSINESS_INFO.companyName}
         </div>
-        {businessInfo.businessPhone && (
-          <div className="text-[10px] text-muted-foreground">{businessInfo.businessPhone}</div>
-        )}
         {contactLine && (
           <div className="text-[10px] text-muted-foreground">{contactLine}</div>
         )}
-        {businessInfo.website && (
-          <div className="text-[10px] text-muted-foreground">{businessInfo.website}</div>
+        {(businessInfo.businessPhone || businessInfo.website) && (
+          <div className="text-[10px] text-muted-foreground">
+            {businessInfo.businessPhone && businessInfo.website 
+              ? `${businessInfo.businessPhone} • ${businessInfo.website}`
+              : businessInfo.businessPhone || businessInfo.website}
+          </div>
         )}
       </div>
 

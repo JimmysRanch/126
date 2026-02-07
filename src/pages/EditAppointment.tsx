@@ -8,11 +8,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Separator } from "@/components/ui/separator"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { useKV } from "@github/spark/hooks"
 import { Appointment, Client, MainService, AddOn } from "@/lib/types"
 import { toast } from "sonner"
-import { ArrowLeft, PawPrint, CurrencyDollar } from "@phosphor-icons/react"
+import { ArrowLeft, PawPrint, CurrencyDollar, Scissors } from "@phosphor-icons/react"
 import { format } from "date-fns"
 
 export function EditAppointment() {
@@ -40,6 +42,13 @@ export function EditAppointment() {
   )
   const [notes, setNotes] = useState(appointment?.notes || "")
   const [totalPrice, setTotalPrice] = useState(appointment?.totalPrice || 0)
+
+  // Grooming preferences state
+  const [overallLength, setOverallLength] = useState(appointment?.groomingPreferences?.overallLength || "")
+  const [faceStyle, setFaceStyle] = useState(appointment?.groomingPreferences?.faceStyle || "")
+  const [skipEarTrim, setSkipEarTrim] = useState(appointment?.groomingPreferences?.skipEarTrim || false)
+  const [skipTailTrim, setSkipTailTrim] = useState(appointment?.groomingPreferences?.skipTailTrim || false)
+  const [groomingNotes, setGroomingNotes] = useState(appointment?.groomingPreferences?.groomingNotes || "")
 
   useEffect(() => {
     if ((mainServices || []).length === 0 && (legacyMainServices || []).length > 0) {
@@ -130,6 +139,14 @@ export function EditAppointment() {
       }
     })
 
+    const groomingPreferences = {
+      overallLength,
+      faceStyle,
+      skipEarTrim,
+      skipTailTrim,
+      groomingNotes
+    }
+
     const updatedAppointment: Appointment = {
       ...appointment!,
       clientId: client.id,
@@ -146,7 +163,8 @@ export function EditAppointment() {
       endTime: startTime,
       services,
       totalPrice,
-      notes
+      notes,
+      groomingPreferences
     }
 
     setAppointments((current) =>
@@ -380,6 +398,92 @@ export function EditAppointment() {
                 </div>
               </div>
             </div>
+
+            {/* Grooming Preferences Card */}
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Scissors size={20} className="text-primary" />
+                <h3 className="font-semibold">Grooming Preferences</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Overall length</Label>
+                  <RadioGroup value={overallLength} onValueChange={setOverallLength}>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {["Short & neat", "Medium & neat", "Long & fluffy", "Breed standard"].map((option) => (
+                        <div key={option} className="flex items-center space-x-1.5">
+                          <RadioGroupItem value={option} id={`length-${option}`} />
+                          <Label htmlFor={`length-${option}`} className="text-sm font-normal cursor-pointer">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Face style</Label>
+                  <RadioGroup value={faceStyle} onValueChange={setFaceStyle}>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {["Short & neat", "Round / Teddy", "Beard / Mustache", "Breed Standard"].map((option) => (
+                        <div key={option} className="flex items-center space-x-1.5">
+                          <RadioGroupItem value={option} id={`face-${option}`} />
+                          <Label htmlFor={`face-${option}`} className="text-sm font-normal cursor-pointer">
+                            {option}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Trim preferences</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id="skip-ear-trim"
+                        checked={skipEarTrim}
+                        onCheckedChange={(checked) => setSkipEarTrim(checked as boolean)}
+                      />
+                      <Label htmlFor="skip-ear-trim" className="text-sm font-normal cursor-pointer">
+                        Skip Ear Trim
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-1.5">
+                      <Checkbox
+                        id="skip-tail-trim"
+                        checked={skipTailTrim}
+                        onCheckedChange={(checked) => setSkipTailTrim(checked as boolean)}
+                      />
+                      <Label htmlFor="skip-tail-trim" className="text-sm font-normal cursor-pointer">
+                        Skip Tail Trim
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <Label htmlFor="grooming-notes" className="text-sm font-medium mb-2 block">Grooming Notes</Label>
+                  <Textarea
+                    id="grooming-notes"
+                    value={groomingNotes}
+                    onChange={(e) => setGroomingNotes(e.target.value)}
+                    placeholder="Any special grooming instructions..."
+                    rows={2}
+                    className="text-sm"
+                  />
+                </div>
+              </div>
+            </Card>
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes (Optional)</Label>
