@@ -30,6 +30,7 @@ import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 import { isDemoModeEnabled, toggleDemoMode } from "@/lib/demo-data"
 import { getTodayDateInBusinessTimezone, parseDateStringAsLocal, formatDateString } from "@/lib/date-utils"
+import { StripeSettings as StripeSettingsComponent } from "@/components/StripeSettings"
 
 interface WeightRange {
   id: string
@@ -1085,6 +1086,12 @@ export function Settings() {
                 className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
               >
                 POS
+              </TabsTrigger>
+              <TabsTrigger 
+                value="payments" 
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
+              >
+                Payments
               </TabsTrigger>
               <TabsTrigger 
                 value="appearance" 
@@ -2257,6 +2264,10 @@ export function Settings() {
                 </div>
               </div>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="payments" className="mt-0">
+            <StripeSettingsComponent />
           </TabsContent>
         </Tabs>
         

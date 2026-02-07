@@ -11,22 +11,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, Transaction, TransactionItem, InventoryItem, InventoryLedgerEntry } from "@/lib/types"
-import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar, PawPrint } from "@phosphor-icons/react"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar, PawPrint, CreditCard } from "@phosphor-icons/react"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
+import { useStripeContext, StripeElementsWrapper } from "@/lib/stripe-context"
+import { StripePaymentForm, StripePaymentPlaceholder, StripePaymentResult } from "@/components/StripePaymentForm"
 
 export function POS() {
   const navigate = useNavigate()
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
-  const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
-  const [inventoryLedger, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
+  const [, setTransactions] = useKV<Transaction[]>("transactions", [])
+  const [, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
   const [paymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", [
     { id: "cash", name: "Cash", enabled: true },
     { id: "credit", name: "Credit Card", enabled: true },
     { id: "debit", name: "Debit Card", enabled: true },
     { id: "check", name: "Check", enabled: true }
   ])
+  
+  const { isStripeReady, stripePromise } = useStripeContext()
   
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
@@ -39,9 +42,13 @@ export function POS() {
   const [tipPaymentMethod, setTipPaymentMethod] = useState("")
   const [paymentMethod, setPaymentMethod] = useState("")
   const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false)
-  const isMobile = useIsMobile()
+  const [stripePaymentDialogOpen, setStripePaymentDialogOpen] = useState(false)
   
-  const enabledPaymentMethods = (paymentMethods || []).filter(pm => pm.enabled)
+  // Build payment methods list including Stripe if configured
+  const enabledPaymentMethods = [
+    ...(paymentMethods || []).filter(pm => pm.enabled),
+    ...(isStripeReady ? [{ id: "stripe", name: "Pay with Stripe", enabled: true }] : [])
+  ]
   const tipPaymentLabel = tipPaymentMethod === "cash" ? "Cash" : tipPaymentMethod === "card" ? "Card" : ""
 
   const todayAppointments = (appointments || []).filter(apt => {
@@ -125,6 +132,31 @@ export function POS() {
       return
     }
 
+    // If Stripe is selected, show the Stripe payment dialog
+    if (paymentMethod === "stripe") {
+      setCheckoutDialogOpen(false)
+      setStripePaymentDialogOpen(true)
+      return
+    }
+
+    // Complete the transaction for non-Stripe payments
+    completeTransaction()
+  }
+
+  const handleStripePaymentSuccess = (paymentResult: StripePaymentResult) => {
+    completeTransaction({
+      stripePaymentIntentId: paymentResult.paymentIntentId,
+      cardBrand: paymentResult.cardBrand,
+      cardLast4: paymentResult.cardLast4,
+    })
+    setStripePaymentDialogOpen(false)
+  }
+
+  const completeTransaction = (stripeDetails?: {
+    stripePaymentIntentId?: string
+    cardBrand?: string
+    cardLast4?: string
+  }) => {
     const newTransaction: Transaction = {
       id: Date.now().toString(),
       appointmentId: selectedAppointment?.id,
@@ -142,7 +174,11 @@ export function POS() {
       tipPaymentMethod: tipAmount > 0 ? (tipPaymentMethod as "cash" | "card") : undefined,
       paymentMethod,
       status: 'completed',
-      type: selectedAppointment ? 'appointment' : 'retail'
+      type: selectedAppointment ? 'appointment' : 'retail',
+      // Add Stripe details if present
+      stripePaymentIntentId: stripeDetails?.stripePaymentIntentId,
+      cardBrand: stripeDetails?.cardBrand,
+      cardLast4: stripeDetails?.cardLast4,
     }
 
     setTransactions((current) => [...(current || []), newTransaction])
@@ -428,11 +464,20 @@ export function POS() {
                   <SelectContent>
                     {enabledPaymentMethods.map((method) => (
                       <SelectItem key={method.id} value={method.id}>
-                        {method.name}
+                        <span className="flex items-center gap-2">
+                          {method.id === "stripe" && <CreditCard size={16} className="text-primary" />}
+                          {method.name}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {isStripeReady && paymentMethod === "stripe" && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <CreditCard size={12} />
+                    Secure card payment powered by Stripe
+                  </p>
+                )}
               </div>
             </div>
 
@@ -577,10 +622,52 @@ export function POS() {
               Cancel
             </Button>
             <Button onClick={handleCheckout}>
-              <CurrencyDollar className="mr-2" />
-              Complete Transaction
+              {paymentMethod === "stripe" ? (
+                <>
+                  <CreditCard className="mr-2" />
+                  Pay with Card
+                </>
+              ) : (
+                <>
+                  <CurrencyDollar className="mr-2" />
+                  Complete Transaction
+                </>
+              )}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Stripe Payment Dialog */}
+      <Dialog open={stripePaymentDialogOpen} onOpenChange={setStripePaymentDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CreditCard size={24} className="text-primary" />
+              Card Payment
+            </DialogTitle>
+          </DialogHeader>
+          
+          {isStripeReady && stripePromise ? (
+            <StripeElementsWrapper>
+              <StripePaymentForm
+                amount={calculateTotal()}
+                clientName={selectedAppointment?.clientName}
+                onSuccess={handleStripePaymentSuccess}
+                onCancel={() => {
+                  setStripePaymentDialogOpen(false)
+                  setCheckoutDialogOpen(true)
+                }}
+              />
+            </StripeElementsWrapper>
+          ) : (
+            <StripePaymentPlaceholder
+              onCancel={() => {
+                setStripePaymentDialogOpen(false)
+                setCheckoutDialogOpen(true)
+              }}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
