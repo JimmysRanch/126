@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Trash, PencilSimple, CaretUp, CaretDown } from "@phosphor-icons/react"
+import { Plus, Trash, PencilSimple, CaretUp, CaretDown, ArrowSquareOut } from "@phosphor-icons/react"
 import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -30,6 +30,7 @@ import { useAppearance, type AppearanceTheme, type AppearanceUi } from "@/hooks/
 import { format, addDays, nextFriday, startOfDay, addWeeks } from 'date-fns'
 import { isDemoModeEnabled, toggleDemoMode } from "@/lib/demo-data"
 import { getTodayDateInBusinessTimezone, parseDateStringAsLocal, formatDateString } from "@/lib/date-utils"
+import { StripeTerminalPOS } from "@/stripe/StripeTerminalPOS"
 
 interface WeightRange {
   id: string
@@ -2253,6 +2254,31 @@ export function Settings() {
                         </div>
                       ))
                     )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-4 md:p-6 bg-card border-border mt-6">
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Stripe Integration</h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Connect your Stripe account to accept card payments and manage your finances directly in the app.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <Button onClick={() => navigate('/stripe/onboarding')} className="w-full md:w-auto">
+                    <ArrowSquareOut size={18} className="mr-2" />
+                    Complete Stripe Onboarding
+                  </Button>
+
+                  <Separator />
+
+                  <div>
+                    <h3 className="font-medium mb-3">Stripe Terminal (Card Present)</h3>
+                    <StripeTerminalPOS />
                   </div>
                 </div>
               </div>
