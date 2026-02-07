@@ -142,10 +142,18 @@ export function ReceiptView({ transaction, appointment, payments, taxAmount = 0 
     const cardLast4 = transaction.cardLast4
     const cardBrand = transaction.cardBrand
 
+    // Helper function to format card brand
+    const formatCardBrand = (brand: string | undefined) => {
+      if (!brand || brand.length === 0) return null
+      return `${brand.charAt(0).toUpperCase() + brand.slice(1)} Card`
+    }
+
+    const formattedCardBrand = formatCardBrand(cardBrand)
+
     if (tipAmount > 0 && tipMethod && tipMethod !== primaryMethod) {
       return [
         { 
-          method: cardBrand ? `${cardBrand.charAt(0).toUpperCase() + cardBrand.slice(1)} Card` : primaryMethod, 
+          method: formattedCardBrand || primaryMethod, 
           amount: transaction.total - tipAmount,
           cardLast4 
         },
@@ -154,7 +162,7 @@ export function ReceiptView({ transaction, appointment, payments, taxAmount = 0 
     }
 
     return [{ 
-      method: cardBrand ? `${cardBrand.charAt(0).toUpperCase() + cardBrand.slice(1)} Card` : primaryMethod, 
+      method: formattedCardBrand || primaryMethod, 
       amount: transaction.total,
       cardLast4 
     }]
