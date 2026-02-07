@@ -17,6 +17,7 @@ interface AppointmentDetailsDialogProps {
 }
 
 export function AppointmentDetailsDialog({ appointment, open, onOpenChange }: AppointmentDetailsDialogProps) {
+  // Only setAppointments is needed for updating status; appointments array is unused
   const [, setAppointments] = useKV<Appointment[]>("appointments", [])
   const navigate = useNavigate()
 

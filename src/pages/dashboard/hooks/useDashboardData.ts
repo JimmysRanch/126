@@ -355,14 +355,19 @@ export function useDashboardData() {
       
       // Get unique days worked
       const uniqueDays = new Set(groomerAppts.map(a => a.date))
-      const daysWorked = Math.max(1, uniqueDays.size)
+      const daysWorked = uniqueDays.size
       
       // Calculate total revenue
       const totalRevenue = groomerAppts.reduce((sum, a) => sum + a.totalPrice, 0)
       
-      // Calculate averages
-      const avgDogsPerDay = Math.round((groomerAppts.length / daysWorked) * 10) / 10
-      const avgRevenuePerDay = Math.round(totalRevenue / daysWorked)
+      // Calculate averages - only if there are completed appointments
+      // If no appointments, show 0 to avoid misleading metrics
+      const avgDogsPerDay = daysWorked > 0 
+        ? Math.round((groomerAppts.length / daysWorked) * 10) / 10 
+        : 0
+      const avgRevenuePerDay = daysWorked > 0 
+        ? Math.round(totalRevenue / daysWorked) 
+        : 0
       
       return {
         id: index + 1,
