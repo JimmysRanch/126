@@ -12,7 +12,6 @@ import { useKV } from "@github/spark/hooks"
 import { toast } from "sonner"
 import { Appointment, Transaction, TransactionItem, InventoryItem, InventoryLedgerEntry } from "@/lib/types"
 import { MagnifyingGlass, ShoppingCart, Trash, Plus, Minus, Receipt, CurrencyDollar, PawPrint, CreditCard } from "@phosphor-icons/react"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { getTodayInBusinessTimezone, getNowInBusinessTimezone } from "@/lib/date-utils"
 import { useStripeContext, StripeElementsWrapper } from "@/lib/stripe-context"
 import { StripePaymentForm, StripePaymentPlaceholder, StripePaymentResult } from "@/components/StripePaymentForm"
@@ -21,8 +20,8 @@ export function POS() {
   const navigate = useNavigate()
   const [appointments, setAppointments] = useKV<Appointment[]>("appointments", [])
   const [inventory, setInventory] = useKV<InventoryItem[]>("inventory", [])
-  const [transactions, setTransactions] = useKV<Transaction[]>("transactions", [])
-  const [inventoryLedger, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
+  const [, setTransactions] = useKV<Transaction[]>("transactions", [])
+  const [, setInventoryLedger] = useKV<InventoryLedgerEntry[]>("inventory-ledger", [])
   const [paymentMethods] = useKV<Array<{ id: string; name: string; enabled: boolean }>>("payment-methods", [
     { id: "cash", name: "Cash", enabled: true },
     { id: "credit", name: "Credit Card", enabled: true },
@@ -44,7 +43,6 @@ export function POS() {
   const [paymentMethod, setPaymentMethod] = useState("")
   const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false)
   const [stripePaymentDialogOpen, setStripePaymentDialogOpen] = useState(false)
-  const isMobile = useIsMobile()
   
   // Build payment methods list including Stripe if configured
   const enabledPaymentMethods = [
