@@ -190,6 +190,12 @@ export interface Transaction {
   paymentMethod: string
   status: 'pending' | 'completed' | 'refunded'
   type: 'appointment' | 'retail' | 'mixed'
+  // Stripe payment details
+  stripePaymentIntentId?: string
+  stripeChargeId?: string
+  cardBrand?: string
+  cardLast4?: string
+  stripeReceiptUrl?: string
 }
 
 export interface TransactionItem {
@@ -199,6 +205,45 @@ export interface TransactionItem {
   quantity: number
   price: number
   total: number
+}
+
+// Stripe Integration Types
+export interface StripeSettings {
+  enabled: boolean
+  publishableKey: string
+  testMode: boolean
+  connectedAccountId?: string
+  connectedAccountStatus?: 'pending' | 'active' | 'restricted' | 'disabled'
+  businessName?: string
+  onboardingComplete: boolean
+  payoutsEnabled: boolean
+  chargesEnabled: boolean
+  lastUpdated?: string
+}
+
+export interface StripePaymentIntent {
+  id: string
+  clientSecret: string
+  amount: number
+  currency: string
+  status: 'requires_payment_method' | 'requires_confirmation' | 'requires_action' | 'processing' | 'succeeded' | 'canceled'
+  transactionId?: string
+  createdAt: string
+}
+
+export interface StripeTransaction {
+  id: string
+  transactionId: string
+  stripePaymentIntentId: string
+  amount: number
+  currency: string
+  status: 'pending' | 'succeeded' | 'failed' | 'refunded'
+  cardBrand?: string
+  cardLast4?: string
+  receiptUrl?: string
+  createdAt: string
+  refundedAt?: string
+  refundAmount?: number
 }
 
 export function getWeightCategory(weight: number): 'small' | 'medium' | 'large' | 'giant' {

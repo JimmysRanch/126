@@ -39,6 +39,7 @@ import { useEffect, useMemo } from 'react'
 import { RecentActivityPage } from '@/pages/RecentActivityPage'
 import { useAppearance } from '@/hooks/useAppearance'
 import { Reports } from '@/pages/reports'
+import { StripeProvider } from '@/lib/stripe-context'
 
 function App() {
   const { selectedTheme, selectedUi } = useAppearance()
@@ -65,52 +66,54 @@ function App() {
   }, [appearanceClasses])
 
   return (
-    <Router>
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
-        <TopNav />
-        <div className="flex-1 min-h-0">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/appointments" element={<Appointments />} />
-            <Route path="/appointments/new" element={<NewAppointment />} />
-            <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
-            <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
-            <Route path="/clients" element={<ClientsList />} />
-            <Route path="/clients/new" element={<AddClient />} />
-            <Route path="/clients/:clientId" element={<ClientProfile />} />
-            <Route path="/clients/:clientId/edit" element={<EditClient />} />
-            <Route path="/clients/:clientId/add-pet" element={<AddPet />} />
-            <Route path="/clients/:clientId/pets/:petId/edit" element={<EditPet />} />
-            <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
-            <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
-            <Route path="/staff" element={<Staff />} />
-            <Route path="/staff/invite" element={<InviteStaff />} />
-            <Route path="/staff/:staffId" element={<StaffProfile />} />
-            <Route path="/staff/:staffId/edit" element={<EditStaff />} />
-            <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
-            <Route path="/pos" element={<POS />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/inventory/history" element={<InventoryHistory />} />
-            <Route path="/receipts/:receiptId" element={<Receipt />} />
-            <Route path="/finances" element={<Finances />} />
-            <Route path="/finances/expenses" element={<ExpensesDetail />} />
-            <Route path="/finances/all-expenses" element={<AllExpenses />} />
-            <Route path="/finances/add-expense" element={<AddExpense />} />
-            <Route path="/finances/record-payment" element={<RecordPayment />} />
-            <Route path="/finances/upcoming-bills" element={<UpcomingBills />} />
-            <Route path="/finances/file-taxes" element={<FileTaxes />} />
-            <Route path="/finances/run-payroll" element={<RunPayroll />} />
-            <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
-            <Route path="/reports/*" element={<Reports />} />
-            <Route path="/recent-activity" element={<RecentActivityPage />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
-            <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
-          </Routes>
+    <StripeProvider>
+      <Router>
+        <div className="min-h-screen bg-background text-foreground flex flex-col">
+          <TopNav />
+          <div className="flex-1 min-h-0">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/appointments" element={<Appointments />} />
+              <Route path="/appointments/new" element={<NewAppointment />} />
+              <Route path="/appointments/:appointmentId/edit" element={<EditAppointment />} />
+              <Route path="/messages" element={<PlaceholderPage title="Messages" />} />
+              <Route path="/clients" element={<ClientsList />} />
+              <Route path="/clients/new" element={<AddClient />} />
+              <Route path="/clients/:clientId" element={<ClientProfile />} />
+              <Route path="/clients/:clientId/edit" element={<EditClient />} />
+              <Route path="/clients/:clientId/add-pet" element={<AddPet />} />
+              <Route path="/clients/:clientId/pets/:petId/edit" element={<EditPet />} />
+              <Route path="/clients/:clientId/payment-history" element={<PaymentHistory />} />
+              <Route path="/clients/:clientId/contact" element={<ContactInfo />} />
+              <Route path="/staff" element={<Staff />} />
+              <Route path="/staff/invite" element={<InviteStaff />} />
+              <Route path="/staff/:staffId" element={<StaffProfile />} />
+              <Route path="/staff/:staffId/edit" element={<EditStaff />} />
+              <Route path="/staff/:staffId/payroll-breakdown" element={<StaffPayrollBreakdown />} />
+              <Route path="/pos" element={<POS />} />
+              <Route path="/inventory" element={<Inventory />} />
+              <Route path="/inventory/history" element={<InventoryHistory />} />
+              <Route path="/receipts/:receiptId" element={<Receipt />} />
+              <Route path="/finances" element={<Finances />} />
+              <Route path="/finances/expenses" element={<ExpensesDetail />} />
+              <Route path="/finances/all-expenses" element={<AllExpenses />} />
+              <Route path="/finances/add-expense" element={<AddExpense />} />
+              <Route path="/finances/record-payment" element={<RecordPayment />} />
+              <Route path="/finances/upcoming-bills" element={<UpcomingBills />} />
+              <Route path="/finances/file-taxes" element={<FileTaxes />} />
+              <Route path="/finances/run-payroll" element={<RunPayroll />} />
+              <Route path="/finances/staff/:staffId/payroll-breakdown" element={<FinancesStaffPayrollBreakdown />} />
+              <Route path="/reports/*" element={<Reports />} />
+              <Route path="/recent-activity" element={<RecentActivityPage />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
+              <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
+            </Routes>
+          </div>
+          <Toaster />
         </div>
-        <Toaster />
-      </div>
-    </Router>
+      </Router>
+    </StripeProvider>
   )
 }
 

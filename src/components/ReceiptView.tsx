@@ -138,15 +138,27 @@ export function ReceiptView({ transaction, appointment, payments, taxAmount = 0 
       ? formatMethodLabel(transaction.tipPaymentMethod)
       : undefined
 
+    // Include Stripe card details if available
+    const cardLast4 = transaction.cardLast4
+    const cardBrand = transaction.cardBrand
+
     if (tipAmount > 0 && tipMethod && tipMethod !== primaryMethod) {
       return [
-        { method: primaryMethod, amount: transaction.total - tipAmount },
+        { 
+          method: cardBrand ? `${cardBrand.charAt(0).toUpperCase() + cardBrand.slice(1)} Card` : primaryMethod, 
+          amount: transaction.total - tipAmount,
+          cardLast4 
+        },
         { method: `${tipMethod} (Tip)`, amount: tipAmount }
       ]
     }
 
-    return [{ method: primaryMethod, amount: transaction.total }]
-  }, [payments, transaction.paymentMethod, transaction.tipAmount, transaction.tipPaymentMethod, transaction.total])
+    return [{ 
+      method: cardBrand ? `${cardBrand.charAt(0).toUpperCase() + cardBrand.slice(1)} Card` : primaryMethod, 
+      amount: transaction.total,
+      cardLast4 
+    }]
+  }, [payments, transaction.paymentMethod, transaction.tipAmount, transaction.tipPaymentMethod, transaction.total, transaction.cardLast4, transaction.cardBrand])
 
   return (
     <div className="w-full max-w-[380px] mx-auto text-[11px] text-foreground font-mono">
