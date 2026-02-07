@@ -89,9 +89,14 @@ export function StripeTerminalPOS() {
       const term = terminal ?? (await initTerminal());
       if (!term) return;
       
-      const totalCents = Math.round(parseFloat(chargeAmount) * 100);
-      if (isNaN(totalCents) || totalCents <= 0) {
-        setError("Invalid amount");
+      // Convert dollars to cents safely avoiding floating-point precision issues
+      const parts = chargeAmount.split('.');
+      const dollars = parseInt(parts[0] || '0', 10);
+      const cents = parts[1] ? parseInt(parts[1].padEnd(2, '0').slice(0, 2), 10) : 0;
+      const totalCents = dollars * 100 + cents;
+      
+      if (isNaN(totalCents) || totalCents <= 0 || totalCents < 50) {
+        setError("Invalid amount (minimum $0.50)");
         return;
       }
 

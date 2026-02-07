@@ -26,9 +26,13 @@ webhookRouter.post(
     // Many objects include metadata; for account.updated you may not have it.
     const anyObj = event.data.object as Record<string, unknown>;
     const metadata = anyObj?.metadata as Record<string, unknown> | undefined;
-    const salonId = metadata?.salonId || "unknown";
+    const salonId = metadata?.salonId;
 
-    pushEvent(String(salonId), { id: event.id, type: event.type, created: event.created });
+    if (!salonId) {
+      console.warn(`Webhook event ${event.type} (${event.id}) has no salonId in metadata`);
+    }
+
+    pushEvent(String(salonId || "unknown"), { id: event.id, type: event.type, created: event.created });
 
     // TODO: later: handle dispute created, payment succeeded, etc.
     res.json({ received: true });
