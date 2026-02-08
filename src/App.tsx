@@ -39,6 +39,7 @@ import { useEffect, useMemo } from 'react'
 import { RecentActivityPage } from '@/pages/RecentActivityPage'
 import { useAppearance } from '@/hooks/useAppearance'
 import { Reports } from '@/pages/reports'
+import StripeOnboardingPage from '@/pages/StripeOnboarding'
 
 function App() {
   const { selectedTheme, selectedUi } = useAppearance()
@@ -104,6 +105,7 @@ function App() {
             <Route path="/reports/*" element={<Reports />} />
             <Route path="/recent-activity" element={<RecentActivityPage />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/stripe/onboarding" element={<StripeOnboardingPage />} />
             <Route path="/dev/staff-onboarding" element={<StaffOnboarding />} />
             <Route path="/dev/staff-profile-setup" element={<StaffProfileSetup />} />
           </Routes>

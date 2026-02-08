@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, PawPrint, CaretRight } from '@phosphor-icons/react'
+import { SquaresFour, Circle, CreditCard, Users, Receipt, TrendUp, PawPrint, CaretRight, Wallet } from '@phosphor-icons/react'
 import { FinancialChart } from '@/components/FinancialChart'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -13,6 +13,7 @@ import { PayrollOverview } from '@/components/PayrollOverview'
 import { useKV } from "@github/spark/hooks"
 import { ExpenseRecord, PaymentDetail } from "@/lib/finance-types"
 import { formatDateForDisplay } from "@/lib/date-utils"
+import FinancesStripe from "@/pages/finances/FinancesStripe"
 
 export function Finances() {
   const navigate = useNavigate()
@@ -133,6 +134,10 @@ export function Finances() {
               <TabsTrigger value="taxes" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Receipt size={isMobile ? 16 : 18} />
                 {!isMobile && 'Taxes'}
+              </TabsTrigger>
+              <TabsTrigger value="stripe" className="gap-1 md:gap-2 text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Wallet size={isMobile ? 16 : 18} />
+                {!isMobile && 'Stripe'}
               </TabsTrigger>
             </TabsList>
             <ScrollBar orientation="horizontal" />
@@ -691,6 +696,10 @@ export function Finances() {
                 </Button>
               </div>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="stripe" className="space-y-3">
+            <FinancesStripe />
           </TabsContent>
         </Tabs>
       </div>
