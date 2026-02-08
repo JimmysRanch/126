@@ -1,4 +1,4 @@
-const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:4242";
+const API = import.meta.env.VITE_API_BASE_URL || "";
 
 async function parseErrorResponse(res: Response, operation: string): Promise<string> {
   try {
